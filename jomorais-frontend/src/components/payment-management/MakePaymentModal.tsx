@@ -15,6 +15,7 @@ import type { Student } from '../../types/student.types';
 import { useAllFormasPagamento, useTiposServico, useMesesPendentes, useCreatePagamento } from '../../hooks/usePayment';
 import { useStudents } from '../../hooks/useStudent';
 import { useAnosLectivos } from '../../hooks/useAnoLectivo';
+import paymentService from '../../services/payment.service';
 
 // ============= FUNÇÕES AUXILIARES (baseadas no jomorais) =============
 
@@ -807,8 +808,8 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
         toast.error('Selecione o banco/conta para depósito');
         return;
       }
-      if (!formData.n_Bordoro || formData.n_Bordoro.length !== 9) {
-        toast.error('Número do borderô deve conter exatamente 9 dígitos');
+      if (!formData.n_Bordoro || formData.n_Bordoro.trim() === '') {
+        toast.error('Número do borderô/referência é obrigatório para depósitos');
         return;
       }
     }
@@ -842,8 +843,28 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
     const anoLetivoSelecionado = anosLectivos.find(ano => ano.codigo === selectedAnoLectivo);
 
     try {
+      // Validar unicidade do borderô ANTES de criar os pagamentos
+      if (formData.n_Bordoro && formData.n_Bordoro.trim() !== '') {
+        try {
+          const validationResult = await paymentService.validateBordero(formData.n_Bordoro.trim());
+          if (!validationResult.success || !validationResult.data?.valid) {
+            toast.error(validationResult.message || 'Número de borderô já está em uso');
+            return;
+          }
+        } catch (error: unknown) {
+          console.error('❌ Erro ao validar borderô:', error);
+          // Extrair mensagem de erro do axios
+          const axiosError = error as { response?: { data?: { message?: string } } };
+          const errorMessage = axiosError?.response?.data?.message || 'Erro ao validar número do borderô';
+          toast.error(errorMessage);
+          return;
+        }
+      }
+
       // Criar pagamentos para cada mês selecionado SEQUENCIALMENTE
+      // Todos os pagamentos da mesma transação usam o MESMO borderô
       const payments = [];
+      const borderoParaUsar = formData.n_Bordoro?.trim() || undefined;
       
       for (let i = 0; i < formData.mesesSelecionados.length; i++) {
         const mes = formData.mesesSelecionados[i];
@@ -861,14 +882,6 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
             anoCorreto = parseInt(anoLetivoSelecionado.anoFinal);
           }
         }
-        
-        // Gerar borderô único para cada mês (se for depósito)
-        let numeroBorderoUnico = undefined;
-        if (isDeposito && formData.n_Bordoro) {
-          const sufixo = String(i + 1).padStart(2, '0');
-          const borderoBase = formData.n_Bordoro.slice(0, 7);
-          numeroBorderoUnico = borderoBase + sufixo;
-        }
 
         const paymentData = {
           codigo_Aluno: selectedAluno.codigo,
@@ -882,7 +895,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
           desconto: 0,
           totalgeral: total,
           observacao: formData.observacao,
-          n_Bordoro: numeroBorderoUnico || formData.n_Bordoro || undefined,
+          n_Bordoro: borderoParaUsar, // MESMO borderô para todos os meses da mesma transação
           contaMovimentada: formData.contaMovimentada || undefined,
           codigo_Utilizador: codigoUtilizador,
           codigo_Estatus: 1, // Ativo
@@ -891,6 +904,9 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
           saldo_Anterior: 0,
           descontoSaldo: 0,
           codoc: 0,
+          // Pular validação de borderô após o primeiro pagamento (já foi validado antes)
+          // Isso permite que múltiplos meses usem o mesmo borderô na mesma transação
+          skipBorderoValidation: i > 0,
         };
 
         try {

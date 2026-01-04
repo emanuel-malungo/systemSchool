@@ -161,6 +161,8 @@ export interface PagamentoDetalheInput {
   preco?: number;
   indice_mes?: number;
   indice_ano?: number;
+  // Flag para pular validação de borderô em transações em lote (múltiplos meses)
+  skipBorderoValidation?: boolean;
 }
 
 // ===============================

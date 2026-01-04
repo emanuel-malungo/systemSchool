@@ -454,78 +454,8 @@ export class PaymentManagementService {
   // DETALHES DE PAGAMENTO (tb_pagamentos) - CRUD COMPLETO
   // ===============================
 
-  static async createPagamento(data) {
-    try {
-      // Verificações de integridade
-      const [alunoExists, tipoServicoExists, utilizadorExists, pagamentoiExists, formaPagamentoExists] = await Promise.all([
-        prisma.tb_alunos.findUnique({ where: { codigo: data.codigo_Aluno } }),
-        data.codigo_Tipo_Servico ? prisma.tb_tipo_servicos.findUnique({ where: { codigo: data.codigo_Tipo_Servico } }) : Promise.resolve(true),
-        prisma.tb_utilizadores.findUnique({ where: { codigo: data.codigo_Utilizador } }),
-        prisma.tb_pagamentoi.findUnique({ where: { codigo: data.codigoPagamento } }),
-        data.codigo_FormaPagamento ? prisma.tb_forma_pagamento.findUnique({ where: { codigo: data.codigo_FormaPagamento } }) : Promise.resolve(true)
-      ]);
-
-      if (!alunoExists) {
-        throw new AppError('Aluno não encontrado', 404);
-      }
-
-      if (data.codigo_Tipo_Servico && !tipoServicoExists) {
-        throw new AppError('Tipo de serviço não encontrado', 404);
-      }
-
-      if (!utilizadorExists) {
-        throw new AppError('Utilizador não encontrado', 404);
-      }
-
-      if (!pagamentoiExists) {
-        throw new AppError('Pagamento principal não encontrado', 404);
-      }
-
-      if (data.codigo_FormaPagamento && !formaPagamentoExists) {
-        throw new AppError('Forma de pagamento não encontrada', 404);
-      }
-
-      const pagamento = await prisma.tb_pagamentos.create({
-        data: {
-          codigo_Aluno: data.codigo_Aluno,
-          codigo_Tipo_Servico: data.codigo_Tipo_Servico,
-          data: data.data,
-          n_Bordoro: data.n_Bordoro,
-          multa: data.multa || 0,
-          mes: data.mes,
-          codigo_Utilizador: data.codigo_Utilizador,
-          observacao: data.observacao || '',
-          ano: data.ano || new Date().getFullYear(),
-          contaMovimentada: data.contaMovimentada,
-          quantidade: data.quantidade,
-          desconto: data.desconto,
-          totalgeral: data.totalgeral,
-          dataBanco: data.dataBanco,
-          codigo_Estatus: data.codigo_Estatus || 1,
-          codigo_Empresa: data.codigo_Empresa || 1,
-          codigo_FormaPagamento: data.codigo_FormaPagamento || 1,
-          saldo_Anterior: data.saldo_Anterior || 0,
-          codigoPagamento: data.codigoPagamento,
-          descontoSaldo: data.descontoSaldo || 1,
-          tipoDocumento: data.tipoDocumento,
-          next: data.next || '',
-          codoc: data.codoc || 0,
-          fatura: data.fatura,
-          taxa_iva: data.taxa_iva,
-          hash: data.hash,
-          preco: data.preco || 0,
-          indice_mes: data.indice_mes,
-          indice_ano: data.indice_ano
-        }
-      });
-
-      return pagamento;
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      console.error('Erro ao criar detalhe de pagamento:', error);
-      throw new AppError('Erro ao criar detalhe de pagamento', 500);
-    }
-  }
+  // Método createPagamento removido daqui - existe apenas uma definição abaixo (na seção PAGAMENTOS COMPLETOS)
+  // para evitar duplicação e garantir validação de borderô único
 
   static async getPagamentos(page = 1, limit = 10, filters = {}) {
     try {
@@ -1476,9 +1406,26 @@ export class PaymentManagementService {
 
   static async createPagamento(data) {
     try {
-      // Validar borderô se for depósito
-      if (data.numeroBordero) {
-        await this.validateBordero(data.numeroBordero);
+      // LOG: Ver todos os dados recebidos
+      console.log('📦 [createPagamento] Dados recebidos:', JSON.stringify({
+        n_Bordoro: data.n_Bordoro,
+        numeroBordero: data.numeroBordero,
+        contaMovimentada: data.contaMovimentada,
+        tipoConta: data.tipoConta,
+        codigo_Aluno: data.codigo_Aluno,
+        skipBorderoValidation: data.skipBorderoValidation
+      }, null, 2));
+      
+      // Obter o borderô do campo correto (n_Bordoro ou numeroBordero)
+      const borderoFornecido = data.n_Bordoro || data.numeroBordero;
+      
+      console.log('🔍 [createPagamento] Borderô fornecido:', borderoFornecido);
+      
+      // Validar unicidade do borderô APENAS se não for parte de uma transação em lote
+      // O frontend valida UMA VEZ antes de iniciar, então pagamentos subsequentes
+      // da mesma transação podem pular esta validação
+      if (borderoFornecido && borderoFornecido.trim() !== '' && !data.skipBorderoValidation) {
+        await this.validateBordero(borderoFornecido);
       }
 
       // Determinar conta movimentada baseada na forma de pagamento e tipo de conta
@@ -1494,13 +1441,17 @@ export class PaymentManagementService {
           default:
             contaMovimentada = 'CAIXA';
         }
+      } else if (data.contaMovimentada) {
+        contaMovimentada = data.contaMovimentada;
       }
 
       // Gerar hash para o pagamento
       const hash = `PAG_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      // Gerar borderô (usar o fornecido ou gerar automaticamente)
-      const borderoux = data.numeroBordero || `BOR_${Date.now()}`;
+      // Usar o borderô fornecido pelo frontend (NÃO gerar automaticamente se fornecido)
+      const borderoux = borderoFornecido && borderoFornecido.trim() !== '' 
+        ? borderoFornecido.trim() 
+        : `BOR_${Date.now()}`;
       
       // Criar pagamento principal primeiro
       const pagamentoPrincipal = await prisma.tb_pagamentoi.create({
@@ -2174,58 +2125,70 @@ export class PaymentManagementService {
     }
   }
 
-  // Método para validar número de borderô (9 dígitos únicos)
+  // Método para validar número de borderô (deve ser único)
   static async validateBordero(bordero, excludeId = null) {
     try {
       console.log(`🔍 Validando borderô: ${bordero}, excludeId: ${excludeId}`);
       
-      // Validar formato (exatamente 9 dígitos)
-      if (!/^\d{9}$/.test(bordero)) {
-        console.log(`❌ Formato inválido: ${bordero}`);
-        throw new AppError('Número de borderô deve conter exatamente 9 dígitos', 400);
+      // Validar que não está vazio
+      if (!bordero || bordero.trim() === '') {
+        throw new AppError('Número de borderô é obrigatório', 400);
       }
 
-      // Verificar duplicatas na tb_pagamentoi com informações detalhadas
-      const whereClause = { borderoux: bordero };
+      const borderoTrimmed = bordero.trim();
+
+      // Verificar duplicatas na tb_pagamentoi
+      const whereClausePagamentoi = { borderoux: borderoTrimmed };
       if (excludeId) {
-        whereClause.codigo = { not: excludeId };
+        whereClausePagamentoi.codigo = { not: excludeId };
       }
       
-      console.log(`🔍 Buscando borderô com whereClause:`, whereClause);
+      console.log(`🔍 Buscando borderô na tb_pagamentoi com whereClause:`, whereClausePagamentoi);
 
-      const existingBordero = await prisma.tb_pagamentoi.findFirst({
-        where: whereClause
+      const existingBorderoPagamentoi = await prisma.tb_pagamentoi.findFirst({
+        where: whereClausePagamentoi
       });
 
-      console.log(`🔍 Resultado da busca:`, existingBordero ? `Encontrado: ${existingBordero.codigo}` : 'Não encontrado');
-
-      if (existingBordero) {
-        // Buscar apenas o nome do aluno
+      if (existingBorderoPagamentoi) {
         let alunoInfo = 'N/A';
-        
         try {
-          console.log(`🔍 Pagamento encontrado:`, {
-            codigo: existingBordero.codigo,
-            codigo_Aluno: existingBordero.codigo_Aluno
-          });
-          
-          if (existingBordero.codigo_Aluno) {
+          if (existingBorderoPagamentoi.codigo_Aluno) {
             const aluno = await prisma.tb_alunos.findUnique({
-              where: { codigo: existingBordero.codigo_Aluno }
+              where: { codigo: existingBorderoPagamentoi.codigo_Aluno }
             });
-            
-            if (aluno) {
-              alunoInfo = aluno.nome;
-              console.log(`👤 Aluno encontrado: ${alunoInfo}`);
-            }
+            if (aluno) alunoInfo = aluno.nome;
           }
         } catch (error) {
-          console.log('Erro ao buscar informações do pagamento duplicado:', error.message);
+          console.log('Erro ao buscar informações do aluno:', error.message);
         }
         
-        const errorMessage = `Número de borderô já foi usado na fatura #${existingBordero.codigo}. Aluno: ${alunoInfo}`;
+        const errorMessage = `Número de borderô já foi usado na fatura #${existingBorderoPagamentoi.codigo}. Aluno: ${alunoInfo}`;
+        console.log(`🚨 ${errorMessage}`);
+        throw new AppError(errorMessage, 400);
+      }
+
+      // Verificar duplicatas na tb_pagamentos (n_Bordoro)
+      console.log(`🔍 Buscando borderô na tb_pagamentos com whereClause:`, { n_Bordoro: borderoTrimmed });
+
+      const existingBorderoPagamentos = await prisma.tb_pagamentos.findFirst({
+        where: { n_Bordoro: borderoTrimmed }
+      });
+
+      if (existingBorderoPagamentos) {
+        let alunoInfo = 'N/A';
+        try {
+          if (existingBorderoPagamentos.codigo_Aluno) {
+            const aluno = await prisma.tb_alunos.findUnique({
+              where: { codigo: existingBorderoPagamentos.codigo_Aluno }
+            });
+            if (aluno) alunoInfo = aluno.nome;
+          }
+        } catch (error) {
+          console.log('Erro ao buscar informações do aluno:', error.message);
+        }
         
-        console.log(`🚨 Mensagem de erro final: ${errorMessage}`);
+        const errorMessage = `Número de borderô já foi usado no pagamento #${existingBorderoPagamentos.codigo}. Aluno: ${alunoInfo}`;
+        console.log(`🚨 ${errorMessage}`);
         throw new AppError(errorMessage, 400);
       }
 

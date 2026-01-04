@@ -190,20 +190,8 @@ export class PaymentManagementController {
   // DETALHES DE PAGAMENTO (tb_pagamentos) - CRUD COMPLETO
   // ===============================
 
-  static async createPagamento(req, res) {
-    try {
-      const validatedData = pagamentoCreateSchema.parse(req.body);
-      const pagamento = await PaymentManagementService.createPagamento(validatedData);
-      
-      res.status(201).json({
-        success: true,
-        message: "Detalhe de pagamento criado com sucesso",
-        data: pagamento,
-      });
-    } catch (error) {
-      handleControllerError(res, error, "Erro ao criar detalhe de pagamento", 400);
-    }
-  }
+  // Método createPagamento removido - existe apenas uma definição abaixo (linha ~589)
+  // para evitar duplicação e garantir validação de borderô
 
   static async getPagamentos(req, res) {
     try {
@@ -768,18 +756,33 @@ export class PaymentManagementController {
 
   static async validateBordero(req, res) {
     try {
-      const { bordero } = req.body;
-      const { excludeId } = req.query;
+      // Suporta tanto query params (GET) quanto body (POST)
+      const bordero = req.query?.bordero || req.body?.bordero;
+      const excludeId = req.query?.excludeId || req.body?.excludeId;
+      
+      if (!bordero) {
+        return res.status(400).json({
+          success: false,
+          message: "Número de borderô é obrigatório",
+          data: { valid: false },
+        });
+      }
       
       await PaymentManagementService.validateBordero(bordero, excludeId ? parseInt(excludeId) : null);
       
       res.json({
         success: true,
-        message: "Número de borderô válido",
+        message: "Número de borderô válido e disponível",
         data: { valid: true },
       });
     } catch (error) {
-      handleControllerError(res, error, "Erro ao validar borderô", 400);
+      // Retornar mensagem de erro detalhada
+      const errorMessage = error.message || "Erro ao validar borderô";
+      res.status(error.statusCode || 400).json({
+        success: false,
+        message: errorMessage,
+        data: { valid: false },
+      });
     }
   }
 

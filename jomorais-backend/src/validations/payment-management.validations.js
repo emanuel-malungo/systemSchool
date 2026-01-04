@@ -141,9 +141,12 @@ export const pagamentoCreateSchema = z.object({
   codigo_Utilizador: positiveInt, // Funcionário que processa o pagamento (obrigatório)
   // Campos opcionais para depósito bancário
   tipoConta: z.enum(['BAI', 'BFA']).optional(),
-  numeroBordero: z.string()
-    .regex(/^\d{9}$/, "Número de borderô deve conter exatamente 9 dígitos")
-    .optional()
+  contaMovimentada: z.string().max(100).optional(),
+  // Aceita tanto n_Bordoro quanto numeroBordero (sem restrição de formato)
+  n_Bordoro: z.string().max(100, "Número de borderô deve ter no máximo 100 caracteres").optional(),
+  numeroBordero: z.string().max(100, "Número de borderô deve ter no máximo 100 caracteres").optional(),
+  // Flag para pular validação de borderô em transações em lote (múltiplos meses)
+  skipBorderoValidation: z.boolean().optional()
 });
 
 export const pagamentoUpdateSchema = pagamentoCreateSchema.partial();

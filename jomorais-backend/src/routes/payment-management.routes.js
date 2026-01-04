@@ -693,7 +693,7 @@ router.delete('/pagamentos-principais/:id', PaymentManagementController.deletePa
  *           enum: [propina, outros]
  *         description: Filtrar por tipo de serviço (propina ou outros)
  */
-router.post('/pagamentos', PaymentManagementController.createPagamento);
+// Rota POST /pagamentos removida daqui - existe apenas uma definição abaixo para evitar duplicação
 router.get('/pagamentos', PaymentManagementController.getPagamentos);
 
 /**
@@ -1163,6 +1163,7 @@ router.get('/aluno/:id/completo', PaymentManagementController.getAlunoCompleto);
 router.get('/aluno/:id/tipo-servico-turma', PaymentManagementController.getTipoServicoTurmaAluno);
 router.get('/aluno/:id/meses-pendentes', PaymentManagementController.getMesesPendentesAluno);
 router.get('/aluno/:id/propina-classe/:anoLectivoId', PaymentManagementController.getPropinaClasse);
+router.get('/validate-bordero', PaymentManagementController.validateBordero);
 router.post('/validate-bordero', PaymentManagementController.validateBordero);
 
 // Rotas de relatórios de vendas por funcionário
