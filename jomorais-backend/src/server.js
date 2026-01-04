@@ -2,6 +2,7 @@ import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
+import os from 'os';
 
 // Importar utilitários BigInt
 import { bigIntMiddleware } from './utils/bigint.utils.js';
@@ -122,8 +123,25 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
+const HOST = process.env.HOST || '0.0.0.0';
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
-app.listen(PORT, () => {
+// Função para obter o IP da rede local
+const getLocalIP = () => {
+  const nets = os.networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      if (net.family === 'IPv4' && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return 'localhost';
+};
+
+app.listen(PORT, HOST, () => {
+  const localIP = getLocalIP();
   console.log(`🚀 Servidor rodando em ${BASE_URL}`);
+  console.log(`📡 Acesso local: http://localhost:${PORT}`);
+  console.log(`🌐 Acesso na rede: http://${localIP}:${PORT}`);
 });
