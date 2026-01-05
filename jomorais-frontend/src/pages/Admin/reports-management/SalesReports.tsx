@@ -14,8 +14,8 @@ import Container from '../../../components/layout/Container';
 import { 
   useRelatorioVendasGeral, 
   useRelatorioVendasDetalhado,
-  useRelatoriosVendasActions,
-  type RelatorioVendasFuncionario 
+  type RelatorioVendasFuncionario,
+  type PeriodoRelatorio
 } from '../../../hooks/useRelatoriosVendas';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -25,11 +25,11 @@ import { toast } from 'react-toastify';
 
 export default function SalesReports() {
   // Estados
-  const [periodo, setPeriodo] = useState<'diario' | 'semanal' | 'mensal'>('diario');
-  const [dataInicio, setDataInicio] = useState<string>('');
-  const [dataFim, setDataFim] = useState<string>('');
+  const [periodo, setPeriodo] = useState<PeriodoRelatorio>('diario');
+  const [dataInicio, setDataInicio] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [dataFim, setDataFim] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<number | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true); // Filtros visíveis por padrão
 
   // Queries
   const { data: relatorioGeral, isLoading, error, refetch } = useRelatorioVendasGeral(
@@ -45,15 +45,44 @@ export default function SalesReports() {
     dataFim || undefined
   );
 
-  const { invalidateAll } = useRelatoriosVendasActions();
-
   // Handlers
-  const handlePeriodoChange = (novoPeriodo: 'diario' | 'semanal' | 'mensal') => {
+  const handlePeriodoChange = (novoPeriodo: PeriodoRelatorio) => {
     setPeriodo(novoPeriodo);
-    // Limpar datas customizadas ao mudar período
-    if (novoPeriodo !== 'mensal') {
-      setDataInicio('');
-      setDataFim('');
+    
+    const hoje = new Date();
+    
+    switch (novoPeriodo) {
+      case 'diario':
+        // Hoje
+        setDataInicio(format(hoje, 'yyyy-MM-dd'));
+        setDataFim(format(hoje, 'yyyy-MM-dd'));
+        break;
+      case 'semanal':
+        // Esta semana (segunda a domingo)
+        const inicioSemana = new Date(hoje);
+        inicioSemana.setDate(hoje.getDate() - hoje.getDay() + 1); // Segunda
+        const fimSemana = new Date(inicioSemana);
+        fimSemana.setDate(inicioSemana.getDate() + 6); // Domingo
+        setDataInicio(format(inicioSemana, 'yyyy-MM-dd'));
+        setDataFim(format(fimSemana, 'yyyy-MM-dd'));
+        break;
+      case 'mensal':
+        // Este mês
+        const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        setDataInicio(format(inicioMes, 'yyyy-MM-dd'));
+        setDataFim(format(fimMes, 'yyyy-MM-dd'));
+        break;
+      case 'anual':
+        // Este ano
+        const inicioAno = new Date(hoje.getFullYear(), 0, 1);
+        const fimAno = new Date(hoje.getFullYear(), 11, 31);
+        setDataInicio(format(inicioAno, 'yyyy-MM-dd'));
+        setDataFim(format(fimAno, 'yyyy-MM-dd'));
+        break;
+      case 'personalizado':
+        // Manter datas atuais para personalização
+        break;
     }
   };
 
@@ -193,11 +222,6 @@ export default function SalesReports() {
     }
   };
 
-  const handleExportarExcel = () => {
-    // TODO: Implementar exportação para Excel
-    console.log('Exportar para Excel');
-  };
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-AO', {
       style: 'currency',
@@ -257,12 +281,76 @@ export default function SalesReports() {
             </div>
           </div>
 
-          {/* Filtros */}
+          {/* Filtros - Sempre visíveis */}
           {showFilters && (
             <div className="mt-6 pt-6 border-t border-gray-200">
+              {/* Botões rápidos de período */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Período Rápido
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handlePeriodoChange('diario')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      periodo === 'diario'
+                        ? 'bg-[#182F59] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Hoje
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePeriodoChange('semanal')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      periodo === 'semanal'
+                        ? 'bg-[#182F59] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Esta Semana
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePeriodoChange('mensal')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      periodo === 'mensal'
+                        ? 'bg-[#182F59] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Este Mês
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePeriodoChange('anual')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      periodo === 'anual'
+                        ? 'bg-[#182F59] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Este Ano
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePeriodoChange('personalizado')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      periodo === 'personalizado'
+                        ? 'bg-[#182F59] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Personalizado
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Período */}
-                <div>
+                {/* Período Select (escondido, usando botões) */}
+                <div className="hidden">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Período
                   </label>
@@ -274,6 +362,8 @@ export default function SalesReports() {
                     <option value="diario">Hoje</option>
                     <option value="semanal">Esta Semana</option>
                     <option value="mensal">Este Mês</option>
+                    <option value="anual">Este Ano</option>
+                    <option value="personalizado">Personalizado</option>
                   </select>
                 </div>
 
@@ -285,7 +375,10 @@ export default function SalesReports() {
                   <input
                     type="date"
                     value={dataInicio}
-                    onChange={(e) => setDataInicio(e.target.value)}
+                    onChange={(e) => {
+                      setDataInicio(e.target.value);
+                      setPeriodo('personalizado');
+                    }}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -298,7 +391,10 @@ export default function SalesReports() {
                   <input
                     type="date"
                     value={dataFim}
-                    onChange={(e) => setDataFim(e.target.value)}
+                    onChange={(e) => {
+                      setDataFim(e.target.value);
+                      setPeriodo('personalizado');
+                    }}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -312,6 +408,22 @@ export default function SalesReports() {
                     Aplicar Filtros
                   </button>
                 </div>
+              </div>
+
+              {/* Indicador do período selecionado */}
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <span className="font-medium">Período selecionado:</span>{' '}
+                  {periodo === 'diario' && 'Hoje'}
+                  {periodo === 'semanal' && 'Esta Semana'}
+                  {periodo === 'mensal' && 'Este Mês'}
+                  {periodo === 'anual' && 'Este Ano'}
+                  {periodo === 'personalizado' && 'Personalizado'}
+                  {' • '}
+                  <span className="font-semibold">
+                    {formatDate(dataInicio)} até {formatDate(dataFim)}
+                  </span>
+                </p>
               </div>
             </div>
           )}

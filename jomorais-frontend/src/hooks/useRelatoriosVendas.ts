@@ -67,9 +67,12 @@ const relatorioKeys = {
     [...relatorioKeys.all, 'detalhado', funcionarioId, periodo, dataInicio, dataFim] as const,
 };
 
+// Tipo para período
+export type PeriodoRelatorio = 'diario' | 'semanal' | 'mensal' | 'anual' | 'personalizado';
+
 // API Functions
 const fetchRelatorioGeral = async (
-  periodo: 'diario' | 'semanal' | 'mensal',
+  periodo: PeriodoRelatorio,
   dataInicio?: string,
   dataFim?: string
 ): Promise<RelatorioVendasGeral> => {
@@ -90,7 +93,7 @@ const fetchRelatorioGeral = async (
 
 const fetchRelatorioDetalhado = async (
   funcionarioId: number,
-  periodo: 'diario' | 'semanal' | 'mensal',
+  periodo: PeriodoRelatorio,
   dataInicio?: string,
   dataFim?: string
 ): Promise<RelatorioVendasDetalhado> => {
@@ -111,7 +114,7 @@ const fetchRelatorioDetalhado = async (
 
 // Hook para relatório geral
 export const useRelatorioVendasGeral = (
-  periodo: 'diario' | 'semanal' | 'mensal' = 'diario',
+  periodo: PeriodoRelatorio = 'diario',
   dataInicio?: string,
   dataFim?: string,
   options?: { enabled?: boolean }
@@ -130,7 +133,7 @@ export const useRelatorioVendasGeral = (
 // Hook para relatório detalhado
 export const useRelatorioVendasDetalhado = (
   funcionarioId: number | null,
-  periodo: 'diario' | 'semanal' | 'mensal' = 'diario',
+  periodo: PeriodoRelatorio = 'diario',
   dataInicio?: string,
   dataFim?: string,
   options?: { enabled?: boolean }
