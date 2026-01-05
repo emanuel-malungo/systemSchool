@@ -49,6 +49,19 @@ interface EstudanteCompleto extends AlunoConfirmado {
   };
 }
 
+// Interface para dívidas de anos anteriores
+interface DividaAnterior {
+  anoLectivo: {
+    codigo: number;
+    designacao: string;
+    anoInicial: string;
+    anoFinal: string;
+  };
+  mesesPendentes: string[];
+  mesesPagos: string[];
+  totalPendente: number;
+}
+
 // Interface para os dados da API de meses pendentes
 interface MesesPendentesData {
   mesesPendentes?: string[];
@@ -65,7 +78,7 @@ interface MesesPendentesData {
     anoInicial: string;
     anoFinal: string;
   };
-  dividasAnteriores?: unknown[];
+  dividasAnteriores?: DividaAnterior[];
   temDividas?: boolean;
 }
 
@@ -137,6 +150,9 @@ const StudentFinancialModal: React.FC<StudentFinancialModalProps> = ({
   // Dados da API de meses pendentes
   const apiMesesPendentes = mesesPendentesDetalhados?.mesesPendentes || [];
   const apiMesesPagos = mesesPendentesDetalhados?.mesesPagos || [];
+  
+  // Dívidas de anos anteriores
+  const dividasAnteriores = mesesPendentesDetalhados?.dividasAnteriores || [];
   
   // CORREÇÃO: Usar o length dos arrays diretamente
   const apiMesesPagosCount = apiMesesPagos.length;
@@ -515,6 +531,47 @@ const StudentFinancialModal: React.FC<StudentFinancialModalProps> = ({
                                     </div>
                                   </div>
                                 )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Dívidas de Anos Anteriores */}
+                          {dividasAnteriores.length > 0 && (
+                            <div className="mb-6">
+                              <div className="flex items-center gap-2 mb-3">
+                                <XCircleIcon className="w-5 h-5 text-orange-600" />
+                                <h4 className="font-semibold text-orange-700 text-lg">
+                                  ⚠️ Dívidas de Anos Anteriores ({dividasAnteriores.reduce((acc, d) => acc + d.mesesPendentes.length, 0)} meses)
+                                </h4>
+                              </div>
+                              <div className="space-y-3">
+                                {dividasAnteriores.map((divida, index) => (
+                                  <div key={index} className="bg-orange-50 border border-orange-300 rounded-lg p-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Calendar className="w-4 h-4 text-orange-600" />
+                                      <span className="text-orange-800 font-semibold">
+                                        Ano Letivo: {divida.anoLectivo.designacao}
+                                      </span>
+                                      <span className="bg-orange-200 text-orange-800 text-xs px-2 py-0.5 rounded-full">
+                                        {divida.mesesPendentes.length} mês(es) pendente(s)
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                                      {divida.mesesPendentes.map((mes, mesIndex) => (
+                                        <div key={mesIndex} className="bg-orange-100 border border-orange-300 rounded p-2 text-center">
+                                          <span className="text-orange-800 font-medium text-xs">
+                                            {mes}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-3 p-3 bg-orange-100 border border-orange-300 rounded-lg">
+                                <p className="text-orange-800 text-sm font-medium">
+                                  ⚠️ Este aluno tem propinas pendentes de anos letivos anteriores que precisam ser regularizadas.
+                                </p>
                               </div>
                             </div>
                           )}

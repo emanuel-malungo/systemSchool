@@ -2795,9 +2795,15 @@ export class PaymentManagementService {
       // Determinar próximo mês a pagar
       const proximoMes = mesesPendentes.length > 0 ? mesesPendentes[0] : null;
 
-      // Verificar se há dívidas de anos anteriores (temporariamente desabilitado)
-      // const dividasAnteriores = await this.verificarDividasAnteriores(alunoId, anoLectivoSelecionado.codigo);
-      const dividasAnteriores = [];
+      // Verificar se há dívidas de anos anteriores
+      const dividasAnteriores = await this.verificarDividasAnteriores(alunoId, anoLectivoSelecionado.codigo);
+      
+      console.log(`📊 Dívidas de anos anteriores encontradas: ${dividasAnteriores.length}`);
+      if (dividasAnteriores.length > 0) {
+        dividasAnteriores.forEach(divida => {
+          console.log(`  - ${divida.anoLectivo.designacao}: ${divida.mesesPendentes.length} meses pendentes`);
+        });
+      }
 
       return {
         mesesPendentes,
@@ -2877,6 +2883,8 @@ export class PaymentManagementService {
   // Método para verificar dívidas de anos letivos anteriores (apenas anos em que o aluno estudou)
   static async verificarDividasAnteriores(alunoId, codigoAnoLectivoAtual) {
     try {
+      console.log(`🔍 Verificando dívidas anteriores para aluno ${alunoId}, ano atual: ${codigoAnoLectivoAtual}`);
+      
       // Buscar todos os anos letivos anteriores ao atual
       const anosAnteriores = await prisma.tb_ano_lectivo.findMany({
         where: {
@@ -2887,6 +2895,8 @@ export class PaymentManagementService {
         orderBy: { codigo: 'desc' }
       });
 
+      console.log(`📅 Anos anteriores encontrados: ${anosAnteriores.map(a => a.designacao).join(', ')}`);
+
       const dividasAnteriores = [];
 
       for (const anoAnterior of anosAnteriores) {
@@ -2894,27 +2904,36 @@ export class PaymentManagementService {
         const estavMatriculado = await this.verificarMatriculaNoAno(alunoId, anoAnterior);
         
         if (!estavMatriculado) {
-          console.log(`Aluno ${alunoId} não estava matriculado no ano ${anoAnterior.designacao}, pulando...`);
+          console.log(`  ⏭️ Aluno ${alunoId} não estava matriculado no ano ${anoAnterior.designacao}, pulando...`);
           continue; // Pular este ano se o aluno não estava matriculado
         }
+        
+        console.log(`  ✅ Aluno estava matriculado em ${anoAnterior.designacao}, verificando pagamentos...`);
+        
         const anoInicial = parseInt(anoAnterior.anoInicial);
         const anoFinal = parseInt(anoAnterior.anoFinal);
 
-        // Buscar pagamentos do aluno neste ano anterior
+        // Buscar pagamentos do aluno neste ano anterior (incluindo formato MÊS-ANO)
         const pagamentosAnoAnterior = await prisma.tb_pagamentos.findMany({
           where: {
             codigo_Aluno: parseInt(alunoId),
-            OR: [
-              { ano: anoInicial },
-              { ano: anoFinal }
-            ],
             tipoServico: {
               designacao: {
                 contains: 'propina'
               }
-            }
+            },
+            OR: [
+              // Formato com ano no campo 'ano'
+              { ano: anoInicial },
+              { ano: anoFinal },
+              // Formato MÊS-ANO (ex: "SETEMBRO-2024")
+              { mes: { contains: `-${anoInicial}` } },
+              { mes: { contains: `-${anoFinal}` } }
+            ]
           }
         });
+
+        console.log(`    📝 Pagamentos encontrados para ${anoAnterior.designacao}: ${pagamentosAnoAnterior.length}`);
 
         // Verificar se há meses não pagos
         const mesesAnoLectivo = [
@@ -2922,14 +2941,41 @@ export class PaymentManagementService {
           'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO', 'JULHO'
         ];
 
+        // Mapa para saber qual ano pertence cada mês do ano letivo
+        const mesesComAno = new Map();
+        mesesAnoLectivo.forEach((mes, index) => {
+          const anoDoPeriodo = index < 4 ? anoInicial : anoFinal;
+          mesesComAno.set(mes, anoDoPeriodo);
+        });
+
         const mesesPagosAnoAnterior = new Set();
         pagamentosAnoAnterior.forEach(pagamento => {
           if (pagamento.mes) {
-            mesesPagosAnoAnterior.add(pagamento.mes.toUpperCase());
+            let mesSimples, anoPagamento;
+            
+            // Verificar se o mês já vem no formato "MÊS-ANO" ou apenas "MÊS"
+            if (pagamento.mes.includes('-')) {
+              const partes = pagamento.mes.split('-');
+              mesSimples = partes[0].toUpperCase().trim();
+              anoPagamento = parseInt(partes[1]);
+            } else {
+              mesSimples = pagamento.mes.toUpperCase().trim();
+              anoPagamento = pagamento.ano;
+            }
+            
+            // Verificar se o mês pertence ao ano correto do ano letivo
+            const anoEsperado = mesesComAno.get(mesSimples);
+            if (anoPagamento === anoEsperado) {
+              mesesPagosAnoAnterior.add(mesSimples);
+            }
           }
         });
 
+        console.log(`    ✓ Meses pagos em ${anoAnterior.designacao}: ${Array.from(mesesPagosAnoAnterior).join(', ') || 'Nenhum'}`);
+
         const mesesPendentesAnoAnterior = mesesAnoLectivo.filter(mes => !mesesPagosAnoAnterior.has(mes));
+
+        console.log(`    ⚠️ Meses pendentes em ${anoAnterior.designacao}: ${mesesPendentesAnoAnterior.join(', ') || 'Nenhum'}`);
 
         if (mesesPendentesAnoAnterior.length > 0) {
           dividasAnteriores.push({
@@ -2941,6 +2987,7 @@ export class PaymentManagementService {
         }
       }
 
+      console.log(`📊 Total de anos com dívidas: ${dividasAnteriores.length}`);
       return dividasAnteriores;
     } catch (error) {
       console.error('Erro ao verificar dívidas anteriores:', error);
