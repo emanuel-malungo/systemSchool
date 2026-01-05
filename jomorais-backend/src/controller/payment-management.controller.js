@@ -759,6 +759,7 @@ export class PaymentManagementController {
       // Suporta tanto query params (GET) quanto body (POST)
       const bordero = req.query?.bordero || req.body?.bordero;
       const excludeId = req.query?.excludeId || req.body?.excludeId;
+      const codigoAluno = req.query?.codigoAluno || req.body?.codigoAluno;
       
       if (!bordero) {
         return res.status(400).json({
@@ -768,12 +769,21 @@ export class PaymentManagementController {
         });
       }
       
-      await PaymentManagementService.validateBordero(bordero, excludeId ? parseInt(excludeId) : null);
+      const result = await PaymentManagementService.validateBordero(
+        bordero, 
+        excludeId ? parseInt(excludeId) : null,
+        codigoAluno ? parseInt(codigoAluno) : null
+      );
       
       res.json({
         success: true,
-        message: "Número de borderô válido e disponível",
-        data: { valid: true },
+        message: result.sameStudent 
+          ? "Borderô permitido para este aluno (múltiplos meses ou refazer pagamento)" 
+          : "Número de borderô válido e disponível",
+        data: { 
+          valid: result.valid || true, 
+          sameStudent: result.sameStudent || false 
+        },
       });
     } catch (error) {
       // Retornar mensagem de erro detalhada

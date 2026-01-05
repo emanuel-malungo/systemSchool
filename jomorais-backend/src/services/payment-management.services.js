@@ -773,11 +773,21 @@ export class PaymentManagementService {
               console.log(`[NOTA CRÉDITO] Saldo do aluno ${pagamento.codigo_Aluno} incrementado em ${valorReversao}`);
             }
 
-            // 2.2. EXCLUIR o pagamento da tb_pagamentos (para remover da lista e reverter status do mês)
+            // 2.2. Armazenar borderô antes de excluir (para liberar reutilização)
+            const borderoAnulado = pagamento.n_Bordoro;
+            if (borderoAnulado) {
+              console.log(`[NOTA CRÉDITO] Borderô ${borderoAnulado} será liberado para reutilização`);
+            }
+
+            // 2.3. EXCLUIR o pagamento da tb_pagamentos (para remover da lista e reverter status do mês)
+            // Importante: Ao excluir, o borderô fica disponível para novo pagamento
             await tx.tb_pagamentos.delete({
               where: { codigo: pagamento.codigo }
             });
             console.log(`[NOTA CRÉDITO] Pagamento ${pagamento.codigo} EXCLUÍDO da tb_pagamentos`);
+            if (borderoAnulado) {
+              console.log(`[NOTA CRÉDITO] ✅ Borderô ${borderoAnulado} agora está disponível para reutilização`);
+            }
 
           } else {
             // 2.1. Reverter o saldo do aluno ANTES de excluir (usar total ou valorEntregue)
@@ -794,11 +804,21 @@ export class PaymentManagementService {
               console.log(`[NOTA CRÉDITO] Saldo do aluno ${pagamento.codigo_Aluno} incrementado em ${valorReversao}`);
             }
 
-            // 2.2. EXCLUIR o pagamento da tb_pagamentoi (para remover da lista e reverter status do mês)
+            // 2.2. Armazenar borderô antes de excluir (para liberar reutilização)
+            const borderoAnulado = pagamento.borderoux;
+            if (borderoAnulado) {
+              console.log(`[NOTA CRÉDITO] Borderô ${borderoAnulado} será liberado para reutilização`);
+            }
+
+            // 2.3. EXCLUIR o pagamento da tb_pagamentoi (para remover da lista e reverter status do mês)
+            // Importante: Ao excluir, o borderô fica disponível para novo pagamento
             await tx.tb_pagamentoi.delete({
               where: { codigo: pagamento.codigo }
             });
             console.log(`[NOTA CRÉDITO] Pagamento ${pagamento.codigo} EXCLUÍDO da tb_pagamentoi`);
+            if (borderoAnulado) {
+              console.log(`[NOTA CRÉDITO] ✅ Borderô ${borderoAnulado} agora está disponível para reutilização`);
+            }
           }
 
           console.log(`[NOTA CRÉDITO] Pagamento ${pagamento.codigo} anulado com sucesso`);
@@ -1413,8 +1433,67 @@ export class PaymentManagementService {
         contaMovimentada: data.contaMovimentada,
         tipoConta: data.tipoConta,
         codigo_Aluno: data.codigo_Aluno,
-        skipBorderoValidation: data.skipBorderoValidation
+        mes: data.mes,
+        ano: data.ano,
+        skipBorderoValidation: data.skipBorderoValidation,
+        skipMesValidation: data.skipMesValidation
       }, null, 2));
+
+      // ===============================
+      // VALIDAÇÃO: VERIFICAR SE O MÊS JÁ FOI PAGO
+      // Um mês só pode ser pago novamente se o pagamento anterior foi anulado (nota de crédito)
+      // ===============================
+      if (data.mes && data.ano && data.codigo_Aluno && !data.skipMesValidation) {
+        const mesUpper = data.mes.toUpperCase().trim();
+        
+        // Buscar pagamento existente para este mês/ano/aluno
+        const pagamentoExistente = await prisma.tb_pagamentos.findFirst({
+          where: {
+            codigo_Aluno: data.codigo_Aluno,
+            ano: data.ano,
+            OR: [
+              // Formato: "OUTUBRO" (mês simples)
+              { mes: mesUpper },
+              // Formato: "OUTUBRO/2025" ou "OUTUBRO-2025"
+              { mes: { startsWith: mesUpper } }
+            ]
+          },
+          include: {
+            tipoServico: {
+              select: { designacao: true }
+            },
+            aluno: {
+              select: { nome: true }
+            }
+          }
+        });
+
+        if (pagamentoExistente) {
+          // Verificar se o tipo de serviço é o mesmo (para permitir pagar propina + outro serviço no mesmo mês)
+          const mesmoTipoServico = pagamentoExistente.codigo_Tipo_Servico === data.codigo_Tipo_Servico;
+          
+          if (mesmoTipoServico) {
+            const nomeAluno = pagamentoExistente.aluno?.nome || 'Aluno';
+            const tipoServico = pagamentoExistente.tipoServico?.designacao || 'Serviço';
+            const dataOriginal = pagamentoExistente.data 
+              ? new Date(pagamentoExistente.data).toLocaleDateString('pt-BR') 
+              : 'N/A';
+            
+            console.log(`🚨 [createPagamento] Pagamento duplicado detectado!`);
+            console.log(`   - Aluno: ${nomeAluno}`);
+            console.log(`   - Mês: ${mesUpper}/${data.ano}`);
+            console.log(`   - Tipo Serviço: ${tipoServico}`);
+            console.log(`   - Pagamento original: #${pagamentoExistente.codigo} em ${dataOriginal}`);
+            
+            throw new AppError(
+              `O mês ${mesUpper}/${data.ano} já foi pago para ${nomeAluno}. ` +
+              `Pagamento #${pagamentoExistente.codigo} registrado em ${dataOriginal}. ` +
+              `Para pagar novamente, primeiro anule o pagamento anterior com uma Nota de Crédito.`,
+              400
+            );
+          }
+        }
+      }
       
       // Obter o borderô do campo correto (n_Bordoro ou numeroBordero)
       const borderoFornecido = data.n_Bordoro || data.numeroBordero;
@@ -1424,8 +1503,9 @@ export class PaymentManagementService {
       // Validar unicidade do borderô APENAS se não for parte de uma transação em lote
       // O frontend valida UMA VEZ antes de iniciar, então pagamentos subsequentes
       // da mesma transação podem pular esta validação
+      // IMPORTANTE: Passa o codigo_Aluno para permitir reutilização do mesmo borderô pelo mesmo aluno
       if (borderoFornecido && borderoFornecido.trim() !== '' && !data.skipBorderoValidation) {
-        await this.validateBordero(borderoFornecido);
+        await this.validateBordero(borderoFornecido, null, data.codigo_Aluno);
       }
 
       // Determinar conta movimentada baseada na forma de pagamento e tipo de conta
@@ -2126,9 +2206,22 @@ export class PaymentManagementService {
   }
 
   // Método para validar número de borderô (deve ser único)
-  static async validateBordero(bordero, excludeId = null) {
+  /**
+   * Valida se um borderô pode ser usado para um novo pagamento.
+   * 
+   * REGRA DE NEGÓCIO:
+   * - Um borderô pode ser usado para MÚLTIPLOS meses do MESMO aluno na MESMA transação
+   * - Um borderô NÃO pode ser usado por OUTRO aluno
+   * - Se um pagamento foi anulado (nota de crédito), o borderô pode ser reutilizado
+   *   para o mesmo aluno refazer o pagamento
+   * 
+   * @param {string} bordero - Número do borderô a validar
+   * @param {number|null} excludeId - ID do pagamento a excluir da verificação (para edição)
+   * @param {number|null} codigoAluno - Código do aluno que está fazendo o pagamento
+   */
+  static async validateBordero(bordero, excludeId = null, codigoAluno = null) {
     try {
-      console.log(`🔍 Validando borderô: ${bordero}, excludeId: ${excludeId}`);
+      console.log(`🔍 Validando borderô: ${bordero}, excludeId: ${excludeId}, codigoAluno: ${codigoAluno}`);
       
       // Validar que não está vazio
       if (!bordero || bordero.trim() === '') {
@@ -2150,6 +2243,12 @@ export class PaymentManagementService {
       });
 
       if (existingBorderoPagamentoi) {
+        // NOVA REGRA: Permitir se for o MESMO aluno (cenário de anulação/refazer ou múltiplos meses)
+        if (codigoAluno && existingBorderoPagamentoi.codigo_Aluno === codigoAluno) {
+          console.log(`✅ Borderô ${bordero} já existe para o mesmo aluno ${codigoAluno} - PERMITIDO (múltiplos meses ou refazer pagamento)`);
+          return { valid: true, sameStudent: true };
+        }
+        
         let alunoInfo = 'N/A';
         try {
           if (existingBorderoPagamentoi.codigo_Aluno) {
@@ -2175,6 +2274,12 @@ export class PaymentManagementService {
       });
 
       if (existingBorderoPagamentos) {
+        // NOVA REGRA: Permitir se for o MESMO aluno (cenário de anulação/refazer ou múltiplos meses)
+        if (codigoAluno && existingBorderoPagamentos.codigo_Aluno === codigoAluno) {
+          console.log(`✅ Borderô ${bordero} já existe para o mesmo aluno ${codigoAluno} - PERMITIDO (múltiplos meses ou refazer pagamento)`);
+          return { valid: true, sameStudent: true };
+        }
+        
         let alunoInfo = 'N/A';
         try {
           if (existingBorderoPagamentos.codigo_Aluno) {
@@ -2193,7 +2298,7 @@ export class PaymentManagementService {
       }
 
       console.log(`✅ Borderô ${bordero} é válido e disponível`);
-      return true;
+      return { valid: true, sameStudent: false };
     } catch (error) {
       if (error instanceof AppError) {
         throw error;

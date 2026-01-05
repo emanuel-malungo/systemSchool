@@ -735,14 +735,18 @@ class PaymentService {
 
   /**
    * Valida número de borderô
+   * @param bordero - Número do borderô a validar
+   * @param excludeId - ID do pagamento a excluir da verificação (para edição)
+   * @param codigoAluno - Código do aluno (permite reutilizar borderô pelo mesmo aluno)
    */
-  async validateBordero(bordero: string, excludeId?: number): Promise<ApiResponse<{ valid: boolean; message: string }>> {
+  async validateBordero(bordero: string, excludeId?: number, codigoAluno?: number): Promise<ApiResponse<{ valid: boolean; message: string; sameStudent?: boolean }>> {
     try {
       const queryParams = new URLSearchParams()
       queryParams.append("bordero", bordero)
       if (excludeId) queryParams.append("excludeId", excludeId.toString())
+      if (codigoAluno) queryParams.append("codigoAluno", codigoAluno.toString())
 
-      const response = await api.get<ApiResponse<{ valid: boolean; message: string }>>(
+      const response = await api.get<ApiResponse<{ valid: boolean; message: string; sameStudent?: boolean }>>(
         `${this.baseUrl}/validate-bordero?${queryParams.toString()}`
       )
       return response.data

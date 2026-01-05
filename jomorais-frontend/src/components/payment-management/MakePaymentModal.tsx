@@ -269,6 +269,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
   const [isDeposito, setIsDeposito] = useState(false);
   const [isAutoSelected, setIsAutoSelected] = useState(false);
   const [isUsingGenericService, setIsUsingGenericService] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Proteção contra duplo clique
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [createdPayment, setCreatedPayment] = useState<{
     preco: number;
@@ -766,6 +767,12 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // PROTEÇÃO CONTRA DUPLO CLIQUE - Verificar se já está processando
+    if (isSubmitting) {
+      console.log('⚠️ [SUBMIT] Ignorando - já existe um pagamento em processamento');
+      return;
+    }
+
     console.log('🔥 [SUBMIT] Iniciando submissão do pagamento');
     console.log('📋 [SUBMIT] Estado atual:', {
       selectedAluno: selectedAluno?.codigo,
@@ -842,14 +849,28 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
     // Encontrar o ano letivo selecionado
     const anoLetivoSelecionado = anosLectivos.find(ano => ano.codigo === selectedAnoLectivo);
 
+    // ATIVAR PROTEÇÃO CONTRA DUPLO CLIQUE
+    setIsSubmitting(true);
+
     try {
       // Validar unicidade do borderô ANTES de criar os pagamentos
+      // IMPORTANTE: Passa o codigo_Aluno para permitir reutilização do mesmo borderô
+      // pelo mesmo aluno (cenário de anulação + refazer pagamento, ou múltiplos meses)
       if (formData.n_Bordoro && formData.n_Bordoro.trim() !== '') {
         try {
-          const validationResult = await paymentService.validateBordero(formData.n_Bordoro.trim());
+          const validationResult = await paymentService.validateBordero(
+            formData.n_Bordoro.trim(), 
+            undefined, 
+            selectedAluno.codigo
+          );
           if (!validationResult.success || !validationResult.data?.valid) {
             toast.error(validationResult.message || 'Número de borderô já está em uso');
+            setIsSubmitting(false);
             return;
+          }
+          // Se o borderô já existe para o mesmo aluno, apenas informar
+          if (validationResult.data?.sameStudent) {
+            console.log('ℹ️ Borderô já usado por este aluno - permitido para múltiplos meses ou refazer pagamento');
           }
         } catch (error: unknown) {
           console.error('❌ Erro ao validar borderô:', error);
@@ -857,6 +878,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
           const axiosError = error as { response?: { data?: { message?: string } } };
           const errorMessage = axiosError?.response?.data?.message || 'Erro ao validar número do borderô';
           toast.error(errorMessage);
+          setIsSubmitting(false);
           return;
         }
       }
@@ -893,7 +915,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
           preco: formData.preco,
           multa: 0,
           desconto: 0,
-          totalgeral: total,
+          totalgeral: formData.preco, // Valor unitário do mês (não multiplicar por quantidade de meses)
           observacao: formData.observacao,
           n_Bordoro: borderoParaUsar, // MESMO borderô para todos os meses da mesma transação
           contaMovimentada: formData.contaMovimentada || undefined,
@@ -924,7 +946,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
         ...payments[0],
         preco: formData.preco,
         mesesPagos: formData.mesesSelecionados,
-        totalPago: total * formData.mesesSelecionados.length
+        totalPago: total // total já está calculado como preco * meses.length
       });
       setShowInvoiceModal(true);
       
@@ -942,6 +964,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
     } catch (error) {
       console.error('Erro ao criar pagamento:', error);
       // Não fechar o modal em caso de erro para o usuário poder tentar novamente
+      setIsSubmitting(false); // Liberar para nova tentativa em caso de erro
     }
   };
 
@@ -966,6 +989,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
     setIsDeposito(false);
     setIsAutoSelected(false);
     setIsUsingGenericService(false);
+    setIsSubmitting(false); // Resetar proteção contra duplo clique
     setAlunoSearch('');
     setDebouncedSearch('');
     setSelectedAluno(null);
@@ -1834,7 +1858,7 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                       Meses Selecionados: {formData.mesesSelecionados.length}
                     </span>
                     <span className="text-sm text-green-700">
-                      {formData.mesesSelecionados.length} × {formatCurrency(total)}
+                      {formData.mesesSelecionados.length} × {formatCurrency(formData.preco)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-1">
@@ -1842,11 +1866,11 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
                       Total a pagar:
                     </span>
                     <span className="text-xl font-bold text-green-700">
-                      {formatCurrency(total * formData.mesesSelecionados.length)}
+                      {formatCurrency(total)}
                     </span>
                   </div>
                   <p className="text-xs text-green-600 mt-1">
-                    ({formData.mesesSelecionados.length} meses × {formatCurrency(total)})
+                    ({formData.mesesSelecionados.length} meses × {formatCurrency(formData.preco)})
                   </p>
                 </div>
               )}
@@ -1862,17 +1886,17 @@ const MakePaymentModal: React.FC<MakePaymentModalProps> = ({
             type="button"
             onClick={handleClose}
             className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-            disabled={createPaymentMutation.isPending}
+            disabled={isSubmitting || createPaymentMutation.isPending}
           >
             Cancelar
           </button>
           <button
             type="submit"
             onClick={handleSubmit}
-            disabled={createPaymentMutation.isPending || total <= 0 || formData.mesesSelecionados.length === 0}
+            disabled={isSubmitting || createPaymentMutation.isPending || total <= 0 || formData.mesesSelecionados.length === 0}
             className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {createPaymentMutation.isPending ? (
+            {isSubmitting || createPaymentMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Processando...
