@@ -33,7 +33,7 @@ const addStudentSchema = yup.object().shape({
   mae: yup.string().max(200, 'Nome da mãe deve ter no máximo 200 caracteres').default(''),
   sexo: yup.string().oneOf(['M', 'F'], 'Selecione o sexo').required('Sexo é obrigatório'),
   dataNascimento: yup.date().nullable().default(null),
-  email: yup.string().email('Email inválido').max(45, 'Email deve ter no máximo 45 caracteres').default(''),
+  email: yup.string().email('Email inválido').max(45, 'Email deve ter no máximo 45 caracteres').nullable().transform((value) => value || null).default(''),
   telefone: yup.string().max(45, 'Telefone deve ter no máximo 45 caracteres').default(''),
   codigo_Nacionalidade: yup.number().required('Nacionalidade é obrigatória'),
   codigo_Estado_Civil: yup.number().required('Estado civil é obrigatório').default(1),
@@ -51,7 +51,7 @@ const addStudentSchema = yup.object().shape({
   encarregado: yup.object().shape({
     nome: yup.string().required('Nome do encarregado é obrigatório').max(250, 'Nome deve ter no máximo 250 caracteres'),
     telefone: yup.string().required('Telefone do encarregado é obrigatório').max(45, 'Telefone deve ter no máximo 45 caracteres'),
-    email: yup.string().email('Email inválido').max(45, 'Email deve ter no máximo 45 caracteres').default(''),
+    email: yup.string().email('Email inválido').max(45, 'Email deve ter no máximo 45 caracteres').nullable().transform((value) => value || null).default(''),
     codigo_Profissao: yup.number().required('Profissão é obrigatória'),
     local_Trabalho: yup.string().required('Local de trabalho é obrigatório').max(45, 'Local de trabalho deve ter no máximo 45 caracteres'),
     status: yup.number().default(1),

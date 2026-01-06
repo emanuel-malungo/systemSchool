@@ -37,7 +37,7 @@ const editStudentSchema = yup.object().shape({
   mae: yup.string().max(200).default(''),
   sexo: yup.string().oneOf(['M', 'F']).required('Sexo é obrigatório'),
   dataNascimento: yup.date().nullable().default(null),
-  email: yup.string().email('Email inválido').max(45).default(''),
+  email: yup.string().email('Email inválido').max(45).nullable().transform((value) => value || null).default(''),
   telefone: yup.string().max(45).default(''),
   codigo_Nacionalidade: yup.number().required('Nacionalidade é obrigatória'),
   codigo_Estado_Civil: yup.number().required('Estado civil é obrigatório'),
@@ -52,7 +52,7 @@ const editStudentSchema = yup.object().shape({
   encarregado: yup.object().shape({
     nome: yup.string().required('Nome do encarregado é obrigatório').max(250),
     telefone: yup.string().required('Telefone do encarregado é obrigatório').max(45),
-    email: yup.string().email('Email inválido').max(45).default(''),
+    email: yup.string().email('Email inválido').max(45).nullable().transform((value) => value || null).default(''),
     codigo_Profissao: yup.number().required('Profissão é obrigatória'),
     local_Trabalho: yup.string().required('Local de trabalho é obrigatório').max(45),
     status: yup.number().default(1),
