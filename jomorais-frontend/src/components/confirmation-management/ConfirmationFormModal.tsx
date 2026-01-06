@@ -359,24 +359,8 @@ export default function ConfirmationFormModal({
                   Turma <span className="text-red-500">*</span>
                 </label>
                 
-                {isEditMode ? (
-                  // Modo de edição: apenas exibe a turma
-                  <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
-                    {selectedTurma ? (
-                      <div>
-                        <p className="font-medium">{selectedTurma.designacao}</p>
-                        <p className="text-sm text-gray-500">
-                          {selectedTurma.classe && `${selectedTurma.classe} - `}
-                          {selectedTurma.curso || 'Curso não disponível'}
-                        </p>
-                      </div>
-                    ) : (
-                      'Turma não disponível'
-                    )}
-                  </div>
-                ) : (
-                  // Modo de criação: busca de turma
-                  <div className="relative">
+                {/* Busca de turma (habilitado tanto para criação quanto edição) */}
+                <div className="relative">
                     <div className="relative">
                       <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <input
@@ -482,7 +466,6 @@ export default function ConfirmationFormModal({
                       <p className="mt-1 text-sm text-red-500">{errors.codigo_Turma.message}</p>
                     )}
                   </div>
-                )}
               </div>
 
               {/* Seleção de Ano Letivo */}
@@ -493,7 +476,7 @@ export default function ConfirmationFormModal({
                 <select
                   {...register('codigo_Ano_lectivo', {
                     required: 'Ano letivo é obrigatório',
-                    valueAsNumber: true,
+                      valueAsNumber: true,
                   })}
                   disabled={isLoading}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all ${
