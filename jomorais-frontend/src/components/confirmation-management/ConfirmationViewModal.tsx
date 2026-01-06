@@ -7,7 +7,7 @@ interface ConfirmationViewModalProps {
   isOpen: boolean
   onClose: () => void
   confirmation: IConfirmation | null
-  onEdit: () => void
+  onEdit?: () => void  // Opcional - apenas para administradores
 }
 
 export default function ConfirmationViewModal({
@@ -271,15 +271,17 @@ export default function ConfirmationViewModal({
             >
               Fechar
             </Button>
-            <Button
-              type="button"
-              onClick={onEdit}
-              variant="primary"
-              className="flex-1 bg-[#007C00] hover:bg-[#005a00]"
-            >
-              <Edit2 className="h-4 w-4" />
-              Editar Confirmação
-            </Button>
+            {onEdit && (
+              <Button
+                type="button"
+                onClick={onEdit}
+                variant="primary"
+                className="flex-1 bg-[#007C00] hover:bg-[#005a00]"
+              >
+                <Edit2 className="h-4 w-4" />
+                Editar Confirmação
+              </Button>
+            )}
           </div>
         </div>
       </div>

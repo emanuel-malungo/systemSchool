@@ -1,5 +1,6 @@
 import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { IConfirmation } from '../../types/confirmation.types'
+import { usePermissions } from '../../hooks/useAuth'
 
 interface ConfirmationTableProps {
   confirmations: IConfirmation[]
@@ -22,6 +23,7 @@ export default function ConfirmationTable({
   totalPages,
   onPageChange,
 }: ConfirmationTableProps) {
+  const { isAdmin } = usePermissions()
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8">
@@ -153,14 +155,16 @@ export default function ConfirmationTable({
                       <Eye className="h-5 w-5" />
                     </button>
 
-                    {/* Editar */}
-                    <button
-                      onClick={() => onEdit(confirmation)}
-                      className="text-yellow-600 hover:text-yellow-900 transition-colors p-1 hover:bg-yellow-50 rounded"
-                      title="Editar"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                    </button>
+                    {/* Editar - Apenas para Administrador */}
+                    {isAdmin && (
+                      <button
+                        onClick={() => onEdit(confirmation)}
+                        className="text-yellow-600 hover:text-yellow-900 transition-colors p-1 hover:bg-yellow-50 rounded"
+                        title="Editar (Apenas Administrador)"
+                      >
+                        <Edit2 className="h-5 w-5" />
+                      </button>
+                    )}
 
                     {/* Deletar */}
                     <button

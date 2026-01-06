@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Plus, Search, CheckCircle } from 'lucide-react'
 import { useConfirmationsManager } from '../../../hooks/useConfirmation'
+import { usePermissions } from '../../../hooks/useAuth'
 import ConfirmationTable from '../../../components/confirmation-management/ConfirmationTable'
 import ConfirmationViewModal from '../../../components/confirmation-management/ConfirmationViewModal'
 import ConfirmationFormModal from '../../../components/confirmation-management/ConfirmationFormModal'
@@ -9,6 +10,7 @@ import type { IConfirmation, IConfirmationInput } from '../../../types/confirmat
 import Container from '../../../components/layout/Container'
 
 export default function ConfirmationManagement() {
+  const { isAdmin } = usePermissions()
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
@@ -44,6 +46,11 @@ export default function ConfirmationManagement() {
   }
 
   const handleEditConfirmation = (confirmation: IConfirmation) => {
+    // Apenas administradores podem editar confirmações
+    if (!isAdmin) {
+      alert('Apenas administradores podem editar confirmações.')
+      return
+    }
     setConfirmationToEdit(confirmation)
     setIsFormModalOpen(true)
   }
@@ -185,10 +192,10 @@ export default function ConfirmationManagement() {
           setSelectedConfirmation(null)
         }}
         confirmation={selectedConfirmation}
-        onEdit={() => {
+        onEdit={isAdmin ? () => {
           setIsViewModalOpen(false)
           handleEditConfirmation(selectedConfirmation!)
-        }}
+        } : undefined}
       />
 
       <ConfirmationFormModal
