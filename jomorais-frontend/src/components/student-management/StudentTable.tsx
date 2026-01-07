@@ -65,6 +65,9 @@ export default function StudentTable({
                 Nome
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                ID Matrícula
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Sexo
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -89,6 +92,11 @@ export default function StudentTable({
                   {student.email && (
                     <div className="text-sm text-gray-500">{student.email}</div>
                   )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-semibold text-[#007C00]">
+                    {student.tb_matriculas?.codigo ? `#${student.tb_matriculas.codigo}` : 'N/A'}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

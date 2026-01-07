@@ -33,6 +33,9 @@ class StudentService {
       if (params.search) {
         queryParams.append("search", params.search)
       }
+      if (params.matriculaId) {
+        queryParams.append("matriculaId", params.matriculaId)
+      }
       if (params.status && params.status !== "all") {
         queryParams.append("status", params.status)
       }

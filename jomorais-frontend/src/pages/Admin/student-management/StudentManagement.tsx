@@ -14,6 +14,7 @@ export default function StudentManagement() {
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [matriculaId, setMatriculaId] = useState('')
   
   // Modais
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -31,6 +32,7 @@ export default function StudentManagement() {
   } = useStudentsManager({ 
     page: currentPage, 
     search: searchTerm,
+    matriculaId: matriculaId,
   })
 
   // Handlers
@@ -110,7 +112,7 @@ export default function StudentManagement() {
       {/* Filtros e Pesquisa */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
         <div className="flex flex-col md:flex-row gap-4">
-          {/* Barra de Pesquisa */}
+          {/* Barra de Pesquisa Geral */}
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
@@ -124,6 +126,21 @@ export default function StudentManagement() {
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all"
             />
           </div>
+          
+          {/* Busca por ID da Matrícula */}
+          <div className="md:w-64 relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="ID da matrícula..."
+              value={matriculaId}
+              onChange={(e) => {
+                setMatriculaId(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all"
+            />
+          </div>
         </div>
 
         {/* Contador de Resultados */}
@@ -131,10 +148,11 @@ export default function StudentManagement() {
           <span className="text-sm text-gray-600 font-medium">
             Mostrando <span className="text-[#007C00] font-bold">{students.length}</span> de <span className="text-gray-900 font-bold">{totalItems}</span> estudantes
           </span>
-          {searchTerm && (
+          {(searchTerm || matriculaId) && (
             <button
               onClick={() => {
                 setSearchTerm('')
+                setMatriculaId('')
                 setCurrentPage(1)
               }}
               className="text-sm text-[#007C00] hover:text-[#005a00] font-medium hover:underline transition-all"

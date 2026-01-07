@@ -83,6 +83,11 @@ export default function StudentViewModal({
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-900">{fullStudent.nome}</h3>
+                {fullStudent.tb_matriculas && fullStudent.tb_matriculas.codigo && (
+                  <p className="text-sm font-semibold text-[#007C00]">
+                    ID Matrícula: #{fullStudent.tb_matriculas.codigo}
+                  </p>
+                )}
                 {fullStudent.tb_status && (
                   <p className="text-sm text-gray-500">Status: {fullStudent.tb_status.designacao}</p>
                 )}

@@ -212,6 +212,7 @@ export interface PaginationParams {
   search?: string;
   status?: string | null;
   curso?: string | null;
+  matriculaId?: string;
 }
 
 export interface ApiResponse<T> {

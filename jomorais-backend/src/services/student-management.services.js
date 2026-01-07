@@ -909,7 +909,7 @@ export class StudentManagementService {
     }
   }
 
-  static async getAlunos(page = 1, limit = 10, search = '', statusFilter = null, cursoFilter = null) {
+  static async getAlunos(page = 1, limit = 10, search = '', statusFilter = null, cursoFilter = null, matriculaId = '') {
     try {
       const { skip, take } = getPagination(page, limit);
 
@@ -926,6 +926,16 @@ export class StudentManagementService {
           { pai: { contains: search } },
           { mae: { contains: search } }
         ];
+      }
+      
+      // Filtro por ID da matrícula (busca exata)
+      if (matriculaId) {
+        const matriculaIdNum = parseInt(matriculaId);
+        if (!isNaN(matriculaIdNum)) {
+          where.tb_matriculas = {
+            codigo: matriculaIdNum
+          };
+        }
       }
       
       // Filtro por status
