@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { GraduationCap, ArrowLeft, Save, User, BookOpen, Calendar } from 'lucide-react'
+import { GraduationCap, ArrowLeft, Save, User, BookOpen, Calendar, AlertCircle } from 'lucide-react'
 import { useMatricula, useUpdateMatricula } from '../../../hooks/useMatricula'
 import { useCourses } from '../../../hooks/useCourse'
 import { useStudents } from '../../../hooks/useStudent'
@@ -17,478 +17,504 @@ import { mockStatus } from '../../../mocks/status.mock'
 
 // Validation Schema
 const editMatriculaSchema = yup.object().shape({
-  codigo_Aluno: yup.number().required('Aluno é obrigatório').min(1, 'Selecione um aluno'),
-  codigo_Curso: yup.number().required('Curso é obrigatório').min(1, 'Selecione um curso'),
-  data_Matricula: yup.string().required('Data de matrícula é obrigatória'),
-  codigoStatus: yup.number().required('Status é obrigatório'),
+	codigo_Aluno: yup.number().required('Aluno é obrigatório').min(1, 'Selecione um aluno'),
+	codigo_Curso: yup.number().required('Curso é obrigatório').min(1, 'Selecione um curso'),
+	data_Matricula: yup.string().required('Data de matrícula é obrigatória'),
+	codigoStatus: yup.number().required('Status é obrigatório'),
 })
 
 type EditMatriculaFormData = yup.InferType<typeof editMatriculaSchema>
 
 export default function EditMatricula() {
-  const navigate = useNavigate()
-  const { id } = useParams<{ id: string }>()
-  const { user } = useAuth()
-  const [searchAluno, setSearchAluno] = useState('')
-  const [searchCurso, setSearchCurso] = useState('')
-  const [debouncedSearchAluno, setDebouncedSearchAluno] = useState('')
-  const [debouncedSearchCurso, setDebouncedSearchCurso] = useState('')
-  const [showAlunoResults, setShowAlunoResults] = useState(false)
-  const [showCursoResults, setShowCursoResults] = useState(false)
-  const [selectedAlunoId, setSelectedAlunoId] = useState<number>(0)
-  const [selectedCursoId, setSelectedCursoId] = useState<number>(0)
-  const [isUpdating, setIsUpdating] = useState(false)
+	const navigate = useNavigate()
+	const { id } = useParams<{ id: string }>()
+	const { user } = useAuth()
+	const [searchAluno, setSearchAluno] = useState('')
+	const [searchCurso, setSearchCurso] = useState('')
+	const [debouncedSearchAluno, setDebouncedSearchAluno] = useState('')
+	const [debouncedSearchCurso, setDebouncedSearchCurso] = useState('')
+	const [showAlunoResults, setShowAlunoResults] = useState(false)
+	const [showCursoResults, setShowCursoResults] = useState(false)
+	const [selectedAlunoId, setSelectedAlunoId] = useState<number>(0)
+	const [selectedCursoId, setSelectedCursoId] = useState<number>(0)
+	const [isUpdating, setIsUpdating] = useState(false)
 
-  const updateMatricula = useUpdateMatricula()
-  
-  // Buscar matrícula existente
-  const { data: matriculaData, isLoading: loadingMatricula } = useMatricula(Number(id))
-  
-  // Debounce para evitar muitas requisições
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchAluno(searchAluno)
-    }, 500)
+	const updateMatricula = useUpdateMatricula()
 
-    return () => clearTimeout(timer)
-  }, [searchAluno])
+	// Buscar matrícula existente
+	const { data: matriculaData, isLoading: loadingMatricula } = useMatricula(Number(id))
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchCurso(searchCurso)
-    }, 500)
+	// Debounce para evitar muitas requisições
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearchAluno(searchAluno)
+		}, 500)
 
-    return () => clearTimeout(timer)
-  }, [searchCurso])
-  
-  // Buscar alunos e cursos usando a busca da API (com debounce)
-  const { data: studentsData, isLoading: loadingStudents } = useStudents({ 
-    page: 1, 
-    limit: 20,
-    search: debouncedSearchAluno 
-  })
-  const { data: coursesData, isLoading: loadingCourses } = useCourses({ 
-    page: 1, 
-    limit: 20,
-    search: debouncedSearchCurso 
-  })
+		return () => clearTimeout(timer)
+	}, [searchAluno])
 
-  const searchResults = {
-    students: studentsData?.data || [],
-    courses: coursesData?.data || []
-  }
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearchCurso(searchCurso)
+		}, 500)
 
-  // Encontrar aluno e curso selecionados
-  const selectedAluno = searchResults.students.find(s => s.codigo === selectedAlunoId) || 
-    (matriculaData?.data?.tb_alunos ? {
-      codigo: matriculaData.data.tb_alunos.codigo,
-      nome: matriculaData.data.tb_alunos.nome,
-      sexo: matriculaData.data.tb_alunos.sexo,
-      email: matriculaData.data.tb_alunos.email,
-      telefone: matriculaData.data.tb_alunos.telefone
-    } : undefined)
-  
-  const selectedCurso = searchResults.courses.find(c => c.codigo === selectedCursoId) ||
-    (matriculaData?.data?.tb_cursos ? {
-      codigo: matriculaData.data.tb_cursos.codigo,
-      designacao: matriculaData.data.tb_cursos.designacao
-    } : undefined)
+		return () => clearTimeout(timer)
+	}, [searchCurso])
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors, isSubmitting }
-  } = useForm<EditMatriculaFormData>({
-    resolver: yupResolver(editMatriculaSchema),
-    mode: 'onChange',
-    defaultValues: {
-      codigo_Aluno: 0,
-      codigo_Curso: 0,
-      data_Matricula: new Date().toISOString().split('T')[0],
-      codigoStatus: 0,
-    }
-  })
+	// Buscar alunos e cursos usando a busca da API (com debounce)
+	const { data: studentsData, isLoading: loadingStudents } = useStudents({
+		page: 1,
+		limit: 20,
+		search: debouncedSearchAluno
+	})
+	const { data: coursesData, isLoading: loadingCourses } = useCourses({
+		page: 1,
+		limit: 20,
+		search: debouncedSearchCurso
+	})
 
-  // Preencher formulário com dados da matrícula
-  useEffect(() => {
-    if (matriculaData?.data) {
-      const matricula = matriculaData.data
-      
-      setSelectedAlunoId(matricula.codigo_Aluno)
-      setSelectedCursoId(matricula.codigo_Curso)
-      setSearchAluno(matricula.tb_alunos?.nome || '')
-      setSearchCurso(matricula.tb_cursos?.designacao || '')
-      
-      reset({
-        codigo_Aluno: matricula.codigo_Aluno,
-        codigo_Curso: matricula.codigo_Curso,
-        data_Matricula: matricula.data_Matricula ? new Date(matricula.data_Matricula).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        codigoStatus: matricula.codigoStatus,
-      })
-    }
-  }, [matriculaData, reset])
+	const searchResults = {
+		students: studentsData?.data || [],
+		courses: coursesData?.data || []
+	}
 
-  // Handlers para seleção de aluno
-  const handleSelectAluno = (aluno: typeof searchResults.students[0]) => {
-    setSelectedAlunoId(aluno.codigo)
-    setSearchAluno(aluno.nome)
-    setShowAlunoResults(false)
-    setValue('codigo_Aluno', aluno.codigo)
-  }
+	// Encontrar aluno e curso selecionados
+	const selectedAluno = searchResults.students.find(s => s.codigo === selectedAlunoId) ||
+		(matriculaData?.data?.tb_alunos ? {
+			codigo: matriculaData.data.tb_alunos.codigo,
+			nome: matriculaData.data.tb_alunos.nome,
+			sexo: matriculaData.data.tb_alunos.sexo,
+			email: matriculaData.data.tb_alunos.email,
+			telefone: matriculaData.data.tb_alunos.telefone
+		} : undefined)
 
-  // Handlers para seleção de curso
-  const handleSelectCurso = (curso: typeof searchResults.courses[0]) => {
-    setSelectedCursoId(curso.codigo)
-    setSearchCurso(curso.designacao)
-    setShowCursoResults(false)
-    setValue('codigo_Curso', curso.codigo)
-  }
+	const selectedCurso = searchResults.courses.find(c => c.codigo === selectedCursoId) ||
+		(matriculaData?.data?.tb_cursos ? {
+			codigo: matriculaData.data.tb_cursos.codigo,
+			designacao: matriculaData.data.tb_cursos.designacao
+		} : undefined)
 
-  const onSubmit: SubmitHandler<EditMatriculaFormData> = async (data) => {
-    if (!selectedAlunoId || selectedAlunoId === 0) {
-      alert('Por favor, selecione um aluno da lista de resultados')
-      return
-    }
-    if (!selectedCursoId || selectedCursoId === 0) {
-      alert('Por favor, selecione um curso da lista de resultados')
-      return
-    }
+	const {
+		control,
+		handleSubmit,
+		setValue,
+		reset,
+		formState: { errors, isSubmitting }
+	} = useForm<EditMatriculaFormData>({
+		resolver: yupResolver(editMatriculaSchema),
+		mode: 'onChange',
+		defaultValues: {
+			codigo_Aluno: 0,
+			codigo_Curso: 0,
+			data_Matricula: new Date().toISOString().split('T')[0],
+			codigoStatus: 0,
+		}
+	})
 
-    setIsUpdating(true)
-    
-    try {
-      const matriculaData: Partial<IMatriculaInput> = {
-        codigo_Aluno: selectedAlunoId,
-        codigo_Curso: selectedCursoId,
-        data_Matricula: new Date(data.data_Matricula).toISOString(),
-        codigo_Utilizador: user?.id ? (typeof user.id === 'number' ? user.id : parseInt(user.id)) : 1,
-        codigoStatus: data.codigoStatus,
-      }
+	// Preencher formulário com dados da matrícula
+	useEffect(() => {
+		if (matriculaData?.data) {
+			const matricula = matriculaData.data
 
-      await updateMatricula.mutateAsync({ id: Number(id), matriculaData })
-      navigate('/admin/student-management/enrolls')
-    } catch (error) {
-      console.error('Erro ao atualizar matrícula:', error)
-    } finally {
-      setIsUpdating(false)
-    }
-  }
+			setSelectedAlunoId(matricula.codigo_Aluno)
+			setSelectedCursoId(matricula.codigo_Curso)
+			setSearchAluno(matricula.tb_alunos?.nome || '')
+			setSearchCurso(matricula.tb_cursos?.designacao || '')
 
-  if (loadingMatricula) {
-    return (
-      <Container>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-          <span className="ml-3 text-gray-600">Carregando matrícula...</span>
-        </div>
-      </Container>
-    )
-  }
+			reset({
+				codigo_Aluno: matricula.codigo_Aluno,
+				codigo_Curso: matricula.codigo_Curso,
+				data_Matricula: matricula.data_Matricula ? new Date(matricula.data_Matricula).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+				codigoStatus: matricula.codigoStatus,
+			})
+		}
+	}, [matriculaData, reset])
 
-  if (!matriculaData?.data) {
-    return (
-      <Container>
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Matrícula não encontrada</h2>
-          <p className="text-gray-600 mb-4">A matrícula que você está tentando editar não existe.</p>
-          <Button onClick={() => navigate('/admin/student-management/enrolls')}>
-            Voltar para lista
-          </Button>
-        </div>
-      </Container>
-    )
-  }
+	// Handlers para seleção de aluno
+	const handleSelectAluno = (aluno: typeof searchResults.students[0]) => {
+		setSelectedAlunoId(aluno.codigo)
+		setSearchAluno(aluno.nome)
+		setShowAlunoResults(false)
+		setValue('codigo_Aluno', aluno.codigo)
+	}
 
-  return (
-    <Container>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between bg-white shadow-sm p-6 rounded-lg">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-              type="button"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-bold flex items-center gap-2">
-                <GraduationCap className="h-8 w-8 text-blue-600" />
-                Editar Matrícula
-              </h1>
-              <p className="text-gray-600">
-                Atualize as informações da matrícula
-              </p>
-            </div>
-          </div>
-        </div>
+	// Handlers para seleção de curso
+	const handleSelectCurso = (curso: typeof searchResults.courses[0]) => {
+		setSelectedCursoId(curso.codigo)
+		setSearchCurso(curso.designacao)
+		setShowCursoResults(false)
+		setValue('codigo_Curso', curso.codigo)
+	}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Informações da Matrícula */}
-          <div className="bg-white rounded-lg shadow p-6 space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold mb-1 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-                Informações da Matrícula
-              </h2>
-              <p className="text-sm text-gray-600">
-                Atualize o aluno, curso ou status da matrícula
-              </p>
-            </div>
+	const onSubmit: SubmitHandler<EditMatriculaFormData> = async (data) => {
+		if (!selectedAlunoId || selectedAlunoId === 0) {
+			alert('Por favor, selecione um aluno da lista de resultados')
+			return
+		}
+		if (!selectedCursoId || selectedCursoId === 0) {
+			alert('Por favor, selecione um curso da lista de resultados')
+			return
+		}
 
-            {/* Seleção de Aluno */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                <User className="inline h-4 w-4 mr-1" />
-                Aluno <span className="text-red-500">*</span>
-              </label>
-              
-              {/* Campo de pesquisa de aluno com autocomplete */}
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Digite para pesquisar aluno..."
-                  value={searchAluno}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    setSearchAluno(value)
-                    setShowAlunoResults(value.length > 0)
-                    if (value.length === 0) {
-                      setSelectedAlunoId(0)
-                    }
-                  }}
-                  onFocus={() => searchAluno.length > 0 && setShowAlunoResults(true)}
-                  autoComplete="off"
-                />
-                
-                {(loadingStudents || (searchAluno !== debouncedSearchAluno && searchAluno.length > 0)) && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                  </div>
-                )}
+		setIsUpdating(true)
 
-                {/* Dropdown de resultados */}
-                {showAlunoResults && searchAluno.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {searchResults.students.length > 0 ? (
-                      <>
-                        <div className="px-3 py-2 bg-gray-50 border-b text-xs text-gray-600 font-medium">
-                          {searchResults.students.length} aluno(s) encontrado(s)
-                        </div>
-                        {searchResults.students.map((student) => (
-                          <button
-                            key={student.codigo}
-                            type="button"
-                            onClick={() => handleSelectAluno(student)}
-                            className="w-full text-left px-3 py-2 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            <div className="font-medium text-gray-900">{student.nome}</div>
-                            <div className="text-xs text-gray-500">
-                              {student.sexo} • {student.email || 'Sem email'} • {student.telefone || 'Sem telefone'}
-                            </div>
-                          </button>
-                        ))}
-                      </>
-                    ) : !loadingStudents ? (
-                      <div className="px-3 py-4 text-center text-gray-500 text-sm">
-                        Nenhum aluno encontrado
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-              
-              {!selectedAlunoId && searchAluno && (
-                <p className="text-sm text-amber-600 mt-1">Selecione um aluno da lista de resultados</p>
-              )}
+		try {
+			const matriculaData: Partial<IMatriculaInput> = {
+				codigo_Aluno: selectedAlunoId,
+				codigo_Curso: selectedCursoId,
+				data_Matricula: new Date(data.data_Matricula).toISOString(),
+				codigo_Utilizador: user?.id ? (typeof user.id === 'number' ? user.id : parseInt(user.id)) : 1,
+				codigoStatus: data.codigoStatus,
+			}
 
-              {/* Informações do aluno selecionado */}
-              {selectedAluno && (
-                <div className="mt-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h3 className="font-semibold text-blue-900 mb-2">Informações do Aluno</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-600">Nome:</span>
-                      <p className="font-medium text-gray-900">{selectedAluno.nome}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Sexo:</span>
-                      <p className="font-medium text-gray-900">{selectedAluno.sexo}</p>
-                    </div>
-                    {selectedAluno.email && (
-                      <div>
-                        <span className="text-gray-600">Email:</span>
-                        <p className="font-medium text-gray-900">{selectedAluno.email}</p>
-                      </div>
-                    )}
-                    {selectedAluno.telefone && (
-                      <div>
-                        <span className="text-gray-600">Telefone:</span>
-                        <p className="font-medium text-gray-900">{selectedAluno.telefone}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+			await updateMatricula.mutateAsync({ id: Number(id), matriculaData })
+			navigate('/admin/student-management/enrolls')
+		} catch (error) {
+			console.error('Erro ao atualizar matrícula:', error)
+		} finally {
+			setIsUpdating(false)
+		}
+	}
 
-            {/* Seleção de Curso */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                <BookOpen className="inline h-4 w-4 mr-1" />
-                Curso <span className="text-red-500">*</span>
-              </label>
-              
-              {/* Campo de pesquisa de curso com autocomplete */}
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Digite para pesquisar curso..."
-                  value={searchCurso}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    setSearchCurso(value)
-                    setShowCursoResults(value.length > 0)
-                    if (value.length === 0) {
-                      setSelectedCursoId(0)
-                    }
-                  }}
-                  onFocus={() => searchCurso.length > 0 && setShowCursoResults(true)}
-                  autoComplete="off"
-                />
-                
-                {(loadingCourses || (searchCurso !== debouncedSearchCurso && searchCurso.length > 0)) && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full"></div>
-                  </div>
-                )}
+	if (loadingMatricula) {
+		return (
+			<Container>
+				<div className="bg-white rounded-3xl border border-gray-100 p-20">
+					<div className="flex flex-col items-center justify-center">
+						<div className="relative w-16 h-16">
+							<div className="absolute inset-0 border-4 border-[#3964d7]/10 rounded-full"></div>
+							<div className="absolute inset-0 border-4 border-[#3964d7] border-t-transparent rounded-full animate-spin"></div>
+						</div>
+						<p className="mt-6 text-sm font-bold text-[#1e293b] animate-pulse uppercase tracking-[0.2em]">Recuperando Matrícula...</p>
+					</div>
+				</div>
+			</Container>
+		)
+	}
 
-                {/* Dropdown de resultados */}
-                {showCursoResults && searchCurso.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {searchResults.courses.length > 0 ? (
-                      <>
-                        <div className="px-3 py-2 bg-gray-50 border-b text-xs text-gray-600 font-medium">
-                          {searchResults.courses.length} curso(s) encontrado(s)
-                        </div>
-                        {searchResults.courses.map((course) => (
-                          <button
-                            key={course.codigo}
-                            type="button"
-                            onClick={() => handleSelectCurso(course)}
-                            className="w-full text-left px-3 py-2 hover:bg-green-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                          >
-                            <div className="font-medium text-gray-900">{course.designacao}</div>
-                          </button>
-                        ))}
-                      </>
-                    ) : !loadingCourses ? (
-                      <div className="px-3 py-4 text-center text-gray-500 text-sm">
-                        Nenhum curso encontrado
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-              
-              {!selectedCursoId && searchCurso && (
-                <p className="text-sm text-amber-600 mt-1">Selecione um curso da lista de resultados</p>
-              )}
+	if (!matriculaData?.data) {
+		return (
+			<Container>
+				<div className="bg-white rounded-3xl border border-gray-100 p-16 text-center">
+					<div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+						<AlertCircle className="h-10 w-10 text-rose-500" />
+					</div>
+					<h2 className="text-2xl font-black text-[#1e293b] mb-2">Matrícula não encontrada</h2>
+					<p className="text-gray-500 font-medium mb-8">O registro que você está tentando editar não foi localizado no sistema.</p>
+					<Button
+						onClick={() => navigate('/admin/student-management/enrolls')}
+						className="bg-[#3964d7] hover:bg-[#2d52b2] px-8"
+					>
+						Voltar para a Lista
+					</Button>
+				</div>
+			</Container>
+		)
+	}
 
-              {/* Informações do curso selecionado */}
-              {selectedCurso && (
-                <div className="mt-3 p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h3 className="font-semibold text-green-900 mb-2">Informações do Curso</h3>
-                  <div className="text-sm">
-                    <span className="text-gray-600">Curso:</span>
-                    <p className="font-medium text-gray-900">{selectedCurso.designacao}</p>
-                  </div>
-                </div>
-              )}
-            </div>
+	return (
+		<Container>
+			<div className="space-y-8">
+				{/* Header */}
+				<div className="bg-white rounded-3xl border border-gray-100 p-8">
+					<div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+						<div className="flex items-center gap-6">
+							<button
+								onClick={() => navigate(-1)}
+								className="p-3 bg-gray-50 text-gray-400 hover:text-[#3964d7] hover:bg-[#3964d7]/5 rounded-xl transition-all duration-300"
+								type="button"
+							>
+								<ArrowLeft className="h-5 w-5" />
+							</button>
+							<div className="flex items-center gap-4">
+								<div className="w-14 h-14 flex items-center justify-center bg-[#3964d7] rounded-2xl shadow-[0_8px_16px_-4px_rgba(57,100,215,0.4)]">
+									<GraduationCap className="h-7 w-7 text-white" />
+								</div>
+								<div>
+									<h1 className="text-2xl font-black text-[#1e293b] leading-tight">
+										Editar Matrícula
+									</h1>
+									<div className="flex items-center gap-2 mt-1">
+										<span className="text-[10px] text-[#3964d7] font-black uppercase tracking-widest">Atualização Cadastral</span>
+										<div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+										<span className="text-[10px] text-gray-400 font-bold">Matrícula #{id}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            {/* Data de Matrícula */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                <Calendar className="inline h-4 w-4 mr-1" />
-                Data de Matrícula <span className="text-red-500">*</span>
-              </label>
-              <Controller
-                name="data_Matricula"
-                control={control}
-                render={({ field }) => (
-                  <input
-                    type="date"
-                    {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                )}
-              />
-              {errors.data_Matricula && (
-                <p className="text-sm text-red-500 mt-1">{errors.data_Matricula.message}</p>
-              )}
-            </div>
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+					{/* Informações da Matrícula */}
+					<div className="bg-white rounded-3xl border border-gray-100 p-8 space-y-8">
+						<div>
+							<div className="flex items-center gap-3 mb-1">
+								<div className="w-1 h-4 bg-[#3964d7] rounded-full"></div>
+								<h2 className="text-[12px] font-black text-gray-400 uppercase tracking-[0.2em]">Ajuste de Matrícula</h2>
+							</div>
+							<p className="text-sm font-medium text-gray-500">Atualize o aluno, curso ou status conforme necessário</p>
+						</div>
 
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Status da Matrícula</label>
-              <Controller
-                name="codigoStatus"
-                control={control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Selecione o status</option>
-                    {mockStatus.map((status) => (
-                      <option key={status.codigo} value={status.codigo}>
-                        {status.designacao}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              />
-              {errors.codigoStatus && (
-                <p className="text-sm text-red-500 mt-1">{errors.codigoStatus.message}</p>
-              )}
-            </div>
-          </div>
+						{/* Seleção de Aluno */}
+						<div className="space-y-4">
+							<label className="block text-gray-600 text-[14px] font-bold tracking-tight">
+								<User className="inline h-4 w-4 mr-1 text-[#3964d7]" />
+								Aluno <span className="text-red-500">*</span>
+							</label>
 
-          {/* Botões de Ação */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate(-1)}
-              disabled={isSubmitting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting || isUpdating || updateMatricula.isPending || !selectedAlunoId || !selectedCursoId}
-            >
-              {isSubmitting || isUpdating || updateMatricula.isPending ? (
-                <>
-                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2 inline-block"></div>
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Atualizar Matrícula
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </Container>
-  )
+							{/* Campo de pesquisa de aluno com autocomplete */}
+							<div className="relative group">
+								<div className="relative">
+									<Input
+										type="text"
+										placeholder="Digite para pesquisar aluno..."
+										value={searchAluno}
+										onChange={(e) => {
+											const value = e.target.value
+											setSearchAluno(value)
+											setShowAlunoResults(value.length > 0)
+											if (value.length === 0) {
+												setSelectedAlunoId(0)
+											}
+										}}
+										onFocus={() => searchAluno.length > 0 && setShowAlunoResults(true)}
+										autoComplete="off"
+										className="pr-12"
+									/>
+
+									{(loadingStudents || (searchAluno !== debouncedSearchAluno && searchAluno.length > 0)) && (
+										<div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+											<div className="animate-spin h-5 w-5 border-2 border-[#3964d7] border-t-transparent rounded-full"></div>
+										</div>
+									)}
+								</div>
+
+								{/* Dropdown de resultados */}
+								{showAlunoResults && searchAluno.length > 0 && (
+									<div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl max-h-64 overflow-y-auto p-2 space-y-1 slide-in-bottom">
+										{searchResults.students.length > 0 ? (
+											<>
+												<div className="px-4 py-2 text-[10px] text-gray-400 font-black uppercase tracking-wider border-b border-gray-50 mb-1">
+													{searchResults.students.length} aluno(s) encontrado(s)
+												</div>
+												{searchResults.students.map((student) => (
+													<button
+														key={student.codigo}
+														type="button"
+														onClick={() => handleSelectAluno(student)}
+														className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-xl transition-all group/item"
+													>
+														<div className="font-bold text-[#1e293b] group-hover/item:text-[#3964d7]">{student.nome}</div>
+														<div className="text-[11px] text-gray-400 font-medium flex items-center gap-3 mt-0.5">
+															<span>{student.sexo}</span>
+															<div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+															<span>{student.email || 'Sem email'}</span>
+															<div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+															<span>{student.telefone || 'Sem telefone'}</span>
+														</div>
+													</button>
+												))}
+											</>
+										) : !loadingStudents ? (
+											<div className="px-4 py-8 text-center">
+												<User className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+												<p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Nenhum aluno encontrado</p>
+											</div>
+										) : null}
+									</div>
+								)}
+							</div>
+
+							{!selectedAlunoId && searchAluno && (
+								<p className="text-[12px] font-bold text-amber-600 flex items-center gap-1.5 px-1">
+									<div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+									Selecione um aluno da lista de resultados
+								</p>
+							)}
+
+							{/* Informações do aluno selecionado */}
+							{selectedAluno && (
+								<div className="mt-4 p-6 bg-[#3964d7]/5 rounded-3xl border border-[#3964d7]/10 flex items-center gap-6 animate-in fade-in zoom-in duration-300">
+									<div className="h-16 w-16 rounded-2xl bg-[#3964d7] flex items-center justify-center text-white text-2xl font-black shadow-[0_8px_16px_-4px_rgba(57,100,215,0.4)]">
+										{selectedAluno.nome.charAt(0).toUpperCase()}
+									</div>
+									<div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-6">
+										<div>
+											<p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Aluno Selecionado</p>
+											<p className="text-sm font-bold text-[#1e293b] truncate">{selectedAluno.nome}</p>
+										</div>
+										<div>
+											<p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Género</p>
+											<p className="text-sm font-bold text-[#1e293b]">{selectedAluno.sexo}</p>
+										</div>
+										<div className="md:col-span-2">
+											<p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Contacto</p>
+											<p className="text-sm font-bold text-[#1e293b] truncate">{selectedAluno.email || selectedAluno.telefone || 'N/A'}</p>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+							{/* Seleção de Curso */}
+							<div className="space-y-4">
+								<label className="block text-gray-600 text-[14px] font-bold tracking-tight">
+									<BookOpen className="inline h-4 w-4 mr-1 text-[#3964d7]" />
+									Curso <span className="text-red-500">*</span>
+								</label>
+
+								{/* Campo de pesquisa de curso com autocomplete */}
+								<div className="relative group">
+									<div className="relative">
+										<Input
+											type="text"
+											placeholder="Digite para pesquisar curso..."
+											value={searchCurso}
+											onChange={(e) => {
+												const value = e.target.value
+												setSearchCurso(value)
+												setShowCursoResults(value.length > 0)
+												if (value.length === 0) {
+													setSelectedCursoId(0)
+												}
+											}}
+											onFocus={() => searchCurso.length > 0 && setShowCursoResults(true)}
+											autoComplete="off"
+										/>
+
+										{(loadingCourses || (searchCurso !== debouncedSearchCurso && searchCurso.length > 0)) && (
+											<div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+												<div className="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
+											</div>
+										)}
+									</div>
+
+									{/* Dropdown de resultados */}
+									{showCursoResults && searchCurso.length > 0 && (
+										<div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl max-h-64 overflow-y-auto p-2 space-y-1 slide-in-bottom">
+											{searchResults.courses.length > 0 ? (
+												<>
+													<div className="px-4 py-2 text-[10px] text-gray-400 font-black uppercase tracking-wider border-b border-gray-50 mb-1">
+														{searchResults.courses.length} curso(s) encontrado(s)
+													</div>
+													{searchResults.courses.map((course) => (
+														<button
+															key={course.codigo}
+															type="button"
+															onClick={() => handleSelectCurso(course)}
+															className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-xl transition-all group/item"
+														>
+															<div className="font-bold text-[#1e293b] group-hover/item:text-[#3964d7]">{course.designacao}</div>
+														</button>
+													))}
+												</>
+											) : !loadingCourses ? (
+												<div className="px-4 py-8 text-center text-gray-400 text-sm font-bold uppercase tracking-widest">
+													Nenhum curso encontrado
+												</div>
+											) : null}
+										</div>
+									)}
+								</div>
+
+								{!selectedCursoId && searchCurso && (
+									<p className="text-[12px] font-bold text-amber-600 flex items-center gap-1.5 px-1">
+										<div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+										Selecione um curso da lista de resultados
+									</p>
+								)}
+
+								{/* Informações do curso selecionado */}
+								{selectedCurso && (
+									<div className="mt-4 p-5 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-4 animate-in fade-in zoom-in duration-300">
+										<div className="h-10 w-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white">
+											<BookOpen className="h-5 w-5" />
+										</div>
+										<div>
+											<p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest mb-0.5">Curso Selecionado</p>
+											<p className="text-sm font-bold text-emerald-700">{selectedCurso.designacao}</p>
+										</div>
+									</div>
+								)}
+							</div>
+
+							<div className="grid grid-cols-1 gap-6">
+								{/* Data de Matrícula */}
+								<div className="space-y-4">
+									<label className="block text-gray-600 text-[14px] font-bold tracking-tight">
+										<Calendar className="inline h-4 w-4 mr-1 text-[#3964d7]" />
+										Data de Matrícula <span className="text-red-500">*</span>
+									</label>
+									<Controller
+										name="data_Matricula"
+										control={control}
+										render={({ field }) => (
+											<input
+												type="date"
+												{...field}
+												className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 font-medium focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#3964d7]/5 focus:border-[#3964d7]/50 transition-all duration-300"
+											/>
+										)}
+									/>
+									{errors.data_Matricula && (
+										<p className="text-red-500 text-[12px] font-bold mt-1.5">{errors.data_Matricula.message}</p>
+									)}
+								</div>
+
+								{/* Status */}
+								<div className="space-y-4">
+									<label className="block text-gray-600 text-[14px] font-bold tracking-tight">Status da Matrícula</label>
+									<Controller
+										name="codigoStatus"
+										control={control}
+										render={({ field }) => (
+											<select
+												{...field}
+												onChange={(e) => field.onChange(parseInt(e.target.value))}
+												className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-700 font-medium focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#3964d7]/5 focus:border-[#3964d7]/50 transition-all duration-300"
+											>
+												<option value="">Selecione o status</option>
+												{mockStatus.map((status) => (
+													<option key={status.codigo} value={status.codigo}>
+														{status.designacao}
+													</option>
+												))}
+											</select>
+										)}
+									/>
+									{errors.codigoStatus && (
+										<p className="text-red-500 text-[12px] font-bold mt-1.5">{errors.codigoStatus.message}</p>
+									)}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Botões de Ação */}
+					<div className="flex items-center justify-end gap-4 pt-4">
+						<Button
+							type="button"
+							variant="secondary"
+							onClick={() => navigate(-1)}
+							disabled={isSubmitting}
+							className="px-10"
+						>
+							Descartar Alterações
+						</Button>
+						<Button
+							type="submit"
+							loading={isSubmitting || isUpdating || updateMatricula.isPending}
+							disabled={isSubmitting || isUpdating || updateMatricula.isPending || !selectedAlunoId || !selectedCursoId}
+							className="px-10 bg-[#3964d7] hover:bg-[#2d52b2] shadow-[0_8px_20px_-6px_rgba(57,100,215,0.4)]"
+						>
+							<Save className="h-4 w-4 mr-2" />
+							Salvar Alterações
+						</Button>
+					</div>
+				</form>
+			</div>
+		</Container>
+	)
 }
