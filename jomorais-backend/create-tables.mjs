@@ -26,8 +26,12 @@ async function createTables() {
     console.log('✅ Tabelas criadas com sucesso!\n');
     
     // Listar as novas tabelas
-    const tables = await prisma.$queryRaw`SHOW TABLES LIKE 'tb_professor%' OR SHOW TABLES LIKE 'tb_periodo%' OR SHOW TABLES LIKE 'tb_historico%'`;
-    console.log('📊 Novas tabelas:', tables);
+    const tables = await prisma.$queryRaw`SHOW TABLES LIKE 'tb_professor%'`;
+    const periodos = await prisma.$queryRaw`SHOW TABLES LIKE 'tb_periodo%'`;
+    const historico = await prisma.$queryRaw`SHOW TABLES LIKE 'tb_historico%'`;
+    console.log('📊 Novas tabelas professor:', tables);
+    console.log('📊 Novas tabelas periodos:', periodos);
+    console.log('📊 Novas tabelas historico:', historico);
 
   } catch (error) {
     console.error('❌ Erro ao criar tabelas:', error.message);

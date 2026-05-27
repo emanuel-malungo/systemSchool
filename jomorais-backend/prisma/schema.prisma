@@ -2491,7 +2491,7 @@ model tb_certificados {
   Codigo_Aluno        Int       @map("Codigo_Aluno") @db.UnsignedInt
   Codigo_Disciplina   Int       @map("Codigo_Disciplina") @db.UnsignedInt
   Codigo_AnoLectivo   Int       @map("Codigo_AnoLectivo") @db.UnsignedInt
-  NumeroCertificado   String    @unique @map("NumeroCertificado") @db.VarChar(50)
+  NumeroCertificado   String    @map("NumeroCertificado") @db.VarChar(50)
   DataEmissao         DateTime  @map("DataEmissao")
   DataAssinatura      DateTime? @map("DataAssinatura")
   AssinadoPor         Int?      @map("AssinadoPor") @db.UnsignedInt
