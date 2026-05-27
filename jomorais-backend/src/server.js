@@ -22,6 +22,7 @@ import paymentManagementRoutes from './routes/payment-management.routes.js';
 import saftRoutes from './routes/saft.routes.js';
 import academicStaffRoutes from './routes/academic-staff.routes.js';
 import academicEvaluationRoutes from './routes/academic-evaluation.routes.js';
+import professorEvaluationRoutes from './routes/professor-evaluation.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import reportsManagementRoutes from './routes/reports-management.routes.js';
 import financialManagementReportsRoutes from './routes/financial-management-reports.routes.js';
@@ -65,6 +66,7 @@ app.get('/', (req, res) => {
       paymentManagement: '/api/payment-management',
       academicStaff: '/api/academic-staff',
       academicEvaluation: '/api/academic-evaluation',
+      professorEvaluation: '/api/professor-evaluation',
       dashboard: '/api/dashboard',
       reportsManagement: '/api/reports-management',
       financialManagementReports: '/api/financial-management/reports',
@@ -98,6 +100,7 @@ app.use('/api/payment-management', paymentManagementRoutes);
 app.use('/api/finance-management/saft', saftRoutes);
 app.use('/api/academic-staff', academicStaffRoutes);
 app.use('/api/academic-evaluation', academicEvaluationRoutes);
+app.use('/api/professor-evaluation', professorEvaluationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports-management', reportsManagementRoutes);
 app.use('/api/financial-management/reports', financialManagementReportsRoutes);

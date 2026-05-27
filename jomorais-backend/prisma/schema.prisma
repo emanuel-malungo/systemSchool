@@ -75,7 +75,7 @@ model tb_utilizadores {
   tb_recibo                     tb_recibo[]
   tb_resultados_finais          tb_resultados_finais[]
   tb_tipos_propinas             tb_tipos_propinas[]
-  tb_tipos_utilizador           tb_tipos_utilizador             @relation(fields: [codigo_Tipo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_utilizadores_1")
+  tb_tipos_utilizador           tb_tipos_utilizador             @relation(fields: [codigo_Tipo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_utilizadores_1")
 
   @@index([codigo_Tipo_Utilizador], map: "FK_tb_utilizadores_1")
 }
@@ -91,9 +91,9 @@ model tb_item_permissao_utilizador {
   codigo_Utilizador Int             @map("Codigo_Utilizador") @db.UnsignedInt
   data_Permissao    DateTime        @map("Data_Permissao") @db.Date
   status            String          @default("desactivo") @map("status") @db.VarChar(45)
-  data_Inicio       DateTime        @default(dbgenerated("'0000-00-00'")) @map("Data_Inicio") @db.Date
-  data_fin          DateTime        @default(dbgenerated("'0000-00-00'")) @map("Data_fin") @db.Date
-  tb_utilizadores   tb_utilizadores @relation(fields: [codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_item_permissao_utilizador_2")
+  data_Inicio       DateTime        @default(dbgenerated("('0000-00-00')")) @map("Data_Inicio") @db.Date
+  data_fin          DateTime        @default(dbgenerated("('0000-00-00')")) @map("Data_fin") @db.Date
+  tb_utilizadores   tb_utilizadores @relation(fields: [codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_item_permissao_utilizador_2")
 
   @@index([codigo_Permissao], map: "FK_tb_item_permissao_utilizador_1")
   @@index([codigo_Utilizador], map: "FK_tb_item_permissao_utilizador_2")
@@ -103,8 +103,8 @@ model tb_permissao_turma_utilizador {
   codigo           Int             @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
   codigoTurma      Int             @map("CodigoTurma") @db.UnsignedInt
   codigoUtilizador Int             @map("CodigoUtilizador") @db.UnsignedInt
-  tb_utilizadores  tb_utilizadores @relation(fields: [codigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_permissao_turma_utilizador_Utilizador")
-  tb_turmas        tb_turmas       @relation(fields: [codigoTurma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_permissao_turma_utilizador_tuma")
+  tb_utilizadores  tb_utilizadores @relation(fields: [codigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_permissao_turma_utilizador_Utilizador")
+  tb_turmas        tb_turmas       @relation(fields: [codigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_permissao_turma_utilizador_tuma")
 
   @@index([codigoTurma], map: "FK_permissao_turma_utilizador_tuma")
   @@index([codigoUtilizador], map: "FK_permissao_turma_utilizador_Utilizador")
@@ -132,7 +132,7 @@ model tb_municipios {
   codigo_Provincia Int           @map("Codigo_Provincia") @db.UnsignedInt
   designacao       String        @map("Designacao") @db.VarChar(45)
   tb_comunas       tb_comunas[]
-  tb_provincias    tb_provincias @relation(fields: [codigo_Provincia], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_Provincias")
+  tb_provincias    tb_provincias @relation(fields: [codigo_Provincia], references: [codigo], onUpdate: Restrict, map: "FK_Provincias")
 
   @@index([codigo_Provincia], map: "FK_Provincias")
 }
@@ -142,7 +142,7 @@ model tb_comunas {
   codigo_Municipio Int           @map("Codigo_Municipio") @db.UnsignedInt
   designacao       String        @map("Designacao") @db.VarChar(45)
   tb_alunos        tb_alunos[]
-  tb_municipios    tb_municipios @relation(fields: [codigo_Municipio], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_comunas_Municipio")
+  tb_municipios    tb_municipios @relation(fields: [codigo_Municipio], references: [codigo], onUpdate: Restrict, map: "FK_tb_comunas_Municipio")
 
   @@index([codigo_Municipio], map: "FK_tb_comunas_Municipio")
 }
@@ -191,7 +191,7 @@ model tb_dados_instituicao {
   municipio           String                @default("0") @map("Municipio") @db.VarChar(45)
   nescola             String                @default("0") @map("Nescola") @db.VarChar(45)
   taxaIva             Int?                  @default(1) @map("taxaIva") @db.UnsignedInt
-  tb_regime_iva       tb_regime_iva?        @relation(fields: [taxaIva], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_dados_instituicao_tb_regime_iva")
+  tb_regime_iva       tb_regime_iva?        @relation(fields: [taxaIva], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_dados_instituicao_tb_regime_iva")
   tb_grade_curricular tb_grade_curricular[]
   tb_pauta            tb_pauta[]
 
@@ -250,13 +250,14 @@ model tb_cursos {
   codigo_Status                  Int                              @default(1) @map("codigo_Status") @db.UnsignedInt
   tb_classe_disiciplina_terminal tb_classe_disiciplina_terminal[]
   tb_condicao_aprovacao          tb_condicao_aprovacao[]
-  tb_status                      tb_status                        @relation(fields: [codigo_Status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_cursos_1")
+  tb_status                      tb_status                        @relation(fields: [codigo_Status], references: [codigo], onUpdate: Restrict, map: "FK_tb_cursos_1")
   tb_disciplinas                 tb_disciplinas[]
   tb_disciplinas_docente         tb_disciplinas_docente[]
   tb_formula_media               tb_formula_media[]
   tb_grade_curricular            tb_grade_curricular[]
   tb_matriculas                  tb_matriculas[]
   tb_turmas                      tb_turmas[]
+  tb_professor_disciplina        tb_professor_disciplina[]
 
   @@index([codigo_Status], map: "FK_tb_cursos_1")
 }
@@ -270,7 +271,7 @@ model tb_classes {
   tb_avaliacao_classe                                                                          tb_avaliacao_classe[]
   tb_classe_disiciplina_terminal_tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes    tb_classe_disiciplina_terminal[] @relation("tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes")
   tb_classe_disiciplina_terminal_tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes tb_classe_disiciplina_terminal[] @relation("tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes")
-  tb_status                                                                                    tb_status                        @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_classes_1")
+  tb_status                                                                                    tb_status                        @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_classes_1")
   tb_condicao_aprovacao                                                                        tb_condicao_aprovacao[]
   tb_grade_curricular                                                                          tb_grade_curricular[]
   tb_limite_pagamento_propina                                                                  tb_limite_pagamento_propina?
@@ -290,14 +291,16 @@ model tb_disciplinas {
   cadeiraEspecifica              Int                              @default(0) @map("CadeiraEspecifica") @db.UnsignedInt
   tb_classe_disiciplina_terminal tb_classe_disiciplina_terminal[]
   tb_condicao_aprovacao          tb_condicao_aprovacao[]
-  tb_cursos                      tb_cursos                        @relation(fields: [codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_disciplinas_1")
-  tb_status                      tb_status                        @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_disciplinas_2")
+  tb_cursos                      tb_cursos                        @relation(fields: [codigo_Curso], references: [codigo], onUpdate: Restrict, map: "FK_tb_disciplinas_1")
+  tb_status                      tb_status                        @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_disciplinas_2")
   tb_disciplinas_docente         tb_disciplinas_docente[]
   tb_faltas                      tb_faltas[]
   tb_grade_curricular            tb_grade_curricular[]
   tb_notas                       tb_notas[]
   tb_notas_alunos                tb_notas_alunos[]
   tb_resultados_finais           tb_resultados_finais[]
+  tb_professor_disciplina        tb_professor_disciplina[]
+  tb_professor_turma             tb_professor_turma[]
 
   @@index([codigo_Curso], map: "FK_tb_disciplinas_1")
   @@index([status], map: "FK_tb_disciplinas_2")
@@ -312,12 +315,12 @@ model tb_grade_curricular {
   codigo_empresa       Int                  @map("Codigo_empresa") @db.UnsignedInt
   status               Int                  @map("Status") @db.UnsignedInt
   codigoTipoNota       Int                  @map("CodigoTipoNota") @db.UnsignedInt
-  tb_disciplinas       tb_disciplinas       @relation(fields: [codigo_disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_1")
-  tb_classes           tb_classes           @relation(fields: [codigo_Classe], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_2")
-  tb_cursos            tb_cursos            @relation(fields: [codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_3")
-  tb_utilizadores      tb_utilizadores      @relation(fields: [codigo_user], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_4")
-  tb_dados_instituicao tb_dados_instituicao @relation(fields: [codigo_empresa], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_5")
-  tb_status            tb_status            @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_grade_curricular_6")
+  tb_disciplinas       tb_disciplinas       @relation(fields: [codigo_disciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_1")
+  tb_classes           tb_classes           @relation(fields: [codigo_Classe], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_2")
+  tb_cursos            tb_cursos            @relation(fields: [codigo_Curso], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_3")
+  tb_utilizadores      tb_utilizadores      @relation(fields: [codigo_user], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_4")
+  tb_dados_instituicao tb_dados_instituicao @relation(fields: [codigo_empresa], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_5")
+  tb_status            tb_status            @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_grade_curricular_6")
 
   @@index([codigo_disciplina], map: "FK_tb_grade_curricular_1")
   @@index([codigo_Classe], map: "FK_tb_grade_curricular_2")
@@ -352,25 +355,26 @@ model tb_turmas {
   max_Alunos                    Int?                            @default(30) @map("Max_Alunos")
   tb_confirmacoes               tb_confirmacoes[]
   tb_directores_turmas          tb_directores_turmas[]
-  tb_docente_turma              tb_docente_turma[]              @ignore
   tb_notas                      tb_notas[]
   tb_notas_1_4                  tb_notas_1_4[]
   tb_notas_5_6                  tb_notas_5_6[]
   tb_notas_7_9                  tb_notas_7_9[]
+  tb_notas_alunos               tb_notas_alunos[]
   tb_notas_contgest_10_12       tb_notas_contgest_10_12[]
   tb_notas_enfermagem_10_12     tb_notas_enfermagem_10_12[]
   tb_notas_fis_bio_10_12        tb_notas_fis_bio_10_12[]
   tb_notas_jur_econ_10_12       tb_notas_jur_econ_10_12[]
   tb_ocorrencias_alunos         tb_ocorrencias_alunos[]
   tb_permissao_turma_utilizador tb_permissao_turma_utilizador[]
+  tb_professor_turma            tb_professor_turma[]
   tb_servico_aluno              tb_servico_aluno[]
   tb_servicos_turma             tb_servicos_turma[]
   tb_tipos_propinas             tb_tipos_propinas[]
-  tb_ano_lectivo                tb_ano_lectivo                  @relation(fields: [codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_turmas_AnoLectivo")
-  tb_classes                    tb_classes                      @relation(fields: [codigo_Classe], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_turmas_Classe")
-  tb_cursos                     tb_cursos                       @relation(fields: [codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_turmas_Curso")
-  tb_periodos                   tb_periodos                     @relation(fields: [codigo_Periodo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_turmas_Periodos")
-  tb_salas                      tb_salas                        @relation(fields: [codigo_Sala], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_turmas_Sala")
+  tb_ano_lectivo                tb_ano_lectivo                  @relation(fields: [codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_turmas_AnoLectivo")
+  tb_classes                    tb_classes                      @relation(fields: [codigo_Classe], references: [codigo], onUpdate: Restrict, map: "FK_tb_turmas_Classe")
+  tb_cursos                     tb_cursos                       @relation(fields: [codigo_Curso], references: [codigo], onUpdate: Restrict, map: "FK_tb_turmas_Curso")
+  tb_periodos                   tb_periodos                     @relation(fields: [codigo_Periodo], references: [codigo], onUpdate: Restrict, map: "FK_tb_turmas_Periodos")
+  tb_salas                      tb_salas                        @relation(fields: [codigo_Sala], references: [codigo], onUpdate: Restrict, map: "FK_tb_turmas_Sala")
 
   @@index([codigo_Classe], map: "FK_tb_turmas_Classe")
   @@index([codigo_Curso], map: "FK_tb_turmas_Curso")
@@ -395,9 +399,8 @@ model tb_docente {
   email                String?                @map("Email") @db.VarChar(45)
   user_id              BigInt                 @default(1) @map("user_id") @db.UnsignedBigInt
   tb_directores_turmas tb_directores_turmas[]
-  tb_status            tb_status?             @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_docente_1")
-  users                users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_tb_docente_3")
-  tb_docente_turma     tb_docente_turma[]     @ignore
+  tb_status            tb_status?             @relation(fields: [status], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_docente_1")
+  users                users                  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "FK_tb_docente_3")
   tb_pauta             tb_pauta[]
 
   @@index([status], map: "FK_tb_docente_1")
@@ -410,8 +413,8 @@ model tb_disciplinas_docente {
   codigoDocente    Int            @map("CodigoDocente") @db.UnsignedInt
   codigoCurso      Int            @map("CodigoCurso") @db.UnsignedInt
   codigoDisciplina Int            @map("CodigoDisciplina") @db.UnsignedInt
-  tb_cursos        tb_cursos      @relation(fields: [codigoCurso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_disciplinas_docente_2")
-  tb_disciplinas   tb_disciplinas @relation(fields: [codigoDisciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_disciplinas_docente_3")
+  tb_cursos        tb_cursos      @relation(fields: [codigoCurso], references: [codigo], onUpdate: Restrict, map: "FK_tb_disciplinas_docente_2")
+  tb_disciplinas   tb_disciplinas @relation(fields: [codigoDisciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_disciplinas_docente_3")
 
   @@index([codigoDocente], map: "FK_tb_disciplinas_docente_1")
   @@index([codigoCurso], map: "FK_tb_disciplinas_docente_2")
@@ -424,28 +427,25 @@ model tb_directores_turmas {
   codigoAnoLectivo Int            @map("CodigoAnoLectivo") @db.UnsignedInt
   codigoTurma      Int            @map("CodigoTurma") @db.UnsignedInt
   codigoDocente    Int            @map("CodigoDocente") @db.UnsignedInt
-  tb_ano_lectivo   tb_ano_lectivo @relation(fields: [codigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_directores_turmas_1")
-  tb_turmas        tb_turmas      @relation(fields: [codigoTurma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_directores_turmas_2")
-  tb_docente       tb_docente     @relation(fields: [codigoDocente], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_directores_turmas_3")
+  tb_ano_lectivo   tb_ano_lectivo @relation(fields: [codigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_directores_turmas_1")
+  tb_turmas        tb_turmas      @relation(fields: [codigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_tb_directores_turmas_2")
+  tb_docente       tb_docente     @relation(fields: [codigoDocente], references: [codigo], onUpdate: Restrict, map: "FK_tb_directores_turmas_3")
 
   @@index([codigoAnoLectivo], map: "FK_tb_directores_turmas_1")
   @@index([codigoTurma], map: "FK_tb_directores_turmas_2")
   @@index([codigoDocente], map: "FK_tb_directores_turmas_3")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// Tabela legada - mantida com @ignore para não ser gerenciada pelo Prisma
 model tb_docente_turma {
-  codigo_Docente Int        @default(autoincrement()) @map("Codigo_Docente") @db.UnsignedInt
-  codigo_turma   Int        @map("Codigo_turma") @db.UnsignedInt
-  tb_docente     tb_docente @relation(fields: [codigo_Docente], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_docente_tuma_1")
-  tb_turmas      tb_turmas  @relation(fields: [codigo_turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_docente_tuma_2")
+  codigo_Docente Int @map("Codigo_Docente") @db.UnsignedInt
+  codigo_turma   Int @map("Codigo_turma") @db.UnsignedInt
 
-  @@index([codigo_Docente], map: "FK_docente_turma_1")
-  @@index([codigo_turma], map: "FK_docente_turma_2")
   @@map("tb_docente_tuma")
   @@ignore
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model tb_tipo_avaliacao {
   codigo              Int                   @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
   descricao           String?               @map("Descricao") @db.VarChar(45)
@@ -494,8 +494,8 @@ model tb_encarregados {
   dataCadastro      DateTime     @map("DataCadastro") @db.Date
   status            Int          @default(1) @map("Status") @db.UnsignedInt
   tb_alunos         tb_alunos[]
-  tb_status         tb_status    @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_encarregados_2")
-  tb_profissao      tb_profissao @relation(fields: [codigo_Profissao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_encarregados_Profissao")
+  tb_status         tb_status    @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_encarregados_2")
+  tb_profissao      tb_profissao @relation(fields: [codigo_Profissao], references: [codigo], onUpdate: Restrict, map: "FK_tb_encarregados_Profissao")
 
   @@index([codigo_Profissao], map: "FK_tb_encarregados_Profissao")
   @@index([codigo_Utilizador], map: "FK_tb_encarregados_Utilizador")
@@ -511,7 +511,7 @@ model tb_proveniencias {
   codigoUtilizador Int?        @map("CodigoUtilizador") @db.UnsignedInt
   dataCadastro     DateTime?   @map("DataCadastro") @db.DateTime(0)
   tb_alunos        tb_alunos[]
-  tb_status        tb_status?  @relation(fields: [codigoStatus], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_proveniencias_1")
+  tb_status        tb_status?  @relation(fields: [codigoStatus], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_proveniencias_1")
 
   @@index([codigoStatus], map: "FK_tb_proveniencias_1")
 }
@@ -545,12 +545,12 @@ model tb_alunos {
   motivo_Desconto           String?                     @map("Motivo_Desconto") @db.VarChar(455)
   provinciaEmissao          String                      @default("LUANDA") @map("ProvinciaEmissao") @db.VarChar(45)
   user_id                   BigInt?                     @default(1) @map("user_id") @db.UnsignedBigInt
-  users                     users?                      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_alunos_2")
-  tb_comunas                tb_comunas                  @relation(fields: [codigo_Comuna], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_alunos_Comuna")
-  tb_encarregados           tb_encarregados             @relation(fields: [codigo_Encarregado], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_alunos_Encarregado")
-  tb_nacionalidades         tb_nacionalidades           @relation(fields: [codigo_Nacionalidade], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_alunos_Nacionalidade")
-  tb_utilizadores           tb_utilizadores             @relation(fields: [codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_alunos_Utilizador")
-  tb_proveniencias          tb_proveniencias?           @relation(fields: [escolaProveniencia], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "proveniencias")
+  users                     users?                      @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_alunos_2")
+  tb_comunas                tb_comunas                  @relation(fields: [codigo_Comuna], references: [codigo], onUpdate: Restrict, map: "FK_tb_alunos_Comuna")
+  tb_encarregados           tb_encarregados             @relation(fields: [codigo_Encarregado], references: [codigo], onUpdate: Restrict, map: "FK_tb_alunos_Encarregado")
+  tb_nacionalidades         tb_nacionalidades           @relation(fields: [codigo_Nacionalidade], references: [codigo], onUpdate: Restrict, map: "FK_tb_alunos_Nacionalidade")
+  tb_utilizadores           tb_utilizadores             @relation(fields: [codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_alunos_Utilizador")
+  tb_proveniencias          tb_proveniencias?           @relation(fields: [escolaProveniencia], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "proveniencias")
   tb_comportamento          tb_comportamento[]
   tb_conta_aluno            tb_conta_aluno[]
   tb_deposito_valor         tb_deposito_valor[]
@@ -572,7 +572,6 @@ model tb_alunos {
   tb_propinas               tb_propinas[]
   tb_recibo                 tb_recibo[]
   tb_servico_aluno          tb_servico_aluno[]
-  tb_transferencias         tb_transferencias[]         @relation("TransferenciasAluno")
 
   @@index([user_id], map: "FK_tb_alunos_2")
   @@index([codigo_Comuna], map: "FK_tb_alunos_Comuna")
@@ -595,9 +594,9 @@ model tb_matriculas {
   tb_declaracao_notas      tb_declaracao_notas[]
   tb_declaracao_sem_nota   tb_declaracao_sem_nota[]
   tb_faltas                tb_faltas[]
-  tb_status                tb_status                  @relation(fields: [codigoStatus], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_matriculas_4")
-  tb_alunos                tb_alunos                  @relation(fields: [codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_matriculas_Aluno")
-  tb_cursos                tb_cursos                  @relation(fields: [codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_matriculas_Curso")
+  tb_status                tb_status                  @relation(fields: [codigoStatus], references: [codigo], onUpdate: Restrict, map: "FK_tb_matriculas_4")
+  tb_alunos                tb_alunos                  @relation(fields: [codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_matriculas_Aluno")
+  tb_cursos                tb_cursos                  @relation(fields: [codigo_Curso], references: [codigo], onUpdate: Restrict, map: "FK_tb_matriculas_Curso")
   tb_merito                tb_merito[]
   tb_pre_confirmacao       tb_pre_confirmacao[]
   tb_processos_disciplinar tb_processos_disciplinar[]
@@ -619,10 +618,10 @@ model tb_confirmacoes {
   codigo_Status         Int                     @default(1) @map("Codigo_Status") @db.UnsignedInt
   classificacao         String?                 @map("Classificacao") @db.VarChar(45)
   tb_anulacoes          tb_anulacoes[]
-  tb_ano_lectivo        tb_ano_lectivo          @relation(fields: [codigo_Ano_lectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_confirmacoes_Ano_Lectivo")
-  tb_matriculas         tb_matriculas           @relation(fields: [codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_confirmacoes_Matricula")
-  tb_turmas             tb_turmas               @relation(fields: [codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_confirmacoes_Turma")
-  tb_utilizadores       tb_utilizadores         @relation(fields: [codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_confirmacoes_Utilizador")
+  tb_ano_lectivo        tb_ano_lectivo          @relation(fields: [codigo_Ano_lectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_confirmacoes_Ano_Lectivo")
+  tb_matriculas         tb_matriculas           @relation(fields: [codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_confirmacoes_Matricula")
+  tb_turmas             tb_turmas               @relation(fields: [codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_confirmacoes_Turma")
+  tb_utilizadores       tb_utilizadores         @relation(fields: [codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_confirmacoes_Utilizador")
   tb_pedidos_declaracao tb_pedidos_declaracao[]
   tb_resultados_finais  tb_resultados_finais[]
 
@@ -641,9 +640,6 @@ model tb_transferencias {
   codigoMotivo      Int       @default(1) @map("CodigoMotivo") @db.UnsignedInt
   obs               String?   @map("OBS") @db.VarChar(150)
   dataActualizacao  DateTime? @map("DataActualizacao") @db.Date
-  tb_alunos         tb_alunos @relation("TransferenciasAluno", fields: [codigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction)
-
-  @@index([codigoAluno], map: "FK_tb_transferencias_Aluno")
 }
 
 model tb_motivos_anulacao {
@@ -693,7 +689,7 @@ model tb_tipo_taxa_iva {
   designacao        String?            @default("") @map("Designacao") @db.VarChar(45)
   codigo_Isencao    Int?               @default(0) @map("Codigo_Isencao") @db.UnsignedInt
   status            String             @default("Activo") @map("Status") @db.VarChar(45)
-  tb_motivo_isencao tb_motivo_isencao? @relation(fields: [codigo_Isencao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipo_taxa_iva_1")
+  tb_motivo_isencao tb_motivo_isencao? @relation(fields: [codigo_Isencao], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_tipo_taxa_iva_1")
 
   @@index([codigo_Isencao], map: "FK_tb_tipo_taxa_iva_1")
 }
@@ -726,10 +722,10 @@ model tb_tipo_servicos {
   tb_propina_classe     tb_propina_classe[]
   tb_servico_aluno      tb_servico_aluno[]
   tb_servicos_turma     tb_servicos_turma[]
-  tb_moedas             tb_moedas              @relation(fields: [codigo_Moeda], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipo_moedas")
-  motivos_iva           motivos_iva?           @relation(fields: [codigoRasao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipo_servicos_motivos_iva")
-  taxa_iva              taxa_iva?              @relation(fields: [iva], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipo_servicos_taxa_iva")
-  tb_categoria_servicos tb_categoria_servicos? @relation(fields: [categoria], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipo_servicos_tb_categoria_servicos")
+  tb_moedas             tb_moedas              @relation(fields: [codigo_Moeda], references: [codigo], onUpdate: Restrict, map: "FK_tb_tipo_moedas")
+  motivos_iva           motivos_iva?           @relation(fields: [codigoRasao], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_tipo_servicos_motivos_iva")
+  taxa_iva              taxa_iva?              @relation(fields: [iva], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_tipo_servicos_taxa_iva")
+  tb_categoria_servicos tb_categoria_servicos? @relation(fields: [categoria], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_tipo_servicos_tb_categoria_servicos")
 
   @@index([codigo_Moeda], map: "FK_tb_tipo_servicos_Moeda")
   @@index([codigo_Utilizador], map: "FK_tb_tipo_servicos_Utilizador")
@@ -744,9 +740,9 @@ model tb_servicos_turma {
   anoLectivo       String           @map("AnoLectivo") @db.VarChar(45)
   codigoClasse     Int              @map("CodigoClasse") @db.UnsignedInt
   codigoServico    Int              @map("CodigoServico") @db.UnsignedInt
-  tb_classes       tb_classes       @relation(fields: [codigoClasse], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servicos_turma_1")
-  tb_turmas        tb_turmas        @relation(fields: [codigoTurma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servicos_turma_2")
-  tb_tipo_servicos tb_tipo_servicos @relation(fields: [codigoServico], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servicos_turma_3")
+  tb_classes       tb_classes       @relation(fields: [codigoClasse], references: [codigo], onUpdate: Restrict, map: "FK_tb_servicos_turma_1")
+  tb_turmas        tb_turmas        @relation(fields: [codigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_tb_servicos_turma_2")
+  tb_tipo_servicos tb_tipo_servicos @relation(fields: [codigoServico], references: [codigo], onUpdate: Restrict, map: "FK_tb_servicos_turma_3")
 
   @@index([codigoClasse], map: "FK_tb_servicos_turma_1")
   @@index([codigoTurma], map: "FK_tb_servicos_turma_2")
@@ -759,10 +755,10 @@ model tb_servico_aluno {
   codigo_Aluno     Int              @map("Codigo_Aluno") @db.UnsignedInt
   status           Int              @map("status") @db.UnsignedInt
   codigo_Turma     Int              @default(1) @map("Codigo_Turma") @db.UnsignedInt
-  tb_alunos        tb_alunos        @relation(fields: [codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servico_aluno_3")
-  tb_turmas        tb_turmas        @relation(fields: [codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servico_aluno_4")
-  tb_tipo_servicos tb_tipo_servicos @relation(fields: [codigo_Servico], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servico_classe_1")
-  tb_status        tb_status        @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_servico_classe_3")
+  tb_alunos        tb_alunos        @relation(fields: [codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_servico_aluno_3")
+  tb_turmas        tb_turmas        @relation(fields: [codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_servico_aluno_4")
+  tb_tipo_servicos tb_tipo_servicos @relation(fields: [codigo_Servico], references: [codigo], onUpdate: Restrict, map: "FK_tb_servico_classe_1")
+  tb_status        tb_status        @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_servico_classe_3")
 
   @@index([codigo_Servico], map: "FK_tb_servico_classe_1")
   @@index([codigo_Aluno], map: "FK_tb_servico_classe_2")
@@ -777,9 +773,9 @@ model tb_propina_classe {
   codigoUtilizador  Int              @map("CodigoUtilizador") @db.UnsignedInt
   dataRegisto       DateTime         @map("DataRegisto") @db.Date
   anoLectivo        String           @default("2017") @map("AnoLectivo") @db.VarChar(45)
-  tb_classes        tb_classes       @relation(fields: [codigoClasse], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propina_classe_1")
-  tb_tipo_servicos  tb_tipo_servicos @relation(fields: [codigoTipoServico], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propina_classe_2")
-  tb_utilizadores   tb_utilizadores  @relation(fields: [codigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propina_classe_3")
+  tb_classes        tb_classes       @relation(fields: [codigoClasse], references: [codigo], onUpdate: Restrict, map: "FK_tb_propina_classe_1")
+  tb_tipo_servicos  tb_tipo_servicos @relation(fields: [codigoTipoServico], references: [codigo], onUpdate: Restrict, map: "FK_tb_propina_classe_2")
+  tb_utilizadores   tb_utilizadores  @relation(fields: [codigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_propina_classe_3")
 
   @@index([codigoClasse], map: "FK_tb_propina_classe_1")
   @@index([codigoTipoServico], map: "FK_tb_propina_classe_2")
@@ -791,7 +787,7 @@ model tb_limite_pagamento_propina {
   codigoClasse Int        @map("CodigoClasse") @db.UnsignedInt
   mesLimite    String     @map("MesLimite") @db.VarChar(45)
   mesInicial   String     @map("mesInicial") @db.VarChar(45)
-  tb_classes   tb_classes @relation(fields: [codigo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_limite_pagamento_propina_1")
+  tb_classes   tb_classes @relation(fields: [codigo], references: [codigo], onUpdate: Restrict, map: "FK_tb_limite_pagamento_propina_1")
 }
 
 model tb_meses_classe {
@@ -830,7 +826,7 @@ model tb_pagamentoi {
   nifCliente       String?           @map("nifCliente") @db.VarChar(50)
   troco            Float?            @map("troco")
   tb_nota_credito  tb_nota_credito[]
-  tb_status        tb_status         @relation(fields: [status], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentoI_1")
+  tb_status        tb_status         @relation(fields: [status], references: [codigo], onUpdate: Restrict, map: "FK_tb_pagamentoI_1")
   tb_pagamentos    tb_pagamentos[]
 
   @@index([status], map: "FK_tb_pagamentoI_1")
@@ -868,11 +864,11 @@ model tb_pagamentos {
   preco                 Float               @default(0) @map("preco")
   indice_mes            Int?                @map("indice_mes")
   indice_ano            Int?                @map("indice_ano")
-  aluno                 tb_alunos           @relation(fields: [codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentos_4")
-  pagamento             tb_pagamentoi       @relation(fields: [codigoPagamento], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentos_CodigoPagamento")
-  formaPagamento        tb_forma_pagamento? @relation(fields: [codigo_FormaPagamento], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentos_Codigo_FormaPagamento")
-  tipoServico           tb_tipo_servicos?   @relation(fields: [codigo_Tipo_Servico], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentos_Tipo_Servicos")
-  utilizador            tb_utilizadores     @relation(fields: [codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pagamentos_Utilizadore")
+  aluno                 tb_alunos           @relation(fields: [codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_pagamentos_4")
+  pagamento             tb_pagamentoi       @relation(fields: [codigoPagamento], references: [codigo], onUpdate: Restrict, map: "FK_tb_pagamentos_CodigoPagamento")
+  formaPagamento        tb_forma_pagamento? @relation(fields: [codigo_FormaPagamento], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_pagamentos_Codigo_FormaPagamento")
+  tipoServico           tb_tipo_servicos?   @relation(fields: [codigo_Tipo_Servico], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_pagamentos_Tipo_Servicos")
+  utilizador            tb_utilizadores     @relation(fields: [codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_pagamentos_Utilizadore")
 
   @@index([codigo_Utilizador], map: "FK_tb_pagamentos_Utilizadore")
   @@index([codigo_Tipo_Servico], map: "FK_tb_pagamentos_Tipo_Servicos")
@@ -894,8 +890,8 @@ model tb_nota_credito {
   dataOperacao     String?        @default("00-00-0000") @map("DataOperacao") @db.VarChar(45)
   hash             String?        @map("hash") @db.VarChar(555)
   codigoPagamentoi Int?           @map("CodigoPagamentoi") @db.UnsignedInt
-  tb_alunos        tb_alunos      @relation(fields: [codigo_aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_nota_credito_1")
-  tb_pagamentoi    tb_pagamentoi? @relation(fields: [codigoPagamentoi], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_nota_credito_tb_pagamentoi")
+  tb_alunos        tb_alunos      @relation(fields: [codigo_aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_nota_credito_1")
+  tb_pagamentoi    tb_pagamentoi? @relation(fields: [codigoPagamentoi], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_nota_credito_tb_pagamentoi")
 
   @@index([codigo_aluno], map: "FK_tb_nota_credito_1")
   @@index([codigoPagamentoi], map: "FK_tb_nota_credito_tb_pagamentoi")
@@ -979,7 +975,7 @@ model materias {
   user_id    BigInt    @default(1) @db.UnsignedBigInt
   created_at DateTime? @db.Timestamp(0)
   updated_at DateTime? @db.Timestamp(0)
-  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_materias_1")
+  users      users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "FK_materias_1")
 
   @@index([user_id], map: "FK_materias_1")
 }
@@ -1031,7 +1027,7 @@ model tb_acessos_sistema {
   Descricao        String?         @db.VarChar(145)
   IpAcesso         String?         @db.VarChar(45)
   MacAdrress       String?         @db.VarChar(95)
-  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_acessos_sistema_1")
+  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_acessos_sistema_1")
 
   @@index([CodigoUtilizador], map: "FK_tb_acessos_sistema_1")
 }
@@ -1048,9 +1044,9 @@ model tb_anulacoes {
   Data_Anulacao          DateTime            @db.Date
   Codigo_Motivo_Anulacao Int                 @db.UnsignedInt
   Codigo_Utilizador      Int                 @db.UnsignedInt
-  tb_confirmacoes        tb_confirmacoes     @relation(fields: [Codigo_Confirmacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_anulacoes_Confirmacao")
-  tb_motivos_anulacao    tb_motivos_anulacao @relation(fields: [Codigo_Motivo_Anulacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_anulacoes_Motivos")
-  tb_utilizadores        tb_utilizadores     @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_anulacoes_Utilizador")
+  tb_confirmacoes        tb_confirmacoes     @relation(fields: [Codigo_Confirmacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_anulacoes_Confirmacao")
+  tb_motivos_anulacao    tb_motivos_anulacao @relation(fields: [Codigo_Motivo_Anulacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_anulacoes_Motivos")
+  tb_utilizadores        tb_utilizadores     @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_anulacoes_Utilizador")
 
   @@index([Codigo_Confirmacao], map: "FK_tb_anulacoes_Confirmacao")
   @@index([Codigo_Motivo_Anulacao], map: "FK_tb_anulacoes_Motivos")
@@ -1061,8 +1057,8 @@ model tb_avaliacao_classe {
   Codigo            Int               @id @default(autoincrement()) @db.UnsignedInt
   CodigoCalsse      Int               @db.UnsignedInt
   CodigoAvaliacao   Int               @db.UnsignedInt
-  tb_classes        tb_classes        @relation(fields: [CodigoCalsse], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_avaliacao_classe_1")
-  tb_tipo_avaliacao tb_tipo_avaliacao @relation(fields: [CodigoAvaliacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_avaliacao_classe_2")
+  tb_classes        tb_classes        @relation(fields: [CodigoCalsse], references: [codigo], onUpdate: Restrict, map: "FK_tb_avaliacao_classe_1")
+  tb_tipo_avaliacao tb_tipo_avaliacao @relation(fields: [CodigoAvaliacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_avaliacao_classe_2")
 
   @@index([CodigoCalsse], map: "FK_tb_avaliacao_classe_1")
   @@index([CodigoAvaliacao], map: "FK_tb_avaliacao_classe_2")
@@ -1102,10 +1098,10 @@ model tb_classe_disiciplina_terminal {
   CodigoClasseInicio                                                       Int?            @db.UnsignedInt
   CodigoClasseFim                                                          Int?            @db.UnsignedInt
   CodigoCurso                                                              Int?            @db.UnsignedInt
-  tb_classes_tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes    tb_classes?     @relation("tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes", fields: [CodigoClasseFim], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_classe_trminal_ClasseFim")
-  tb_classes_tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes tb_classes?     @relation("tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes", fields: [CodigoClasseInicio], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_classe_trminal_ClasseInicio")
-  tb_cursos                                                                tb_cursos?      @relation(fields: [CodigoCurso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_classe_trminal_Curso")
-  tb_disciplinas                                                           tb_disciplinas? @relation(fields: [CodigoDisciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_classe_trminal_Disciplina")
+  tb_classes_tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes    tb_classes?     @relation("tb_classe_disiciplina_terminal_CodigoClasseFimTotb_classes", fields: [CodigoClasseFim], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_classe_trminal_ClasseFim")
+  tb_classes_tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes tb_classes?     @relation("tb_classe_disiciplina_terminal_CodigoClasseInicioTotb_classes", fields: [CodigoClasseInicio], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_classe_trminal_ClasseInicio")
+  tb_cursos                                                                tb_cursos?      @relation(fields: [CodigoCurso], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_classe_trminal_Curso")
+  tb_disciplinas                                                           tb_disciplinas? @relation(fields: [CodigoDisciplina], references: [codigo], onDelete: Restrict, onUpdate: Restrict, map: "FK_tb_classe_trminal_Disciplina")
 
   @@index([CodigoClasseFim], map: "FK_tb_classe_trminal_ClasseFim")
   @@index([CodigoClasseInicio], map: "FK_tb_classe_trminal_ClasseInicio")
@@ -1134,7 +1130,7 @@ model tb_comportamento {
   CodigoDisciplina Int?      @db.UnsignedInt
   Trimestre        String    @db.VarChar(45)
   Comportamento    String    @db.VarChar(45)
-  tb_alunos        tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_comportamento_CodigoAluno")
+  tb_alunos        tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_comportamento_CodigoAluno")
 
   @@index([Codigo_Aluno], map: "FK_tb_comportamento_CodigoAluno")
   @@index([CodigoDisciplina], map: "FK_tb_comportamento_CodigoDisciplina")
@@ -1147,9 +1143,9 @@ model tb_condicao_aprovacao {
   CodigoDisciplina Int            @db.UnsignedInt
   NotaMinima       Int            @default(10) @db.UnsignedInt
   Global           String         @default("Sim") @db.VarChar(45)
-  tb_cursos        tb_cursos      @relation(fields: [CodigoCurso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_condicao_aprovacao_1")
-  tb_classes       tb_classes     @relation(fields: [CodigoClasse], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_condicao_aprovacao_2")
-  tb_disciplinas   tb_disciplinas @relation(fields: [CodigoDisciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_condicao_aprovacao_3")
+  tb_cursos        tb_cursos      @relation(fields: [CodigoCurso], references: [codigo], onUpdate: Restrict, map: "FK_tb_condicao_aprovacao_1")
+  tb_classes       tb_classes     @relation(fields: [CodigoClasse], references: [codigo], onUpdate: Restrict, map: "FK_tb_condicao_aprovacao_2")
+  tb_disciplinas   tb_disciplinas @relation(fields: [CodigoDisciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_condicao_aprovacao_3")
 
   @@index([CodigoCurso], map: "FK_tb_condicao_aprovacao_1")
   @@index([CodigoClasse], map: "FK_tb_condicao_aprovacao_2")
@@ -1160,7 +1156,7 @@ model tb_conta_aluno {
   Codigo       Int       @id @default(0) @db.UnsignedInt
   Codigo_Aluno Int       @default(0) @db.UnsignedInt
   Saldo        Decimal   @default(0.00) @db.Decimal(10, 2)
-  tb_alunos    tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_conta_aluno_1")
+  tb_alunos    tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_conta_aluno_1")
 
   @@index([Codigo_Aluno], map: "FK_tb_conta_aluno_1")
 }
@@ -1171,9 +1167,9 @@ model tb_declaracao_notas {
   Codigo_Matricula      Int                   @db.UnsignedInt
   Codigo_Efeito         Int                   @db.UnsignedInt
   Codigo_Utilizador     Int                   @db.UnsignedInt
-  tb_efeitos_declaracao tb_efeitos_declaracao @relation(fields: [Codigo_Efeito], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_notas_Efeito")
-  tb_matriculas         tb_matriculas         @relation(fields: [Codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_notas_Matricula")
-  tb_tipos_utilizador   tb_tipos_utilizador   @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_notas_Utilizador")
+  tb_efeitos_declaracao tb_efeitos_declaracao @relation(fields: [Codigo_Efeito], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_notas_Efeito")
+  tb_matriculas         tb_matriculas         @relation(fields: [Codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_notas_Matricula")
+  tb_tipos_utilizador   tb_tipos_utilizador   @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_notas_Utilizador")
 
   @@index([Codigo_Efeito], map: "FK_tb_declaracao_notas_Efeito")
   @@index([Codigo_Matricula], map: "FK_tb_declaracao_notas_Matricula")
@@ -1186,9 +1182,9 @@ model tb_declaracao_sem_nota {
   Codigo_Matricula      Int                   @db.UnsignedInt
   Codigo_Efeito         Int                   @db.UnsignedInt
   Codigo_Utilizadores   Int                   @db.UnsignedInt
-  tb_efeitos_declaracao tb_efeitos_declaracao @relation(fields: [Codigo_Efeito], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_sem_nota_Efeito")
-  tb_matriculas         tb_matriculas         @relation(fields: [Codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_sem_nota_Matricula")
-  tb_utilizadores       tb_utilizadores       @relation(fields: [Codigo_Utilizadores], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracao_sem_nota_Utilizador")
+  tb_efeitos_declaracao tb_efeitos_declaracao @relation(fields: [Codigo_Efeito], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_sem_nota_Efeito")
+  tb_matriculas         tb_matriculas         @relation(fields: [Codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_sem_nota_Matricula")
+  tb_utilizadores       tb_utilizadores       @relation(fields: [Codigo_Utilizadores], references: [codigo], onUpdate: Restrict, map: "FK_tb_declaracao_sem_nota_Utilizador")
 
   @@index([Codigo_Efeito], map: "FK_tb_declaracao_sem_nota_Efeito")
   @@index([Codigo_Matricula], map: "FK_tb_declaracao_sem_nota_Matricula")
@@ -1204,8 +1200,8 @@ model tb_deposito_valor {
   Codigo_Aluno    Int       @db.UnsignedInt
   Obs             String?   @db.VarChar(60)
   Valor           Float     @db.Float
-  tb_moedas       tb_moedas @relation(fields: [Codigo_moeda], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_deposito_valor_1")
-  tb_alunos       tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_deposito_valor_2")
+  tb_moedas       tb_moedas @relation(fields: [Codigo_moeda], references: [codigo], onUpdate: Restrict, map: "FK_tb_deposito_valor_1")
+  tb_alunos       tb_alunos @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_deposito_valor_2")
 
   @@index([Codigo_moeda], map: "FK_tb_deposito_valor_1")
   @@index([Codigo_Aluno], map: "FK_tb_deposito_valor_2")
@@ -1227,8 +1223,8 @@ model tb_entrada_valores {
   DataDeposito     DateTime?       @db.Date
   DataCadastro     DateTime        @db.DateTime(0)
   CodigoUtilizador Int             @db.UnsignedInt
-  tb_alunos        tb_alunos       @relation(fields: [CodigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_entrada_valores_1")
-  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_entrada_valores_2")
+  tb_alunos        tb_alunos       @relation(fields: [CodigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_entrada_valores_1")
+  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_entrada_valores_2")
 
   @@index([CodigoAluno], map: "FK_tb_entrada_valores_1")
   @@index([CodigoUtilizador], map: "FK_tb_entrada_valores_2")
@@ -1239,8 +1235,8 @@ model tb_entrega_declarcoes {
   Codigo_Pedido_Declaracao Int                   @db.UnsignedInt
   Data_Entrega             DateTime              @db.Date
   Codigo_Utilizador        Int                   @db.UnsignedInt
-  tb_pedidos_declaracao    tb_pedidos_declaracao @relation(fields: [Codigo_Pedido_Declaracao], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_entrega_declarcoes_Pedido_Declaracao")
-  tb_utilizadores          tb_utilizadores       @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_entrega_declarcoes_Utilizador")
+  tb_pedidos_declaracao    tb_pedidos_declaracao @relation(fields: [Codigo_Pedido_Declaracao], references: [Codigo], onUpdate: Restrict, map: "FK_tb_entrega_declarcoes_Pedido_Declaracao")
+  tb_utilizadores          tb_utilizadores       @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_entrega_declarcoes_Utilizador")
 
   @@index([Codigo_Pedido_Declaracao], map: "FK_tb_entrega_declarcoes_Pedido_Declaracao")
   @@index([Codigo_Utilizador], map: "FK_tb_entrega_declarcoes_Utilizador")
@@ -1257,9 +1253,9 @@ model tb_faltas {
   AnoLectivo          String          @db.VarChar(45)
   dataRegisto         DateTime?       @db.DateTime(0)
   Trimestre           String          @db.VarChar(45)
-  tb_disciplinas      tb_disciplinas  @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_faltas_Disciplina")
-  tb_matriculas       tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_faltas_Matricula")
-  tb_utilizadores     tb_utilizadores @relation(fields: [Codigo_Utilizadores], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_faltas_Utilizadores")
+  tb_disciplinas      tb_disciplinas  @relation(fields: [Codigo_Disciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_faltas_Disciplina")
+  tb_matriculas       tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_faltas_Matricula")
+  tb_utilizadores     tb_utilizadores @relation(fields: [Codigo_Utilizadores], references: [codigo], onUpdate: Restrict, map: "FK_tb_faltas_Utilizadores")
 
   @@index([Codigo_Matricula], map: "FK_tb_faltas_Aluno")
   @@index([Codigo_Disciplina], map: "FK_tb_faltas_Disciplina")
@@ -1273,8 +1269,8 @@ model tb_formula_media {
   tipo_media    String        @db.VarChar(45)
   tipo_pauta    Int           @db.UnsignedInt
   Codigo_Curso  Int           @db.UnsignedInt
-  tb_tipo_pauta tb_tipo_pauta @relation(fields: [tipo_pauta], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_formula_media_1")
-  tb_cursos     tb_cursos     @relation(fields: [Codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_formula_media_2")
+  tb_tipo_pauta tb_tipo_pauta @relation(fields: [tipo_pauta], references: [codigo], onUpdate: Restrict, map: "FK_tb_formula_media_1")
+  tb_cursos     tb_cursos     @relation(fields: [Codigo_Curso], references: [codigo], onUpdate: Restrict, map: "FK_tb_formula_media_2")
 
   @@index([tipo_pauta], map: "FK_tb_formula_media_1")
   @@index([Codigo_Curso], map: "FK_tb_formula_media_2")
@@ -1288,7 +1284,7 @@ model tb_foto {
   tipo        String?   @db.VarChar(15)
   tamanho     Int?      @db.UnsignedInt
   codigoAluno Int       @db.UnsignedInt
-  tb_alunos   tb_alunos @relation(fields: [codigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_foto_1")
+  tb_alunos   tb_alunos @relation(fields: [codigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_foto_1")
 
   @@index([codigoAluno], map: "FK_tb_foto_1")
 }
@@ -1299,7 +1295,7 @@ model tb_historico_aluno {
   Data                 DateTime         @db.Date
   Ato                  String           @db.VarChar(200)
   Codigo_Classificacao Int              @db.UnsignedInt
-  tb_classificacao     tb_classificacao @relation(fields: [Codigo_Classificacao], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_historico_aluno_1")
+  tb_classificacao     tb_classificacao @relation(fields: [Codigo_Classificacao], references: [Codigo], onUpdate: Restrict, map: "FK_tb_historico_aluno_1")
 
   @@index([Codigo_Classificacao], map: "FK_tb_historico_aluno_1")
 }
@@ -1316,7 +1312,7 @@ model tb_logs {
   OBS              String?         @db.VarChar(245)
   Data             DateTime        @db.DateTime(0)
   CodigoUtilizador Int             @default(1) @db.UnsignedInt
-  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_logs_1")
+  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_logs_1")
 
   @@index([CodigoUtilizador], map: "FK_tb_logs_1")
 }
@@ -1327,8 +1323,8 @@ model tb_merito {
   Data_Merito       DateTime        @db.Date
   Codigo_Matricula  Int             @db.UnsignedInt
   Codigo_Utilizador Int             @db.UnsignedInt
-  tb_matriculas     tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_merito_Matricula")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_merito_Utilizador")
+  tb_matriculas     tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_merito_Matricula")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_merito_Utilizador")
 
   @@index([Codigo_Matricula], map: "FK_tb_merito_Matricula")
   @@index([Codigo_Utilizador], map: "FK_tb_merito_Utilizador")
@@ -1356,7 +1352,7 @@ model tb_multas {
   Valor             Float?        @db.Float
   codigoAnoLectivo  Int           @default(1) @db.UnsignedInt
   mescobrar         Int           @default(0) @db.UnsignedInt
-  tb_tipo_multa     tb_tipo_multa @relation(fields: [Codigo_Tipo_Multa], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_multas_1")
+  tb_tipo_multa     tb_tipo_multa @relation(fields: [Codigo_Tipo_Multa], references: [codigo], onUpdate: Restrict, map: "FK_tb_multas_1")
 
   @@index([Codigo_Tipo_Multa], map: "FK_tb_multas_1")
 }
@@ -1366,7 +1362,7 @@ model tb_notas {
   CodigoAluno         Int               @db.UnsignedInt
   Nota                Float             @db.Float
   CodigoDisciplina    Int               @db.UnsignedInt
-  DataCadastro        DateTime          @default(dbgenerated("'2017-01-01 00:00:00'")) @db.DateTime(0)
+  DataCadastro        DateTime          @default(dbgenerated("('2017-01-01 00:00:00')")) @db.DateTime(0)
   CodigoTipoAvaliacao Int               @db.UnsignedInt
   CodigoUtilizador    Int               @db.UnsignedInt
   Obs                 String?           @db.VarChar(100)
@@ -1375,12 +1371,12 @@ model tb_notas {
   NotaExpressao       String?           @default("Nao") @db.VarChar(45)
   Trimestre           String            @db.VarChar(20)
   ComportamentoAluno  String?           @db.VarChar(200)
-  tb_alunos           tb_alunos         @relation(fields: [CodigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_1")
-  tb_disciplinas      tb_disciplinas    @relation(fields: [CodigoDisciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_2")
-  tb_ano_lectivo      tb_ano_lectivo    @relation(fields: [CodigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_3")
-  tb_tipo_avaliacao   tb_tipo_avaliacao @relation(fields: [CodigoTipoAvaliacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_4")
-  tb_utilizadores     tb_utilizadores   @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_5")
-  tb_turmas           tb_turmas         @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_6")
+  tb_alunos           tb_alunos         @relation(fields: [CodigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_1")
+  tb_disciplinas      tb_disciplinas    @relation(fields: [CodigoDisciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_2")
+  tb_ano_lectivo      tb_ano_lectivo    @relation(fields: [CodigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_3")
+  tb_tipo_avaliacao   tb_tipo_avaliacao @relation(fields: [CodigoTipoAvaliacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_4")
+  tb_utilizadores     tb_utilizadores   @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_5")
+  tb_turmas           tb_turmas         @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_6")
 
   @@index([CodigoAluno], map: "FK_tb_notas_1")
   @@index([CodigoDisciplina], map: "FK_tb_notas_2")
@@ -1446,10 +1442,10 @@ model tb_notas_1_4 {
   ED_MUS_NER         Float           @default(0) @db.Float
   EMP_NER            Float           @default(0) @db.Float
   ED_FIS_NER         Float           @default(0) @db.Float
-  tb_alunos          tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_1_4_Aluno")
-  tb_ano_lectivo     tb_ano_lectivo  @relation(fields: [Codigo_Ano_Lectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_1_4_Ano_Lectivo")
-  tb_turmas          tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_1_4_Turma")
-  tb_utilizadores    tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_1_4_User")
+  tb_alunos          tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_1_4_Aluno")
+  tb_ano_lectivo     tb_ano_lectivo  @relation(fields: [Codigo_Ano_Lectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_1_4_Ano_Lectivo")
+  tb_turmas          tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_1_4_Turma")
+  tb_utilizadores    tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_1_4_User")
 
   @@index([Codigo_Aluno], map: "FK_tb_notas_1_4_Aluno")
   @@index([Codigo_Ano_Lectivo], map: "FK_tb_notas_1_4_Ano_Lectivo")
@@ -1547,10 +1543,10 @@ model tb_notas_5_6 {
   CodigoTurma      Int             @db.UnsignedInt
   CodigoAnoLectivo Int             @db.UnsignedInt
   EMC_AC1          Float           @default(0) @db.Float
-  tb_alunos        tb_alunos       @relation(fields: [CodigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_5_6_1")
-  tb_turmas        tb_turmas       @relation(fields: [CodigoTurma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_5_6_2")
-  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_5_6_3")
-  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [CodigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_5_6_4")
+  tb_alunos        tb_alunos       @relation(fields: [CodigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_5_6_1")
+  tb_turmas        tb_turmas       @relation(fields: [CodigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_5_6_2")
+  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_5_6_3")
+  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [CodigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_5_6_4")
 
   @@index([CodigoAluno], map: "FK_tb_notas_5_6_1")
   @@index([CodigoTurma], map: "FK_tb_notas_5_6_2")
@@ -1670,10 +1666,10 @@ model tb_notas_7_9 {
   L_ESTR_FR1        Float?          @default(0) @db.Float
   L_ESTR_FR2        Float?          @default(0) @db.Float
   L_ESTR_FR3        Float?          @default(0) @db.Float
-  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_7_9_Aluno")
-  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_7_9_AnoLectivo")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_7_9_Turma")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_7_9_User")
+  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_7_9_Aluno")
+  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_7_9_AnoLectivo")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_7_9_Turma")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_7_9_User")
 
   @@index([Codigo_Aluno], map: "FK_tb_notas_7_9_Aluno")
   @@index([Codigo_AnoLectivo], map: "FK_tb_notas_7_9_AnoLectivo")
@@ -1691,12 +1687,14 @@ model tb_notas_alunos {
   CodigoTrimestre     Int               @db.UnsignedInt
   DataCadastro        Int               @db.UnsignedInt
   CodigoUtilizador    Int               @db.UnsignedInt
-  tb_alunos           tb_alunos         @relation(fields: [CodigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_1")
-  tb_disciplinas      tb_disciplinas    @relation(fields: [CodigoDisciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_2")
-  tb_ano_lectivo      tb_ano_lectivo    @relation(fields: [CodigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_3")
-  tb_tipo_avaliacao   tb_tipo_avaliacao @relation(fields: [CodigoTipoAvaliacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_4")
-  tb_utilizadores     tb_utilizadores   @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_5")
-  tb_trimestres       tb_trimestres     @relation(fields: [CodigoTrimestre], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_alunos_6")
+  CodigoTurma         Int?              @db.UnsignedInt
+  tb_alunos           tb_alunos         @relation(fields: [CodigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_1")
+  tb_disciplinas      tb_disciplinas    @relation(fields: [CodigoDisciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_2")
+  tb_ano_lectivo      tb_ano_lectivo    @relation(fields: [CodigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_3")
+  tb_tipo_avaliacao   tb_tipo_avaliacao @relation(fields: [CodigoTipoAvaliacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_4")
+  tb_utilizadores     tb_utilizadores   @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_5")
+  tb_trimestres       tb_trimestres     @relation(fields: [CodigoTrimestre], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_6")
+  tb_turmas           tb_turmas?        @relation(fields: [CodigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_alunos_turma")
 
   @@index([CodigoAluno], map: "FK_tb_notas_alunos_1")
   @@index([CodigoDisciplina], map: "FK_tb_notas_alunos_2")
@@ -1704,6 +1702,7 @@ model tb_notas_alunos {
   @@index([CodigoTipoAvaliacao], map: "FK_tb_notas_alunos_4")
   @@index([CodigoUtilizador], map: "FK_tb_notas_alunos_5")
   @@index([CodigoTrimestre], map: "FK_tb_notas_alunos_6")
+  @@index([CodigoTurma], map: "FK_tb_notas_alunos_turma")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -1838,10 +1837,10 @@ model tb_notas_contgest_10_12 {
   OGE_FR1           Float           @default(0) @db.Float
   OGE_FR2           Float           @default(0) @db.Float
   OGE_FR3           Float           @default(0) @db.Float
-  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_contgest_10_12_Aluno")
-  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_contgest_10_12_AnoLectivo")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_contgest_10_12_Turma")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_contgest_10_12_Utilizador")
+  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_contgest_10_12_Aluno")
+  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_contgest_10_12_AnoLectivo")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_contgest_10_12_Turma")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_contgest_10_12_Utilizador")
 
   @@index([Codigo_Aluno], map: "FK_tb_notas_contgest_10_12_Aluno")
   @@index([Codigo_AnoLectivo], map: "FK_tb_notas_contgest_10_12_AnoLectivo")
@@ -1938,10 +1937,10 @@ model tb_notas_enfermagem_10_12 {
   obs               String          @db.VarChar(45)
   desempenho        String          @db.VarChar(45)
   DataCadastro      DateTime        @db.Date
-  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_enfermagem_Aluno")
-  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_enfermagem_AnoLectivo")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_enfermagem_Turma")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_enfermagem_Utilizador")
+  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_enfermagem_Aluno")
+  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_enfermagem_AnoLectivo")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_enfermagem_Turma")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_enfermagem_Utilizador")
 
   @@index([Codigo_Aluno], map: "FK_tb_notas_enfermagem_Aluno")
   @@index([Codigo_AnoLectivo], map: "FK_tb_notas_enfermagem_AnoLectivo")
@@ -2046,10 +2045,10 @@ model tb_notas_fis_bio_10_12 {
   desempenho        String          @db.VarChar(45)
   DataCadastro      DateTime        @db.Date
   MAT_FR3           Float           @default(0) @db.Float
-  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_fis_bio_10_12_AnoLectivo")
-  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_fis_bio_10_12_Codigo_Aluno")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_fis_bio_10_12_Turma")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_fis_bio_10_12_Utilizador")
+  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_fis_bio_10_12_AnoLectivo")
+  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_fis_bio_10_12_Codigo_Aluno")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_fis_bio_10_12_Turma")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_fis_bio_10_12_Utilizador")
 
   @@index([Codigo_AnoLectivo], map: "FK_tb_notas_fis_bio_10_12_AnoLectivo")
   @@index([Codigo_Aluno], map: "FK_tb_notas_fis_bio_10_12_Codigo_Aluno")
@@ -2179,10 +2178,10 @@ model tb_notas_jur_econ_10_12 {
   ED_FIS_FR3        Float           @default(0) @db.Float
   MAT_FR2           Float           @default(0) @db.Float
   ED_FIS_FR2        Float           @default(0) @db.Float
-  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_jur_econ_10_12_Aluno")
-  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_jur_econ_10_12_AnoLectivo")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_jur_econ_10_12_Turma")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_notas_jur_econ_10_12_Utilizador")
+  tb_alunos         tb_alunos       @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_jur_econ_10_12_Aluno")
+  tb_ano_lectivo    tb_ano_lectivo  @relation(fields: [Codigo_AnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_jur_econ_10_12_AnoLectivo")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_jur_econ_10_12_Turma")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_notas_jur_econ_10_12_Utilizador")
 
   @@index([Codigo_Aluno], map: "FK_tb_notas_jur_econ_10_12_Aluno")
   @@index([Codigo_AnoLectivo], map: "FK_tb_notas_jur_econ_10_12_AnoLectivo")
@@ -2199,10 +2198,10 @@ model tb_ocorrencias_alunos {
   codigoAnoLectivo Int             @db.UnsignedInt
   trimestre        String          @db.VarChar(45)
   dataOcorrencia   DateTime        @db.Date
-  tb_alunos        tb_alunos       @relation(fields: [codigoAluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_ocorrencias_alunos_1")
-  tb_turmas        tb_turmas       @relation(fields: [codigoTurma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_ocorrencias_alunos_2")
-  tb_utilizadores  tb_utilizadores @relation(fields: [codigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_ocorrencias_alunos_3")
-  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [codigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_ocorrencias_alunos_4")
+  tb_alunos        tb_alunos       @relation(fields: [codigoAluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_ocorrencias_alunos_1")
+  tb_turmas        tb_turmas       @relation(fields: [codigoTurma], references: [codigo], onUpdate: Restrict, map: "FK_tb_ocorrencias_alunos_2")
+  tb_utilizadores  tb_utilizadores @relation(fields: [codigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_ocorrencias_alunos_3")
+  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [codigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_ocorrencias_alunos_4")
 
   @@index([codigoAluno], map: "FK_tb_ocorrencias_alunos_1")
   @@index([codigoTurma], map: "FK_tb_ocorrencias_alunos_2")
@@ -2216,9 +2215,9 @@ model tb_pauta {
   data                 DateTime             @db.Date
   Codigo_utilizador    Int                  @db.UnsignedInt
   Codigo_docente       Int                  @db.UnsignedInt
-  tb_dados_instituicao tb_dados_instituicao @relation(fields: [Codigo_empresa], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_Pauta_1")
-  tb_utilizadores      tb_utilizadores      @relation(fields: [Codigo_utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_Pauta_2")
-  tb_docente           tb_docente           @relation(fields: [Codigo_docente], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pauta_3")
+  tb_dados_instituicao tb_dados_instituicao @relation(fields: [Codigo_empresa], references: [codigo], onUpdate: Restrict, map: "FK_tb_Pauta_1")
+  tb_utilizadores      tb_utilizadores      @relation(fields: [Codigo_utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_Pauta_2")
+  tb_docente           tb_docente           @relation(fields: [Codigo_docente], references: [codigo], onUpdate: Restrict, map: "FK_tb_pauta_3")
 
   @@index([Codigo_empresa], map: "FK_tb_Pauta_1")
   @@index([Codigo_utilizador], map: "FK_tb_Pauta_2")
@@ -2233,10 +2232,10 @@ model tb_pedidos_declaracao {
   Codigo_Tipo_Declaracao Int                     @db.UnsignedInt
   Codigo_Utilizador      Int                     @db.UnsignedInt
   tb_entrega_declarcoes  tb_entrega_declarcoes[]
-  tb_confirmacoes        tb_confirmacoes         @relation(fields: [Codigo_Confirmacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pedidos_declaracao_Confirmacao")
-  tb_efeitos_declaracao  tb_efeitos_declaracao   @relation(fields: [Codigo_Efeito], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pedidos_declaracao_Efeito_Declaracao")
-  tb_tipo_declaracao     tb_tipo_declaracao      @relation(fields: [Codigo_Tipo_Declaracao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pedidos_declaracao_Tipo_Declaracao")
-  tb_utilizadores        tb_utilizadores         @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pedidos_declaracao_Utilizador")
+  tb_confirmacoes        tb_confirmacoes         @relation(fields: [Codigo_Confirmacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_pedidos_declaracao_Confirmacao")
+  tb_efeitos_declaracao  tb_efeitos_declaracao   @relation(fields: [Codigo_Efeito], references: [codigo], onUpdate: Restrict, map: "FK_tb_pedidos_declaracao_Efeito_Declaracao")
+  tb_tipo_declaracao     tb_tipo_declaracao      @relation(fields: [Codigo_Tipo_Declaracao], references: [codigo], onUpdate: Restrict, map: "FK_tb_pedidos_declaracao_Tipo_Declaracao")
+  tb_utilizadores        tb_utilizadores         @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_pedidos_declaracao_Utilizador")
 
   @@index([Codigo_Confirmacao], map: "FK_tb_pedidos_declaracao_Confirmacao")
   @@index([Codigo_Efeito], map: "FK_tb_pedidos_declaracao_Efeito_Declaracao")
@@ -2253,12 +2252,12 @@ model tb_pre_confirmacao {
   CodigoUtilizador Int             @db.UnsignedInt
   CodigoStatus     Int             @db.UnsignedInt
   DataCadastro     DateTime        @db.DateTime(0)
-  tb_matriculas    tb_matriculas   @relation(fields: [CodigoMatricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_1")
-  tb_classes       tb_classes      @relation(fields: [CodigoClasse], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_2")
-  tb_periodos      tb_periodos     @relation(fields: [CodigoPeriodo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_3")
-  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [CodigoAnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_4")
-  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_5")
-  tb_status        tb_status       @relation(fields: [CodigoStatus], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_pre_confirmacao_6")
+  tb_matriculas    tb_matriculas   @relation(fields: [CodigoMatricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_1")
+  tb_classes       tb_classes      @relation(fields: [CodigoClasse], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_2")
+  tb_periodos      tb_periodos     @relation(fields: [CodigoPeriodo], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_3")
+  tb_ano_lectivo   tb_ano_lectivo  @relation(fields: [CodigoAnoLectivo], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_4")
+  tb_utilizadores  tb_utilizadores @relation(fields: [CodigoUtilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_5")
+  tb_status        tb_status       @relation(fields: [CodigoStatus], references: [codigo], onUpdate: Restrict, map: "FK_tb_pre_confirmacao_6")
 
   @@index([CodigoMatricula], map: "FK_tb_pre_confirmacao_1")
   @@index([CodigoClasse], map: "FK_tb_pre_confirmacao_2")
@@ -2275,8 +2274,8 @@ model tb_processos_disciplinar {
   Codigo_Matricula  Int             @db.UnsignedInt
   Data_Proc_Disc    DateTime        @db.Date
   Codigo_Utilizador Int             @db.UnsignedInt
-  tb_matriculas     tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_processos_disciplinar_Matricula")
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_processos_disciplinar_Utilizador")
+  tb_matriculas     tb_matriculas   @relation(fields: [Codigo_Matricula], references: [codigo], onUpdate: Restrict, map: "FK_tb_processos_disciplinar_Matricula")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_processos_disciplinar_Utilizador")
 
   @@index([Codigo_Matricula], map: "FK_tb_processos_disciplinar_Matricula")
   @@index([Codigo_Utilizador], map: "FK_tb_processos_disciplinar_Utilizador")
@@ -2299,9 +2298,9 @@ model tb_propinas {
   Total_Pago_AKZ      Float?            @default(0) @db.Float
   HoraPagamento       DateTime          @db.Time(0)
   DataBanco           DateTime?         @db.Date
-  tb_alunos           tb_alunos         @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propinas_1")
-  tb_tipos_propinas   tb_tipos_propinas @relation(fields: [Codigo_Tipo_Propina], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propinas_2")
-  tb_utilizadores     tb_utilizadores   @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_propinas_3")
+  tb_alunos           tb_alunos         @relation(fields: [Codigo_Aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_propinas_1")
+  tb_tipos_propinas   tb_tipos_propinas @relation(fields: [Codigo_Tipo_Propina], references: [Codigo], onUpdate: Restrict, map: "FK_tb_propinas_2")
+  tb_utilizadores     tb_utilizadores   @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_propinas_3")
 
   @@index([Codigo_Aluno], map: "FK_tb_propinas_1")
   @@index([Codigo_Tipo_Propina], map: "FK_tb_propinas_2")
@@ -2323,9 +2322,9 @@ model tb_recibo {
   tipo_documento        String             @default("RECIBO") @db.VarChar(45)
   next                  String             @db.VarChar(45)
   fatura                String             @db.VarChar(45)
-  tb_forma_pagamento    tb_forma_pagamento @relation(fields: [codigo_formaPagamento], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_formaPagamento")
-  tb_utilizadores       tb_utilizadores    @relation(fields: [codigo_utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_recibo_Utilizador")
-  tb_alunos             tb_alunos          @relation(fields: [codigo_aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_recibo_aluno")
+  tb_forma_pagamento    tb_forma_pagamento @relation(fields: [codigo_formaPagamento], references: [codigo], onUpdate: Restrict, map: "FK_tb_formaPagamento")
+  tb_utilizadores       tb_utilizadores    @relation(fields: [codigo_utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_recibo_Utilizador")
+  tb_alunos             tb_alunos          @relation(fields: [codigo_aluno], references: [codigo], onUpdate: Restrict, map: "FK_tb_recibo_aluno")
 
   @@index([codigo_formaPagamento], map: "FK_tb_formaPagamento")
   @@index([codigo_utilizador], map: "FK_tb_recibo_Utilizador")
@@ -2339,10 +2338,10 @@ model tb_resultados_finais {
   Media_Final                Float                  @db.Float
   Codigo_Classificacao_Final Int                    @db.UnsignedInt
   Codigo_Utilizador          Int                    @db.UnsignedInt
-  tb_classificacao_final     tb_classificacao_final @relation(fields: [Codigo_Classificacao_Final], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_resultados_finais_Classificacao_Final")
-  tb_confirmacoes            tb_confirmacoes        @relation(fields: [Codigo_Confirmacao], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_resultados_finais_Confirmacao")
-  tb_disciplinas             tb_disciplinas         @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_resultados_finais_Disciplina")
-  tb_utilizadores            tb_utilizadores        @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_resultados_finais_Utilizador")
+  tb_classificacao_final     tb_classificacao_final @relation(fields: [Codigo_Classificacao_Final], references: [Codigo], onUpdate: Restrict, map: "FK_tb_resultados_finais_Classificacao_Final")
+  tb_confirmacoes            tb_confirmacoes        @relation(fields: [Codigo_Confirmacao], references: [codigo], onUpdate: Restrict, map: "FK_tb_resultados_finais_Confirmacao")
+  tb_disciplinas             tb_disciplinas         @relation(fields: [Codigo_Disciplina], references: [codigo], onUpdate: Restrict, map: "FK_tb_resultados_finais_Disciplina")
+  tb_utilizadores            tb_utilizadores        @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_resultados_finais_Utilizador")
 
   @@index([Codigo_Classificacao_Final], map: "FK_tb_resultados_finais_Classificacao_Final")
   @@index([Codigo_Confirmacao], map: "FK_tb_resultados_finais_Confirmacao")
@@ -2370,8 +2369,8 @@ model tb_tipos_propinas {
   Moeda             String          @db.VarChar(45)
   Codigo_Turma      Int             @db.UnsignedInt
   tb_propinas       tb_propinas[]
-  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipos_propinas_1")
-  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_tipos_propinas_2")
+  tb_utilizadores   tb_utilizadores @relation(fields: [Codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_tipos_propinas_1")
+  tb_turmas         tb_turmas       @relation(fields: [Codigo_Turma], references: [codigo], onUpdate: Restrict, map: "FK_tb_tipos_propinas_2")
 
   @@index([Codigo_Utilizador], map: "FK_tb_tipos_propinas_1")
   @@index([Codigo_Turma], map: "FK_tb_tipos_propinas_2")
@@ -2382,7 +2381,7 @@ model tb_utilizador_docente {
   Codigo_Docente            Int      @default(0)
   Codigo_Utilizador_Docente Int      @default(0)
   Codigo_Utilizador         Int      @default(0)
-  Data                      DateTime @default(dbgenerated("'0000-00-00'")) @db.Date
+  Data                      DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
 }
 
 model tb_valor_tipo_nota {
@@ -2390,4 +2389,102 @@ model tb_valor_tipo_nota {
   Designacao       String @db.VarChar(45)
   ValorNumerico    Float  @db.Float
   Codigo_Tipo_Nota Int    @db.UnsignedInt
+}
+
+// ============================================
+// NOVOS MODELOS: GESTÃO DE AVALIAÇÃO
+// ============================================
+
+model tb_professores {
+  Codigo            Int       @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Nome              String    @map("Nome") @db.VarChar(200)
+  Email             String    @map("Email") @db.VarChar(100)
+  Telefone          String?   @map("Telefone") @db.VarChar(45)
+  Formacao          String    @map("Formacao") @db.VarChar(200)
+  NivelAcademico    String    @map("NivelAcademico") @db.VarChar(100)
+  Especialidade     String?   @map("Especialidade") @db.VarChar(100)
+  NumeroFuncionario String?   @map("NumeroFuncionario") @db.VarChar(50)
+  DataAdmissao      DateTime? @map("DataAdmissao") @db.Date
+  Status            String    @default("Activo") @map("Status") @db.VarChar(20)
+  Codigo_Utilizador Int?      @db.UnsignedInt
+  DataCadastro      DateTime  @default(now()) @map("DataCadastro")
+  DataActualizacao  DateTime  @updatedAt @map("DataActualizacao")
+  
+  tb_professor_disciplina tb_professor_disciplina[]
+  tb_professor_turma      tb_professor_turma[]
+
+  @@index([Status], map: "FK_tb_professores_status")
+}
+
+model tb_professor_disciplina {
+  Codigo            Int      @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Professor  Int      @map("Codigo_Professor") @db.UnsignedInt
+  Codigo_Disciplina Int      @map("Codigo_Disciplina") @db.UnsignedInt
+  Codigo_Curso      Int      @map("Codigo_Curso") @db.UnsignedInt
+  AnoLectivo        String   @map("AnoLectivo") @db.VarChar(45)
+  Status            String   @default("Activo") @map("Status") @db.VarChar(20)
+  DataCadastro      DateTime @default(now()) @map("DataCadastro")
+  
+  tb_professores    tb_professores @relation(fields: [Codigo_Professor], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_disciplina_professor")
+  tb_disciplinas    tb_disciplinas @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_disciplina_disciplina")
+  tb_cursos         tb_cursos @relation(fields: [Codigo_Curso], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_disciplina_curso")
+
+  @@unique([Codigo_Professor, Codigo_Disciplina, Codigo_Curso, AnoLectivo], name: "UK_professor_disciplina_curso_ano")
+  @@index([Codigo_Professor], map: "FK_tb_professor_disciplina_professor")
+  @@index([Codigo_Disciplina], map: "FK_tb_professor_disciplina_disciplina")
+  @@index([Codigo_Curso], map: "FK_tb_professor_disciplina_curso")
+}
+
+model tb_professor_turma {
+  Codigo            Int      @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Professor  Int      @map("Codigo_Professor") @db.UnsignedInt
+  Codigo_Turma      Int      @map("Codigo_Turma") @db.UnsignedInt
+  Codigo_Disciplina Int      @map("Codigo_Disciplina") @db.UnsignedInt
+  AnoLectivo        String   @map("AnoLectivo") @db.VarChar(45)
+  Status            String   @default("Activo") @map("Status") @db.VarChar(20)
+  DataCadastro      DateTime @default(now()) @map("DataCadastro")
+  
+  tb_professores    tb_professores @relation(fields: [Codigo_Professor], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_turma_professor")
+  tb_turmas         tb_turmas @relation(fields: [Codigo_Turma], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_turma_turma")
+  tb_disciplinas    tb_disciplinas @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_professor_turma_disciplina")
+
+  @@unique([Codigo_Professor, Codigo_Turma, Codigo_Disciplina, AnoLectivo], name: "UK_professor_turma_disciplina_ano")
+  @@index([Codigo_Professor], map: "FK_tb_professor_turma_professor")
+  @@index([Codigo_Turma], map: "FK_tb_professor_turma_turma")
+  @@index([Codigo_Disciplina], map: "FK_tb_professor_turma_disciplina")
+}
+
+model tb_periodos_avaliacao {
+  Codigo            Int      @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Designacao        String   @map("Designacao") @db.VarChar(100)
+  TipoAvaliacao     String   @map("TipoAvaliacao") @db.VarChar(10)
+  Trimestre         Int      @map("Trimestre") @db.UnsignedInt
+  DataInicio        DateTime @map("DataInicio") @db.Date
+  DataFim           DateTime @map("DataFim") @db.Date
+  AnoLectivo        String   @map("AnoLectivo") @db.VarChar(45)
+  Status            String   @default("Activo") @map("Status") @db.VarChar(20)
+  Observacoes       String?  @map("Observacoes") @db.Text
+  DataCadastro      DateTime @default(now()) @map("DataCadastro")
+  
+  tb_historico_notas tb_historico_notas[]
+
+  @@index([Trimestre], map: "FK_tb_periodos_avaliacao_trimestre")
+  @@index([AnoLectivo], map: "FK_tb_periodos_avaliacao_ano")
+  @@index([TipoAvaliacao], map: "FK_tb_periodos_avaliacao_tipo")
+}
+
+model tb_historico_notas {
+  Codigo          Int      @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Nota     Int      @map("Codigo_Nota") @db.UnsignedInt
+  CampoAlterado   String   @map("CampoAlterado") @db.VarChar(50)
+  ValorAnterior   Float?   @map("ValorAnterior")
+  ValorNovo       Float?   @map("ValorNovo")
+  MotivoAlteracao String?  @map("MotivoAlteracao") @db.Text
+  AlteradoPor     Int      @map("AlteradoPor") @db.UnsignedInt
+  DataAlteracao   DateTime @default(now()) @map("DataAlteracao")
+  
+  tb_periodos_avaliacao tb_periodos_avaliacao @relation(fields: [Codigo_Nota], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_historico_notas_periodo")
+
+  @@index([Codigo_Nota], map: "FK_tb_historico_notas_nota")
+  @@index([AlteradoPor], map: "FK_tb_historico_notas_usuario")
 }

@@ -1,0 +1,948 @@
+// services/professor-evaluation.services.js
+import prisma from '../config/database.js';
+import { AppError } from '../utils/validation.utils.js';
+
+export class ProfessorEvaluationService {
+  // ===============================
+  // PROFESSORES - CRUD COMPLETO
+  // ===============================
+
+  static async createProfessor(data) {
+    try {
+      const {
+        nome,
+        email,
+        telefone,
+        formacao,
+        nivelAcademico,
+        especialidade,
+        numeroFuncionario,
+        dataAdmissao,
+        status = 'Activo',
+        codigoUtilizador
+      } = data;
+
+      // Validações básicas
+      if (!nome || !email || !formacao || !nivelAcademico) {
+        throw new AppError('Campos obrigatórios: nome, email, formação e nível acadêmico', 400);
+      }
+
+      // Verificar se professor com mesmo email já existe
+      const existingProfessor = await prisma.tb_professores.findFirst({
+        where: { email: email.toLowerCase().trim() }
+      });
+
+      if (existingProfessor) {
+        throw new AppError('Já existe um professor com este email', 409);
+      }
+
+      // Se codigoUtilizador fornecido, validar
+      if (codigoUtilizador) {
+        const utilizadorExists = await prisma.tb_utilizadores.findUnique({
+          where: { codigo: parseInt(codigoUtilizador) }
+        });
+        if (!utilizadorExists) {
+          throw new AppError('Utilizador não encontrado', 404);
+        }
+      }
+
+      const professor = await prisma.tb_professores.create({
+        data: {
+          nome: nome.trim(),
+          email: email.toLowerCase().trim(),
+          telefone: telefone?.trim() || null,
+          formacao: formacao.trim(),
+          nivelAcademico: nivelAcademico.trim(),
+          especialidade: especialidade?.trim() || null,
+          numeroFuncionario: numeroFuncionario?.trim() || null,
+          dataAdmissao: dataAdmissao ? new Date(dataAdmissao) : null,
+          status,
+          Codigo_Utilizador: codigoUtilizador ? parseInt(codigoUtilizador) : null
+        }
+      });
+
+      return {
+        ...professor,
+        mensagem: 'Professor criado com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      console.error('Erro detalhado ao criar professor:', error);
+      throw new AppError(`Erro ao criar professor: ${error.message}`, 500);
+    }
+  }
+
+  static async updateProfessor(id, data) {
+    try {
+      const professorId = parseInt(id);
+
+      const existingProfessor = await prisma.tb_professores.findUnique({
+        where: { Codigo: professorId }
+      });
+
+      if (!existingProfessor) {
+        throw new AppError('Professor não encontrado', 404);
+      }
+
+      // Se atualizando email, verificar duplicatas
+      if (data.email && data.email.toLowerCase().trim() !== existingProfessor.email) {
+        const duplicateEmail = await prisma.tb_professores.findFirst({
+          where: {
+            email: data.email.toLowerCase().trim(),
+            Codigo: { not: professorId }
+          }
+        });
+        if (duplicateEmail) {
+          throw new AppError('Já existe outro professor com este email', 409);
+        }
+      }
+
+      // Validar utilizador se fornecido
+      if (data.codigoUtilizador) {
+        const utilizadorExists = await prisma.tb_utilizadores.findUnique({
+          where: { codigo: parseInt(data.codigoUtilizador) }
+        });
+        if (!utilizadorExists) {
+          throw new AppError('Utilizador não encontrado', 404);
+        }
+      }
+
+      const updateData = {};
+      Object.keys(data).forEach(key => {
+        if (data[key] !== undefined && data[key] !== null) {
+          switch (key) {
+            case 'nome':
+            case 'email':
+            case 'telefone':
+            case 'formacao':
+            case 'nivelAcademico':
+            case 'especialidade':
+            case 'numeroFuncionario':
+            case 'status':
+              updateData[key] = typeof data[key] === 'string' ? data[key].trim() : data[key];
+              break;
+            case 'dataAdmissao':
+              updateData[key] = new Date(data[key]);
+              break;
+            case 'codigoUtilizador':
+              updateData['Codigo_Utilizador'] = parseInt(data[key]);
+              break;
+          }
+        }
+      });
+
+      const professor = await prisma.tb_professores.update({
+        where: { Codigo: professorId },
+        data: updateData
+      });
+
+      return {
+        ...professor,
+        mensagem: 'Professor atualizado com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atualizar professor: ${error.message}`, 500);
+    }
+  }
+
+  static async getProfessores(page = 1, limit = 10, search = '') {
+    try {
+      const skip = (page - 1) * limit;
+
+      const where = search ? {
+        OR: [
+          { nome: { contains: search } },
+          { email: { contains: search } },
+          { telefone: { contains: search } },
+          { especialidade: { contains: search } }
+        ]
+      } : {};
+
+      const [professores, total] = await Promise.all([
+        prisma.tb_professores.findMany({
+          where,
+          skip,
+          take: parseInt(limit),
+          include: {
+            _count: {
+              select: {
+                tb_professor_disciplina: true,
+                tb_professor_turma: true
+              }
+            }
+          },
+          orderBy: { nome: 'asc' }
+        }),
+        prisma.tb_professores.count({ where })
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: professores,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1
+        }
+      };
+    } catch (error) {
+      console.error('Erro ao buscar professores:', error);
+      throw new AppError(`Erro ao buscar professores: ${error.message}`, 500);
+    }
+  }
+
+  static async getProfessorById(id) {
+    try {
+      const professor = await prisma.tb_professores.findUnique({
+        where: { Codigo: parseInt(id) },
+        include: {
+          tb_professor_disciplina: {
+            select: {
+              Codigo: true,
+              Codigo_Disciplina: true,
+              Codigo_Curso: true,
+              AnoLectivo: true,
+              Status: true
+            },
+            take: 10
+          },
+          tb_professor_turma: {
+            select: {
+              Codigo: true,
+              Codigo_Turma: true,
+              Codigo_Disciplina: true,
+              AnoLectivo: true,
+              Status: true
+            },
+            take: 10
+          }
+        }
+      });
+
+      if (!professor) {
+        throw new AppError('Professor não encontrado', 404);
+      }
+
+      return professor;
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao buscar professor: ${error.message}`, 500);
+    }
+  }
+
+  static async deleteProfessor(id) {
+    try {
+      const professorId = parseInt(id);
+
+      const professor = await prisma.tb_professores.findUnique({
+        where: { Codigo: professorId },
+        include: {
+          _count: {
+            select: {
+              tb_professor_disciplina: true,
+              tb_professor_turma: true
+            }
+          }
+        }
+      });
+
+      if (!professor) {
+        throw new AppError('Professor não encontrado', 404);
+      }
+
+      // Verificar se possui atribuições ativas
+      if (
+        professor._count.tb_professor_disciplina > 0 ||
+        professor._count.tb_professor_turma > 0
+      ) {
+        throw new AppError(
+          'Não é possível excluir professor com atribuições de disciplina ou turma ativas',
+          400
+        );
+      }
+
+      // Arquivar em vez de deletar (soft delete)
+      await prisma.tb_professores.update({
+        where: { Codigo: professorId },
+        data: { status: 'Inactivo' }
+      });
+
+      return {
+        mensagem: 'Professor arquivado com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao deletar professor: ${error.message}`, 500);
+    }
+  }
+
+  static async getProfessoresAtivos() {
+    try {
+      return await prisma.tb_professores.findMany({
+        where: { status: 'Activo' },
+        select: {
+          Codigo: true,
+          nome: true,
+          email: true,
+          especialidade: true
+        },
+        orderBy: { nome: 'asc' }
+      });
+    } catch (error) {
+      throw new AppError(`Erro ao buscar professores ativos: ${error.message}`, 500);
+    }
+  }
+
+  // ===============================
+  // PROFESSOR DISCIPLINA - CRUD
+  // ===============================
+
+  static async assignDisciplinaToProfessor(data) {
+    try {
+      const { codigoProfessor, codigoDisciplina, codigoCurso, anoLectivo } = data;
+
+      if (!codigoProfessor || !codigoDisciplina || !codigoCurso || !anoLectivo) {
+        throw new AppError(
+          'Campos obrigatórios: codigoProfessor, codigoDisciplina, codigoCurso, anoLectivo',
+          400
+        );
+      }
+
+      // Validar professor
+      const professor = await prisma.tb_professores.findUnique({
+        where: { Codigo: parseInt(codigoProfessor) }
+      });
+      if (!professor) throw new AppError('Professor não encontrado', 404);
+
+      // Validar disciplina
+      const disciplina = await prisma.tb_disciplinas.findUnique({
+        where: { codigo: parseInt(codigoDisciplina) }
+      });
+      if (!disciplina) throw new AppError('Disciplina não encontrada', 404);
+
+      // Validar curso
+      const curso = await prisma.tb_cursos.findUnique({
+        where: { codigo: parseInt(codigoCurso) }
+      });
+      if (!curso) throw new AppError('Curso não encontrado', 404);
+
+      // Verificar duplicata
+      const existingAssignment = await prisma.tb_professor_disciplina.findFirst({
+        where: {
+          Codigo_Professor: parseInt(codigoProfessor),
+          Codigo_Disciplina: parseInt(codigoDisciplina),
+          Codigo_Curso: parseInt(codigoCurso),
+          AnoLectivo: anoLectivo.trim()
+        }
+      });
+
+      if (existingAssignment) {
+        throw new AppError(
+          'Professor já está atribuído a esta disciplina neste curso e ano letivo',
+          409
+        );
+      }
+
+      const assignment = await prisma.tb_professor_disciplina.create({
+        data: {
+          Codigo_Professor: parseInt(codigoProfessor),
+          Codigo_Disciplina: parseInt(codigoDisciplina),
+          Codigo_Curso: parseInt(codigoCurso),
+          AnoLectivo: anoLectivo.trim(),
+          Status: 'Activo'
+        },
+        include: {
+          tb_professores: { select: { Codigo: true, nome: true } },
+          tb_disciplinas: { select: { codigo: true, designacao: true } },
+          tb_cursos: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      return {
+        ...assignment,
+        mensagem: 'Disciplina atribuída ao professor com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atribuir disciplina: ${error.message}`, 500);
+    }
+  }
+
+  static async getProfessorDisciplinas(page = 1, limit = 10, professorId = null) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const where = professorId
+        ? { Codigo_Professor: parseInt(professorId) }
+        : {};
+
+      const [disciplinas, total] = await Promise.all([
+        prisma.tb_professor_disciplina.findMany({
+          where,
+          skip,
+          take: parseInt(limit),
+          include: {
+            tb_professores: { select: { Codigo: true, nome: true } },
+            tb_disciplinas: { select: { codigo: true, designacao: true } },
+            tb_cursos: { select: { codigo: true, designacao: true } }
+          },
+          orderBy: { AnoLectivo: 'desc' }
+        }),
+        prisma.tb_professor_disciplina.count({ where })
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: disciplinas,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1
+        }
+      };
+    } catch (error) {
+      throw new AppError(`Erro ao buscar disciplinas do professor: ${error.message}`, 500);
+    }
+  }
+
+  static async updateProfessorDisciplina(id, data) {
+    try {
+      const assignment = await prisma.tb_professor_disciplina.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!assignment) {
+        throw new AppError('Atribuição de disciplina não encontrada', 404);
+      }
+
+      const updateData = {};
+      if (data.status) updateData.Status = data.status;
+
+      const updated = await prisma.tb_professor_disciplina.update({
+        where: { Codigo: parseInt(id) },
+        data: updateData,
+        include: {
+          tb_professores: { select: { Codigo: true, nome: true } },
+          tb_disciplinas: { select: { codigo: true, designacao: true } },
+          tb_cursos: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      return {
+        ...updated,
+        mensagem: 'Atribuição de disciplina atualizada com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atualizar atribuição: ${error.message}`, 500);
+    }
+  }
+
+  static async deleteProfessorDisciplina(id) {
+    try {
+      const assignment = await prisma.tb_professor_disciplina.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!assignment) {
+        throw new AppError('Atribuição de disciplina não encontrada', 404);
+      }
+
+      await prisma.tb_professor_disciplina.delete({
+        where: { Codigo: parseInt(id) }
+      });
+
+      return {
+        mensagem: 'Atribuição de disciplina removida com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao remover atribuição: ${error.message}`, 500);
+    }
+  }
+
+  // ===============================
+  // PROFESSOR TURMA - CRUD
+  // ===============================
+
+  static async assignTurmaToProfessor(data) {
+    try {
+      const { codigoProfessor, codigoTurma, codigoDisciplina, anoLectivo } = data;
+
+      if (!codigoProfessor || !codigoTurma || !codigoDisciplina || !anoLectivo) {
+        throw new AppError(
+          'Campos obrigatórios: codigoProfessor, codigoTurma, codigoDisciplina, anoLectivo',
+          400
+        );
+      }
+
+      // Validações
+      const [professor, turma, disciplina] = await Promise.all([
+        prisma.tb_professores.findUnique({
+          where: { Codigo: parseInt(codigoProfessor) }
+        }),
+        prisma.tb_turmas.findUnique({
+          where: { codigo: parseInt(codigoTurma) }
+        }),
+        prisma.tb_disciplinas.findUnique({
+          where: { codigo: parseInt(codigoDisciplina) }
+        })
+      ]);
+
+      if (!professor) throw new AppError('Professor não encontrado', 404);
+      if (!turma) throw new AppError('Turma não encontrada', 404);
+      if (!disciplina) throw new AppError('Disciplina não encontrada', 404);
+
+      // Verificar duplicata
+      const existingAssignment = await prisma.tb_professor_turma.findFirst({
+        where: {
+          Codigo_Professor: parseInt(codigoProfessor),
+          Codigo_Turma: parseInt(codigoTurma),
+          Codigo_Disciplina: parseInt(codigoDisciplina),
+          AnoLectivo: anoLectivo.trim()
+        }
+      });
+
+      if (existingAssignment) {
+        throw new AppError(
+          'Professor já está atribuído a esta turma e disciplina neste ano letivo',
+          409
+        );
+      }
+
+      const assignment = await prisma.tb_professor_turma.create({
+        data: {
+          Codigo_Professor: parseInt(codigoProfessor),
+          Codigo_Turma: parseInt(codigoTurma),
+          Codigo_Disciplina: parseInt(codigoDisciplina),
+          AnoLectivo: anoLectivo.trim(),
+          Status: 'Activo'
+        },
+        include: {
+          tb_professores: { select: { Codigo: true, nome: true } },
+          tb_turmas: { select: { codigo: true, designacao: true } },
+          tb_disciplinas: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      return {
+        ...assignment,
+        mensagem: 'Turma atribuída ao professor com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atribuir turma: ${error.message}`, 500);
+    }
+  }
+
+  static async getProfessorTurmas(page = 1, limit = 10, professorId = null) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const where = professorId
+        ? { Codigo_Professor: parseInt(professorId) }
+        : {};
+
+      const [turmas, total] = await Promise.all([
+        prisma.tb_professor_turma.findMany({
+          where,
+          skip,
+          take: parseInt(limit),
+          include: {
+            tb_professores: { select: { Codigo: true, nome: true } },
+            tb_turmas: { select: { codigo: true, designacao: true } },
+            tb_disciplinas: { select: { codigo: true, designacao: true } }
+          },
+          orderBy: { AnoLectivo: 'desc' }
+        }),
+        prisma.tb_professor_turma.count({ where })
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: turmas,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1
+        }
+      };
+    } catch (error) {
+      throw new AppError(`Erro ao buscar turmas do professor: ${error.message}`, 500);
+    }
+  }
+
+  static async updateProfessorTurma(id, data) {
+    try {
+      const assignment = await prisma.tb_professor_turma.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!assignment) {
+        throw new AppError('Atribuição de turma não encontrada', 404);
+      }
+
+      const updateData = {};
+      if (data.status) updateData.Status = data.status;
+
+      const updated = await prisma.tb_professor_turma.update({
+        where: { Codigo: parseInt(id) },
+        data: updateData,
+        include: {
+          tb_professores: { select: { Codigo: true, nome: true } },
+          tb_turmas: { select: { codigo: true, designacao: true } },
+          tb_disciplinas: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      return {
+        ...updated,
+        mensagem: 'Atribuição de turma atualizada com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atualizar atribuição: ${error.message}`, 500);
+    }
+  }
+
+  static async deleteProfessorTurma(id) {
+    try {
+      const assignment = await prisma.tb_professor_turma.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!assignment) {
+        throw new AppError('Atribuição de turma não encontrada', 404);
+      }
+
+      await prisma.tb_professor_turma.delete({
+        where: { Codigo: parseInt(id) }
+      });
+
+      return {
+        mensagem: 'Atribuição de turma removida com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao remover atribuição: ${error.message}`, 500);
+    }
+  }
+
+  // ===============================
+  // PERÍODOS DE AVALIAÇÃO - CRUD
+  // ===============================
+
+  static async createPeriodoAvaliacao(data) {
+    try {
+      const {
+        designacao,
+        tipoAvaliacao,
+        trimestre,
+        dataInicio,
+        dataFim,
+        anoLectivo,
+        status = 'Activo',
+        observacoes
+      } = data;
+
+      if (
+        !designacao ||
+        !tipoAvaliacao ||
+        !trimestre ||
+        !dataInicio ||
+        !dataFim ||
+        !anoLectivo
+      ) {
+        throw new AppError(
+          'Campos obrigatórios: designacao, tipoAvaliacao, trimestre, dataInicio, dataFim, anoLectivo',
+          400
+        );
+      }
+
+      // Validar datas
+      const inicio = new Date(dataInicio);
+      const fim = new Date(dataFim);
+
+      if (inicio >= fim) {
+        throw new AppError('Data de início deve ser anterior à data de fim', 400);
+      }
+
+      // Verificar duplicata
+      const existingPeriodo = await prisma.tb_periodos_avaliacao.findFirst({
+        where: {
+          designacao: designacao.trim(),
+          AnoLectivo: anoLectivo.trim()
+        }
+      });
+
+      if (existingPeriodo) {
+        throw new AppError(
+          'Já existe um período de avaliação com esta designação neste ano letivo',
+          409
+        );
+      }
+
+      const periodo = await prisma.tb_periodos_avaliacao.create({
+        data: {
+          Designacao: designacao.trim(),
+          TipoAvaliacao: tipoAvaliacao.trim(),
+          Trimestre: parseInt(trimestre),
+          DataInicio: inicio,
+          DataFim: fim,
+          AnoLectivo: anoLectivo.trim(),
+          Status: status,
+          Observacoes: observacoes?.trim() || null
+        }
+      });
+
+      return {
+        ...periodo,
+        mensagem: 'Período de avaliação criado com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao criar período de avaliação: ${error.message}`, 500);
+    }
+  }
+
+  static async getPeriodosAvaliacao(page = 1, limit = 10, anoLectivo = null) {
+    try {
+      const skip = (page - 1) * limit;
+
+      const where = anoLectivo ? { AnoLectivo: anoLectivo.trim() } : {};
+
+      const [periodos, total] = await Promise.all([
+        prisma.tb_periodos_avaliacao.findMany({
+          where,
+          skip,
+          take: parseInt(limit),
+          orderBy: [{ AnoLectivo: 'desc' }, { Trimestre: 'asc' }]
+        }),
+        prisma.tb_periodos_avaliacao.count({ where })
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: periodos,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1
+        }
+      };
+    } catch (error) {
+      throw new AppError(`Erro ao buscar períodos de avaliação: ${error.message}`, 500);
+    }
+  }
+
+  static async getPeriodoAvaliacaoById(id) {
+    try {
+      const periodo = await prisma.tb_periodos_avaliacao.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!periodo) {
+        throw new AppError('Período de avaliação não encontrado', 404);
+      }
+
+      return periodo;
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao buscar período de avaliação: ${error.message}`, 500);
+    }
+  }
+
+  static async updatePeriodoAvaliacao(id, data) {
+    try {
+      const periodo = await prisma.tb_periodos_avaliacao.findUnique({
+        where: { Codigo: parseInt(id) }
+      });
+
+      if (!periodo) {
+        throw new AppError('Período de avaliação não encontrado', 404);
+      }
+
+      // Validar datas se fornecidas
+      if (data.dataInicio && data.dataFim) {
+        const inicio = new Date(data.dataInicio);
+        const fim = new Date(data.dataFim);
+        if (inicio >= fim) {
+          throw new AppError('Data de início deve ser anterior à data de fim', 400);
+        }
+      }
+
+      const updateData = {};
+      Object.keys(data).forEach(key => {
+        if (data[key] !== undefined && data[key] !== null) {
+          switch (key) {
+            case 'designacao':
+            case 'tipoAvaliacao':
+            case 'anoLectivo':
+            case 'observacoes':
+            case 'status':
+              updateData[key.charAt(0).toUpperCase() + key.slice(1)] = typeof data[key] === 'string' 
+                ? data[key].trim() 
+                : data[key];
+              break;
+            case 'trimestre':
+              updateData['Trimestre'] = parseInt(data[key]);
+              break;
+            case 'dataInicio':
+              updateData['DataInicio'] = new Date(data[key]);
+              break;
+            case 'dataFim':
+              updateData['DataFim'] = new Date(data[key]);
+              break;
+          }
+        }
+      });
+
+      const updated = await prisma.tb_periodos_avaliacao.update({
+        where: { Codigo: parseInt(id) },
+        data: updateData
+      });
+
+      return {
+        ...updated,
+        mensagem: 'Período de avaliação atualizado com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao atualizar período de avaliação: ${error.message}`, 500);
+    }
+  }
+
+  static async deletePeriodoAvaliacao(id) {
+    try {
+      const periodo = await prisma.tb_periodos_avaliacao.findUnique({
+        where: { Codigo: parseInt(id) },
+        include: {
+          _count: {
+            select: { tb_historico_notas: true }
+          }
+        }
+      });
+
+      if (!periodo) {
+        throw new AppError('Período de avaliação não encontrado', 404);
+      }
+
+      if (periodo._count.tb_historico_notas > 0) {
+        throw new AppError(
+          'Não é possível deletar período de avaliação com histórico de notas',
+          400
+        );
+      }
+
+      await prisma.tb_periodos_avaliacao.delete({
+        where: { Codigo: parseInt(id) }
+      });
+
+      return {
+        mensagem: 'Período de avaliação removido com sucesso'
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao remover período de avaliação: ${error.message}`, 500);
+    }
+  }
+
+  static async getPeriodosAtivos() {
+    try {
+      return await prisma.tb_periodos_avaliacao.findMany({
+        where: { Status: 'Activo' },
+        orderBy: [{ AnoLectivo: 'desc' }, { Trimestre: 'asc' }]
+      });
+    } catch (error) {
+      throw new AppError(`Erro ao buscar períodos ativos: ${error.message}`, 500);
+    }
+  }
+
+  // ===============================
+  // RELATÓRIOS E ESTATÍSTICAS
+  // ===============================
+
+  static async getRelatorioProfessores() {
+    try {
+      const [
+        totalProfessores,
+        professoresAtivos,
+        totalDisciplinasAtribuidas,
+        totalTurmasAtribuidas,
+        totalPeriodos,
+        periodosAtivos
+      ] = await Promise.all([
+        prisma.tb_professores.count(),
+        prisma.tb_professores.count({ where: { status: 'Activo' } }),
+        prisma.tb_professor_disciplina.count({ where: { Status: 'Activo' } }),
+        prisma.tb_professor_turma.count({ where: { Status: 'Activo' } }),
+        prisma.tb_periodos_avaliacao.count(),
+        prisma.tb_periodos_avaliacao.count({ where: { Status: 'Activo' } })
+      ]);
+
+      return {
+        resumo: {
+          totalProfessores,
+          professoresAtivos,
+          inativos: totalProfessores - professoresAtivos,
+          totalDisciplinasAtribuidas,
+          totalTurmasAtribuidas,
+          totalPeriodos,
+          periodosAtivos
+        }
+      };
+    } catch (error) {
+      throw new AppError(`Erro ao gerar relatório: ${error.message}`, 500);
+    }
+  }
+
+  static async getEstatisticasProfessores() {
+    try {
+      const professoresComAtribuicoes = await prisma.tb_professores.findMany({
+        where: { status: 'Activo' },
+        select: {
+          Codigo: true,
+          nome: true,
+          especialidade: true,
+          _count: {
+            select: {
+              tb_professor_disciplina: true,
+              tb_professor_turma: true
+            }
+          }
+        },
+        orderBy: { nome: 'asc' }
+      });
+
+      const distribuicaoPorEspecialidade = await prisma.tb_professores.groupBy({
+        by: ['especialidade'],
+        where: { status: 'Activo' },
+        _count: { Codigo: true }
+      });
+
+      return {
+        professoresComAtribuicoes,
+        distribuicaoPorEspecialidade
+      };
+    } catch (error) {
+      throw new AppError(`Erro ao gerar estatísticas: ${error.message}`, 500);
+    }
+  }
+}
