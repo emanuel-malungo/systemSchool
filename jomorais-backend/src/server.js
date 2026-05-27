@@ -24,6 +24,7 @@ import academicStaffRoutes from './routes/academic-staff.routes.js';
 import academicEvaluationRoutes from './routes/academic-evaluation.routes.js';
 import professorEvaluationRoutes from './routes/professor-evaluation.routes.js';
 import gradeManagementRoutes from './routes/grade-management.routes.js';
+import certificatesRoutes from './routes/certificates.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import reportsManagementRoutes from './routes/reports-management.routes.js';
 import financialManagementReportsRoutes from './routes/financial-management-reports.routes.js';
@@ -69,6 +70,7 @@ app.get('/', (req, res) => {
       academicEvaluation: '/api/academic-evaluation',
       professorEvaluation: '/api/professor-evaluation',
       gradeManagement: '/api/grades',
+      certificates: '/api/certificates',
       dashboard: '/api/dashboard',
       reportsManagement: '/api/reports-management',
       financialManagementReports: '/api/financial-management/reports',
@@ -104,6 +106,7 @@ app.use('/api/academic-staff', academicStaffRoutes);
 app.use('/api/academic-evaluation', academicEvaluationRoutes);
 app.use('/api/professor-evaluation', professorEvaluationRoutes);
 app.use('/api/grades', gradeManagementRoutes);
+app.use('/api/certificates', certificatesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports-management', reportsManagementRoutes);
 app.use('/api/financial-management/reports', financialManagementReportsRoutes);

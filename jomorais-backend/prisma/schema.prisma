@@ -75,6 +75,8 @@ model tb_utilizadores {
   tb_recibo                     tb_recibo[]
   tb_resultados_finais          tb_resultados_finais[]
   tb_tipos_propinas             tb_tipos_propinas[]
+  tb_certificados_assinador     tb_certificados[]    @relation("CertificadoAssinador")
+  tb_declaracoes                tb_declaracoes[]
   tb_tipos_utilizador           tb_tipos_utilizador             @relation(fields: [codigo_Tipo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_utilizadores_1")
 
   @@index([codigo_Tipo_Utilizador], map: "FK_tb_utilizadores_1")
@@ -242,6 +244,8 @@ model tb_ano_lectivo {
   tb_ocorrencias_alunos     tb_ocorrencias_alunos[]
   tb_pre_confirmacao        tb_pre_confirmacao[]
   tb_turmas                 tb_turmas[]
+  tb_certificados           tb_certificados[]
+  tb_historico_escolar      tb_historico_escolar[]
 }
 
 model tb_cursos {
@@ -301,6 +305,7 @@ model tb_disciplinas {
   tb_resultados_finais           tb_resultados_finais[]
   tb_professor_disciplina        tb_professor_disciplina[]
   tb_professor_turma             tb_professor_turma[]
+  tb_certificados                tb_certificados[]
 
   @@index([codigo_Curso], map: "FK_tb_disciplinas_1")
   @@index([status], map: "FK_tb_disciplinas_2")
@@ -572,6 +577,9 @@ model tb_alunos {
   tb_propinas               tb_propinas[]
   tb_recibo                 tb_recibo[]
   tb_servico_aluno          tb_servico_aluno[]
+  tb_certificados           tb_certificados[]
+  tb_declaracoes            tb_declaracoes[]
+  tb_historico_escolar      tb_historico_escolar[]
 
   @@index([user_id], map: "FK_tb_alunos_2")
   @@index([codigo_Comuna], map: "FK_tb_alunos_Comuna")
@@ -1077,19 +1085,6 @@ model tb_certificado_items {
   Nota2             String @db.VarChar(10)
   Nota3             String @db.VarChar(10)
   CodigoCertificado Int    @db.UnsignedInt
-}
-
-model tb_certificados {
-  Codigo      Int     @id @default(autoincrement()) @db.UnsignedInt
-  Curso       String  @db.VarChar(60)
-  Classe      String  @db.VarChar(60)
-  Turma       String  @db.VarChar(45)
-  Aluno       String  @db.VarChar(100)
-  Ano         String  @db.VarChar(45)
-  CodigoAluno Int     @db.UnsignedInt
-  anoUm       String? @db.VarChar(45)
-  AnoDois     String? @db.VarChar(45)
-  AnoTres     String? @db.VarChar(45)
 }
 
 model tb_classe_disiciplina_terminal {
@@ -2487,4 +2482,80 @@ model tb_historico_notas {
 
   @@index([Codigo_Nota], map: "FK_tb_historico_notas_nota")
   @@index([AlteradoPor], map: "FK_tb_historico_notas_usuario")
+}
+
+// ==================== CERTIFICADOS ====================
+
+model tb_certificados {
+  Codigo              Int       @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Aluno        Int       @map("Codigo_Aluno") @db.UnsignedInt
+  Codigo_Disciplina   Int       @map("Codigo_Disciplina") @db.UnsignedInt
+  Codigo_AnoLectivo   Int       @map("Codigo_AnoLectivo") @db.UnsignedInt
+  NumeroCertificado   String    @unique @map("NumeroCertificado") @db.VarChar(50)
+  DataEmissao         DateTime  @map("DataEmissao")
+  DataAssinatura      DateTime? @map("DataAssinatura")
+  AssinadoPor         Int?      @map("AssinadoPor") @db.UnsignedInt
+  Status              String    @default("Pendente") @map("Status") @db.VarChar(20) // Pendente, Assinado, Cancelado
+  Observacoes         String?   @map("Observacoes") @db.Text
+  DataCadastro        DateTime  @default(now()) @map("DataCadastro")
+
+  tb_alunos           tb_alunos           @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_aluno")
+  tb_disciplinas      tb_disciplinas      @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_disciplina")
+  tb_ano_lectivo      tb_ano_lectivo      @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_ano_lectivo")
+  tb_utilizadores     tb_utilizadores?    @relation("CertificadoAssinador", fields: [AssinadoPor], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_assinador")
+
+  @@unique([Codigo_Aluno, Codigo_Disciplina, Codigo_AnoLectivo], map: "UK_tb_certificados")
+  @@index([Codigo_Aluno], map: "FK_tb_certificados_aluno_idx")
+  @@index([Codigo_Disciplina], map: "FK_tb_certificados_disciplina_idx")
+  @@index([Codigo_AnoLectivo], map: "FK_tb_certificados_ano_lectivo_idx")
+  @@index([AssinadoPor], map: "FK_tb_certificados_assinador_idx")
+  @@map("tb_certificados")
+}
+
+// ==================== DECLARAÇÕES ====================
+
+model tb_declaracoes {
+  Codigo              Int       @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Aluno        Int       @map("Codigo_Aluno") @db.UnsignedInt
+  TipoDeclaracao      String    @map("TipoDeclaracao") @db.VarChar(50) // Matrícula, Aprovação, Frequência, etc
+  NumeroDeclaracao    String    @unique @map("NumeroDeclaracao") @db.VarChar(50)
+  DataEmissao         DateTime  @map("DataEmissao")
+  DataValidade        DateTime? @map("DataValidade")
+  Finalidade          String?   @map("Finalidade") @db.VarChar(100)
+  Conteudo            String    @map("Conteudo") @db.Text // Texto da declaração
+  EmitidoPor          Int       @map("EmitidoPor") @db.UnsignedInt // Utilizador que emite
+  Status              String    @default("Ativa") @map("Status") @db.VarChar(20) // Ativa, Cancelada, Expirada
+  Observacoes         String?   @map("Observacoes") @db.Text
+  DataCadastro        DateTime  @default(now()) @map("DataCadastro")
+
+  tb_alunos           tb_alunos           @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracoes_aluno")
+  tb_utilizadores     tb_utilizadores     @relation(fields: [EmitidoPor], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_declaracoes_emissor")
+
+  @@index([Codigo_Aluno], map: "FK_tb_declaracoes_aluno_idx")
+  @@index([EmitidoPor], map: "FK_tb_declaracoes_emissor_idx")
+  @@map("tb_declaracoes")
+}
+
+// ==================== HISTÓRICO ESCOLAR ====================
+
+model tb_historico_escolar {
+  Codigo              Int       @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
+  Codigo_Aluno        Int       @map("Codigo_Aluno") @db.UnsignedInt
+  Codigo_AnoLectivo   Int       @map("Codigo_AnoLectivo") @db.UnsignedInt
+  MediaGeral          Float     @map("MediaGeral") // Média de todas as disciplinas
+  TotalDisciplinas    Int       @map("TotalDisciplinas") // Quantidade de disciplinas
+  TotalAprovadas      Int       @map("TotalAprovadas") // Disciplinas com nota >= 10
+  TotalReprovadas     Int       @map("TotalReprovadas") // Disciplinas com nota < 10
+  TaxaAprovacao       Float     @map("TaxaAprovacao") // Percentagem de aprovação
+  Situacao            String    @map("Situacao") @db.VarChar(50) // Aprovado, Reprovado, Pendente
+  Observacoes         String?   @map("Observacoes") @db.Text
+  DataGeracao         DateTime  @default(now()) @map("DataGeracao")
+
+  tb_alunos           tb_alunos           @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_historico_escolar_aluno")
+  tb_ano_lectivo      tb_ano_lectivo      @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_historico_escolar_ano")
+
+  @@unique([Codigo_Aluno, Codigo_AnoLectivo], map: "UK_tb_historico_escolar")
+  @@index([Codigo_Aluno], map: "FK_tb_historico_escolar_aluno_idx")
+  @@index([Codigo_AnoLectivo], map: "FK_tb_historico_escolar_ano_idx")
+  @@map("tb_historico_escolar")
 }
