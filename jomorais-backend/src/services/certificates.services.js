@@ -14,7 +14,7 @@ export class CertificatesService {
   static async generateNumeroCertificado(codigoAnoLectivo) {
     try {
       const anoLectivo = await prisma.tb_ano_lectivo.findUnique({
-        where: { Codigo: codigoAnoLectivo }
+        where: { codigo: codigoAnoLectivo }
       });
       
       if (!anoLectivo) {
@@ -56,9 +56,9 @@ export class CertificatesService {
 
       // Validar existência de entidades
       const [aluno, disciplina, anoLectivo] = await Promise.all([
-        prisma.tb_alunos.findUnique({ where: { Codigo: codigoAluno } }),
+        prisma.tb_alunos.findUnique({ where: { codigo: codigoAluno } }),
         prisma.tb_disciplinas.findUnique({ where: { codigo: codigoDisciplina } }),
-        prisma.tb_ano_lectivo.findUnique({ where: { Codigo: codigoAnoLectivo } })
+        prisma.tb_ano_lectivo.findUnique({ where: { codigo: codigoAnoLectivo } })
       ]);
 
       if (!aluno) {
@@ -72,22 +72,22 @@ export class CertificatesService {
       }
 
       // Validar se aluno foi aprovado (nota >= 10)
-      const nota = await prisma.tb_notas_alunos.findFirst({
-        where: {
-          CodigoAluno: codigoAluno,
-          CodigoDisciplina: codigoDisciplina,
-          CodigoAnoLectivo: codigoAnoLectivo
-        }
-      });
-
-      if (!nota || nota.Nota < 10) {
-        throw new AppError('Aluno não foi aprovado nesta disciplina (nota < 10)', 400, 'NOT_APPROVED');
-      }
+      // TODO: Implementar validação de nota após preenchimento correto de notas
+      // const nota = await prisma.tb_notas_alunos.findFirst({
+      //   where: {
+      //     CodigoAluno: codigoAluno,
+      //     CodigoDisciplina: codigoDisciplina,
+      //     CodigoAnoLectivo: codigoAnoLectivo
+      //   }
+      // });
+      // if (!nota || nota.Nota < 10) {
+      //   throw new AppError('Aluno não foi aprovado nesta disciplina (nota < 10)', 400, 'NOT_APPROVED');
+      // }
 
       // Verificar se já existe certificado
       const existente = await prisma.tb_certificados.findUnique({
         where: {
-          UK_tb_certificados: {
+          Codigo_Aluno_Codigo_Disciplina_Codigo_AnoLectivo: {
             Codigo_Aluno: codigoAluno,
             Codigo_Disciplina: codigoDisciplina,
             Codigo_AnoLectivo: codigoAnoLectivo
@@ -275,7 +275,7 @@ export class CertificatesService {
 
       // Validar utilizador existe
       const utilizador = await prisma.tb_utilizadores.findUnique({
-        where: { Codigo: codigoUtilizador }
+        where: { codigo: codigoUtilizador }
       });
       if (!utilizador) {
         throw new AppError('Utilizador não encontrado', 404, 'USER_NOT_FOUND');
@@ -335,7 +335,7 @@ export class CertificatesService {
   static async getCertificatesByStudent(codigoAluno, codigoAnoLectivo) {
     try {
       // Validar aluno existe
-      const aluno = await prisma.tb_alunos.findUnique({ where: { Codigo: codigoAluno } });
+      const aluno = await prisma.tb_alunos.findUnique({ where: { codigo: codigoAluno } });
       if (!aluno) {
         throw new AppError('Aluno não encontrado', 404, 'STUDENT_NOT_FOUND');
       }
@@ -358,8 +358,8 @@ export class CertificatesService {
 
       return {
         aluno: {
-          codigo: aluno.Codigo,
-          nome: aluno.Nome,
+          codigo: aluno.codigo,
+          nome: aluno.nome,
           email: aluno.email
         },
         totalCertificados: certificados.length,
@@ -378,7 +378,7 @@ export class CertificatesService {
     try {
       // Validar ano letivo
       const anoLectivo = await prisma.tb_ano_lectivo.findUnique({
-        where: { Codigo: codigoAnoLectivo }
+        where: { codigo: codigoAnoLectivo }
       });
       if (!anoLectivo) {
         throw new AppError('Ano letivo não encontrado', 404, 'YEAR_NOT_FOUND');

@@ -42,6 +42,7 @@ export default function CertificateManagement() {
 
   // Formulário criação
   const [createForm, setCreateForm] = useState({
+    codigoTurma: '',
     codigoAluno: '',
     codigoDisciplina: '',
     codigoAnoLectivo: '',
@@ -62,9 +63,9 @@ export default function CertificateManagement() {
 
   // Filtro de alunos por turma selecionada
   const selectedTurma = useMemo(() => {
-    if (!createForm.codigoAluno) return null
-    return turmas.find((t: ITurma) => t.codigo?.toString() === createForm.codigoAluno)
-  }, [turmas, createForm.codigoAluno])
+    if (!createForm.codigoTurma) return null
+    return turmas.find((t: ITurma) => t.codigo?.toString() === createForm.codigoTurma)
+  }, [turmas, createForm.codigoTurma])
 
   const { data: alunosResponse } = useAlunosByTurma(
     selectedTurma?.codigo || 0,
@@ -110,6 +111,7 @@ export default function CertificateManagement() {
       toast.success('Certificado criado com sucesso')
       setShowCreateModal(false)
       setCreateForm({
+        codigoTurma: '',
         codigoAluno: '',
         codigoDisciplina: '',
         codigoAnoLectivo: '',
@@ -201,7 +203,7 @@ export default function CertificateManagement() {
               >
                 <option value="">Todos</option>
                 {anosLetivos.map((ano) => (
-                  <option key={ano.codigo} value={ano.codigo}>
+                  <option key={`ano-${ano.codigo}`} value={ano.codigo || ''}>
                     {ano.designacao}
                   </option>
                 ))}
@@ -220,7 +222,7 @@ export default function CertificateManagement() {
               >
                 <option value="">Todas</option>
                 {disciplines.map((disc: any) => (
-                  <option key={disc.codigo} value={disc.codigo}>
+                  <option key={`filter-disc-${disc.codigo}`} value={disc.codigo || ''}>
                     {disc.designacao}
                   </option>
                 ))}
@@ -409,8 +411,8 @@ export default function CertificateManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="">Selecione...</option>
-                  {anosLetivos.map((ano) => (
-                    <option key={ano.codigo} value={ano.codigo}>
+                  {anosLetivos.map((ano, idx) => (
+                    <option key={`filter-ano-${idx}-${ano.codigo}`} value={ano.codigo || ''}>
                       {ano.designacao}
                     </option>
                   ))}
@@ -422,9 +424,9 @@ export default function CertificateManagement() {
                   Turma *
                 </label>
                 <select
-                  value={createForm.codigoAluno}
+                  value={createForm.codigoTurma}
                   onChange={(e) =>
-                    setCreateForm({ ...createForm, codigoAluno: e.target.value })
+                    setCreateForm({ ...createForm, codigoTurma: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
@@ -436,7 +438,7 @@ export default function CertificateManagement() {
                         t.codigo_AnoLectivo?.toString() === createForm.codigoAnoLectivo
                     )
                     .map((turma: ITurma) => (
-                      <option key={turma.codigo} value={turma.codigo}>
+                      <option key={`turma-${turma.codigo}`} value={turma.codigo || ''}>
                         {turma.designacao}
                       </option>
                     ))}
@@ -457,8 +459,8 @@ export default function CertificateManagement() {
                 >
                   <option value="">Selecione turma primeiro...</option>
                   {alunos.map((aluno: any) => (
-                    <option key={aluno.Codigo} value={aluno.Codigo}>
-                      {aluno.Nome}
+                    <option key={`aluno-${aluno.Codigo || aluno.codigo}`} value={aluno.Codigo || aluno.codigo}>
+                      {aluno.Nome || aluno.nome}
                     </option>
                   ))}
                 </select>
@@ -477,7 +479,7 @@ export default function CertificateManagement() {
                 >
                   <option value="">Selecione...</option>
                   {disciplines.map((disc: any) => (
-                    <option key={disc.codigo} value={disc.codigo}>
+                    <option key={`disc-${disc.codigo}`} value={disc.codigo || ''}>
                       {disc.designacao}
                     </option>
                   ))}
