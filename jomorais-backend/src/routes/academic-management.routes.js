@@ -1164,6 +1164,7 @@ router.post('/disciplinas', AcademicManagementController.createDisciplina);
  *                 pagination:
  *                   $ref: '#/components/schemas/Pagination'
  */
+router.get('/disciplinas/todas', AcademicManagementController.getAllDisciplinas);
 router.get('/disciplinas', AcademicManagementController.getDisciplinas);
 
 /**

@@ -1199,6 +1199,22 @@ export class AcademicManagementService {
     }
   }
 
+  // Novo método: Retorna TODAS as disciplinas sem paginação (para select dropdowns)
+  static async getAllDisciplinas() {
+    try {
+      const disciplinas = await prisma.tb_disciplinas.findMany({
+        select: {
+          codigo: true,
+          designacao: true
+        },
+        orderBy: { designacao: 'asc' }
+      });
+      return disciplinas;
+    } catch (error) {
+      throw new AppError('Erro ao buscar disciplinas', 500);
+    }
+  }
+
   static async getDisciplinaById(id) {
     try {
       const disciplina = await prisma.tb_disciplinas.findUnique({
@@ -1873,25 +1889,29 @@ export class AcademicManagementService {
       }
 
       // Buscar disciplinas relacionadas através da grade curricular
+      // SEM filtro de status para capturar todas as disciplinas
       const disciplinas = await prisma.tb_grade_curricular.findMany({
         where: {
           codigo_Classe: turma.codigo_Classe,
-          codigo_Curso: turma.codigo_Curso,
-          status: 1
+          codigo_Curso: turma.codigo_Curso
         },
-        select: {
+        include: {
           tb_disciplinas: {
             select: {
               codigo: true,
               designacao: true
             }
           }
-        }
+        },
+        distinct: ['codigo_disciplina'] // Evita duplicatas
       });
 
       const turmaComDisciplinas = {
         ...turma,
-        disciplinas: disciplinas.map(d => d.tb_disciplinas).filter(Boolean)
+        disciplinas: disciplinas
+          .map(d => d.tb_disciplinas)
+          .filter(Boolean)
+          .filter((d, i, arr) => arr.findIndex(t => t.codigo === d.codigo) === i) // Remove duplicatas
       };
 
       return turmaComDisciplinas;

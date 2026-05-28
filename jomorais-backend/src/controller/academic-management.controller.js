@@ -444,6 +444,21 @@ export class AcademicManagementController {
     }
   }
 
+  // Novo método: Retorna todas as disciplinas sem paginação
+  static async getAllDisciplinas(req, res) {
+    try {
+      const disciplinas = await AcademicManagementService.getAllDisciplinas();
+      
+      res.json({
+        success: true,
+        message: "Disciplinas encontradas",
+        data: disciplinas
+      });
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao buscar disciplinas", 400);
+    }
+  }
+
   static async getDisciplinaById(req, res) {
     try {
       const { id } = idParamSchema.parse(req.params);

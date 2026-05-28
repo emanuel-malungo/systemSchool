@@ -12,12 +12,19 @@ import {
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
-import { useAlunosByTurma, useTurmasComplete, useTurmaWithDisciplinas } from '../../../hooks/useTurma'
+import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
-import { useTiposAvaliacao } from '../../../hooks/useAcademicEvaluation'
+import { useDisciplinas } from '../../../hooks/useDisciplina'
 import { useAuth } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
 import type { ITurma } from '../../../types/turma.types'
+
+interface GradeEntry {
+  MAC?: number
+  PP?: number
+  PT?: number
+  notaFinal?: number
+}
 
 export default function GradeLaunching() {
   const { user } = useAuth()
@@ -29,17 +36,17 @@ export default function GradeLaunching() {
   const [selectedTrimestre, setSelectedTrimestre] = useState('')
 
   // Estados adicionais
-  const [localGrades, setLocalGrades] = useState<Record<string, number>>({})
+  const [localGrades, setLocalGrades] = useState<Record<string, GradeEntry>>({})
   const [saving, setSaving] = useState(false)
 
   // Hooks de busca de dados
   const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
   const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete('')
-  const { data: tiposAvaliacaoData, isLoading: isLoadingTiposAvaliacao } = useTiposAvaliacao(1, 100)
+  const { data: disciplinasData, isLoading: isLoadingDisciplinas } = useDisciplinas()
 
   const anosLetivos = anosLetivosData?.data || []
   const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
-  const tiposAvaliacao = tiposAvaliacaoData?.data || []
+  const disciplines = Array.isArray(disciplinasData) ? disciplinasData : []
 
   // Filtrar as turmas de acordo com o Ano Letivo selecionado
   const filteredTurmas = useMemo(() => {
@@ -53,33 +60,13 @@ export default function GradeLaunching() {
     return turmas.find((t: ITurma) => t.codigo?.toString() === selectedTurmaId)
   }, [turmas, selectedTurmaId])
 
-  // Hooks dependentes da turma e disciplina selecionadas
+  // Hook dependente apenas da turma selecionada para buscar alunos
   const { data: alunosTurmaResponse, isLoading: isLoadingAlunos } = useAlunosByTurma(
-    selectedTurma?.codigo || 0,
-    !!selectedTurma?.codigo
-  )
-  
-  // Novo hook que já retorna a turma com as disciplinas incluídas
-  const { data: turmaWithDisciplinasResponse, isLoading: isLoadingDisciplinas } = useTurmaWithDisciplinas(
     selectedTurma?.codigo || 0,
     !!selectedTurma?.codigo
   )
 
   const students = (alunosTurmaResponse as any)?.data || (Array.isArray(alunosTurmaResponse) ? alunosTurmaResponse : [])
-  
-  // Extrair disciplinas da turma com disciplinas
-  const disciplines = useMemo(() => {
-    console.log('turmaWithDisciplinasResponse:', turmaWithDisciplinasResponse)
-    
-    const turmaData = turmaWithDisciplinasResponse?.data
-    if (turmaData && Array.isArray(turmaData.disciplinas)) {
-      console.log('Disciplinas da turma:', turmaData.disciplinas)
-      return turmaData.disciplinas
-    }
-
-    console.log('Nenhuma disciplina encontrada')
-    return []
-  }, [turmaWithDisciplinasResponse])
 
   // Verificar se todo o contexto necessário foi selecionado
   const isContextSelected = useMemo(() => {
@@ -105,9 +92,18 @@ export default function GradeLaunching() {
   // Sincronizar notas do backend com o estado local ao carregar ou mudar contexto
   useEffect(() => {
     if (gradesData?.data && isContextSelected) {
-      const gradesMap: Record<string, number> = {}
+      const gradesMap: Record<string, GradeEntry> = {}
       gradesData.data.forEach((grade: any) => {
-        gradesMap[`${grade.CodigoAluno}-${grade.CodigoTipoAvaliacao}`] = grade.Nota
+        const key = grade.CodigoAluno.toString()
+        gradesMap[key] = {
+          ...gradesMap[key],
+          [grade.CodigoTipoAvaliacao === 1 ? 'MAC' : grade.CodigoTipoAvaliacao === 2 ? 'PP' : 'PT']: grade.Nota
+        }
+        // Calcular nota final
+        const entry = gradesMap[key]
+        if (entry.MAC !== undefined && entry.PT !== undefined) {
+          entry.notaFinal = Math.round(((entry.MAC + entry.PT) / 2) * 100) / 100
+        }
       })
       setLocalGrades(gradesMap)
     } else {
@@ -136,46 +132,73 @@ export default function GradeLaunching() {
     { codigo: 3, designacao: '3º Trimestre' },
   ]
 
-  // Calcula a média das notas inseridas localmente para um aluno específico
-  const getStudentAverage = (studentId: number) => {
-    const studentGrades = tiposAvaliacao
-      .map(tipo => localGrades[`${studentId}-${tipo.codigo}`])
-      .filter(val => val !== undefined && val !== null && !isNaN(val))
+  // Atualizar nota e calcular nota final
+  const updateGradeField = (studentId: number, field: 'MAC' | 'PP' | 'PT', value: string) => {
+    const numValue = value === '' ? undefined : parseFloat(value)
     
-    if (studentGrades.length === 0) return undefined
-    const sum = studentGrades.reduce((a, b) => a + b, 0)
-    return sum / studentGrades.length
+    // Validar se está no intervalo 0-20
+    if (numValue !== undefined && (numValue < 0 || numValue > 20 || isNaN(numValue))) {
+      toast.error('A nota deve estar entre 0 e 20')
+      return
+    }
+
+    setLocalGrades(prev => {
+      const key = studentId.toString()
+      const entry = { ...prev[key] } || {}
+      entry[field] = numValue
+      
+      // Calcular nota final = (MAC + PT) / 2
+      if (entry.MAC !== undefined && entry.PT !== undefined) {
+        entry.notaFinal = Math.round(((entry.MAC + entry.PT) / 2) * 100) / 100
+      } else if (entry.MAC !== undefined || entry.PT !== undefined) {
+        // Se só tem MAC ou PT, não calcula
+        delete entry.notaFinal
+      }
+      
+      return { ...prev, [key]: entry }
+    })
+  }
+
+  // Calcula classificação (Aprovado/Reprovado)
+  const getClassification = (notaFinal?: number): string => {
+    if (notaFinal === undefined) return 'Pendente'
+    return notaFinal >= 10 ? 'Aprovado' : 'Reprovado'
   }
 
   // Estatísticas gerais baseadas nas notas da turma
   const stats = useMemo(() => {
-    if (!students.length) return { media: '0.00', aprovados: 0, reprovados: 0, total: 0 }
+    if (!students.length) return { media: '0.00', aprovados: 0, reprovados: 0, pendentes: 0, total: 0 }
 
     let totalGradesCount = 0
     let sumGrades = 0
     let aprovados = 0
     let reprovados = 0
+    let pendentes = 0
 
     students.forEach((student: any) => {
-      const avg = getStudentAverage(student.codigo)
-      if (avg !== undefined) {
-        sumGrades += avg
+      const key = student.codigo.toString()
+      const grades = localGrades[key]
+      if (grades?.notaFinal !== undefined) {
+        sumGrades += grades.notaFinal
         totalGradesCount++
-        if (avg >= 10) {
+        if (grades.notaFinal >= 10) {
           aprovados++
         } else {
           reprovados++
         }
+      } else if (grades?.MAC !== undefined || grades?.PP !== undefined || grades?.PT !== undefined) {
+        pendentes++ // Tem pelo menos uma nota, mas não completo
       }
-    });
+    })
 
     return {
       media: totalGradesCount > 0 ? (sumGrades / totalGradesCount).toFixed(2) : '0.00',
       aprovados,
       reprovados,
+      pendentes,
       total: totalGradesCount,
     }
-  }, [students, localGrades, tiposAvaliacao])
+  }, [students, localGrades])
 
   // Salvar todas as notas lançadas e alteradas
   const handleSaveAllGrades = async () => {
@@ -189,46 +212,94 @@ export default function GradeLaunching() {
       const newGradesPayload: any[] = []
       const updatedGradesPromises: Promise<any>[] = []
 
-      for (const key of Object.keys(localGrades)) {
-        const [codigoAluno, codigoTipoAvaliacao] = key.split('-').map(Number)
-        const currentNota = localGrades[key]
-
-        // Validar nota (0-20)
-        if (currentNota < 0 || currentNota > 20) {
-          toast.error(`A nota deve estar entre 0 e 20.`)
-          setSaving(false)
-          return
+      // Para cada aluno, criar 3 registros (MAC=1, PP=2, PT=3)
+      for (const student of students) {
+        const key = student.codigo.toString()
+        const grades = localGrades[key]
+        
+        if (!grades || (grades.MAC === undefined && grades.PP === undefined && grades.PT === undefined)) {
+          continue // Pular se não tem nenhuma nota
         }
 
-        // Buscar se essa nota já existia na base de dados
-        const existingGrade = gradesData?.data?.find(
-          (g: any) =>
-            g.CodigoAluno === codigoAluno &&
-            g.CodigoTipoAvaliacao === codigoTipoAvaliacao
-        )
+        // Processar MAC (tipo avaliação 1)
+        if (grades.MAC !== undefined) {
+          const existingGrade = gradesData?.data?.find(
+            (g: any) => g.CodigoAluno === student.codigo && g.CodigoTipoAvaliacao === 1
+          )
 
-        if (existingGrade) {
-          // Se a nota foi modificada, atualiza-a
-          if (existingGrade.Nota !== currentNota) {
-            updatedGradesPromises.push(
-              updateGrade({
-                id: existingGrade.Codigo,
-                data: {
-                  nota: currentNota,
-                },
-              })
-            )
+          if (existingGrade) {
+            if (existingGrade.Nota !== grades.MAC) {
+              updatedGradesPromises.push(
+                updateGrade({
+                  id: existingGrade.Codigo,
+                  data: { nota: grades.MAC },
+                })
+              )
+            }
+          } else {
+            newGradesPayload.push({
+              codigoAluno: student.codigo,
+              codigoDisciplina: parseInt(selectedDisciplinaId),
+              nota: grades.MAC,
+              codigoTipoAvaliacao: 1, // MAC
+              codigoTrimestre: parseInt(selectedTrimestre),
+              codigoTurma: parseInt(selectedTurmaId),
+            })
           }
-        } else {
-          // Se é uma nota nova, insere no lote
-          newGradesPayload.push({
-            codigoAluno,
-            codigoDisciplina: parseInt(selectedDisciplinaId),
-            nota: currentNota,
-            codigoTipoAvaliacao,
-            codigoTrimestre: parseInt(selectedTrimestre),
-            codigoTurma: parseInt(selectedTurmaId),
-          })
+        }
+
+        // Processar PP (tipo avaliação 2)
+        if (grades.PP !== undefined) {
+          const existingGrade = gradesData?.data?.find(
+            (g: any) => g.CodigoAluno === student.codigo && g.CodigoTipoAvaliacao === 2
+          )
+
+          if (existingGrade) {
+            if (existingGrade.Nota !== grades.PP) {
+              updatedGradesPromises.push(
+                updateGrade({
+                  id: existingGrade.Codigo,
+                  data: { nota: grades.PP },
+                })
+              )
+            }
+          } else {
+            newGradesPayload.push({
+              codigoAluno: student.codigo,
+              codigoDisciplina: parseInt(selectedDisciplinaId),
+              nota: grades.PP,
+              codigoTipoAvaliacao: 2, // PP
+              codigoTrimestre: parseInt(selectedTrimestre),
+              codigoTurma: parseInt(selectedTurmaId),
+            })
+          }
+        }
+
+        // Processar PT (tipo avaliação 3)
+        if (grades.PT !== undefined) {
+          const existingGrade = gradesData?.data?.find(
+            (g: any) => g.CodigoAluno === student.codigo && g.CodigoTipoAvaliacao === 3
+          )
+
+          if (existingGrade) {
+            if (existingGrade.Nota !== grades.PT) {
+              updatedGradesPromises.push(
+                updateGrade({
+                  id: existingGrade.Codigo,
+                  data: { nota: grades.PT },
+                })
+              )
+            }
+          } else {
+            newGradesPayload.push({
+              codigoAluno: student.codigo,
+              codigoDisciplina: parseInt(selectedDisciplinaId),
+              nota: grades.PT,
+              codigoTipoAvaliacao: 3, // PT
+              codigoTrimestre: parseInt(selectedTrimestre),
+              codigoTurma: parseInt(selectedTurmaId),
+            })
+          }
         }
       }
 
@@ -461,7 +532,7 @@ export default function GradeLaunching() {
           </div>
 
           <div className="overflow-x-auto">
-            {isLoadingAlunos || isLoadingGrades || isLoadingTiposAvaliacao ? (
+            {isLoadingAlunos || isLoadingGrades ? (
               <div className="p-12 text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
                 <p className="text-gray-600">Buscando informações dos alunos e notas...</p>
@@ -477,18 +548,20 @@ export default function GradeLaunching() {
                   <tr className="bg-gray-50 border-b border-gray-200">
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-16">Nº</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nome do Aluno</th>
-                    {tiposAvaliacao.map(tipo => (
-                      <th key={tipo.codigo} className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">
-                        {tipo.designacao}
-                      </th>
-                    ))}
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">Média</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">Status</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">MAC</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">PP</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">PT</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">Nota Final</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-32">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {students.map((student: any, index: number) => {
-                    const avg = getStudentAverage(student.codigo)
+                    const key = student.codigo.toString()
+                    const grades = localGrades[key] || {}
+                    const notaFinal = grades.notaFinal
+                    const status = getClassification(notaFinal)
+
                     return (
                       <tr key={student.codigo} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4 text-sm text-gray-500 font-medium">{index + 1}</td>
@@ -497,56 +570,65 @@ export default function GradeLaunching() {
                           <p className="text-xs text-gray-400">Cód: #{student.codigo}</p>
                         </td>
                         
-                        {/* Inputs Dinâmicos para tipos de avaliações */}
-                        {tiposAvaliacao.map(tipo => {
-                          const gradeKey = `${student.codigo}-${tipo.codigo}`
-                          const value = localGrades[gradeKey] !== undefined ? localGrades[gradeKey] : ''
-                          return (
-                            <td key={tipo.codigo} className="px-6 py-4">
-                              <input
-                                type="number"
-                                min="0"
-                                max="20"
-                                step="0.1"
-                                value={value}
-                                onChange={(e) => {
-                                  const val = e.target.value === '' ? undefined : parseFloat(e.target.value)
-                                  setLocalGrades(prev => {
-                                    const copy = { ...prev }
-                                    if (val === undefined || isNaN(val)) {
-                                      delete copy[gradeKey]
-                                    } else {
-                                      copy[gradeKey] = val
-                                    }
-                                    return copy
-                                  })
-                                }}
-                                className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium"
-                                placeholder="0-20"
-                              />
-                            </td>
-                          )
-                        })}
+                        {/* MAC Input */}
+                        <td className="px-6 py-4 text-center">
+                          <input
+                            type="number"
+                            min="0"
+                            max="20"
+                            step="0.1"
+                            value={grades.MAC !== undefined ? grades.MAC : ''}
+                            onChange={(e) => updateGradeField(student.codigo, 'MAC', e.target.value)}
+                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            placeholder="0-20"
+                          />
+                        </td>
 
-                        {/* Média / Nota Final */}
-                        <td className="px-6 py-4">
-                          <span className={`text-lg font-bold ${avg !== undefined ? (avg >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400'}`}>
-                            {avg !== undefined ? avg.toFixed(2) : '-'}
+                        {/* PP Input */}
+                        <td className="px-6 py-4 text-center">
+                          <input
+                            type="number"
+                            min="0"
+                            max="20"
+                            step="0.1"
+                            value={grades.PP !== undefined ? grades.PP : ''}
+                            onChange={(e) => updateGradeField(student.codigo, 'PP', e.target.value)}
+                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            placeholder="0-20"
+                          />
+                        </td>
+
+                        {/* PT Input */}
+                        <td className="px-6 py-4 text-center">
+                          <input
+                            type="number"
+                            min="0"
+                            max="20"
+                            step="0.1"
+                            value={grades.PT !== undefined ? grades.PT : ''}
+                            onChange={(e) => updateGradeField(student.codigo, 'PT', e.target.value)}
+                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            placeholder="0-20"
+                          />
+                        </td>
+
+                        {/* Nota Final - Read Only */}
+                        <td className="px-6 py-4 text-center">
+                          <span className={`text-lg font-bold ${notaFinal !== undefined ? (notaFinal >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400'}`}>
+                            {notaFinal !== undefined ? notaFinal.toFixed(2) : '-'}
                           </span>
                         </td>
 
                         {/* Status */}
-                        <td className="px-6 py-4">
-                          {avg !== undefined ? (
-                            avg >= 10 ? (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                Aprovado
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                Reprovado
-                              </span>
-                            )
+                        <td className="px-6 py-4 text-center">
+                          {status === 'Aprovado' ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                              Aprovado
+                            </span>
+                          ) : status === 'Reprovado' ? (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                              Reprovado
+                            </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
                               Pendente
