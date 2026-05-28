@@ -17,7 +17,6 @@ import {
 import Container from '../../../components/layout/Container'
 import {
   usePauta,
-  useGeneratePauta,
   useExportPautaPDF,
   useExportPautaExcel,
   usePublishPauta,
@@ -46,6 +45,7 @@ export default function PautaManagement() {
   })
 
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
+  const [isGeneratingPauta, setIsGeneratingPauta] = useState(false)
 
   // Hooks de dados para os selects
   const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
@@ -150,31 +150,29 @@ export default function PautaManagement() {
   }, [consolidatedPauta, filters.page, filters.limit])
 
   // Hooks de mutação
-  const { mutate: generatePauta, isPending: isGenerating } = useGeneratePauta()
   const { mutate: exportPDF, isPending: isExportingPDF } = useExportPautaPDF()
   const { mutate: exportExcel, isPending: isExportingExcel } = useExportPautaExcel()
   const { mutate: publishPauta, isPending: isPublishing } = usePublishPauta()
 
   // Handlers
-  const handleGeneratePauta = () => {
+  const handleGeneratePauta = async () => {
     if (!filters.codigoTurma || !filters.codigoAnoLectivo) {
       toast.error('Por favor, selecione a turma e o ano letivo')
       return
     }
 
-    generatePauta(
-      {
-        codigoTurma: parseInt(filters.codigoTurma),
-        codigoTrimestre: parseInt(filters.codigoTrimestre),
-        codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
-      },
-      {
-        onSuccess: () => {
-          refetchPauta()
-        }
-      }
-    )
-    setShowGenerateConfirm(false)
+    setIsGeneratingPauta(true)
+    try {
+      // Refetch para carregar/gerar a pauta
+      await refetchPauta()
+      toast.success('Pauta gerada com sucesso!')
+    } catch (error) {
+      console.error('Erro ao gerar pauta:', error)
+      toast.error('Erro ao gerar pauta')
+    } finally {
+      setIsGeneratingPauta(false)
+      setShowGenerateConfirm(false)
+    }
   }
 
   const handleExportPDF = () => {
@@ -318,10 +316,10 @@ export default function PautaManagement() {
           <div className="flex items-end">
             <button
               onClick={() => setShowGenerateConfirm(true)}
-              disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGenerating}
+              disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGeneratingPauta}
               className="w-full py-2.5 bg-[#007C00] text-white rounded-xl hover:bg-[#005a00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2 shadow-md"
             >
-              {isGenerating ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
+              {isGeneratingPauta ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
               Gerar Pauta
             </button>
           </div>
@@ -576,10 +574,10 @@ export default function PautaManagement() {
               <button
                 type="button"
                 onClick={handleGeneratePauta}
-                disabled={isGenerating}
+                disabled={isGeneratingPauta}
                 className="flex-1 px-4 py-2 bg-[#007C00] text-white rounded-lg font-medium hover:bg-[#005a00] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Gerar'}
+                {isGeneratingPauta ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Gerar'}
               </button>
             </div>
           </div>
