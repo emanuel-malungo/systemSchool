@@ -11,18 +11,13 @@ import {
   ChevronRight,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
-import {
-  useGrades,
-  useCreateGrade,
-  useUpdateGrade,
-  useDeleteGrade,
-} from '../../../hooks/useGrade'
-import { useStudentsComplete } from '../../../hooks/useStudent'
-import { useDisciplines } from '../../../hooks/useDiscipline'
-import { useTurmasComplete } from '../../../hooks/useTurma'
+import { useGrades, useCreateGrade, useUpdateGrade, useDeleteGrade } from '../../../hooks/useGrade'
+import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
+import { useDisciplinesByCurso } from '../../../hooks/useDiscipline'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useTiposAvaliacao } from '../../../hooks/useAcademicEvaluation'
 import type { Grade, CreateGradePayload } from '../../../types/grade.types'
+import type { ITurma } from '../../../types/turma.types'
 
 interface FilterState {
   page: number
@@ -65,8 +60,6 @@ export default function GradeLaunching() {
   })
 
   // Estados de busca para selects
-  const [studentSearch, setStudentSearch] = useState('')
-  const [disciplineSearch, setDisciplineSearch] = useState('')
   const [turmaSearch, setTurmaSearch] = useState('')
 
   // Hooks de dados
@@ -82,13 +75,28 @@ export default function GradeLaunching() {
   )
 
   // Hooks para dados dos selects
-  const { data: studentsData, isLoading: isLoadingStudents } = useStudentsComplete(true)
-  const { data: disciplinesData, isLoading: isLoadingDisciplines } = useDisciplines({ 
-    page: 1, 
-    limit: 1000,
-    search: disciplineSearch 
-  })
   const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(turmaSearch)
+  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+
+  // Pegar a turma selecionada no formulário
+  const selectedTurma = useMemo(() => {
+    if (!formData.codigoTurma) return null
+    return turmas.find((t: ITurma) => t.codigo?.toString() === formData.codigoTurma)
+  }, [turmas, formData.codigoTurma])
+
+  // Hooks dependentes da turma selecionada
+  const { data: alunosTurmaResponse, isLoading: isLoadingStudents } = useAlunosByTurma(
+    selectedTurma?.codigo || 0,
+    !!selectedTurma?.codigo
+  )
+  
+  const { data: disciplinasCursoResponse, isLoading: isLoadingDisciplines } = useDisciplinesByCurso(
+    selectedTurma?.codigo_Curso || 0,
+    !!selectedTurma?.codigo_Curso
+  )
+
+  const students = (alunosTurmaResponse as any)?.data || (Array.isArray(alunosTurmaResponse) ? alunosTurmaResponse : [])
+  const disciplines = (disciplinasCursoResponse as any)?.data || (Array.isArray(disciplinasCursoResponse) ? disciplinasCursoResponse : [])
   const { data: anosLetivosData, isLoading: isLoadingAnosLectivos } = useAnosLectivos({ page: 1, limit: 1000 })
   const { data: tiposAvaliacaoData, isLoading: isLoadingTiposAvaliacao } = useTiposAvaliacao(1, 100)
 
@@ -101,32 +109,16 @@ export default function GradeLaunching() {
   const grades = gradesData?.data || []
   const pagination = gradesData?.pagination
 
-  // Dados dos selects
-  const students = Array.isArray(studentsData) ? studentsData : studentsData?.data || []
-  const disciplines = disciplinesData?.data || []
-  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
   const anosLetivos = anosLetivosData?.data || []
   const tiposAvaliacao = tiposAvaliacaoData?.data || []
 
-  // Filtros locais para dados que vêm sem paginação
-  const filteredStudents = useMemo(() => {
-    if (!studentSearch.trim()) return students
-    const term = studentSearch.toLowerCase()
-    return students.filter(s => 
-      s.nome?.toLowerCase().includes(term) || 
-      s.codigo?.toString().includes(term)
-    )
-  }, [students, studentSearch])
-
-  const filteredDisciplines = useMemo(() => {
-    // Já filtra via API com 'search' param, mas podemos filtrar localmente também
-    return disciplines
-  }, [disciplines])
-
   const filteredTurmas = useMemo(() => {
-    // Já filtra via API com 'turmaSearch' param
-    return turmas
-  }, [turmas])
+    let filtered = turmas
+    if (formData.codigoAnoLectivo) {
+      filtered = filtered.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === formData.codigoAnoLectivo)
+    }
+    return filtered
+  }, [turmas, formData.codigoAnoLectivo])
 
   // Trimestres fixos (1, 2, 3)
   const trimestres = [
@@ -192,8 +184,6 @@ export default function GradeLaunching() {
       codigoTurma: '',
     })
     // Limpar filtros de busca
-    setStudentSearch('')
-    setDisciplineSearch('')
     setTurmaSearch('')
   }
 
@@ -508,34 +498,104 @@ export default function GradeLaunching() {
             <form onSubmit={handleFormSubmit} className="space-y-5">
               {!isEditingGrade && (
                 <>
-                  {/* Aluno com busca */}
+                  {/* Ano Letivo */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Aluno * ({filteredStudents.length})
+                      Ano Letivo * ({anosLetivos.length})
+                    </label>
+                    <select
+                      value={formData.codigoAnoLectivo}
+                      onChange={e => {
+                        setFormData(f => ({ 
+                          ...f, 
+                          codigoAnoLectivo: e.target.value,
+                          codigoTurma: '',
+                          codigoAluno: '',
+                          codigoDisciplina: ''
+                        }))
+                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
+                      disabled={isLoadingAnosLectivos}
+                    >
+                      <option value="">Selecione um ano letivo...</option>
+                      {isLoadingAnosLectivos ? (
+                        <option disabled>Carregando anos letivos...</option>
+                      ) : anosLetivos.length === 0 ? (
+                        <option disabled>Nenhum ano letivo disponível</option>
+                      ) : (
+                        anosLetivos.map(ano => (
+                          <option key={ano.codigo} value={ano.codigo}>
+                            {ano.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+
+                  {/* Turma com busca */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Turma * ({filteredTurmas.length})
                     </label>
                     <input
                       type="text"
-                      placeholder="Buscar aluno por nome ou código..."
-                      value={studentSearch}
-                      onChange={(e) => setStudentSearch(e.target.value)}
+                      placeholder="Buscar turma..."
+                      value={turmaSearch}
+                      onChange={(e) => setTurmaSearch(e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
+                      disabled={!formData.codigoAnoLectivo}
                     />
                     <select
-                      value={formData.codigoAluno}
+                      value={formData.codigoTurma}
                       onChange={e => {
-                        setFormData(f => ({ ...f, codigoAluno: e.target.value }))
-                        setStudentSearch('')
+                        setFormData(f => ({ 
+                          ...f, 
+                          codigoTurma: e.target.value,
+                          codigoAluno: '',
+                          codigoDisciplina: ''
+                        }))
+                        setTurmaSearch('')
                       }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingStudents}
+                      disabled={isLoadingTurmas || !formData.codigoAnoLectivo}
+                    >
+                      <option value="">Selecione uma turma...</option>
+                      {!formData.codigoAnoLectivo ? (
+                        <option disabled>Selecione o ano letivo primeiro</option>
+                      ) : isLoadingTurmas ? (
+                        <option disabled>Carregando turmas...</option>
+                      ) : filteredTurmas.length === 0 ? (
+                        <option disabled>Nenhuma turma encontrada para este ano letivo</option>
+                      ) : (
+                        filteredTurmas.map((turma: ITurma) => (
+                          <option key={turma.codigo} value={turma.codigo}>
+                            {turma.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+
+                  {/* Aluno */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Aluno * ({students.length})
+                    </label>
+                    <select
+                      value={formData.codigoAluno}
+                      onChange={e => setFormData(f => ({ ...f, codigoAluno: e.target.value }))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
+                      disabled={!formData.codigoTurma || isLoadingStudents}
                     >
                       <option value="">Selecione um aluno...</option>
-                      {isLoadingStudents ? (
-                        <option disabled>Carregando alunos...</option>
-                      ) : filteredStudents.length === 0 ? (
-                        <option disabled>Nenhum aluno encontrado</option>
+                      {!formData.codigoTurma ? (
+                        <option disabled>Selecione a turma primeiro</option>
+                      ) : isLoadingStudents ? (
+                        <option disabled>Carregando alunos da turma...</option>
+                      ) : students.length === 0 ? (
+                        <option disabled>Nenhum aluno encontrado nesta turma</option>
                       ) : (
-                        filteredStudents.map(student => (
+                        students.map((student: any) => (
                           <option key={student.codigo} value={student.codigo}>
                             {student.nome} (#{student.codigo})
                           </option>
@@ -544,34 +604,26 @@ export default function GradeLaunching() {
                     </select>
                   </div>
 
-                  {/* Disciplina com busca */}
+                  {/* Disciplina */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Disciplina * ({filteredDisciplines.length})
+                      Disciplina * ({disciplines.length})
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Buscar disciplina..."
-                      value={disciplineSearch}
-                      onChange={(e) => setDisciplineSearch(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
-                    />
                     <select
                       value={formData.codigoDisciplina}
-                      onChange={e => {
-                        setFormData(f => ({ ...f, codigoDisciplina: e.target.value }))
-                        setDisciplineSearch('')
-                      }}
+                      onChange={e => setFormData(f => ({ ...f, codigoDisciplina: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingDisciplines}
+                      disabled={!formData.codigoTurma || isLoadingDisciplines}
                     >
                       <option value="">Selecione uma disciplina...</option>
-                      {isLoadingDisciplines ? (
+                      {!formData.codigoTurma ? (
+                        <option disabled>Selecione a turma primeiro</option>
+                      ) : isLoadingDisciplines ? (
                         <option disabled>Carregando disciplinas...</option>
-                      ) : filteredDisciplines.length === 0 ? (
+                      ) : disciplines.length === 0 ? (
                         <option disabled>Nenhuma disciplina encontrada</option>
                       ) : (
-                        filteredDisciplines.map(discipline => (
+                        disciplines.map((discipline: any) => (
                           <option key={discipline.codigo} value={discipline.codigo}>
                             {discipline.designacao}
                           </option>
@@ -651,41 +703,7 @@ export default function GradeLaunching() {
                     </select>
                   </div>
 
-                  {/* Turma com busca */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Turma (Opcional) ({filteredTurmas.length})
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Buscar turma..."
-                      value={turmaSearch}
-                      onChange={(e) => setTurmaSearch(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
-                    />
-                    <select
-                      value={formData.codigoTurma}
-                      onChange={e => {
-                        setFormData(f => ({ ...f, codigoTurma: e.target.value }))
-                        setTurmaSearch('')
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingTurmas}
-                    >
-                      <option value="">Selecione uma turma (opcional)...</option>
-                      {isLoadingTurmas ? (
-                        <option disabled>Carregando turmas...</option>
-                      ) : filteredTurmas.length === 0 ? (
-                        <option disabled>Nenhuma turma encontrada</option>
-                      ) : (
-                        filteredTurmas.map(turma => (
-                          <option key={turma.codigo} value={turma.codigo}>
-                            {turma.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
+
                 </>
               )}
 
