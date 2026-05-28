@@ -12,7 +12,7 @@ import {
   CheckCircle,
   XCircle,
   Calendar,
-  Search,
+  BookOpen,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import {
@@ -24,6 +24,8 @@ import {
 } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
+import type { ITurma } from '../../../types/turma.types'
+import { toast } from 'react-toastify'
 
 interface FilterState {
   codigoTurma: string
@@ -40,51 +42,112 @@ export default function PautaManagement() {
     codigoTrimestre: '1',
     codigoAnoLectivo: '',
     page: 1,
-    limit: 15,
+    limit: 10,
   })
-
-  // Estados de busca para selects
-  const [turmaSearch, setTurmaSearch] = useState('')
-  const [showTurmaDropdown, setShowTurmaDropdown] = useState(false)
 
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
 
-  // Hooks de dados para selects
-  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(turmaSearch)
+  // Hooks de dados para os selects
   const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete('')
 
-  // Dados dos selects
-  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
   const anosLetivos = anosLetivosData?.data || []
+  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
 
-  // Filtro local de turmas
+  // Filtrar as turmas de acordo com o Ano Letivo selecionado
   const filteredTurmas = useMemo(() => {
-    if (!turmaSearch.trim()) return turmas
-    const term = turmaSearch.toLowerCase()
-    return turmas.filter((t: { designacao?: string; codigo?: number }) =>
-      t.designacao?.toLowerCase().includes(term) ||
-      t.codigo?.toString().includes(term)
-    )
-  }, [turmas, turmaSearch])
+    if (!filters.codigoAnoLectivo) return []
+    return turmas.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === filters.codigoAnoLectivo)
+  }, [turmas, filters.codigoAnoLectivo])
 
-  // Turma e Ano selecionados (para mostrar nomes)
+  // Turma e Ano selecionados
   const selectedTurma = useMemo(() => {
     if (!filters.codigoTurma) return null
-    return turmas.find((t: { codigo?: number }) => t.codigo?.toString() === filters.codigoTurma)
+    return turmas.find((t: ITurma) => t.codigo?.toString() === filters.codigoTurma)
   }, [turmas, filters.codigoTurma])
 
   const selectedAnoLetivo = useMemo(() => {
     if (!filters.codigoAnoLectivo) return null
-    return anosLetivos.find((a: { codigo?: number }) => a.codigo?.toString() === filters.codigoAnoLectivo)
+    return anosLetivos.find((a: any) => a.codigo?.toString() === filters.codigoAnoLectivo)
   }, [anosLetivos, filters.codigoAnoLectivo])
 
-  // Hooks de dados
-  const { data: pautaData, isLoading: isLoadingPauta } = usePauta(
+  // Verificar se os filtros obrigatórios foram selecionados
+  const isContextSelected = useMemo(() => {
+    return !!filters.codigoTurma && !!filters.codigoAnoLectivo && !!filters.codigoTrimestre
+  }, [filters.codigoTurma, filters.codigoAnoLectivo, filters.codigoTrimestre])
+
+  // Hook de dados para carregar a pauta
+  const { data: pautaResponse, isLoading: isLoadingPauta, refetch: refetchPauta } = usePauta(
     parseInt(filters.codigoTurma) || 0,
     parseInt(filters.codigoTrimestre) || 1,
     parseInt(filters.codigoAnoLectivo) || 0,
-    !!filters.codigoTurma && !!filters.codigoAnoLectivo
+    isContextSelected
   )
+
+  const pauta = pautaResponse?.data
+
+  // Processar e consolidar a pauta do backend em uma estrutura matricial (grid de disciplinas)
+  const consolidatedPauta = useMemo(() => {
+    if (!pauta) return null
+
+    const rawPauta = (pauta as any).pauta || {}
+    const uniqueStudentIds = Object.keys(rawPauta)
+
+    // Obter todas as disciplinas únicas na pauta para gerar colunas da tabela
+    const disciplineNames = new Set<string>()
+    Object.values(rawPauta).forEach((studentData: any) => {
+      studentData.disciplinas?.forEach((d: any) => {
+        if (d.disciplina) {
+          disciplineNames.add(d.disciplina)
+        }
+      })
+    })
+    const uniqueDisciplines = Array.from(disciplineNames).sort()
+
+    // Calcular estatísticas e médias
+    let totalAprovados = 0
+    let totalReprovados = 0
+    let sumAverages = 0
+    let evaluatedStudentsCount = 0
+
+    uniqueStudentIds.forEach(studentId => {
+      const studentData = rawPauta[studentId]
+      const grades = studentData.disciplinas
+        ?.map((d: any) => d.nota)
+        .filter((g: any) => g !== null && g !== undefined && !isNaN(g)) || []
+
+      if (grades.length > 0) {
+        const avg = grades.reduce((sum: number, val: number) => sum + val, 0) / grades.length
+        sumAverages += avg
+        evaluatedStudentsCount++
+        if (avg >= 10) {
+          totalAprovados++
+        } else {
+          totalReprovados++
+        }
+      }
+    })
+
+    const mediaGeral = evaluatedStudentsCount > 0 ? sumAverages / evaluatedStudentsCount : 0
+
+    return {
+      totalAlunos: uniqueStudentIds.length,
+      mediaGeral,
+      alunosAprovados: totalAprovados,
+      alunosReprovados: totalReprovados,
+      uniqueDisciplines,
+      rawPauta,
+      studentIds: uniqueStudentIds
+    }
+  }, [pauta])
+
+  // Paginação dos alunos
+  const paginatedStudentIds = useMemo(() => {
+    if (!consolidatedPauta) return []
+    const start = (filters.page - 1) * filters.limit
+    const end = start + filters.limit
+    return consolidatedPauta.studentIds.slice(start, end)
+  }, [consolidatedPauta, filters.page, filters.limit])
 
   // Hooks de mutação
   const { mutate: generatePauta, isPending: isGenerating } = useGeneratePauta()
@@ -92,97 +155,71 @@ export default function PautaManagement() {
   const { mutate: exportExcel, isPending: isExportingExcel } = useExportPautaExcel()
   const { mutate: publishPauta, isPending: isPublishing } = usePublishPauta()
 
-  // Dados extraídos
-  const pauta = pautaData?.data
-
-  // Itens da pauta com paginação
-  const paginatedItems = useMemo(() => {
-    if (!pauta?.itens) return { items: [], total: 0, pages: 0 }
-
-    const start = (filters.page - 1) * filters.limit
-    const end = start + filters.limit
-    const items = pauta.itens.slice(start, end)
-
-    return {
-      items,
-      total: pauta.itens.length,
-      pages: Math.ceil(pauta.itens.length / filters.limit),
-    }
-  }, [pauta, filters.page, filters.limit])
-
   // Handlers
   const handleGeneratePauta = () => {
     if (!filters.codigoTurma || !filters.codigoAnoLectivo) {
-      alert('Por favor, selecione turma e ano letivo')
+      toast.error('Por favor, selecione a turma e o ano letivo')
       return
     }
 
-    generatePauta({
-      codigoTurma: parseInt(filters.codigoTurma),
-      codigoTrimestre: parseInt(filters.codigoTrimestre),
-      codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
-    })
+    generatePauta(
+      {
+        codigoTurma: parseInt(filters.codigoTurma),
+        codigoTrimestre: parseInt(filters.codigoTrimestre),
+        codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
+      },
+      {
+        onSuccess: () => {
+          refetchPauta()
+        }
+      }
+    )
     setShowGenerateConfirm(false)
   }
 
   const handleExportPDF = () => {
-    if (!pauta) {
-      alert('Nenhuma pauta para exportar')
-      return
-    }
-
+    if (!pauta) return
     exportPDF({
-      codigoTurma: pauta.codigoTurma,
-      codigoTrimestre: pauta.codigoTrimestre,
-      codigoAnoLectivo: pauta.codigoAnoLectivo,
+      codigoTurma: parseInt(filters.codigoTurma),
+      codigoTrimestre: parseInt(filters.codigoTrimestre),
+      codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
     })
   }
 
   const handleExportExcel = () => {
-    if (!pauta) {
-      alert('Nenhuma pauta para exportar')
-      return
-    }
-
+    if (!pauta) return
     exportExcel({
-      codigoTurma: pauta.codigoTurma,
-      codigoTrimestre: pauta.codigoTrimestre,
-      codigoAnoLectivo: pauta.codigoAnoLectivo,
+      codigoTurma: parseInt(filters.codigoTurma),
+      codigoTrimestre: parseInt(filters.codigoTrimestre),
+      codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
     })
   }
 
   const handlePublishPauta = () => {
-    if (!pauta) {
-      alert('Nenhuma pauta para publicar')
-      return
-    }
-
+    if (!pauta) return
     if (confirm('Tem certeza que deseja publicar esta pauta? As notas ficarão visíveis para os alunos.')) {
       publishPauta({
-        codigoTurma: pauta.codigoTurma,
-        codigoTrimestre: pauta.codigoTrimestre,
+        codigoTurma: parseInt(filters.codigoTurma),
+        codigoTrimestre: parseInt(filters.codigoTrimestre),
       })
     }
   }
 
-  const getStatusBadge = (status: 'Aprovado' | 'Reprovado') => {
-    if (status === 'Aprovado') {
-      return (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-          <CheckCircle className="h-4 w-4 mr-1" />
-          Aprovado
-        </span>
-      )
-    }
-    return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-        <XCircle className="h-4 w-4 mr-1" />
-        Reprovado
-      </span>
-    )
+  const handleAnoLectivoChange = (value: string) => {
+    setFilters(f => ({ ...f, codigoAnoLectivo: value, codigoTurma: '', page: 1 }))
   }
 
-  const totalPages = paginatedItems.pages
+  const handleTurmaChange = (value: string) => {
+    setFilters(f => ({ ...f, codigoTurma: value, page: 1 }))
+  }
+
+  const trimestres = [
+    { codigo: 1, designacao: '1º Trimestre' },
+    { codigo: 2, designacao: '2º Trimestre' },
+    { codigo: 3, designacao: '3º Trimestre' },
+  ]
+
+  const totalPages = consolidatedPauta ? Math.ceil(consolidatedPauta.totalAlunos / filters.limit) : 0
   const currentPage = filters.page
 
   return (
@@ -204,7 +241,7 @@ export default function PautaManagement() {
                   Gestão de Pautas
                 </h1>
                 <p className="text-gray-600 text-lg">
-                  Gere, visualize e publique pautas consolidadas de notas por turma
+                  Gere, visualize e publique as pautas consolidadas por turma e trimestre
                 </p>
               </div>
             </div>
@@ -214,118 +251,67 @@ export default function PautaManagement() {
 
       {/* Filtros */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Turma - Select com busca */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Turma *
-            </label>
-            <div className="relative">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar turma..."
-                  value={showTurmaDropdown ? turmaSearch : (selectedTurma?.designacao || '')}
-                  onChange={(e) => {
-                    setTurmaSearch(e.target.value)
-                    if (!showTurmaDropdown) setShowTurmaDropdown(true)
-                  }}
-                  onFocus={() => setShowTurmaDropdown(true)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                />
-              </div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <BookOpen className="h-5 w-5 text-[#007C00]" />
+          Filtros de Pauta
+        </h2>
 
-              {showTurmaDropdown && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowTurmaDropdown(false)} />
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-20">
-                    {isLoadingTurmas ? (
-                      <div className="px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Carregando turmas...
-                      </div>
-                    ) : filteredTurmas.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-gray-500">
-                        Nenhuma turma encontrada
-                      </div>
-                    ) : (
-                      filteredTurmas.map((turma: { codigo: number; designacao: string }) => (
-                        <button
-                          key={turma.codigo}
-                          type="button"
-                          onClick={() => {
-                            setFilters(f => ({ ...f, codigoTurma: turma.codigo.toString(), page: 1 }))
-                            setTurmaSearch('')
-                            setShowTurmaDropdown(false)
-                          }}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                            filters.codigoTurma === turma.codigo.toString() ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-700'
-                          }`}
-                        >
-                          {turma.designacao} <span className="text-gray-400">(#{turma.codigo})</span>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-            {selectedTurma && (
-              <button
-                type="button"
-                onClick={() => {
-                  setFilters(f => ({ ...f, codigoTurma: '', page: 1 }))
-                  setTurmaSearch('')
-                }}
-                className="mt-1 text-xs text-red-500 hover:text-red-700"
-              >
-                Limpar seleção
-              </button>
-            )}
-          </div>
-
-          {/* Trimestre */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Ano Letivo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Trimestre
-            </label>
-            <select
-              value={filters.codigoTrimestre}
-              onChange={e => setFilters(f => ({ ...f, codigoTrimestre: e.target.value, page: 1 }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-            >
-              <option value="1">1º Trimestre</option>
-              <option value="2">2º Trimestre</option>
-              <option value="3">3º Trimestre</option>
-            </select>
-          </div>
-
-          {/* Ano Letivo - Select */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Ano Letivo *
             </label>
             <select
               value={filters.codigoAnoLectivo}
-              onChange={e => setFilters(f => ({ ...f, codigoAnoLectivo: e.target.value, page: 1 }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
+              onChange={e => handleAnoLectivoChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
               disabled={isLoadingAnosLetivos}
             >
-              <option value="">Selecione um ano letivo...</option>
-              {isLoadingAnosLetivos ? (
-                <option disabled>Carregando...</option>
-              ) : anosLetivos.length === 0 ? (
-                <option disabled>Nenhum ano letivo disponível</option>
-              ) : (
-                anosLetivos.map((ano: { codigo: number; designacao: string }) => (
-                  <option key={ano.codigo} value={ano.codigo}>
-                    {ano.designacao}
-                  </option>
-                ))
-              )}
+              <option value="">Selecione um ano...</option>
+              {anosLetivos.map((ano: any) => (
+                <option key={ano.codigo} value={ano.codigo}>
+                  {ano.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Turma */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Turma *
+            </label>
+            <select
+              value={filters.codigoTurma}
+              onChange={e => handleTurmaChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
+            >
+              <option value="">Selecione uma turma...</option>
+              {filteredTurmas.map((turma: ITurma) => (
+                <option key={turma.codigo} value={turma.codigo}>
+                  {turma.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Trimestre */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Trimestre *
+            </label>
+            <select
+              value={filters.codigoTrimestre}
+              onChange={e => setFilters(f => ({ ...f, codigoTrimestre: e.target.value, page: 1 }))}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+            >
+              {trimestres.map(t => (
+                <option key={t.codigo} value={t.codigo}>
+                  {t.designacao}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -333,23 +319,23 @@ export default function PautaManagement() {
             <button
               onClick={() => setShowGenerateConfirm(true)}
               disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGenerating}
-              className="w-full px-4 py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-[#007C00] text-white rounded-xl hover:bg-[#005a00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2 shadow-md"
             >
-              {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <BarChart3 className="h-4 w-4" />}
+              {isGenerating ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
               Gerar Pauta
             </button>
           </div>
         </div>
       </div>
 
-      {/* Ações de Exportação */}
-      {pauta && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {/* Estatísticas Consolidadas da Pauta */}
+      {consolidatedPauta && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Total de Alunos</p>
-                <p className="text-3xl font-bold text-gray-900">{pauta.totalAlunos}</p>
+                <p className="text-3xl font-bold text-gray-900">{consolidatedPauta.totalAlunos}</p>
               </div>
               <Users className="h-8 w-8 text-blue-600" />
             </div>
@@ -359,7 +345,7 @@ export default function PautaManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Aprovados</p>
-                <p className="text-3xl font-bold text-green-600">{pauta.alunosAprovados}</p>
+                <p className="text-3xl font-bold text-green-600">{consolidatedPauta.alunosAprovados}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
@@ -369,7 +355,7 @@ export default function PautaManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Reprovados</p>
-                <p className="text-3xl font-bold text-red-600">{pauta.alunosReprovados}</p>
+                <p className="text-3xl font-bold text-red-600">{consolidatedPauta.alunosReprovados}</p>
               </div>
               <XCircle className="h-8 w-8 text-red-600" />
             </div>
@@ -379,7 +365,7 @@ export default function PautaManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Média Geral</p>
-                <p className="text-3xl font-bold text-purple-600">{pauta.mediaGeral.toFixed(2)}</p>
+                <p className="text-3xl font-bold text-purple-600">{consolidatedPauta.mediaGeral.toFixed(2)}</p>
               </div>
               <BarChart3 className="h-8 w-8 text-purple-600" />
             </div>
@@ -387,13 +373,13 @@ export default function PautaManagement() {
         </div>
       )}
 
-      {/* Botões de Ação */}
-      {pauta && (
+      {/* Ações da Pauta */}
+      {consolidatedPauta && (
         <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={handleExportPDF}
             disabled={isExportingPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50 font-semibold shadow-xs"
           >
             {isExportingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Exportar PDF
@@ -402,7 +388,7 @@ export default function PautaManagement() {
           <button
             onClick={handleExportExcel}
             disabled={isExportingExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50 font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors disabled:opacity-50 font-semibold shadow-xs"
           >
             {isExportingExcel ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Exportar Excel
@@ -411,15 +397,15 @@ export default function PautaManagement() {
           <button
             onClick={handlePublishPauta}
             disabled={isPublishing}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors disabled:opacity-50 font-semibold shadow-xs"
           >
             {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
             Publicar Pauta
           </button>
 
           <button
-            onClick={() => setFilters(f => ({ ...f, page: 1 }))}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium ml-auto"
+            onClick={() => refetchPauta()}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors font-semibold ml-auto shadow-xs"
           >
             <Calendar className="h-4 w-4" />
             Atualizar
@@ -427,98 +413,125 @@ export default function PautaManagement() {
         </div>
       )}
 
-      {/* Tabela de Pauta */}
+      {/* Grid de Exibição da Pauta Matricial */}
       <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          {!pauta || isLoadingPauta ? (
-            <div className="px-6 py-12 text-center">
-              {isLoadingPauta ? (
-                <>
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
-                  <p className="text-gray-600">Carregando pauta...</p>
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
-                  <p className="text-gray-600 font-medium">Nenhuma pauta encontrada</p>
-                  <p className="text-sm text-gray-500">Selecione os filtros e clique em "Gerar Pauta"</p>
-                </>
-              )}
-            </div>
-          ) : (
-            <>
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Aluno</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Disciplina</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nota</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Tipo Avaliação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedItems.items.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center">
-                        <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
-                        <p className="text-gray-600 font-medium">Nenhum resultado</p>
+        {!isContextSelected ? (
+          <div className="px-6 py-12 text-center">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
+            <p className="text-gray-600 font-medium">Nenhuma turma ou ano letivo selecionados</p>
+            <p className="text-sm text-gray-500">Selecione os filtros acima para poder visualizar a pauta.</p>
+          </div>
+        ) : isLoadingPauta ? (
+          <div className="px-6 py-12 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
+            <p className="text-gray-600">Buscando pauta da turma...</p>
+          </div>
+        ) : !consolidatedPauta || consolidatedPauta.totalAlunos === 0 ? (
+          <div className="px-6 py-12 text-center">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
+            <p className="text-gray-600 font-medium">Esta pauta ainda não foi gerada</p>
+            <p className="text-sm text-gray-500 mb-4">Clique no botão "Gerar Pauta" para calculá-la e exibi-la.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full whitespace-nowrap">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-16">Nº</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nome do Aluno</th>
+                  {consolidatedPauta.uniqueDisciplines.map(disc => (
+                    <th key={disc} className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                      {disc}
+                    </th>
+                  ))}
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-32">Média</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-32">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {paginatedStudentIds.map((studentId, index) => {
+                  const studentData = consolidatedPauta.rawPauta[studentId]
+                  const student = studentData.aluno
+
+                  // Mapeia as notas do aluno para as colunas das disciplinas correspondentes
+                  const gradesByDisc = consolidatedPauta.uniqueDisciplines.map(discName => {
+                    const d = studentData.disciplinas?.find((item: any) => item.disciplina === discName)
+                    return d ? d.nota : null
+                  })
+
+                  // Calcula a média das notas
+                  const filledGrades = gradesByDisc.filter(g => g !== null)
+                  const avg = filledGrades.length > 0 ? filledGrades.reduce((sum, val) => sum + val, 0) / filledGrades.length : 0
+                  const status = avg >= 10 ? 'Aprovado' : 'Reprovado'
+
+                  return (
+                    <tr key={studentId} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm text-gray-500 font-medium">
+                        {(filters.page - 1) * filters.limit + index + 1}
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="font-semibold text-gray-900">{student.nome}</p>
+                        <p className="text-xs text-gray-400">Cód: #{student.codigo}</p>
+                      </td>
+                      {gradesByDisc.map((grade, idx) => (
+                        <td key={idx} className="px-6 py-4 text-center">
+                          <span
+                            className={`font-semibold text-sm ${
+                              grade !== null ? (grade >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400'
+                            }`}
+                          >
+                            {grade !== null ? grade.toFixed(1) : '-'}
+                          </span>
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-center">
+                        <span className={`font-bold text-sm ${avg >= 10 ? 'text-[#007C00]' : 'text-red-600'}`}>
+                          {avg.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                            avg >= 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {status}
+                        </span>
                       </td>
                     </tr>
-                  ) : (
-                    paginatedItems.items.map((item, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <p className="font-medium text-gray-900">{item.nomeAluno}</p>
-                          <p className="text-xs text-gray-500">Código: {item.codigoAluno}</p>
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="text-gray-700">{item.nomeDisciplina}</p>
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="font-bold text-lg text-gray-900">{item.nota.toFixed(2)}</p>
-                        </td>
-                        <td className="px-6 py-4">
-                          {getStatusBadge(item.status)}
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="text-gray-700">{item.tipoAvaliacao}</p>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                  )
+                })}
+              </tbody>
+            </table>
 
-              {/* Paginação */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
-                  <span className="text-sm text-gray-600">
-                    Página {currentPage} de {totalPages} ({paginatedItems.total} itens)
-                  </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setFilters(f => ({ ...f, page: Math.max(1, f.page - 1) }))}
-                      disabled={currentPage === 1}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Anterior
-                    </button>
-                    <button
-                      onClick={() => setFilters(f => ({ ...f, page: Math.min(totalPages, f.page + 1) }))}
-                      disabled={currentPage === totalPages}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Próxima
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
+            {/* Paginação */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <span className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} ({consolidatedPauta.totalAlunos} alunos)
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFilters(f => ({ ...f, page: Math.max(1, f.page - 1) }))}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Anterior
+                  </button>
+                  <button
+                    onClick={() => setFilters(f => ({ ...f, page: Math.min(totalPages, f.page + 1) }))}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Próxima
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modal de Confirmação de Geração */}
@@ -528,25 +541,25 @@ export default function PautaManagement() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Gerar Pauta</h2>
 
             <p className="text-gray-600 mb-6">
-              Tem certeza que deseja gerar a pauta para:
+              Tem certeza que deseja processar e gerar a pauta consolidada para:
             </p>
 
             <div className="space-y-3 mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between">
                 <span className="text-gray-600">Turma:</span>
-                <span className="font-medium text-gray-900">
+                <span className="font-semibold text-gray-900">
                   {selectedTurma?.designacao || `#${filters.codigoTurma}`}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Trimestre:</span>
-                <span className="font-medium text-gray-900">
+                <span className="font-semibold text-gray-900">
                   {parseInt(filters.codigoTrimestre)}º
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Ano Letivo:</span>
-                <span className="font-medium text-gray-900">
+                <span className="font-semibold text-gray-900">
                   {selectedAnoLetivo?.designacao || `#${filters.codigoAnoLectivo}`}
                 </span>
               </div>

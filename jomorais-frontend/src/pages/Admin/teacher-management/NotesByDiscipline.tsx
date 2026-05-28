@@ -13,6 +13,9 @@ import {
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { useGrades } from '../../../hooks/useGrade'
+import { useTurmasComplete } from '../../../hooks/useTurma'
+import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
+import type { ITurma } from '../../../types/turma.types'
 
 interface DisciplineStats {
   codigoDisciplina: number
@@ -40,6 +43,23 @@ export default function NotesByDiscipline() {
   // Estados de expansão de disciplinas
   const [expandedDisciplines, setExpandedDisciplines] = useState<Set<number>>(new Set())
 
+  // Hooks de dados para os selects
+  const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete('')
+
+  const anosLetivos = anosLetivosData?.data || []
+  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+
+  // Filtrar as turmas de acordo com o Ano Letivo selecionado
+  const filteredTurmas = useMemo(() => {
+    if (!filters.codigoAnoLectivo) return []
+    return turmas.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === filters.codigoAnoLectivo)
+  }, [turmas, filters.codigoAnoLectivo])
+
+  const isContextSelected = useMemo(() => {
+    return !!filters.codigoTurma && !!filters.codigoAnoLectivo
+  }, [filters.codigoTurma, filters.codigoAnoLectivo])
+
   // Hooks de dados
   const { data: gradesData, isLoading: isLoadingGrades } = useGrades(
     1,
@@ -47,7 +67,8 @@ export default function NotesByDiscipline() {
     {
       codigoTurma: filters.codigoTurma ? parseInt(filters.codigoTurma) : undefined,
       codigoAnoLectivo: filters.codigoAnoLectivo ? parseInt(filters.codigoAnoLectivo) : undefined,
-    }
+    },
+    isContextSelected
   )
 
   // Dados extraídos
@@ -135,6 +156,14 @@ export default function NotesByDiscipline() {
     setExpandedDisciplines(newExpanded)
   }
 
+  const handleAnoLectivoChange = (value: string) => {
+    setFilters(f => ({ ...f, codigoAnoLectivo: value, codigoTurma: '' }))
+  }
+
+  const handleTurmaChange = (value: string) => {
+    setFilters(f => ({ ...f, codigoTurma: value }))
+  }
+
   const getStatusBadge = (nota: number) => {
     if (nota >= 10) {
       return (
@@ -193,37 +222,51 @@ export default function NotesByDiscipline() {
           <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Ano Letivo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Código da Turma
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Ano Letivo *
             </label>
-            <input
-              type="number"
-              value={filters.codigoTurma}
-              onChange={e => setFilters(f => ({ ...f, codigoTurma: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-              placeholder="Ex: 1"
-            />
+            <select
+              value={filters.codigoAnoLectivo}
+              onChange={e => handleAnoLectivoChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={isLoadingAnosLetivos}
+            >
+              <option value="">Selecione um ano...</option>
+              {anosLetivos.map((ano: any) => (
+                <option key={ano.codigo} value={ano.codigo}>
+                  {ano.designacao}
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Turma */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ano Letivo
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Turma *
             </label>
-            <input
-              type="number"
-              value={filters.codigoAnoLectivo}
-              onChange={e => setFilters(f => ({ ...f, codigoAnoLectivo: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-              placeholder="Ex: 1"
-            />
+            <select
+              value={filters.codigoTurma}
+              onChange={e => handleTurmaChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
+            >
+              <option value="">Selecione uma turma...</option>
+              {filteredTurmas.map((turma: ITurma) => (
+                <option key={turma.codigo} value={turma.codigo}>
+                  {turma.designacao}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex items-end">
             <button
               onClick={() => setExpandedDisciplines(new Set())}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold"
             >
               Recolher Tudo
             </button>
@@ -232,7 +275,7 @@ export default function NotesByDiscipline() {
       </div>
 
       {/* Estatísticas Gerais */}
-      {disciplineStats.length > 0 && (
+      {isContextSelected && disciplineStats.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <div className="flex items-center justify-between">
@@ -298,7 +341,15 @@ export default function NotesByDiscipline() {
 
       {/* Disciplinas */}
       <div className="space-y-4">
-        {isLoadingGrades ? (
+        {!isContextSelected ? (
+          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
+            <p className="text-gray-600 font-medium">Filtros não selecionados</p>
+            <p className="text-sm text-gray-500">
+              Selecione o Ano Letivo e a Turma acima para visualizar as notas agrupadas por disciplina.
+            </p>
+          </div>
+        ) : isLoadingGrades ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
             <p className="text-gray-600">Carregando notas...</p>
@@ -308,7 +359,7 @@ export default function NotesByDiscipline() {
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
             <p className="text-gray-600 font-medium">Nenhuma nota encontrada</p>
             <p className="text-sm text-gray-500">
-              Selecione os filtros para visualizar notas por disciplina
+              Não existem notas lançadas para a turma e ano letivo selecionados.
             </p>
           </div>
         ) : (
@@ -320,9 +371,9 @@ export default function NotesByDiscipline() {
               {/* Header da Disciplina */}
               <button
                 onClick={() => toggleDisciplineExpanded(discipline.codigoDisciplina)}
-                className="w-full px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+                className="w-full px-6 py-4 hover:bg-gray-50/50 transition-colors text-left"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="flex-shrink-0">
                       {expandedDisciplines.has(discipline.codigoDisciplina) ? (
@@ -342,45 +393,43 @@ export default function NotesByDiscipline() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-6 self-end md:self-auto">
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Alunos</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Alunos</p>
+                      <p className="text-xl font-bold text-gray-900">
                         {discipline.totalAlunos}
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Média</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Média</p>
+                      <p className="text-xl font-bold text-gray-900">
                         {discipline.media.toFixed(2)}
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Aprovação</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Aprovação</p>
                       <p
-                        className={`text-2xl font-bold ${getDisciplinePerformanceColor(discipline.percentualAprovacao)}`}
+                        className={`text-xl font-bold ${getDisciplinePerformanceColor(discipline.percentualAprovacao)}`}
                       >
                         {discipline.percentualAprovacao.toFixed(0)}%
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                            <span className="font-bold text-green-600">
-                              {discipline.aprovados}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <XCircle className="h-4 w-4 text-red-600" />
-                            <span className="font-bold text-red-600">
-                              {discipline.reprovados}
-                            </span>
-                          </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span className="font-bold text-green-600 text-sm">
+                            {discipline.aprovados}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <XCircle className="h-4 w-4 text-red-600" />
+                          <span className="font-bold text-red-600 text-sm">
+                            {discipline.reprovados}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -390,7 +439,7 @@ export default function NotesByDiscipline() {
 
               {/* Detalhes da Disciplina */}
               {expandedDisciplines.has(discipline.codigoDisciplina) && (
-                <div className="border-t border-gray-100 bg-gray-50">
+                <div className="border-t border-gray-100 bg-gray-50/50">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
@@ -415,14 +464,14 @@ export default function NotesByDiscipline() {
                           </th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-gray-100 bg-white">
                         {discipline.notas.map((nota, idx) => (
                           <tr
                             key={idx}
-                            className="border-b border-gray-200 hover:bg-white transition-colors"
+                            className="hover:bg-gray-50/50 transition-colors"
                           >
                             <td className="px-6 py-3">
-                              <p className="font-medium text-gray-900">
+                              <p className="font-semibold text-gray-900">
                                 {nota.tb_alunos?.nome || `Aluno ${nota.CodigoAluno}`}
                               </p>
                             </td>
@@ -433,14 +482,14 @@ export default function NotesByDiscipline() {
                               {nota.tb_trimestres?.designacao || `Trimestre ${nota.CodigoTrimestre}`}
                             </td>
                             <td className="px-6 py-3">
-                              <span className="font-bold text-lg text-gray-900">
+                              <span className="font-bold text-gray-900">
                                 {nota.Nota.toFixed(2)}
                               </span>
                             </td>
                             <td className="px-6 py-3">
                               {getStatusBadge(nota.Nota)}
                             </td>
-                            <td className="px-6 py-3 text-gray-600 text-sm">
+                            <td className="px-6 py-3 text-gray-600 text-sm font-medium">
                               {nota.tb_tipo_avaliacao?.designacao ||
                                 `Avaliação ${nota.CodigoTipoAvaliacao}`}
                             </td>
@@ -457,12 +506,12 @@ export default function NotesByDiscipline() {
       </div>
 
       {/* Rodapé com informações */}
-      {disciplineStats.length > 0 && (
+      {isContextSelected && disciplineStats.length > 0 && (
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-900">
-              <p className="font-medium mb-1">Resumo da Análise:</p>
+              <p className="font-semibold mb-1">Resumo da Análise:</p>
               <ul className="space-y-1 text-blue-800">
                 <li>
                   • Total de disciplinas: <strong>{generalStats.totalDisciplinas}</strong>
