@@ -2,8 +2,6 @@ import api from '../utils/api.utils'
 import type {
   TipoAvaliacao,
   TipoNota,
-  TipoNotaValor,
-  PeriodoAvaliacao,
   CreateTipoAvaliacaoPayload,
   CreateTipoNotaPayload,
   CreateTipoNotaValorPayload,
@@ -459,4 +457,3 @@ class AcademicEvaluationService {
 }
 
 export default new AcademicEvaluationService()
-export type { AcademicEvaluationPaginationParams }

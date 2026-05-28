@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import type { ITipoServico, ITipoServicoInput } from '../../types/financialService.types'
 import { useMoedas } from '../../hooks/useFinancialServices'
 import { useCategoriasServicos } from '../../hooks/useFinancialServices'
-import { mockStatus, getStatusColor } from '../../mocks/status.mock'
+
 
 interface TipoServicoFormModalProps {
   isOpen: boolean

@@ -1,12 +1,10 @@
 import api from '../utils/api.utils'
 import type {
-  Grade,
   CreateGradePayload,
   UpdateGradePayload,
   GradeResponse,
   GradesListResponse,
   GradeFilters,
-  Pauta,
   PautaResponse,
 } from '../types/grade.types'
 

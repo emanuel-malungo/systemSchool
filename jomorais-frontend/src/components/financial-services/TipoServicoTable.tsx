@@ -1,6 +1,6 @@
 import { Eye, Pencil, Trash2 } from 'lucide-react'
 import type { ITipoServico } from '../../types/financialService.types'
-import { mockStatus, getStatusColor } from '../../mocks/status.mock'
+import { getStatusColor } from '../../mocks/status.mock'
 
 // Função para obter status por designação
 const getStatusByDesignacao = (statusText: string) => {

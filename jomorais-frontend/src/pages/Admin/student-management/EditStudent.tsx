@@ -373,7 +373,7 @@ export default function EditStudent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Email</label>
-                  <Controller name="email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="exemplo@email.com" />} />
+                  <Controller name="email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="exemplo@email.com" value={field.value || ''} />} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Telefone</label>
@@ -512,7 +512,7 @@ export default function EditStudent() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">Email</label>
-                <Controller name="encarregado.email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="email@exemplo.com" />} />
+                <Controller name="encarregado.email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="email@exemplo.com" value={field.value || ''} />} />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

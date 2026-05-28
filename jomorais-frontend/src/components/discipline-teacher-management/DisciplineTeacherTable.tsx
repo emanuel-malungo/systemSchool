@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2, ChevronLeft, ChevronRight, User, BookOpen } from 'lucide-react'
+import { Pencil, Trash2, ChevronLeft, ChevronRight, User, BookOpen } from 'lucide-react'
 import type { IDisciplinaDocente } from '../../types/disciplineTeacher.types'
 
 interface DisciplineTeacherTableProps {

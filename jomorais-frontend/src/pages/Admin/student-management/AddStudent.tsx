@@ -316,7 +316,7 @@ export default function AddStudent() {
                     name="email"
                     control={control}
                     render={({ field }) => (
-                      <Input {...field} type="email" placeholder="exemplo@email.com" />
+                      <Input {...field} type="email" placeholder="exemplo@email.com" value={field.value || ''} />
                     )}
                   />
                 </div>
@@ -661,7 +661,7 @@ export default function AddStudent() {
                   name="encarregado.email"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} type="email" placeholder="email@exemplo.com" />
+                    <Input {...field} type="email" placeholder="email@exemplo.com" value={field.value || ''} />
                   )}
                 />
               </div>

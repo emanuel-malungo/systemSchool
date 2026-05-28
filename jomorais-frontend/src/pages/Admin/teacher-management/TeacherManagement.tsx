@@ -15,7 +15,6 @@ export default function TeacherManagement() {
   // Modais
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [selectedTeacher, setSelectedTeacher] = useState<IDocente | null>(null)
   const [teacherToDelete, setTeacherToDelete] = useState<IDocente | null>(null)
   const [teacherToEdit, setTeacherToEdit] = useState<IDocente | null>(null)
 

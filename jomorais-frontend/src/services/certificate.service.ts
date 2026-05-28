@@ -1,6 +1,5 @@
 import api from '../utils/api.utils'
 import type {
-  Certificate,
   CreateCertificatePayload,
   UpdateCertificatePayload,
   CertificateResponse,

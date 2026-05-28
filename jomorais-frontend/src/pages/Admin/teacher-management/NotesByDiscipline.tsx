@@ -2,8 +2,6 @@ import { useState, useMemo } from 'react'
 import {
   BookOpen,
   TrendingUp,
-  TrendingDown,
-  Users,
   BarChart3,
   AlertCircle,
   Loader2,

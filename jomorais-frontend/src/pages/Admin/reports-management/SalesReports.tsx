@@ -38,7 +38,7 @@ export default function SalesReports() {
     dataFim || undefined
   );
 
-  const { data: relatorioDetalhado, isLoading: loadingDetalhado } = useRelatorioVendasDetalhado(
+  const { data: relatorioDetalhado } = useRelatorioVendasDetalhado(
     funcionarioSelecionado,
     periodo,
     dataInicio || undefined,

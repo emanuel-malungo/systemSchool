@@ -7,21 +7,16 @@ import {
   Building2,
   AlertCircle,
   Clock,
-  TrendingUp,
   Users,
   Receipt,
   DollarSign,
   Eye,
-  FileDown,
   Info,
   CheckCircle,
   XCircle,
   Key,
-  Shield
 } from 'lucide-react'
 import Container from '../../components/layout/Container'
-import StatCard from '../../components/common/StatCard'
-import ErrorBoundary from '../../components/common/ErrorBoundary'
 import type { ISAFTExportConfig, ISAFTExportResponse } from '../../types/saft.types'
 import { toast } from 'react-toastify'
 import SAFTService from '../../services/saft.service'
@@ -29,19 +24,6 @@ import CryptoService from '../../services/crypto.service'
 import '../../assets/styles/saft.css'
 
 // Componente de Loading para estatísticas
-const StatsLoadingSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    {[...Array(4)].map((_, i) => (
-      <StatCard
-        key={i}
-        title=""
-        value=""
-        icon={Users}
-        loading={true}
-      />
-    ))}
-  </div>
-)
 
 // Modal de Progresso da Exportação
 const ExportProgressModal = ({ 
@@ -227,19 +209,11 @@ export default function SAFTExport() {
   // Estados locais substituindo o hook
   const [isExporting, setIsExporting] = useState(false)
   const [exportProgress, setExportProgress] = useState(0)
-  const [exportResult, setExportResult] = useState<ISAFTExportResponse | null>(null)
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const [statistics, setStatistics] = useState({
-    totalInvoices: 0,
-    totalPayments: 0,
-    totalCustomers: 0,
-    totalProducts: 0,
-    totalAmount: 0
-  })
-  const [isLoadingStatistics, setIsLoadingStatistics] = useState(true)
   const [hasKeys, setHasKeys] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastExport, setLastExport] = useState<ISAFTExportResponse | null>(null)
+  const [_exportResult, setExportResult] = useState<ISAFTExportResponse | null>(null)
+  const [_validationErrors, setValidationErrors] = useState<string[]>([])
   
   const isLoadingStatsRef = useRef(false)
   const statsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -256,23 +230,14 @@ export default function SAFTExport() {
     
     try {
       isLoadingStatsRef.current = true
-      setIsLoadingStatistics(true)
       
-      const stats = await SAFTService.getExportStatistics(startDate, endDate)
+      await SAFTService.getExportStatistics(startDate, endDate)
       
-      setStatistics(stats)
+      // Statistics loaded (available for future use)
     } catch (error: unknown) {
       const err = error as Error
       console.error('❌ Erro ao carregar estatísticas:', err)
-      setStatistics({
-        totalInvoices: 0,
-        totalPayments: 0,
-        totalCustomers: 0,
-        totalProducts: 0,
-        totalAmount: 0
-      })
     } finally {
-      setIsLoadingStatistics(false)
       isLoadingStatsRef.current = false
     }
   }
@@ -304,17 +269,18 @@ export default function SAFTExport() {
       const response = await SAFTService.getCompanyInfo()
       
       if (response?.data) {
+        const data = response.data
         setFormData(prev => ({
           ...prev,
           companyInfo: {
             ...prev.companyInfo!,
-            nif: response.data.nif || prev.companyInfo!.nif,
-            name: response.data.nome || prev.companyInfo!.name,
-            address: response.data.endereco || prev.companyInfo!.address,
-            city: response.data.cidade || prev.companyInfo!.city,
-            postalCode: response.data.codigoPostal || prev.companyInfo!.postalCode,
-            phone: response.data.telefone || prev.companyInfo!.phone,
-            email: response.data.email || prev.companyInfo!.email,
+            nif: data.nif || prev.companyInfo!.nif,
+            name: data.nome || prev.companyInfo!.name,
+            address: data.endereco || prev.companyInfo!.address,
+            city: data.cidade || prev.companyInfo!.city,
+            postalCode: data.codigoPostal || prev.companyInfo!.postalCode,
+            phone: data.telefone || prev.companyInfo!.phone,
+            email: data.email || prev.companyInfo!.email,
           }
         }))
       }
@@ -524,11 +490,6 @@ export default function SAFTExport() {
     } catch (err: unknown) {
       const error = err as Error
       const errorMessage = error.message || 'Erro desconhecido na exportação'
-      setExportResult({
-        success: false,
-        message: errorMessage,
-        errors: [errorMessage]
-      })
       setError(errorMessage)
       toast.error(errorMessage)
     } finally {
