@@ -704,6 +704,42 @@ export class AcademicManagementController {
     }
   }
 
+  static async getTurmasComplete(req, res) {
+    try {
+      const { search = '' } = req.query;
+      
+      const whereClause = search ? {
+        designacao: {
+          contains: search,
+          mode: 'insensitive'
+        }
+      } : {};
+      
+      const turmas = await prisma.tb_turmas.findMany({
+        where: whereClause,
+        include: {
+          tb_classes: { select: { codigo: true, designacao: true } },
+          tb_cursos: { select: { codigo: true, designacao: true } },
+          tb_salas: { select: { codigo: true, designacao: true } },
+          tb_periodos: { select: { codigo: true, designacao: true } }
+        },
+        orderBy: {
+          designacao: 'asc'
+        },
+        take: 1000
+      });
+      
+      res.json({
+        success: true,
+        message: "Turmas encontradas",
+        data: turmas
+      });
+    } catch (error) {
+      console.error('Erro ao buscar turmas complete:', error);
+      handleControllerError(res, error, "Erro ao buscar turmas", 400);
+    }
+  }
+
   static async getTurmas(req, res) {
     try {
       const page = parseInt(req.query.page) || 1;

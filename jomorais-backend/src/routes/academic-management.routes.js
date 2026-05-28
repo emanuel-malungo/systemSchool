@@ -1837,6 +1837,7 @@ router.post('/turmas', AcademicManagementController.createTurma);
  *                 pagination:
  *                   $ref: '#/components/schemas/Pagination'
  */
+router.get('/turmas/complete', AcademicManagementController.getTurmasComplete);
 router.get('/turmas', AcademicManagementController.getTurmas);
 
 /**
