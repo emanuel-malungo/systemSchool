@@ -13,8 +13,7 @@ import type {
  * Implementa todas as operações CRUD baseado no backend: grade-management.services.js
  */
 class GradeService {
-  private readonly baseURL = '/api/grade-management'
-  private readonly pautaURL = '/api/grade-management/pauta'
+  private readonly baseURL = '/api/grades'
 
   // ===============================
   // NOTAS - CRUD
@@ -54,7 +53,7 @@ class GradeService {
       }
 
       const response = await api.get<GradesListResponse>(
-        `${this.baseURL}?${queryParams.toString()}`
+        `${this.baseURL}/notas?${queryParams.toString()}`
       )
       return response.data
     } catch (error) {
@@ -70,7 +69,7 @@ class GradeService {
    */
   async getGradeById(id: number): Promise<GradeResponse> {
     try {
-      const response = await api.get<GradeResponse>(`${this.baseURL}/${id}`)
+      const response = await api.get<GradeResponse>(`${this.baseURL}/notas/${id}`)
       return response.data
     } catch (error) {
       console.error(`Erro ao buscar nota ${id}:`, error)
@@ -149,7 +148,7 @@ class GradeService {
    */
   async createGrade(data: CreateGradePayload): Promise<GradeResponse> {
     try {
-      const response = await api.post<GradeResponse>(this.baseURL, data)
+      const response = await api.post<GradeResponse>(`${this.baseURL}/notas`, data)
       return response.data
     } catch (error) {
       console.error('Erro ao lançar nota:', error)
@@ -165,7 +164,7 @@ class GradeService {
    */
   async updateGrade(id: number, data: UpdateGradePayload): Promise<GradeResponse> {
     try {
-      const response = await api.put<GradeResponse>(`${this.baseURL}/${id}`, data)
+      const response = await api.put<GradeResponse>(`${this.baseURL}/notas/${id}`, data)
       return response.data
     } catch (error) {
       console.error(`Erro ao atualizar nota ${id}:`, error)
@@ -180,7 +179,7 @@ class GradeService {
    */
   async deleteGrade(id: number): Promise<void> {
     try {
-      await api.delete(`${this.baseURL}/${id}`)
+      await api.delete(`${this.baseURL}/notas/${id}`)
     } catch (error) {
       console.error(`Erro ao deletar nota ${id}:`, error)
       throw error
@@ -205,7 +204,7 @@ class GradeService {
     codigoUtilizador: number
   }): Promise<any> {
     try {
-      const response = await api.post(`${this.baseURL}/import-bulk`, data)
+      const response = await api.post(`${this.baseURL}/notas/import-bulk`, data)
       return response.data
     } catch (error) {
       console.error('Erro ao importar notas em lote:', error)
@@ -257,13 +256,13 @@ class GradeService {
     codigoAnoLectivo: number
   ): Promise<PautaResponse> {
     try {
-      const response = await api.post<PautaResponse>(
-        `${this.pautaURL}/generate`,
-        {
-          codigoTurma,
-          codigoTrimestre,
-          codigoAnoLectivo,
-        }
+      const queryParams = new URLSearchParams()
+      queryParams.append('codigoTurma', codigoTurma.toString())
+      queryParams.append('codigoTrimestre', codigoTrimestre.toString())
+      queryParams.append('codigoAnoLectivo', codigoAnoLectivo.toString())
+
+      const response = await api.get<PautaResponse>(
+        `${this.baseURL}/pautas?${queryParams.toString()}`
       )
       return response.data
     } catch (error) {
@@ -291,7 +290,7 @@ class GradeService {
       queryParams.append('codigoAnoLectivo', codigoAnoLectivo.toString())
 
       const response = await api.get<PautaResponse>(
-        `${this.pautaURL}?${queryParams.toString()}`
+        `${this.baseURL}/pautas?${queryParams.toString()}`
       )
       return response.data
     } catch (error) {
@@ -314,7 +313,7 @@ class GradeService {
   ): Promise<Blob> {
     try {
       const response = await api.get(
-        `${this.pautaURL}/export/pdf?codigoTurma=${codigoTurma}&codigoTrimestre=${codigoTrimestre}&codigoAnoLectivo=${codigoAnoLectivo}`,
+        `${this.baseURL}/pautas/export/pdf?codigoTurma=${codigoTurma}&codigoTrimestre=${codigoTrimestre}&codigoAnoLectivo=${codigoAnoLectivo}`,
         {
           responseType: 'blob'
         }
@@ -340,7 +339,7 @@ class GradeService {
   ): Promise<Blob> {
     try {
       const response = await api.get(
-        `${this.pautaURL}/export/excel?codigoTurma=${codigoTurma}&codigoTrimestre=${codigoTrimestre}&codigoAnoLectivo=${codigoAnoLectivo}`,
+        `${this.baseURL}/pautas/export/excel?codigoTurma=${codigoTurma}&codigoTrimestre=${codigoTrimestre}&codigoAnoLectivo=${codigoAnoLectivo}`,
         {
           responseType: 'blob'
         }

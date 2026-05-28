@@ -185,7 +185,8 @@ export class GradeManagementService {
       const where = {};
       if (filters.codigoAluno) where.CodigoAluno = parseInt(filters.codigoAluno);
       if (filters.codigoDisciplina) where.CodigoDisciplina = parseInt(filters.codigoDisciplina);
-      if (filters.codigoTurma) where.CodigoTurma = parseInt(filters.codigoTurma);
+      // Note: CodigoTurma filter commented out as column doesn't exist in db yet
+      // if (filters.codigoTurma) where.CodigoTurma = parseInt(filters.codigoTurma);
       if (filters.codigoTrimestre) where.CodigoTrimestre = parseInt(filters.codigoTrimestre);
       if (filters.codigoAnoLectivo) where.CodigoAnoLectivo = parseInt(filters.codigoAnoLectivo);
 
