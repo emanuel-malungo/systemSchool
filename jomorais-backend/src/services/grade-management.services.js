@@ -279,49 +279,75 @@ export class GradeManagementService {
 
   static async generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
     try {
-      // Buscar todas as notas da turma neste trimestre
-      const notas = await prisma.tb_notas_alunos.findMany({
+      // Step 1: Buscar todos os alunos confirmados nesta turma e ano letivo
+      const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
-          CodigoTurma: parseInt(codigoTurma),
-          CodigoTrimestre: parseInt(codigoTrimestre),
-          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+          codigo_Turma: parseInt(codigoTurma),
+          codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
         },
         include: {
-          tb_alunos: { select: { codigo: true, nome: true } },
-          tb_disciplinas: { select: { codigo: true, designacao: true } },
-          tb_tipo_avaliacao: { select: { codigo: true, designacao: true } }
-        },
-        orderBy: [{ tb_alunos: { nome: 'asc' } }, { tb_disciplinas: { designacao: 'asc' } }]
+          tb_matriculas: {
+            include: {
+              tb_alunos: { select: { codigo: true, nome: true } }
+            }
+          }
+        }
       });
 
-      if (notas.length === 0) {
-        throw new AppError('Nenhuma nota encontrada para esta turma e trimestre', 404);
+      if (confirmacoes.length === 0) {
+        throw new AppError('Nenhum aluno confirmado para esta turma e ano letivo', 404);
       }
 
-      // Agrupar por aluno
+      // Step 2: Para cada aluno, buscar suas notas no trimestre
       const pautaPorAluno = {};
-      notas.forEach(nota => {
-        const codigoAluno = nota.CodigoAluno;
-        if (!pautaPorAluno[codigoAluno]) {
+      
+      for (const confirmacao of confirmacoes) {
+        const aluno = confirmacao.tb_matriculas.tb_alunos;
+        const codigoAluno = aluno.codigo;
+
+        // Buscar notas do aluno neste trimestre e ano letivo
+        const notas = await prisma.tb_notas_alunos.findMany({
+          where: {
+            CodigoAluno: codigoAluno,
+            CodigoTrimestre: parseInt(codigoTrimestre),
+            CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+          },
+          include: {
+            tb_disciplinas: { select: { codigo: true, designacao: true } },
+            tb_tipo_avaliacao: { select: { codigo: true, designacao: true } }
+          },
+          orderBy: { tb_disciplinas: { designacao: 'asc' } }
+        });
+
+        if (notas.length > 0) {
           pautaPorAluno[codigoAluno] = {
-            aluno: nota.tb_alunos,
-            disciplinas: []
+            aluno,
+            disciplinas: notas.map(nota => ({
+              disciplina: nota.tb_disciplinas.designacao,
+              tipoAvaliacao: nota.tb_tipo_avaliacao.designacao,
+              nota: nota.Nota,
+              dataCadastro: nota.DataCadastro
+            }))
           };
         }
-        pautaPorAluno[codigoAluno].disciplinas.push({
-          disciplina: nota.tb_disciplinas.designacao,
-          tipoAvaliacao: nota.tb_tipo_avaliacao.designacao,
-          nota: nota.Nota,
-          dataCadastro: nota.DataCadastro
-        });
-      });
+      }
+
+      // Se nenhum aluno tem notas, retornar pauta vazia com todos os alunos
+      const pautaFinal = Object.keys(pautaPorAluno).length > 0 
+        ? pautaPorAluno
+        : confirmacoes.reduce((acc, confirmacao) => {
+            const aluno = confirmacao.tb_matriculas.tb_alunos;
+            acc[aluno.codigo] = { aluno, disciplinas: [] };
+            return acc;
+          }, {});
 
       return {
         turma: parseInt(codigoTurma),
         trimestre: parseInt(codigoTrimestre),
-        anoLectivo: codigoAnoLectivo,
-        totalAlunos: Object.keys(pautaPorAluno).length,
-        pauta: pautaPorAluno,
+        anoLectivo: parseInt(codigoAnoLectivo),
+        totalAlunos: confirmacoes.length,
+        alunosComNotas: Object.keys(pautaPorAluno).length,
+        pauta: pautaFinal,
         dataGeracao: new Date().toISOString()
       };
     } catch (error) {
