@@ -13,6 +13,31 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     PaginationMeta:
+ *       type: object
+ *       properties:
+ *         page:
+ *           type: integer
+ *           description: Número da página atual
+ *           example: 1
+ *         limit:
+ *           type: integer
+ *           description: Número de registros por página
+ *           example: 10
+ *         total:
+ *           type: integer
+ *           description: Total de registros
+ *           example: 45
+ *         pages:
+ *           type: integer
+ *           description: Número total de páginas
+ *           example: 5
+ */
+
+/**
+ * @swagger
  * /api/users:
  *   get:
  *     summary: Lista todos os usuários do sistema moderno

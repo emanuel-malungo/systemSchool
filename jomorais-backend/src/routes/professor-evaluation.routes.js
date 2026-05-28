@@ -41,7 +41,7 @@
  *           description: Formação académica
  *         nivelAcademico:
  *           type: string
- *           description: Nível académico (ex: Licenciado, Mestre)
+ *           description: "Nível académico (ex: Licenciado, Mestre)"
  *         especialidade:
  *           type: string
  *           description: Especialidade do professor
@@ -98,7 +98,7 @@
  *           description: Data de fim do período
  *         AnoLectivo:
  *           type: string
- *           description: Ano letivo (ex: 2024/2025)
+ *           description: "Ano letivo (ex: 2024/2025)"
  *         Status:
  *           type: string
  *           enum: [Activo, Inactivo]
