@@ -12,6 +12,7 @@ import {
   CheckCircle,
   XCircle,
   Calendar,
+  Search,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import {
@@ -21,6 +22,8 @@ import {
   useExportPautaExcel,
   usePublishPauta,
 } from '../../../hooks/useGrade'
+import { useTurmasComplete } from '../../../hooks/useTurma'
+import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 
 interface FilterState {
   codigoTurma: string
@@ -40,7 +43,40 @@ export default function PautaManagement() {
     limit: 15,
   })
 
+  // Estados de busca para selects
+  const [turmaSearch, setTurmaSearch] = useState('')
+  const [showTurmaDropdown, setShowTurmaDropdown] = useState(false)
+
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
+
+  // Hooks de dados para selects
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(turmaSearch)
+  const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
+
+  // Dados dos selects
+  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+  const anosLetivos = anosLetivosData?.data || []
+
+  // Filtro local de turmas
+  const filteredTurmas = useMemo(() => {
+    if (!turmaSearch.trim()) return turmas
+    const term = turmaSearch.toLowerCase()
+    return turmas.filter((t: { designacao?: string; codigo?: number }) =>
+      t.designacao?.toLowerCase().includes(term) ||
+      t.codigo?.toString().includes(term)
+    )
+  }, [turmas, turmaSearch])
+
+  // Turma e Ano selecionados (para mostrar nomes)
+  const selectedTurma = useMemo(() => {
+    if (!filters.codigoTurma) return null
+    return turmas.find((t: { codigo?: number }) => t.codigo?.toString() === filters.codigoTurma)
+  }, [turmas, filters.codigoTurma])
+
+  const selectedAnoLetivo = useMemo(() => {
+    if (!filters.codigoAnoLectivo) return null
+    return anosLetivos.find((a: { codigo?: number }) => a.codigo?.toString() === filters.codigoAnoLectivo)
+  }, [anosLetivos, filters.codigoAnoLectivo])
 
   // Hooks de dados
   const { data: pautaData, isLoading: isLoadingPauta } = usePauta(
@@ -181,19 +217,77 @@ export default function PautaManagement() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
+          {/* Turma - Select com busca */}
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Código da Turma *
+              Turma *
             </label>
-            <input
-              type="number"
-              value={filters.codigoTurma}
-              onChange={e => setFilters(f => ({ ...f, codigoTurma: e.target.value, page: 1 }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-              placeholder="Ex: 1"
-            />
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar turma..."
+                  value={showTurmaDropdown ? turmaSearch : (selectedTurma?.designacao || '')}
+                  onChange={(e) => {
+                    setTurmaSearch(e.target.value)
+                    if (!showTurmaDropdown) setShowTurmaDropdown(true)
+                  }}
+                  onFocus={() => setShowTurmaDropdown(true)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
+                />
+              </div>
+
+              {showTurmaDropdown && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowTurmaDropdown(false)} />
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-20">
+                    {isLoadingTurmas ? (
+                      <div className="px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Carregando turmas...
+                      </div>
+                    ) : filteredTurmas.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        Nenhuma turma encontrada
+                      </div>
+                    ) : (
+                      filteredTurmas.map((turma: { codigo: number; designacao: string }) => (
+                        <button
+                          key={turma.codigo}
+                          type="button"
+                          onClick={() => {
+                            setFilters(f => ({ ...f, codigoTurma: turma.codigo.toString(), page: 1 }))
+                            setTurmaSearch('')
+                            setShowTurmaDropdown(false)
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                            filters.codigoTurma === turma.codigo.toString() ? 'bg-green-50 text-green-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          {turma.designacao} <span className="text-gray-400">(#{turma.codigo})</span>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            {selectedTurma && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFilters(f => ({ ...f, codigoTurma: '', page: 1 }))
+                  setTurmaSearch('')
+                }}
+                className="mt-1 text-xs text-red-500 hover:text-red-700"
+              >
+                Limpar seleção
+              </button>
+            )}
           </div>
 
+          {/* Trimestre */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Trimestre
@@ -209,17 +303,30 @@ export default function PautaManagement() {
             </select>
           </div>
 
+          {/* Ano Letivo - Select */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Ano Letivo *
             </label>
-            <input
-              type="number"
+            <select
               value={filters.codigoAnoLectivo}
               onChange={e => setFilters(f => ({ ...f, codigoAnoLectivo: e.target.value, page: 1 }))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-              placeholder="Ex: 1"
-            />
+              disabled={isLoadingAnosLetivos}
+            >
+              <option value="">Selecione um ano letivo...</option>
+              {isLoadingAnosLetivos ? (
+                <option disabled>Carregando...</option>
+              ) : anosLetivos.length === 0 ? (
+                <option disabled>Nenhum ano letivo disponível</option>
+              ) : (
+                anosLetivos.map((ano: { codigo: number; designacao: string }) => (
+                  <option key={ano.codigo} value={ano.codigo}>
+                    {ano.designacao}
+                  </option>
+                ))
+              )}
+            </select>
           </div>
 
           <div className="flex items-end">
@@ -427,7 +534,9 @@ export default function PautaManagement() {
             <div className="space-y-3 mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between">
                 <span className="text-gray-600">Turma:</span>
-                <span className="font-medium text-gray-900">#{filters.codigoTurma}</span>
+                <span className="font-medium text-gray-900">
+                  {selectedTurma?.designacao || `#${filters.codigoTurma}`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Trimestre:</span>
@@ -437,7 +546,9 @@ export default function PautaManagement() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Ano Letivo:</span>
-                <span className="font-medium text-gray-900">#{filters.codigoAnoLectivo}</span>
+                <span className="font-medium text-gray-900">
+                  {selectedAnoLetivo?.designacao || `#${filters.codigoAnoLectivo}`}
+                </span>
               </div>
             </div>
 
