@@ -18,7 +18,9 @@
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
     "prisma:deploy": "prisma db push --accept-data-loss",
-    "setup:tables": "node scripts/create-tables.mjs"
+    "setup:tables": "node scripts/create-tables.mjs",
+    "setup:certificates": "node run-migration-certificates.mjs",
+    "setup:certificates:recreate": "node run-migration-certificates-recreate.mjs"
   },
   "repository": {
     "type": "git",

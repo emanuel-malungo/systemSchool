@@ -20,7 +20,8 @@ import {
   DoorOpen,
   LogOut,
   Bug,
-  MapPin
+  MapPin,
+  Award
 } from 'lucide-react'
 import { useAuth, usePermissions } from '../../hooks/useAuth'
 
@@ -74,6 +75,7 @@ export default function Sidebar() {
         { title: "Lançamento de Notas", icon: BarChart3, href: "/admin/teacher-management/grade-launching" },
         { title: "Pautas", icon: FileText, href: "/admin/teacher-management/pauta" },
         { title: "Notas por Disciplina", icon: BookOpen, href: "/admin/teacher-management/notes-by-discipline" },
+        { title: "Certificados", icon: Award, href: "/admin/teacher-management/certificates" },
         { title: "Disciplinas do Docente", icon: BookOpen, href: "/admin/teacher-management/discipline-teacher" },
         { title: "Diretores de Turma", icon: UserCheck, href: "/admin/teacher-management/director-turma" }
       ]

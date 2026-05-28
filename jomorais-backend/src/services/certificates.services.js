@@ -115,13 +115,13 @@ export class CertificatesService {
         },
         include: {
           tb_alunos: {
-            select: { Codigo: true, Nome: true }
+            select: { codigo: true, nome: true }
           },
           tb_disciplinas: {
             select: { codigo: true, designacao: true }
           },
           tb_ano_lectivo: {
-            select: { Codigo: true, designacao: true }
+            select: { codigo: true, designacao: true }
           }
         }
       });
@@ -155,16 +155,16 @@ export class CertificatesService {
           take: limit,
           include: {
             tb_alunos: {
-              select: { Codigo: true, Nome: true, email: true }
+              select: { codigo: true, nome: true, email: true }
             },
             tb_disciplinas: {
               select: { codigo: true, designacao: true }
             },
             tb_ano_lectivo: {
-              select: { Codigo: true, designacao: true }
+              select: { codigo: true, designacao: true }
             },
             tb_utilizadores: {
-              select: { Codigo: true, Nome: true }
+              select: { codigo: true, nome: true }
             }
           },
           orderBy: { DataEmissao: 'desc' }
@@ -200,16 +200,16 @@ export class CertificatesService {
         where: { Codigo: id },
         include: {
           tb_alunos: {
-            select: { Codigo: true, Nome: true, email: true, dataNascimento: true }
+            select: { codigo: true, nome: true, email: true, dataNascimento: true }
           },
           tb_disciplinas: {
             select: { codigo: true, designacao: true }
           },
           tb_ano_lectivo: {
-            select: { Codigo: true, designacao: true }
+            select: { codigo: true, designacao: true }
           },
           tb_utilizadores: {
-            select: { Codigo: true, Nome: true }
+            select: { codigo: true, nome: true }
           }
         }
       });
@@ -249,9 +249,9 @@ export class CertificatesService {
           ...(observacoes !== undefined && { Observacoes: observacoes })
         },
         include: {
-          tb_alunos: { select: { Codigo: true, Nome: true } },
+          tb_alunos: { select: { codigo: true, nome: true } },
           tb_disciplinas: { select: { codigo: true, designacao: true } },
-          tb_ano_lectivo: { select: { Codigo: true, designacao: true } }
+          tb_ano_lectivo: { select: { codigo: true, designacao: true } }
         }
       });
 
@@ -294,9 +294,9 @@ export class CertificatesService {
           AssinadoPor: codigoUtilizador
         },
         include: {
-          tb_alunos: { select: { Codigo: true, Nome: true } },
+          tb_alunos: { select: { codigo: true, nome: true } },
           tb_disciplinas: { select: { codigo: true, designacao: true } },
-          tb_utilizadores: { select: { Codigo: true, Nome: true } }
+          tb_utilizadores: { select: { codigo: true, nome: true } }
         }
       });
 
@@ -350,7 +350,7 @@ export class CertificatesService {
             select: { codigo: true, designacao: true }
           },
           tb_ano_lectivo: {
-            select: { Codigo: true, designacao: true }
+            select: { codigo: true, designacao: true }
           }
         },
         orderBy: { DataEmissao: 'desc' }

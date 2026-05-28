@@ -23,6 +23,7 @@ import TeacherManagement from '../pages/Admin/teacher-management/TeacherManageme
 import GradeLaunching from '../pages/Admin/teacher-management/GradeLaunching'
 import PautaManagement from '../pages/Admin/teacher-management/PautaManagement'
 import NotesByDiscipline from '../pages/Admin/teacher-management/NotesByDiscipline'
+import CertificateManagement from '../pages/Admin/teacher-management/CertificateManagement'
 import DisciplineTeacherManagement from '../pages/Admin/discipline-teacher-management/DisciplineTeacherManagement'
 import DirectorTurmaManagement from '../pages/Admin/director-turma-management/DirectorTurmaManagement'
 import StudentReports from '../pages/Admin/reports-management/StudentReports'
@@ -74,6 +75,7 @@ export default function IndexRoutes() {
 	  	<Route path='/admin/teacher-management/grade-launching' element={<GradeLaunching />} />
 	  	<Route path='/admin/teacher-management/pauta' element={<PautaManagement />} />
 	  	<Route path='/admin/teacher-management/notes-by-discipline' element={<NotesByDiscipline />} />
+	  	<Route path='/admin/teacher-management/certificates' element={<CertificateManagement />} />
 	  	<Route path='/admin/teacher-management/discipline-teacher' element={<DisciplineTeacherManagement />} />
 	  	<Route path='/admin/teacher-management/director-turma' element={<DirectorTurmaManagement />} />
 	  	<Route path='/admin/reports-management/students' element={<StudentReports />} />
