@@ -71,6 +71,8 @@ export default function Sidebar() {
       icon: GraduationCap,
       children: [
         { title: "Professores", icon: GraduationCap, href: "/admin/teacher-management/teacher" },
+        { title: "Lançamento de Notas", icon: BarChart3, href: "/admin/teacher-management/grade-launching" },
+        { title: "Pautas", icon: FileText, href: "/admin/teacher-management/pauta" },
         { title: "Disciplinas do Docente", icon: BookOpen, href: "/admin/teacher-management/discipline-teacher" },
         { title: "Diretores de Turma", icon: UserCheck, href: "/admin/teacher-management/director-turma" }
       ]
