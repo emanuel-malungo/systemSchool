@@ -1938,6 +1938,9 @@ router.get('/anos-lectivos/:id/devedores', AcademicManagementController.getAnoLe
 // Rota para alunos de uma turma (deve vir antes da rota genérica)
 router.get('/turmas/:id/alunos', AcademicManagementController.getAlunosByTurma);
 
+// Rota para turma com disciplinas incluídas (deve vir antes da rota genérica)
+router.get('/turmas/:id/com-disciplinas', AcademicManagementController.getTurmaByIdWithDisciplinas);
+
 router.get('/turmas/:id', AcademicManagementController.getTurmaById);
 
 /**
@@ -2114,6 +2117,54 @@ router.post('/grade-curricular', AcademicManagementController.createGradeCurricu
  */
 router.get('/grade-curricular', AcademicManagementController.getGradeCurricular);
 
+// IMPORTANTE: Esta rota específica DEVE vir ANTES de /grade-curricular/:id
+// para evitar que Express interprete "curso" como um :id
+/**
+ * @swagger
+ * /api/academic-management/grade-curricular/curso/{codigo_Curso}/classe/{codigo_Classe}:
+ *   get:
+ *     summary: Obter grade curricular por curso e classe
+ *     tags: [Operações Especiais]
+ *     parameters:
+ *       - in: path
+ *         name: codigo_Curso
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Código do curso
+ *       - in: path
+ *         name: codigo_Classe
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Código da classe
+ *     responses:
+ *       200:
+ *         description: Grade curricular encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Grade curricular encontrada"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GradeCurricular'
+ *       400:
+ *         description: Parâmetros inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiError'
+ */
+router.get('/grade-curricular/curso/:codigo_Curso/classe/:codigo_Classe', AcademicManagementController.getGradeByCursoAndClasse);
+
 /**
  * @swagger
  * /api/academic-management/grade-curricular/{id}:
@@ -2220,58 +2271,6 @@ router.put('/grade-curricular/:id', AcademicManagementController.updateGradeCurr
 router.delete('/grade-curricular/:id', AcademicManagementController.deleteGradeCurricular);
 
 // ========== OPERAÇÕES ESPECIAIS ==========
-
-/**
- * @swagger
- * /api/academic-management/grade-curricular/curso/{codigo_Curso}/classe/{codigo_Classe}:
- *   get:
- *     summary: Obter grade curricular por curso e classe
- *     tags: [Operações Especiais]
- *     parameters:
- *       - in: path
- *         name: codigo_Curso
- *         required: true
- *         schema:
- *           type: integer
- *         description: Código do curso
- *       - in: path
- *         name: codigo_Classe
- *         required: true
- *         schema:
- *           type: integer
- *         description: Código da classe
- *     responses:
- *       200:
- *         description: Grade curricular encontrada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Grade curricular encontrada"
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/GradeCurricular'
- *       404:
- *         description: Grade curricular não encontrada
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiError'
- *       400:
- *         description: Parâmetros inválidos
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiError'
- */
-router.get('/grade-curricular/curso/:codigo_Curso/classe/:codigo_Classe', AcademicManagementController.getGradeByCursoAndClasse);
 
 /**
  * @swagger

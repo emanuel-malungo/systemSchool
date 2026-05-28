@@ -1856,6 +1856,51 @@ export class AcademicManagementService {
     }
   }
 
+  static async getTurmaByIdWithDisciplinas(id) {
+    try {
+      const turma = await prisma.tb_turmas.findUnique({
+        where: { codigo: parseInt(id) },
+        include: {
+          tb_classes: { select: { codigo: true, designacao: true } },
+          tb_cursos: { select: { codigo: true, designacao: true } },
+          tb_salas: { select: { codigo: true, designacao: true } },
+          tb_periodos: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      if (!turma) {
+        throw new AppError('Turma não encontrada', 404);
+      }
+
+      // Buscar disciplinas relacionadas através da grade curricular
+      const disciplinas = await prisma.tb_grade_curricular.findMany({
+        where: {
+          codigo_Classe: turma.codigo_Classe,
+          codigo_Curso: turma.codigo_Curso,
+          status: 1
+        },
+        select: {
+          tb_disciplinas: {
+            select: {
+              codigo: true,
+              designacao: true
+            }
+          }
+        }
+      });
+
+      const turmaComDisciplinas = {
+        ...turma,
+        disciplinas: disciplinas.map(d => d.tb_disciplinas).filter(Boolean)
+      };
+
+      return turmaComDisciplinas;
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Erro ao buscar turma com disciplinas', 500);
+    }
+  }
+
   // ===============================
   // GRADE CURRICULAR - CRUD COMPLETO
   // ===============================

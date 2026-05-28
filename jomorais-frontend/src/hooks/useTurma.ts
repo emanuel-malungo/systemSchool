@@ -85,6 +85,24 @@ export function useTurma(id: number, enabled = true) {
 }
 
 /**
+ * Hook para buscar uma turma específica por ID com disciplinas incluídas
+ * Fetch realizado através do endpoint /turmas/:id/com-disciplinas
+ * @param id - ID da turma
+ * @param enabled - Se a query deve ser executada
+ * @returns Query com dados da turma + disciplinas relacionadas
+ */
+export function useTurmaWithDisciplinas(id: number, enabled = true) {
+  return useQuery({
+    queryKey: [...turmaKeys.detail(id), 'com-disciplinas'],
+    queryFn: () => turmaService.getTurmaByIdWithDisciplinas(id),
+    enabled: enabled && !!id,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 1,
+  })
+}
+
+/**
  * Hook para buscar alunos de uma turma específica
  * @param turmaId - ID da turma
  * @param enabled - Se a query deve ser executada

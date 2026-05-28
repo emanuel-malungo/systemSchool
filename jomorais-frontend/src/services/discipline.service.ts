@@ -222,6 +222,21 @@ class DisciplineService {
       throw error
     }
   }
+
+  /**
+   * Busca disciplinas da grade curricular por curso e classe
+   */
+  async getGradeCurricular(codigo_Curso: number, codigo_Classe: number): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await api.get<ApiResponse<any[]>>(
+        `/api/academic-management/grade-curricular/curso/${codigo_Curso}/classe/${codigo_Classe}`
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar grade curricular curso ${codigo_Curso} classe ${codigo_Classe}:`, error)
+      throw error
+    }
+  }
 }
 
 // Exporta uma instância única do service (Singleton)

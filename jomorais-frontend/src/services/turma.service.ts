@@ -106,6 +106,23 @@ class TurmaService {
   }
 
   /**
+   * Busca uma turma específica por ID com suas disciplinas incluídas
+   * @param id - ID da turma
+   * @returns Promise com dados da turma + disciplinas
+   */
+  async getTurmaByIdWithDisciplinas(id: number): Promise<ApiResponse<ITurma & { disciplinas: any[] }>> {
+    try {
+      const response = await api.get<ApiResponse<ITurma & { disciplinas: any[] }>>(
+        `${this.baseURL}/${id}/com-disciplinas`
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar turma ${id} com disciplinas:`, error)
+      throw error
+    }
+  }
+
+  /**
    * Atualiza uma turma existente
    * @param id - ID da turma
    * @param payload - Dados a serem atualizados

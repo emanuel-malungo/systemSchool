@@ -775,6 +775,22 @@ export class AcademicManagementController {
     }
   }
 
+  static async getTurmaByIdWithDisciplinas(req, res) {
+    try {
+      const { id } = idParamSchema.parse(req.params);
+
+      const turma = await AcademicManagementService.getTurmaByIdWithDisciplinas(id);
+      
+      res.json({
+        success: true,
+        message: "Turma com disciplinas encontrada",
+        data: turma,
+      });
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao buscar turma com disciplinas", 400);
+    }
+  }
+
   static async deleteTurma(req, res) {
     try {
       const { id } = idParamSchema.parse(req.params);

@@ -104,6 +104,20 @@ export function useDisciplinesByCurso(codigo_Curso: number, enabled = true) {
 }
 
 /**
+ * Hook para buscar disciplinas da grade curricular por curso e classe
+ */
+export function useGradeCurricularByCursoAndClasse(codigo_Curso: number, codigo_Classe: number, enabled = true) {
+  return useQuery({
+    queryKey: [...disciplineKeys.all, 'gradeCurricular', codigo_Curso, codigo_Classe],
+    queryFn: () => disciplineService.getGradeCurricular(codigo_Curso, codigo_Classe),
+    enabled: enabled && !!codigo_Curso && !!codigo_Classe,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 1,
+  })
+}
+
+/**
  * Hook para buscar estatísticas das disciplinas
  * @param filters - Filtros opcionais (curso, status)
  * @param enabled - Se a query deve ser executada

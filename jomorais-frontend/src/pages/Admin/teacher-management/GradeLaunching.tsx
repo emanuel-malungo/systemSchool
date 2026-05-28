@@ -12,8 +12,7 @@ import {
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
-import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
-import { useDisciplinesByCurso } from '../../../hooks/useDiscipline'
+import { useAlunosByTurma, useTurmasComplete, useTurmaWithDisciplinas } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useTiposAvaliacao } from '../../../hooks/useAcademicEvaluation'
 import { useAuth } from '../../../hooks/useAuth'
@@ -60,13 +59,27 @@ export default function GradeLaunching() {
     !!selectedTurma?.codigo
   )
   
-  const { data: disciplinasCursoResponse, isLoading: isLoadingDisciplinas } = useDisciplinesByCurso(
-    selectedTurma?.codigo_Curso || 0,
-    !!selectedTurma?.codigo_Curso
+  // Novo hook que já retorna a turma com as disciplinas incluídas
+  const { data: turmaWithDisciplinasResponse, isLoading: isLoadingDisciplinas } = useTurmaWithDisciplinas(
+    selectedTurma?.codigo || 0,
+    !!selectedTurma?.codigo
   )
 
   const students = (alunosTurmaResponse as any)?.data || (Array.isArray(alunosTurmaResponse) ? alunosTurmaResponse : [])
-  const disciplines = (disciplinasCursoResponse as any)?.data || (Array.isArray(disciplinasCursoResponse) ? disciplinasCursoResponse : [])
+  
+  // Extrair disciplinas da turma com disciplinas
+  const disciplines = useMemo(() => {
+    console.log('turmaWithDisciplinasResponse:', turmaWithDisciplinasResponse)
+    
+    const turmaData = turmaWithDisciplinasResponse?.data
+    if (turmaData && Array.isArray(turmaData.disciplinas)) {
+      console.log('Disciplinas da turma:', turmaData.disciplinas)
+      return turmaData.disciplinas
+    }
+
+    console.log('Nenhuma disciplina encontrada')
+    return []
+  }, [turmaWithDisciplinasResponse])
 
   // Verificar se todo o contexto necessário foi selecionado
   const isContextSelected = useMemo(() => {
