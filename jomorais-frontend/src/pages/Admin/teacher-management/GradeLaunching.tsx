@@ -17,7 +17,12 @@ import {
   useUpdateGrade,
   useDeleteGrade,
 } from '../../../hooks/useGrade'
-import type { Grade, CreateGradePayload, UpdateGradePayload } from '../../../types/grade.types'
+import { useStudentsComplete } from '../../../hooks/useStudent'
+import { useDisciplines } from '../../../hooks/useDiscipline'
+import { useTurmasComplete } from '../../../hooks/useTurma'
+import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
+import { useTiposAvaliacao } from '../../../hooks/useAcademicEvaluation'
+import type { Grade, CreateGradePayload } from '../../../types/grade.types'
 
 interface FilterState {
   page: number
@@ -59,6 +64,11 @@ export default function GradeLaunching() {
     codigoTurma: '',
   })
 
+  // Estados de busca para selects
+  const [studentSearch, setStudentSearch] = useState('')
+  const [disciplineSearch, setDisciplineSearch] = useState('')
+  const [turmaSearch, setTurmaSearch] = useState('')
+
   // Hooks de dados
   const { data: gradesData, isLoading: isLoadingGrades } = useGrades(
     filters.page,
@@ -71,6 +81,17 @@ export default function GradeLaunching() {
     }
   )
 
+  // Hooks para dados dos selects
+  const { data: studentsData, isLoading: isLoadingStudents } = useStudentsComplete(true)
+  const { data: disciplinesData, isLoading: isLoadingDisciplines } = useDisciplines({ 
+    page: 1, 
+    limit: 1000,
+    search: disciplineSearch 
+  })
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(turmaSearch)
+  const { data: anosLetivosData, isLoading: isLoadingAnosLectivos } = useAnosLectivos({ page: 1, limit: 1000 })
+  const { data: tiposAvaliacaoData, isLoading: isLoadingTiposAvaliacao } = useTiposAvaliacao(1, 100)
+
   // Hooks de mutação
   const { mutate: createGrade, isPending: isCreating } = useCreateGrade()
   const { mutate: updateGrade, isPending: isUpdating } = useUpdateGrade()
@@ -79,6 +100,40 @@ export default function GradeLaunching() {
   // Dados extraídos
   const grades = gradesData?.data || []
   const pagination = gradesData?.pagination
+
+  // Dados dos selects
+  const students = Array.isArray(studentsData) ? studentsData : studentsData?.data || []
+  const disciplines = disciplinesData?.data || []
+  const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+  const anosLetivos = anosLetivosData?.data || []
+  const tiposAvaliacao = tiposAvaliacaoData?.data || []
+
+  // Filtros locais para dados que vêm sem paginação
+  const filteredStudents = useMemo(() => {
+    if (!studentSearch.trim()) return students
+    const term = studentSearch.toLowerCase()
+    return students.filter(s => 
+      s.nome?.toLowerCase().includes(term) || 
+      s.codigo?.toString().includes(term)
+    )
+  }, [students, studentSearch])
+
+  const filteredDisciplines = useMemo(() => {
+    // Já filtra via API com 'search' param, mas podemos filtrar localmente também
+    return disciplines
+  }, [disciplines])
+
+  const filteredTurmas = useMemo(() => {
+    // Já filtra via API com 'turmaSearch' param
+    return turmas
+  }, [turmas])
+
+  // Trimestres fixos (1, 2, 3)
+  const trimestres = [
+    { codigo: 1, designacao: '1º Trimestre' },
+    { codigo: 2, designacao: '2º Trimestre' },
+    { codigo: 3, designacao: '3º Trimestre' },
+  ]
 
   // Estatísticas
   const stats = useMemo(() => {
@@ -136,6 +191,10 @@ export default function GradeLaunching() {
       codigoTrimestre: '',
       codigoTurma: '',
     })
+    // Limpar filtros de busca
+    setStudentSearch('')
+    setDisciplineSearch('')
+    setTurmaSearch('')
   }
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -449,82 +508,183 @@ export default function GradeLaunching() {
             <form onSubmit={handleFormSubmit} className="space-y-5">
               {!isEditingGrade && (
                 <>
+                  {/* Aluno com busca */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Código do Aluno *
+                      Aluno * ({filteredStudents.length})
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      placeholder="Buscar aluno por nome ou código..."
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
+                    />
+                    <select
                       value={formData.codigoAluno}
-                      onChange={e => setFormData(f => ({ ...f, codigoAluno: e.target.value }))}
+                      onChange={e => {
+                        setFormData(f => ({ ...f, codigoAluno: e.target.value }))
+                        setStudentSearch('')
+                      }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
-                    />
+                      disabled={isLoadingStudents}
+                    >
+                      <option value="">Selecione um aluno...</option>
+                      {isLoadingStudents ? (
+                        <option disabled>Carregando alunos...</option>
+                      ) : filteredStudents.length === 0 ? (
+                        <option disabled>Nenhum aluno encontrado</option>
+                      ) : (
+                        filteredStudents.map(student => (
+                          <option key={student.codigo} value={student.codigo}>
+                            {student.nome} (#{student.codigo})
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
+                  {/* Disciplina com busca */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Código da Disciplina *
+                      Disciplina * ({filteredDisciplines.length})
                     </label>
                     <input
-                      type="number"
+                      type="text"
+                      placeholder="Buscar disciplina..."
+                      value={disciplineSearch}
+                      onChange={(e) => setDisciplineSearch(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
+                    />
+                    <select
                       value={formData.codigoDisciplina}
-                      onChange={e => setFormData(f => ({ ...f, codigoDisciplina: e.target.value }))}
+                      onChange={e => {
+                        setFormData(f => ({ ...f, codigoDisciplina: e.target.value }))
+                        setDisciplineSearch('')
+                      }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
-                    />
+                      disabled={isLoadingDisciplines}
+                    >
+                      <option value="">Selecione uma disciplina...</option>
+                      {isLoadingDisciplines ? (
+                        <option disabled>Carregando disciplinas...</option>
+                      ) : filteredDisciplines.length === 0 ? (
+                        <option disabled>Nenhuma disciplina encontrada</option>
+                      ) : (
+                        filteredDisciplines.map(discipline => (
+                          <option key={discipline.codigo} value={discipline.codigo}>
+                            {discipline.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
+                  {/* Ano Letivo */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ano Letivo *
+                      Ano Letivo * ({anosLetivos.length})
                     </label>
-                    <input
-                      type="number"
+                    <select
                       value={formData.codigoAnoLectivo}
                       onChange={e => setFormData(f => ({ ...f, codigoAnoLectivo: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
-                    />
+                      disabled={isLoadingAnosLectivos}
+                    >
+                      <option value="">Selecione um ano letivo...</option>
+                      {isLoadingAnosLectivos ? (
+                        <option disabled>Carregando anos letivos...</option>
+                      ) : anosLetivos.length === 0 ? (
+                        <option disabled>Nenhum ano letivo disponível</option>
+                      ) : (
+                        anosLetivos.map(ano => (
+                          <option key={ano.codigo} value={ano.codigo}>
+                            {ano.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
+                  {/* Tipo de Avaliação */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Tipo de Avaliação *
+                      Tipo de Avaliação * ({tiposAvaliacao.length})
                     </label>
-                    <input
-                      type="number"
+                    <select
                       value={formData.codigoTipoAvaliacao}
                       onChange={e => setFormData(f => ({ ...f, codigoTipoAvaliacao: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
-                    />
+                      disabled={isLoadingTiposAvaliacao}
+                    >
+                      <option value="">Selecione um tipo de avaliação...</option>
+                      {isLoadingTiposAvaliacao ? (
+                        <option disabled>Carregando tipos de avaliação...</option>
+                      ) : tiposAvaliacao.length === 0 ? (
+                        <option disabled>Nenhum tipo de avaliação disponível</option>
+                      ) : (
+                        tiposAvaliacao.map(tipo => (
+                          <option key={tipo.codigo} value={tipo.codigo}>
+                            {tipo.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
 
+                  {/* Trimestre */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Trimestre *
                     </label>
-                    <input
-                      type="number"
+                    <select
                       value={formData.codigoTrimestre}
                       onChange={e => setFormData(f => ({ ...f, codigoTrimestre: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
-                    />
+                    >
+                      <option value="">Selecione um trimestre...</option>
+                      {trimestres.map(trimestre => (
+                        <option key={trimestre.codigo} value={trimestre.codigo}>
+                          {trimestre.designacao}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
+                  {/* Turma com busca */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Código da Turma (Opcional)
+                      Turma (Opcional) ({filteredTurmas.length})
                     </label>
                     <input
-                      type="number"
-                      value={formData.codigoTurma}
-                      onChange={e => setFormData(f => ({ ...f, codigoTurma: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      placeholder="Ex: 1"
+                      type="text"
+                      placeholder="Buscar turma..."
+                      value={turmaSearch}
+                      onChange={(e) => setTurmaSearch(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
                     />
+                    <select
+                      value={formData.codigoTurma}
+                      onChange={e => {
+                        setFormData(f => ({ ...f, codigoTurma: e.target.value }))
+                        setTurmaSearch('')
+                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
+                      disabled={isLoadingTurmas}
+                    >
+                      <option value="">Selecione uma turma (opcional)...</option>
+                      {isLoadingTurmas ? (
+                        <option disabled>Carregando turmas...</option>
+                      ) : filteredTurmas.length === 0 ? (
+                        <option disabled>Nenhuma turma encontrada</option>
+                      ) : (
+                        filteredTurmas.map(turma => (
+                          <option key={turma.codigo} value={turma.codigo}>
+                            {turma.designacao}
+                          </option>
+                        ))
+                      )}
+                    </select>
                   </div>
                 </>
               )}
