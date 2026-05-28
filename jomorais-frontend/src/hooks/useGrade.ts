@@ -48,11 +48,13 @@ export const gradeKeys = {
 export function useGrades(
   page = 1,
   limit = 10,
-  filters?: GradeFilters
+  filters?: GradeFilters,
+  enabled = true
 ) {
   return useQuery({
     queryKey: gradeKeys.list({ page, limit, filters }),
     queryFn: () => gradeService.getGrades(page, limit, filters),
+    enabled,
     staleTime: 1000 * 60 * 5, // Cache válido por 5 minutos
     gcTime: 1000 * 60 * 10, // Mantém no cache por 10 minutos
     retry: 2,
@@ -143,6 +145,38 @@ export function useCreateGrade() {
     onError: (error: ApiError) => {
       const message =
         error?.response?.data?.message || error?.message || 'Erro ao lançar nota'
+      toast.error(message)
+    },
+  })
+}
+
+/**
+ * Hook para importar múltiplas notas em lote (import-bulk)
+ */
+export function useImportGradesBulk() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: {
+      grades: Array<{
+        codigoAluno: number
+        codigoDisciplina: number
+        nota: number
+        codigoTipoAvaliacao: number
+        codigoTrimestre: number
+        codigoTurma?: number
+      }>
+      codigoAnoLectivo: number
+      codigoUtilizador: number
+    }) => gradeService.importGradesBulk(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: gradeKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: gradeKeys.pauta() })
+      toast.success('Notas salvas com sucesso')
+    },
+    onError: (error: ApiError) => {
+      const message =
+        error?.response?.data?.message || error?.message || 'Erro ao salvar notas'
       toast.error(message)
     },
   })

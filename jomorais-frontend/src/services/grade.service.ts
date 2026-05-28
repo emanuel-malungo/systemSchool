@@ -188,6 +188,32 @@ class GradeService {
   }
 
   /**
+   * Importa múltiplas notas em uma única operação
+   * @param data - Objeto contendo as notas, ano letivo e utilizador
+   * @returns Promise com o resultado da importação em lote
+   */
+  async importGradesBulk(data: {
+    grades: Array<{
+      codigoAluno: number
+      codigoDisciplina: number
+      nota: number
+      codigoTipoAvaliacao: number
+      codigoTrimestre: number
+      codigoTurma?: number
+    }>
+    codigoAnoLectivo: number
+    codigoUtilizador: number
+  }): Promise<any> {
+    try {
+      const response = await api.post(`${this.baseURL}/import-bulk`, data)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao importar notas em lote:', error)
+      throw error
+    }
+  }
+
+  /**
    * Valida se uma nota é válida (entre 0 e 20)
    * @param nota - Valor da nota
    * @returns boolean

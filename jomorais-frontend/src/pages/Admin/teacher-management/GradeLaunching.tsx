@@ -1,124 +1,120 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
-  Plus,
-  Search,
   BookOpen,
   Users,
   BarChart3,
   AlertCircle,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
+  Save,
+  GraduationCap,
+  CheckCircle,
+  Clock,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
-import { useGrades, useCreateGrade, useUpdateGrade, useDeleteGrade } from '../../../hooks/useGrade'
+import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useDisciplinesByCurso } from '../../../hooks/useDiscipline'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useTiposAvaliacao } from '../../../hooks/useAcademicEvaluation'
-import type { Grade, CreateGradePayload } from '../../../types/grade.types'
+import { useAuth } from '../../../hooks/useAuth'
+import { toast } from 'react-toastify'
 import type { ITurma } from '../../../types/turma.types'
 
-interface FilterState {
-  page: number
-  limit: number
-  codigoAluno?: number
-  codigoDisciplina?: number
-  codigoTurma?: number
-  codigoAnoLectivo?: number
-}
-
-interface FormState {
-  codigoAluno: string
-  codigoDisciplina: string
-  nota: string
-  codigoAnoLectivo: string
-  codigoTipoAvaliacao: string
-  codigoTrimestre: string
-  codigoTurma?: string
-}
-
 export default function GradeLaunching() {
-  // Estados de filtro
-  const [filters, setFilters] = useState<FilterState>({
-    page: 1,
-    limit: 10,
-  })
-  const [searchTerm, setSearchTerm] = useState('')
+  const { user } = useAuth()
 
-  // Estados de modal
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false)
-  const [isEditingGrade, setIsEditingGrade] = useState<Grade | null>(null)
-  const [formData, setFormData] = useState<FormState>({
-    codigoAluno: '',
-    codigoDisciplina: '',
-    nota: '',
-    codigoAnoLectivo: '',
-    codigoTipoAvaliacao: '',
-    codigoTrimestre: '',
-    codigoTurma: '',
-  })
+  // Estados dos seletores de contexto
+  const [selectedAnoLectivo, setSelectedAnoLectivo] = useState('')
+  const [selectedTurmaId, setSelectedTurmaId] = useState('')
+  const [selectedDisciplinaId, setSelectedDisciplinaId] = useState('')
+  const [selectedTrimestre, setSelectedTrimestre] = useState('')
 
-  // Estados de busca para selects
-  const [turmaSearch, setTurmaSearch] = useState('')
+  // Estados adicionais
+  const [localGrades, setLocalGrades] = useState<Record<string, number>>({})
+  const [saving, setSaving] = useState(false)
 
-  // Hooks de dados
-  const { data: gradesData, isLoading: isLoadingGrades } = useGrades(
-    filters.page,
-    filters.limit,
-    {
-      codigoAluno: filters.codigoAluno,
-      codigoDisciplina: filters.codigoDisciplina,
-      codigoTurma: filters.codigoTurma,
-      codigoAnoLectivo: filters.codigoAnoLectivo,
-    }
-  )
+  // Hooks de busca de dados
+  const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete('')
+  const { data: tiposAvaliacaoData, isLoading: isLoadingTiposAvaliacao } = useTiposAvaliacao(1, 100)
 
-  // Hooks para dados dos selects
-  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(turmaSearch)
+  const anosLetivos = anosLetivosData?.data || []
   const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+  const tiposAvaliacao = tiposAvaliacaoData?.data || []
 
-  // Pegar a turma selecionada no formulário
+  // Filtrar as turmas de acordo com o Ano Letivo selecionado
+  const filteredTurmas = useMemo(() => {
+    if (!selectedAnoLectivo) return []
+    return turmas.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === selectedAnoLectivo)
+  }, [turmas, selectedAnoLectivo])
+
+  // Obter a turma selecionada atualmente
   const selectedTurma = useMemo(() => {
-    if (!formData.codigoTurma) return null
-    return turmas.find((t: ITurma) => t.codigo?.toString() === formData.codigoTurma)
-  }, [turmas, formData.codigoTurma])
+    if (!selectedTurmaId) return null
+    return turmas.find((t: ITurma) => t.codigo?.toString() === selectedTurmaId)
+  }, [turmas, selectedTurmaId])
 
-  // Hooks dependentes da turma selecionada
-  const { data: alunosTurmaResponse, isLoading: isLoadingStudents } = useAlunosByTurma(
+  // Hooks dependentes da turma e disciplina selecionadas
+  const { data: alunosTurmaResponse, isLoading: isLoadingAlunos } = useAlunosByTurma(
     selectedTurma?.codigo || 0,
     !!selectedTurma?.codigo
   )
   
-  const { data: disciplinasCursoResponse, isLoading: isLoadingDisciplines } = useDisciplinesByCurso(
+  const { data: disciplinasCursoResponse, isLoading: isLoadingDisciplinas } = useDisciplinesByCurso(
     selectedTurma?.codigo_Curso || 0,
     !!selectedTurma?.codigo_Curso
   )
 
   const students = (alunosTurmaResponse as any)?.data || (Array.isArray(alunosTurmaResponse) ? alunosTurmaResponse : [])
   const disciplines = (disciplinasCursoResponse as any)?.data || (Array.isArray(disciplinasCursoResponse) ? disciplinasCursoResponse : [])
-  const { data: anosLetivosData, isLoading: isLoadingAnosLectivos } = useAnosLectivos({ page: 1, limit: 1000 })
-  const { data: tiposAvaliacaoData, isLoading: isLoadingTiposAvaliacao } = useTiposAvaliacao(1, 100)
 
-  // Hooks de mutação
-  const { mutate: createGrade, isPending: isCreating } = useCreateGrade()
-  const { mutate: updateGrade, isPending: isUpdating } = useUpdateGrade()
-  const { mutate: deleteGrade, isPending: isDeleting } = useDeleteGrade()
+  // Verificar se todo o contexto necessário foi selecionado
+  const isContextSelected = useMemo(() => {
+    return !!selectedAnoLectivo && !!selectedTurmaId && !!selectedDisciplinaId && !!selectedTrimestre
+  }, [selectedAnoLectivo, selectedTurmaId, selectedDisciplinaId, selectedTrimestre])
 
-  // Dados extraídos
-  const grades = gradesData?.data || []
-  const pagination = gradesData?.pagination
+  // Buscar notas existentes para este contexto
+  const { data: gradesData, isLoading: isLoadingGrades, refetch: refetchGrades } = useGrades(
+    1,
+    1000,
+    {
+      codigoTurma: selectedTurmaId ? parseInt(selectedTurmaId) : undefined,
+      codigoDisciplina: selectedDisciplinaId ? parseInt(selectedDisciplinaId) : undefined,
+      codigoTrimestre: selectedTrimestre ? parseInt(selectedTrimestre) : undefined,
+      codigoAnoLectivo: selectedAnoLectivo ? parseInt(selectedAnoLectivo) : undefined,
+    },
+    isContextSelected
+  )
 
-  const anosLetivos = anosLetivosData?.data || []
-  const tiposAvaliacao = tiposAvaliacaoData?.data || []
+  const { mutateAsync: importBulk } = useImportGradesBulk()
+  const { mutateAsync: updateGrade } = useUpdateGrade()
 
-  const filteredTurmas = useMemo(() => {
-    let filtered = turmas
-    if (formData.codigoAnoLectivo) {
-      filtered = filtered.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === formData.codigoAnoLectivo)
+  // Sincronizar notas do backend com o estado local ao carregar ou mudar contexto
+  useEffect(() => {
+    if (gradesData?.data && isContextSelected) {
+      const gradesMap: Record<string, number> = {}
+      gradesData.data.forEach((grade: any) => {
+        gradesMap[`${grade.CodigoAluno}-${grade.CodigoTipoAvaliacao}`] = grade.Nota
+      })
+      setLocalGrades(gradesMap)
+    } else {
+      setLocalGrades({})
     }
-    return filtered
-  }, [turmas, formData.codigoAnoLectivo])
+  }, [gradesData, isContextSelected])
+
+  // Limpar seleções dependentes
+  const handleAnoLectivoChange = (value: string) => {
+    setSelectedAnoLectivo(value)
+    setSelectedTurmaId('')
+    setSelectedDisciplinaId('')
+    setLocalGrades({})
+  }
+
+  const handleTurmaChange = (value: string) => {
+    setSelectedTurmaId(value)
+    setSelectedDisciplinaId('')
+    setLocalGrades({})
+  }
 
   // Trimestres fixos (1, 2, 3)
   const trimestres = [
@@ -127,138 +123,128 @@ export default function GradeLaunching() {
     { codigo: 3, designacao: '3º Trimestre' },
   ]
 
-  // Estatísticas
-  const stats = useMemo(() => {
-    if (!grades.length) return { media: 0, aprovados: 0, reprovados: 0, total: 0 }
+  // Calcula a média das notas inseridas localmente para um aluno específico
+  const getStudentAverage = (studentId: number) => {
+    const studentGrades = tiposAvaliacao
+      .map(tipo => localGrades[`${studentId}-${tipo.codigo}`])
+      .filter(val => val !== undefined && val !== null && !isNaN(val))
+    
+    if (studentGrades.length === 0) return undefined
+    const sum = studentGrades.reduce((a, b) => a + b, 0)
+    return sum / studentGrades.length
+  }
 
-    const media = grades.reduce((sum, g) => sum + g.Nota, 0) / grades.length
-    const aprovados = grades.filter(g => g.Nota >= 10).length
-    const reprovados = grades.filter(g => g.Nota < 10).length
+  // Estatísticas gerais baseadas nas notas da turma
+  const stats = useMemo(() => {
+    if (!students.length) return { media: '0.00', aprovados: 0, reprovados: 0, total: 0 }
+
+    let totalGradesCount = 0
+    let sumGrades = 0
+    let aprovados = 0
+    let reprovados = 0
+
+    students.forEach((student: any) => {
+      const avg = getStudentAverage(student.codigo)
+      if (avg !== undefined) {
+        sumGrades += avg
+        totalGradesCount++
+        if (avg >= 10) {
+          aprovados++
+        } else {
+          reprovados++
+        }
+      }
+    });
 
     return {
-      media: media.toFixed(2),
+      media: totalGradesCount > 0 ? (sumGrades / totalGradesCount).toFixed(2) : '0.00',
       aprovados,
       reprovados,
-      total: grades.length,
+      total: totalGradesCount,
     }
-  }, [grades])
+  }, [students, localGrades, tiposAvaliacao])
 
-  // Handlers
-  const handleOpenForm = (grade?: Grade) => {
-    if (grade) {
-      setIsEditingGrade(grade)
-      setFormData({
-        codigoAluno: grade.CodigoAluno.toString(),
-        codigoDisciplina: grade.CodigoDisciplina.toString(),
-        nota: grade.Nota.toString(),
-        codigoAnoLectivo: grade.CodigoAnoLectivo.toString(),
-        codigoTipoAvaliacao: grade.CodigoTipoAvaliacao.toString(),
-        codigoTrimestre: grade.CodigoTrimestre.toString(),
-        codigoTurma: grade.CodigoTurma?.toString() || '',
-      })
-    } else {
-      setIsEditingGrade(null)
-      setFormData({
-        codigoAluno: '',
-        codigoDisciplina: '',
-        nota: '',
-        codigoAnoLectivo: '',
-        codigoTipoAvaliacao: '',
-        codigoTrimestre: '',
-        codigoTurma: '',
-      })
-    }
-    setIsFormModalOpen(true)
-  }
-
-  const handleCloseForm = () => {
-    setIsFormModalOpen(false)
-    setIsEditingGrade(null)
-    setFormData({
-      codigoAluno: '',
-      codigoDisciplina: '',
-      nota: '',
-      codigoAnoLectivo: '',
-      codigoTipoAvaliacao: '',
-      codigoTrimestre: '',
-      codigoTurma: '',
-    })
-    // Limpar filtros de busca
-    setTurmaSearch('')
-  }
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Validações
-    if (
-      !formData.codigoAluno ||
-      !formData.codigoDisciplina ||
-      !formData.nota ||
-      !formData.codigoAnoLectivo ||
-      !formData.codigoTipoAvaliacao ||
-      !formData.codigoTrimestre
-    ) {
-      alert('Por favor, preencha todos os campos obrigatórios')
+  // Salvar todas as notas lançadas e alteradas
+  const handleSaveAllGrades = async () => {
+    if (!isContextSelected) {
+      toast.error('Selecione todos os filtros de contexto antes de salvar.')
       return
     }
 
-    const nota = parseFloat(formData.nota)
-    if (nota < 0 || nota > 20) {
-      alert('A nota deve estar entre 0 e 20')
-      return
-    }
-
+    setSaving(true)
     try {
-      if (isEditingGrade) {
-        updateGrade({
-          id: isEditingGrade.Codigo,
-          data: {
-            nota,
-          },
-        })
-      } else {
-        const payload: CreateGradePayload = {
-          codigoAluno: parseInt(formData.codigoAluno),
-          codigoDisciplina: parseInt(formData.codigoDisciplina),
-          nota,
-          codigoAnoLectivo: parseInt(formData.codigoAnoLectivo),
-          codigoTipoAvaliacao: parseInt(formData.codigoTipoAvaliacao),
-          codigoTrimestre: parseInt(formData.codigoTrimestre),
-          codigoUtilizador: 1, // TODO: Usar usuario logado
-          codigoTurma: formData.codigoTurma ? parseInt(formData.codigoTurma) : undefined,
+      const newGradesPayload: any[] = []
+      const updatedGradesPromises: Promise<any>[] = []
+
+      for (const key of Object.keys(localGrades)) {
+        const [codigoAluno, codigoTipoAvaliacao] = key.split('-').map(Number)
+        const currentNota = localGrades[key]
+
+        // Validar nota (0-20)
+        if (currentNota < 0 || currentNota > 20) {
+          toast.error(`A nota deve estar entre 0 e 20.`)
+          setSaving(false)
+          return
         }
-        createGrade(payload)
+
+        // Buscar se essa nota já existia na base de dados
+        const existingGrade = gradesData?.data?.find(
+          (g: any) =>
+            g.CodigoAluno === codigoAluno &&
+            g.CodigoTipoAvaliacao === codigoTipoAvaliacao
+        )
+
+        if (existingGrade) {
+          // Se a nota foi modificada, atualiza-a
+          if (existingGrade.Nota !== currentNota) {
+            updatedGradesPromises.push(
+              updateGrade({
+                id: existingGrade.Codigo,
+                data: {
+                  nota: currentNota,
+                },
+              })
+            )
+          }
+        } else {
+          // Se é uma nota nova, insere no lote
+          newGradesPayload.push({
+            codigoAluno,
+            codigoDisciplina: parseInt(selectedDisciplinaId),
+            nota: currentNota,
+            codigoTipoAvaliacao,
+            codigoTrimestre: parseInt(selectedTrimestre),
+            codigoTurma: parseInt(selectedTurmaId),
+          })
+        }
       }
-      handleCloseForm()
+
+      // Executa atualizações e inserções
+      if (updatedGradesPromises.length > 0) {
+        await Promise.all(updatedGradesPromises)
+      }
+
+      if (newGradesPayload.length > 0) {
+        await importBulk({
+          grades: newGradesPayload,
+          codigoAnoLectivo: parseInt(selectedAnoLectivo),
+          codigoUtilizador: parseInt(user?.id?.toString() || '1'),
+        })
+      }
+
+      toast.success('Notas salvas com sucesso!')
+      refetchGrades()
     } catch (error) {
-      console.error('Erro ao salvar nota:', error)
+      console.error('Erro ao salvar notas:', error)
+      toast.error('Ocorreu um erro ao salvar algumas notas.')
+    } finally {
+      setSaving(false)
     }
   }
 
-  const handleDeleteGrade = (gradeId: number) => {
-    if (confirm('Tem certeza que deseja deletar esta nota?')) {
-      deleteGrade(gradeId)
-    }
-  }
-
-  const getStatusBadge = (nota: number) => {
-    if (nota >= 10) {
-      return (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-          Aprovado
-        </span>
-      )
-    }
-    return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-        Reprovado
-      </span>
-    )
-  }
-
-  const totalPages = pagination?.totalPages || 1
-  const currentPage = pagination?.currentPage || 1
+  const selectedDisciplinaDesignacao = disciplines.find(
+    (d: any) => d.codigo?.toString() === selectedDisciplinaId
+  )?.designacao
 
   return (
     <Container>
@@ -279,468 +265,296 @@ export default function GradeLaunching() {
                   Lançamento de Notas
                 </h1>
                 <p className="text-gray-600 text-lg">
-                  Gerencie e lance as notas dos alunos por disciplina e trimestre
+                  Selecione o contexto para lançar ou atualizar as notas dos alunos em lote
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Estatísticas Rápidas */}
+      {isContextSelected && students.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium mb-1">Média da Turma</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.media}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <BarChart3 className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium mb-1">Alunos Avaliados</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.total} / {students.length}</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <Users className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium mb-1">Aprovados (Média ≥ 10)</p>
+                <p className="text-3xl font-bold text-green-600">{stats.aprovados}</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium mb-1">Reprovados (Média &lt; 10)</p>
+                <p className="text-3xl font-bold text-red-600">{stats.reprovados}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <Clock className="h-6 w-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Seletores de Contexto */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
+        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <BookOpen className="h-5 w-5 text-[#007C00]" />
+          Seleção de Contexto
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Ano Letivo */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Ano Letivo *
+            </label>
+            <select
+              value={selectedAnoLectivo}
+              onChange={e => handleAnoLectivoChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={isLoadingAnosLetivos}
+            >
+              <option value="">Selecione um ano...</option>
+              {anosLetivos.map(ano => (
+                <option key={ano.codigo} value={ano.codigo}>
+                  {ano.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Turma */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Turma *
+            </label>
+            <select
+              value={selectedTurmaId}
+              onChange={e => handleTurmaChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={!selectedAnoLectivo || isLoadingTurmas}
+            >
+              <option value="">Selecione uma turma...</option>
+              {filteredTurmas.map((turma: ITurma) => (
+                <option key={turma.codigo} value={turma.codigo}>
+                  {turma.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Disciplina */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Disciplina *
+            </label>
+            <select
+              value={selectedDisciplinaId}
+              onChange={e => setSelectedDisciplinaId(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              disabled={!selectedTurmaId || isLoadingDisciplinas}
+            >
+              <option value="">Selecione a disciplina...</option>
+              {disciplines.map((disc: any) => (
+                <option key={disc.codigo} value={disc.codigo}>
+                  {disc.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Trimestre */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Trimestre *
+            </label>
+            <select
+              value={selectedTrimestre}
+              onChange={e => setSelectedTrimestre(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+            >
+              <option value="">Selecione o trimestre...</option>
+              {trimestres.map(t => (
+                <option key={t.codigo} value={t.codigo}>
+                  {t.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Lançamento das Notas */}
+      {isContextSelected ? (
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+            <div>
+              <h3 className="font-bold text-gray-900 text-lg">
+                Alunos da Turma: {selectedTurma?.designacao}
+              </h3>
+              <p className="text-sm text-gray-500">
+                Disciplina: <span className="font-semibold text-gray-700">{selectedDisciplinaDesignacao}</span> | Trimestre: <span className="font-semibold text-gray-700">{selectedTrimestre}º</span>
+              </p>
+            </div>
 
             <button
-              onClick={() => handleOpenForm()}
-              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-[#007C00] to-[#005a00] text-white rounded-xl hover:from-[#005a00] hover:to-[#004000] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+              onClick={handleSaveAllGrades}
+              disabled={saving || isLoadingAlunos || isLoadingGrades || students.length === 0}
+              className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-[#007C00] to-[#005a00] text-white rounded-xl hover:from-[#005a00] hover:to-[#004000] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
             >
-              <Plus className="h-5 w-5" />
-              Lançar Nota
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium mb-1">Total de Notas</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium mb-1">Média de Notas</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.media}</p>
-            </div>
-            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-              <BarChart3 className="h-6 w-6 text-emerald-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium mb-1">Aprovados</p>
-              <p className="text-3xl font-bold text-green-600">{stats.aprovados}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <BookOpen className="h-6 w-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-600 text-sm font-medium mb-1">Reprovados</p>
-              <p className="text-3xl font-bold text-red-600">{stats.reprovados}</p>
-            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-              <AlertCircle className="h-6 w-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filtros e Pesquisa */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Pesquisar por aluno ou disciplina..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-                setFilters(f => ({ ...f, page: 1 }))
-              }}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all"
-            />
-          </div>
-        </div>
-
-        <div className="mt-5 pt-4 border-t border-gray-200 flex items-center justify-between">
-          <span className="text-sm text-gray-600 font-medium">
-            Mostrando <span className="text-[#007C00] font-bold">{grades.length}</span> de{' '}
-            <span className="text-gray-900 font-bold">{pagination?.totalItems || 0}</span> notas
-          </span>
-          {searchTerm && (
-            <button
-              onClick={() => {
-                setSearchTerm('')
-                setFilters(f => ({ ...f, page: 1 }))
-              }}
-              className="text-sm text-[#007C00] hover:text-[#005a00] font-medium hover:underline transition-all"
-            >
-              Limpar pesquisa
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Tabela de Notas */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Aluno</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Disciplina</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Trimestre</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nota</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Ano Letivo</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoadingGrades ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
-                    <p className="text-gray-600">Carregando notas...</p>
-                  </td>
-                </tr>
-              ) : grades.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
-                    <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
-                    <p className="text-gray-600 font-medium">Nenhuma nota encontrada</p>
-                    <p className="text-sm text-gray-500">Clique em "Lançar Nota" para adicionar a primeira nota</p>
-                  </td>
-                </tr>
-              ) : (
-                grades.map(grade => (
-                  <tr key={grade.Codigo} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-gray-900">{grade.tb_alunos?.nome || `Aluno ${grade.CodigoAluno}`}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-gray-700">{grade.tb_disciplinas?.designacao || `Disciplina ${grade.CodigoDisciplina}`}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-gray-700">{grade.tb_trimestres?.designacao || `Trimestre ${grade.CodigoTrimestre}`}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-lg text-gray-900">{grade.Nota.toFixed(2)}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      {getStatusBadge(grade.Nota)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-gray-700">2024/2025</p>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenForm(grade)}
-                          className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                        >
-                          Editar
-                        </button>
-                        <button
-                          onClick={() => handleDeleteGrade(grade.Codigo)}
-                          disabled={isDeleting}
-                          className="px-3 py-1 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
-                        >
-                          Deletar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Paginação */}
-        {!isLoadingGrades && grades.length > 0 && totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
-            <span className="text-sm text-gray-600">
-              Página {currentPage} de {totalPages}
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilters(f => ({ ...f, page: Math.max(1, f.page - 1) }))}
-                disabled={currentPage === 1 || isLoadingGrades}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Anterior
-              </button>
-              <button
-                onClick={() => setFilters(f => ({ ...f, page: Math.min(totalPages, f.page + 1) }))}
-                disabled={currentPage === totalPages || isLoadingGrades}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Próxima
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Modal de Formulário */}
-      {isFormModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              {isEditingGrade ? 'Editar Nota' : 'Lançar Nota'}
-            </h2>
-
-            <form onSubmit={handleFormSubmit} className="space-y-5">
-              {!isEditingGrade && (
+              {saving ? (
                 <>
-                  {/* Ano Letivo */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ano Letivo * ({anosLetivos.length})
-                    </label>
-                    <select
-                      value={formData.codigoAnoLectivo}
-                      onChange={e => {
-                        setFormData(f => ({ 
-                          ...f, 
-                          codigoAnoLectivo: e.target.value,
-                          codigoTurma: '',
-                          codigoAluno: '',
-                          codigoDisciplina: ''
-                        }))
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingAnosLectivos}
-                    >
-                      <option value="">Selecione um ano letivo...</option>
-                      {isLoadingAnosLectivos ? (
-                        <option disabled>Carregando anos letivos...</option>
-                      ) : anosLetivos.length === 0 ? (
-                        <option disabled>Nenhum ano letivo disponível</option>
-                      ) : (
-                        anosLetivos.map(ano => (
-                          <option key={ano.codigo} value={ano.codigo}>
-                            {ano.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Turma com busca */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Turma * ({filteredTurmas.length})
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Buscar turma..."
-                      value={turmaSearch}
-                      onChange={(e) => setTurmaSearch(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] mb-2"
-                      disabled={!formData.codigoAnoLectivo}
-                    />
-                    <select
-                      value={formData.codigoTurma}
-                      onChange={e => {
-                        setFormData(f => ({ 
-                          ...f, 
-                          codigoTurma: e.target.value,
-                          codigoAluno: '',
-                          codigoDisciplina: ''
-                        }))
-                        setTurmaSearch('')
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingTurmas || !formData.codigoAnoLectivo}
-                    >
-                      <option value="">Selecione uma turma...</option>
-                      {!formData.codigoAnoLectivo ? (
-                        <option disabled>Selecione o ano letivo primeiro</option>
-                      ) : isLoadingTurmas ? (
-                        <option disabled>Carregando turmas...</option>
-                      ) : filteredTurmas.length === 0 ? (
-                        <option disabled>Nenhuma turma encontrada para este ano letivo</option>
-                      ) : (
-                        filteredTurmas.map((turma: ITurma) => (
-                          <option key={turma.codigo} value={turma.codigo}>
-                            {turma.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Aluno */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Aluno * ({students.length})
-                    </label>
-                    <select
-                      value={formData.codigoAluno}
-                      onChange={e => setFormData(f => ({ ...f, codigoAluno: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={!formData.codigoTurma || isLoadingStudents}
-                    >
-                      <option value="">Selecione um aluno...</option>
-                      {!formData.codigoTurma ? (
-                        <option disabled>Selecione a turma primeiro</option>
-                      ) : isLoadingStudents ? (
-                        <option disabled>Carregando alunos da turma...</option>
-                      ) : students.length === 0 ? (
-                        <option disabled>Nenhum aluno encontrado nesta turma</option>
-                      ) : (
-                        students.map((student: any) => (
-                          <option key={student.codigo} value={student.codigo}>
-                            {student.nome} (#{student.codigo})
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Disciplina */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Disciplina * ({disciplines.length})
-                    </label>
-                    <select
-                      value={formData.codigoDisciplina}
-                      onChange={e => setFormData(f => ({ ...f, codigoDisciplina: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={!formData.codigoTurma || isLoadingDisciplines}
-                    >
-                      <option value="">Selecione uma disciplina...</option>
-                      {!formData.codigoTurma ? (
-                        <option disabled>Selecione a turma primeiro</option>
-                      ) : isLoadingDisciplines ? (
-                        <option disabled>Carregando disciplinas...</option>
-                      ) : disciplines.length === 0 ? (
-                        <option disabled>Nenhuma disciplina encontrada</option>
-                      ) : (
-                        disciplines.map((discipline: any) => (
-                          <option key={discipline.codigo} value={discipline.codigo}>
-                            {discipline.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Ano Letivo */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ano Letivo * ({anosLetivos.length})
-                    </label>
-                    <select
-                      value={formData.codigoAnoLectivo}
-                      onChange={e => setFormData(f => ({ ...f, codigoAnoLectivo: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingAnosLectivos}
-                    >
-                      <option value="">Selecione um ano letivo...</option>
-                      {isLoadingAnosLectivos ? (
-                        <option disabled>Carregando anos letivos...</option>
-                      ) : anosLetivos.length === 0 ? (
-                        <option disabled>Nenhum ano letivo disponível</option>
-                      ) : (
-                        anosLetivos.map(ano => (
-                          <option key={ano.codigo} value={ano.codigo}>
-                            {ano.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Tipo de Avaliação */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Tipo de Avaliação * ({tiposAvaliacao.length})
-                    </label>
-                    <select
-                      value={formData.codigoTipoAvaliacao}
-                      onChange={e => setFormData(f => ({ ...f, codigoTipoAvaliacao: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                      disabled={isLoadingTiposAvaliacao}
-                    >
-                      <option value="">Selecione um tipo de avaliação...</option>
-                      {isLoadingTiposAvaliacao ? (
-                        <option disabled>Carregando tipos de avaliação...</option>
-                      ) : tiposAvaliacao.length === 0 ? (
-                        <option disabled>Nenhum tipo de avaliação disponível</option>
-                      ) : (
-                        tiposAvaliacao.map(tipo => (
-                          <option key={tipo.codigo} value={tipo.codigo}>
-                            {tipo.designacao}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  {/* Trimestre */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Trimestre *
-                    </label>
-                    <select
-                      value={formData.codigoTrimestre}
-                      onChange={e => setFormData(f => ({ ...f, codigoTrimestre: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                    >
-                      <option value="">Selecione um trimestre...</option>
-                      {trimestres.map(trimestre => (
-                        <option key={trimestre.codigo} value={trimestre.codigo}>
-                          {trimestre.designacao}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5" />
+                  Salvar Notas
                 </>
               )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nota (0-20) *
-                </label>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0"
-                  max="20"
-                  value={formData.nota}
-                  onChange={e => setFormData(f => ({ ...f, nota: e.target.value }))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
-                  placeholder="Ex: 15.5"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-6">
-                <button
-                  type="button"
-                  onClick={handleCloseForm}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating || isUpdating}
-                  className="flex-1 px-4 py-2 bg-[#007C00] text-white rounded-lg font-medium hover:bg-[#005a00] transition-colors disabled:opacity-50"
-                >
-                  {isCreating || isUpdating ? 'Salvando...' : 'Salvar'}
-                </button>
-              </div>
-            </form>
+            </button>
           </div>
+
+          <div className="overflow-x-auto">
+            {isLoadingAlunos || isLoadingGrades || isLoadingTiposAvaliacao ? (
+              <div className="p-12 text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
+                <p className="text-gray-600">Buscando informações dos alunos e notas...</p>
+              </div>
+            ) : students.length === 0 ? (
+              <div className="p-12 text-center">
+                <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
+                <p className="text-gray-600 font-medium">Nenhum aluno encontrado nesta turma.</p>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-16">Nº</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nome do Aluno</th>
+                    {tiposAvaliacao.map(tipo => (
+                      <th key={tipo.codigo} className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">
+                        {tipo.designacao}
+                      </th>
+                    ))}
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">Média</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-32">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {students.map((student: any, index: number) => {
+                    const avg = getStudentAverage(student.codigo)
+                    return (
+                      <tr key={student.codigo} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4 text-sm text-gray-500 font-medium">{index + 1}</td>
+                        <td className="px-6 py-4">
+                          <p className="font-semibold text-gray-900">{student.nome}</p>
+                          <p className="text-xs text-gray-400">Cód: #{student.codigo}</p>
+                        </td>
+                        
+                        {/* Inputs Dinâmicos para tipos de avaliações */}
+                        {tiposAvaliacao.map(tipo => {
+                          const gradeKey = `${student.codigo}-${tipo.codigo}`
+                          const value = localGrades[gradeKey] !== undefined ? localGrades[gradeKey] : ''
+                          return (
+                            <td key={tipo.codigo} className="px-6 py-4">
+                              <input
+                                type="number"
+                                min="0"
+                                max="20"
+                                step="0.1"
+                                value={value}
+                                onChange={(e) => {
+                                  const val = e.target.value === '' ? undefined : parseFloat(e.target.value)
+                                  setLocalGrades(prev => {
+                                    const copy = { ...prev }
+                                    if (val === undefined || isNaN(val)) {
+                                      delete copy[gradeKey]
+                                    } else {
+                                      copy[gradeKey] = val
+                                    }
+                                    return copy
+                                  })
+                                }}
+                                className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium"
+                                placeholder="0-20"
+                              />
+                            </td>
+                          )
+                        })}
+
+                        {/* Média / Nota Final */}
+                        <td className="px-6 py-4">
+                          <span className={`text-lg font-bold ${avg !== undefined ? (avg >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400'}`}>
+                            {avg !== undefined ? avg.toFixed(2) : '-'}
+                          </span>
+                        </td>
+
+                        {/* Status */}
+                        <td className="px-6 py-4">
+                          {avg !== undefined ? (
+                            avg >= 10 ? (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                Aprovado
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                Reprovado
+                              </span>
+                            )
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                              Pendente
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-12 text-center">
+          <GraduationCap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Aguardando Seleção de Contexto</h3>
+          <p className="text-gray-500 max-w-md mx-auto">
+            Por favor, selecione o Ano Letivo, Turma, Disciplina e Trimestre nos filtros acima para carregar a lista de alunos e começar o lançamento de notas.
+          </p>
         </div>
       )}
     </Container>
