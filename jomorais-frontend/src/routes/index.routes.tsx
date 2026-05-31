@@ -34,6 +34,7 @@ import { Payments, PaymentCreate, CreditNotes } from '../pages/Admin/payment-man
 import FinancialServicesManagement from '../pages/Admin/financial-services/FinancialServicesManagement'
 import SAFTExport from '../pages/Admin/SAFTExport'
 import DebugPermissions from '../pages/Admin/DebugPermissions'
+import PeriodosLancamentoManagement from '../pages/Admin/settings-management/PeriodosLancamentoManagement'
 import { ProtectedRoute } from './protected.routes'
 import { PublicRoute } from './public.routes'
 
@@ -56,6 +57,7 @@ export default function IndexRoutes() {
 	  	<Route path='/admin/settings-management/ano-letivo' element={<AnoLectivoManagement />} />
 	  	<Route path='/admin/settings-management/instituicao' element={<InstitutionManagement />} />
 	  	<Route path='/admin/settings-management/geographic' element={<GeographicManagement />} />
+	  	<Route path='/admin/settings-management/periodos-lancamento' element={<PeriodosLancamentoManagement />} />
 	  	<Route path='/admin/student-management' element={<StudentManagement />} />
 	  	<Route path='/admin/student-management/student' element={<StudentManagement />} />
 	  	<Route path='/admin/student-management/student/add' element={<AddStudent />} />

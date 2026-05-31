@@ -106,6 +106,7 @@ export default function Sidebar() {
         { title: "Dados Institucionais", icon: Building, href: "/admin/settings-management/instituicao" },
         { title: "Ano Letivo", icon: Calendar, href: "/admin/settings-management/ano-letivo" },
         { title: "Gestão Geográfica", icon: MapPin, href: "/admin/settings-management/geographic" },
+        { title: "Períodos de Lançamento", icon: Calendar, href: "/admin/settings-management/periodos-lancamento" },
         { title: "Usuários", icon: UserCog, href: "/admin/users" }
       ]
     },

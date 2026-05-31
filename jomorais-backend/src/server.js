@@ -29,6 +29,7 @@ import certificatesRoutes from './routes/certificates.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import reportsManagementRoutes from './routes/reports-management.routes.js';
 import financialManagementReportsRoutes from './routes/financial-management-reports.routes.js';
+import periodosLancamentoRoutes from './routes/periodos-lancamento.routes.js';
 
 // Importar Swagger
 import { swaggerDocs } from './config/swagger.js';
@@ -75,6 +76,7 @@ app.get('/', (req, res) => {
       dashboard: '/api/dashboard',
       reportsManagement: '/api/reports-management',
       financialManagementReports: '/api/financial-management/reports',
+      periodosLancamento: '/api/periodos-lancamento',
       docs: '/api/docs'
     }
   });
@@ -112,6 +114,7 @@ app.use('/api/certificates', certificatesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports-management', reportsManagementRoutes);
 app.use('/api/financial-management/reports', financialManagementReportsRoutes);
+app.use('/api/periodos-lancamento', periodosLancamentoRoutes);
 
 // Documentação Swagger
 swaggerDocs(app);
