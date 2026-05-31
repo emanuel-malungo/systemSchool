@@ -119,6 +119,7 @@ export default function Sidebar() {
       children: [
         { title: "Relatórios de Alunos", icon: Users, href: "/admin/reports-management/students" },
         { title: "Relatórios Acadêmicos", icon: BookOpen, href: "/admin/reports-management/academic" },
+        { title: "Boletim de Notas", icon: FileText, href: "/admin/reports-management/boletim" },
         { title: "Relatório de Vendas", icon: DollarSign, href: "/admin/reports-management/sales" }
       ]
     },
