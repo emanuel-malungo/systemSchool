@@ -24,6 +24,11 @@ const validationSchema = yup.object({
   contacto: yup.string().required('Contacto é obrigatório').min(9, 'Mínimo 9 caracteres'),
   codigo_Especialidade: yup.number().required('Especialidade é obrigatória').positive('Selecione uma especialidade'),
   status: yup.number().required('Status é obrigatório').positive('Selecione um status'),
+  formacao: yup.string().required('Formação acadêmica é obrigatória'),
+  nivelAcademico: yup.string().required('Nível acadêmico é obrigatório'),
+  numeroFuncionario: yup.string().nullable(),
+  dataAdmissao: yup.string().nullable(),
+  criarUsuario: yup.boolean().default(true),
 })
 
 type FormData = IDocenteInput
@@ -55,6 +60,11 @@ export default function TeacherFormModal({
       contacto: '',
       codigo_Especialidade: 0,
       status: 1,
+      formacao: '',
+      nivelAcademico: 'Licenciado',
+      numeroFuncionario: '',
+      dataAdmissao: '',
+      criarUsuario: true,
     },
   })
 
@@ -67,6 +77,11 @@ export default function TeacherFormModal({
         contacto: teacher.contacto,
         codigo_Especialidade: teacher.codigo_Especialidade,
         status: teacher.status,
+        formacao: teacher.formacao || '',
+        nivelAcademico: teacher.nivelAcademico || 'Licenciado',
+        numeroFuncionario: teacher.numeroFuncionario || '',
+        dataAdmissao: teacher.dataAdmissao ? new Date(teacher.dataAdmissao).toISOString().split('T')[0] : '',
+        criarUsuario: false,
       })
     } else if (!isOpen) {
       reset({
@@ -75,6 +90,11 @@ export default function TeacherFormModal({
         contacto: '',
         codigo_Especialidade: 0,
         status: 1,
+        formacao: '',
+        nivelAcademico: 'Licenciado',
+        numeroFuncionario: '',
+        dataAdmissao: '',
+        criarUsuario: true,
       })
     }
   }, [teacher, isOpen, reset])
@@ -195,6 +215,84 @@ export default function TeacherFormModal({
                 </select>
               </div>
             </div>
+
+            {/* Grid com 2 colunas para Formação e Nível Acadêmico */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* Formação Acadêmica */}
+              <div>
+                <Input
+                  {...register('formacao')}
+                  label="Formação Acadêmica"
+                  placeholder="Ex: Licenciatura em Matemática"
+                  error={errors.formacao?.message}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Nível Acadêmico */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nível Acadêmico <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register('nivelAcademico')}
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all ${
+                    errors.nivelAcademico ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                  } ${isLoading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+                >
+                  <option value="Médio">Médio</option>
+                  <option value="Licenciado">Licenciado</option>
+                  <option value="Mestre">Mestre</option>
+                  <option value="Doutor">Doutor</option>
+                </select>
+                {errors.nivelAcademico && (
+                  <p className="mt-1 text-sm text-red-500">{errors.nivelAcademico.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Grid com 2 colunas para Número de Funcionário e Data de Admissão */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* Número de Funcionário */}
+              <div>
+                <Input
+                  {...register('numeroFuncionario')}
+                  label="Nº de Funcionário"
+                  placeholder="Ex: FUNC-12345"
+                  error={errors.numeroFuncionario?.message}
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* Data de Admissão */}
+              <div>
+                <Input
+                  {...register('dataAdmissao')}
+                  type="date"
+                  label="Data de Admissão"
+                  error={errors.dataAdmissao?.message}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            {/* Criar Usuário (apenas no modo de cadastro) */}
+            {!isEditMode && (
+              <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 p-4 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="criarUsuario"
+                  {...register('criarUsuario')}
+                  disabled={isLoading}
+                  className="h-5 w-5 text-[#007C00] focus:ring-[#007C00] border-gray-300 rounded cursor-pointer disabled:opacity-50"
+                />
+                <label htmlFor="criarUsuario" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                  Criar credenciais de utilizador automaticamente para o professor
+                </label>
+              </div>
+            )}
 
             {/* Informações */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

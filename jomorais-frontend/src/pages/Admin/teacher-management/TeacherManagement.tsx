@@ -6,6 +6,7 @@ import TeacherTable from '../../../components/teacher-management/TeacherTable'
 import TeacherFormModal from '../../../components/teacher-management/TeacherFormModal'
 import DeleteConfirmModal from '../../../components/teacher-management/DeleteConfirmModal'
 import Container from '../../../components/layout/Container'
+import CredentialsModal from '../../../components/teacher-management/CredentialsModal'
 
 export default function TeacherManagement() {
   // Estados
@@ -17,6 +18,8 @@ export default function TeacherManagement() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [teacherToDelete, setTeacherToDelete] = useState<IDocente | null>(null)
   const [teacherToEdit, setTeacherToEdit] = useState<IDocente | null>(null)
+  const [credentials, setCredentials] = useState<{ username: string; senhaTemporaria: string } | null>(null)
+  const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false)
 
   // Hook de gerenciamento de professores
   const {
@@ -55,7 +58,14 @@ export default function TeacherManagement() {
         })
       } else {
         // Criar novo professor
-        await createTeacherAsync(data)
+        const result = await createTeacherAsync(data)
+        if (result?.data?.usuario) {
+          setCredentials({
+            username: result.data.usuario.username,
+            senhaTemporaria: result.data.usuario.senhaTemporaria
+          })
+          setIsCredentialsModalOpen(true)
+        }
       }
       setIsFormModalOpen(false)
       setTeacherToEdit(null)
@@ -197,6 +207,15 @@ export default function TeacherManagement() {
         onConfirm={handleDeleteConfirm}
         teacherName={teacherToDelete?.nome || ''}
         isLoading={isDeleting}
+      />
+
+      <CredentialsModal
+        isOpen={isCredentialsModalOpen}
+        onClose={() => {
+          setIsCredentialsModalOpen(false)
+          setCredentials(null)
+        }}
+        credentials={credentials}
       />
     </Container>
   )

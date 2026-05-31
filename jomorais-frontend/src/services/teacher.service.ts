@@ -1,5 +1,6 @@
 import api from '../utils/api.utils'
 import type { 
+  IDocente,
   IDocenteInput, 
   IDocenteResponse, 
   IDocenteListResponse,
@@ -24,9 +25,92 @@ export interface TeacherPaginationParams {
  * Baseado no padrão do backend: academic-staff/docentes
  */
 class TeacherService {
-  private readonly baseURL = '/api/academic-staff/docentes'
+  private readonly baseURL = '/api/professor-evaluation/professores'
   private readonly especialidadesURL = '/api/academic-staff/especialidades'
   private readonly disciplinasDocenteURL = '/api/academic-staff/disciplinas-docente'
+
+  private especialidadesCache: any[] | null = null;
+
+  private async getEspecialidadesListCached(): Promise<any[]> {
+    if (this.especialidadesCache) {
+      return this.especialidadesCache;
+    }
+    try {
+      const res = await this.getEspecialidades();
+      this.especialidadesCache = res.data || [];
+      return this.especialidadesCache;
+    } catch (e) {
+      console.error('Erro ao carregar especialidades para cache:', e);
+      return [];
+    }
+  }
+
+  private mapToFrontend(backendData: any, especialidadesList: any[]): IDocente {
+    const especialidadeObj = especialidadesList.find(
+      (e) => e.designacao.toLowerCase() === backendData.Especialidade?.toLowerCase()
+    );
+    const codigoEspecialidade = especialidadeObj ? especialidadeObj.codigo : 0;
+
+    return {
+      codigo: backendData.Codigo,
+      nome: backendData.Nome,
+      email: backendData.Email,
+      contacto: backendData.Telefone || '',
+      status: backendData.Status === 'Activo' ? 1 : 0,
+      codigo_Especialidade: codigoEspecialidade,
+      codigo_Utilizador: backendData.Codigo_Utilizador || 0,
+      user_id: backendData.user_id ? String(backendData.user_id) : '',
+      formacao: backendData.Formacao || '',
+      nivelAcademico: backendData.NivelAcademico || '',
+      numeroFuncionario: backendData.NumeroFuncionario || '',
+      dataAdmissao: backendData.DataAdmissao || undefined,
+      usuario: backendData.usuario || null,
+      tb_especialidade: {
+        codigo: codigoEspecialidade,
+        designacao: backendData.Especialidade || ''
+      },
+      tb_disciplinas: null,
+      tb_disciplinas_docente: [],
+      tb_directores_turmas: [],
+      tb_docente_turma: [],
+      _count: {
+        tb_disciplinas_docente: backendData._count?.tb_professor_disciplina || 0,
+        tb_directores_turmas: 0,
+        tb_docente_turma: backendData._count?.tb_professor_turma || 0
+      }
+    };
+  }
+
+  private async mapToBackend(payload: IDocenteInput): Promise<any> {
+    let especialidadeName = '';
+    if (payload.codigo_Especialidade) {
+      try {
+        const especialidades = await this.getEspecialidadesListCached();
+        const especialidadeObj = especialidades.find(
+          (e) => e.codigo === payload.codigo_Especialidade
+        );
+        if (especialidadeObj) {
+          especialidadeName = especialidadeObj.designacao;
+        }
+      } catch (error) {
+        console.error('Erro ao buscar especialidade para mapeamento:', error);
+      }
+    }
+
+    return {
+      nome: payload.nome,
+      email: payload.email,
+      telefone: payload.contacto,
+      formacao: payload.formacao || 'Licenciatura',
+      nivelAcademico: payload.nivelAcademico || 'Licenciado',
+      especialidade: especialidadeName,
+      numeroFuncionario: payload.numeroFuncionario || null,
+      dataAdmissao: payload.dataAdmissao ? new Date(payload.dataAdmissao).toISOString() : null,
+      status: payload.status === 0 ? 'Inactivo' : 'Activo',
+      codigoUtilizador: payload.codigo_Utilizador || null,
+      criarUsuario: payload.criarUsuario !== undefined ? payload.criarUsuario : true
+    };
+  }
 
   // ===============================
   // DOCENTES - CRUD
@@ -48,10 +132,19 @@ class TeacherService {
         queryParams.append('search', search)
       }
 
-      const response = await api.get<IDocenteListResponse>(
+      const response = await api.get<any>(
         `${this.baseURL}?${queryParams.toString()}`
       )
-      return response.data
+
+      const especialidades = await this.getEspecialidadesListCached();
+      const mappedData = (response.data.data || []).map((item: any) => this.mapToFrontend(item, especialidades));
+
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mappedData,
+        pagination: response.data.pagination
+      };
     } catch (error) {
       console.error('Erro ao buscar todos os docentes:', error)
       throw error
@@ -71,13 +164,32 @@ class TeacherService {
       queryParams.append('limit', params.limit?.toString() || '10')
       
       if (params.search) queryParams.append('search', params.search)
-      if (params.status && params.status !== 'all') queryParams.append('status', params.status)
-      if (params.especialidade) queryParams.append('especialidade', params.especialidade.toString())
+      if (params.status && params.status !== 'all') {
+        const backendStatus = params.status === '1' || params.status === 'Activo' ? 'Activo' : 'Inactivo';
+        queryParams.append('status', backendStatus);
+      }
+      
+      if (params.especialidade) {
+        const especialidades = await this.getEspecialidadesListCached();
+        const espObj = especialidades.find(e => e.codigo === params.especialidade);
+        if (espObj) {
+          queryParams.append('search', espObj.designacao);
+        }
+      }
 
-      const response = await api.get<IDocenteListResponse>(
+      const response = await api.get<any>(
         `${this.baseURL}?${queryParams.toString()}`
       )
-      return response.data
+
+      const especialidades = await this.getEspecialidadesListCached();
+      const mappedData = (response.data.data || []).map((item: any) => this.mapToFrontend(item, especialidades));
+
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mappedData,
+        pagination: response.data.pagination
+      };
     } catch (error) {
       console.error('Erro ao buscar docentes:', error)
       throw error
@@ -92,8 +204,14 @@ class TeacherService {
    */
   async getDocenteById(id: number): Promise<IDocenteResponse> {
     try {
-      const response = await api.get<IDocenteResponse>(`${this.baseURL}/${id}`)
-      return response.data
+      const response = await api.get<any>(`${this.baseURL}/${id}`)
+      const especialidades = await this.getEspecialidadesListCached();
+      const mapped = this.mapToFrontend(response.data.data, especialidades);
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mapped
+      };
     } catch (error) {
       console.error(`Erro ao buscar docente ${id}:`, error)
       throw error
@@ -108,8 +226,20 @@ class TeacherService {
    */
   async createDocente(payload: IDocenteInput): Promise<IDocenteResponse> {
     try {
-      const response = await api.post<IDocenteResponse>(this.baseURL, payload)
-      return response.data
+      const backendPayload = await this.mapToBackend(payload);
+      const response = await api.post<any>(this.baseURL, backendPayload)
+      const especialidades = await this.getEspecialidadesListCached();
+      const mapped = this.mapToFrontend(response.data.data, especialidades);
+
+      if (response.data.data?.usuario) {
+        mapped.usuario = response.data.data.usuario;
+      }
+
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mapped
+      };
     } catch (error) {
       console.error('Erro ao criar docente:', error)
       throw error
@@ -125,8 +255,23 @@ class TeacherService {
    */
   async updateDocente(id: number, payload: Partial<IDocenteInput>): Promise<IDocenteResponse> {
     try {
-      const response = await api.put<IDocenteResponse>(`${this.baseURL}/${id}`, payload)
-      return response.data
+      const backendPayload = await this.mapToBackend(payload as IDocenteInput);
+      
+      // Remove undefined keys
+      Object.keys(backendPayload).forEach(key => {
+        if (backendPayload[key] === undefined) {
+          delete backendPayload[key];
+        }
+      });
+
+      const response = await api.put<any>(`${this.baseURL}/${id}`, backendPayload)
+      const especialidades = await this.getEspecialidadesListCached();
+      const mapped = this.mapToFrontend(response.data.data, especialidades);
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mapped
+      };
     } catch (error) {
       console.error(`Erro ao atualizar docente ${id}:`, error)
       throw error
@@ -141,11 +286,7 @@ class TeacherService {
    */
   async updateDocenteStatus(id: number, status: number): Promise<IDocenteResponse> {
     try {
-      const response = await api.patch<IDocenteResponse>(
-        `${this.baseURL}/${id}/status`,
-        { status }
-      )
-      return response.data
+      return this.updateDocente(id, { status });
     } catch (error) {
       console.error(`Erro ao atualizar status do docente ${id}:`, error)
       throw error
@@ -160,8 +301,11 @@ class TeacherService {
    */
   async deleteDocente(id: number): Promise<{ success: boolean; message: string }> {
     try {
-      const response = await api.delete<{ success: boolean; message: string }>(`${this.baseURL}/${id}`)
-      return response.data
+      const response = await api.delete<any>(`${this.baseURL}/${id}`)
+      return {
+        success: response.data.success,
+        message: response.data.message || response.data.mensagem
+      }
     } catch (error) {
       console.error(`Erro ao deletar docente ${id}:`, error)
       throw error
@@ -193,10 +337,17 @@ class TeacherService {
    */
   async getDocentesPorEspecialidade(especialidadeId: number): Promise<IDocenteListResponse> {
     try {
-      const response = await api.get<IDocenteListResponse>(
+      const response = await api.get<any>(
         `${this.baseURL}/especialidade/${especialidadeId}`
       )
-      return response.data
+      const especialidades = await this.getEspecialidadesListCached();
+      const mappedData = (response.data.data || []).map((item: any) => this.mapToFrontend(item, especialidades));
+
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mappedData
+      };
     } catch (error) {
       console.error(`Erro ao buscar docentes da especialidade ${especialidadeId}:`, error)
       throw error
@@ -284,10 +435,17 @@ class TeacherService {
    */
   async getDocentesPorTurma(turmaId: number): Promise<IDocenteListResponse> {
     try {
-      const response = await api.get<IDocenteListResponse>(
+      const response = await api.get<any>(
         `/api/academic-staff/turmas/${turmaId}/docentes`
       )
-      return response.data
+      const especialidades = await this.getEspecialidadesListCached();
+      const mappedData = (response.data.data || []).map((item: any) => this.mapToFrontend(item, especialidades));
+
+      return {
+        success: response.data.success,
+        message: response.data.message,
+        data: mappedData
+      };
     } catch (error) {
       console.error(`Erro ao buscar docentes da turma ${turmaId}:`, error)
       throw error

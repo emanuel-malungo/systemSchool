@@ -193,9 +193,34 @@ export class ProfessorEvaluationService {
           }
         }
 
-        // Criar o professor vinculando ao utilizador
+        // Resolve the especialidade ID
+        let codigoEspecialidadeResolved = null;
+        if (especialidade) {
+          const espObj = await tx.tb_especialidade.findFirst({
+            where: { designacao: { contains: especialidade.trim() } }
+          });
+          if (espObj) {
+            codigoEspecialidadeResolved = espObj.codigo;
+          }
+        }
+
+        // Criar na tabela tb_docente primeiro para obter o ID autoincrementado unificado
+        const novoDocente = await tx.tb_docente.create({
+          data: {
+            nome: nome.trim(),
+            status: status === 'Activo' ? 1 : 0,
+            codigo_Utilizador: finalCodigoUtilizador,
+            codigo_Especialidade: codigoEspecialidadeResolved,
+            contacto: telefone?.trim() || null,
+            email: email.toLowerCase().trim(),
+            user_id: BigInt(1) // ID do utilizador criador padrão
+          }
+        });
+
+        // Criar o professor vinculando ao utilizador com o mesmo ID
         const professor = await tx.tb_professores.create({
           data: {
+            Codigo: novoDocente.codigo,
             Nome: nome.trim(),
             Email: email.toLowerCase().trim(),
             Telefone: telefone?.trim() || null,
@@ -240,10 +265,10 @@ export class ProfessorEvaluationService {
       }
 
       // Se atualizando email, verificar duplicatas
-      if (data.email && data.email.toLowerCase().trim() !== existingProfessor.email) {
+      if (data.email && data.email.toLowerCase().trim() !== existingProfessor.Email) {
         const duplicateEmail = await prisma.tb_professores.findFirst({
           where: {
-            email: data.email.toLowerCase().trim(),
+            Email: data.email.toLowerCase().trim(),
             Codigo: { not: professorId }
           }
         });
@@ -267,17 +292,31 @@ export class ProfessorEvaluationService {
         if (data[key] !== undefined && data[key] !== null) {
           switch (key) {
             case 'nome':
+              updateData['Nome'] = data[key].trim();
+              break;
             case 'email':
+              updateData['Email'] = data[key].toLowerCase().trim();
+              break;
             case 'telefone':
+              updateData['Telefone'] = data[key].trim();
+              break;
             case 'formacao':
+              updateData['Formacao'] = data[key].trim();
+              break;
             case 'nivelAcademico':
+              updateData['NivelAcademico'] = data[key].trim();
+              break;
             case 'especialidade':
+              updateData['Especialidade'] = data[key].trim();
+              break;
             case 'numeroFuncionario':
+              updateData['NumeroFuncionario'] = data[key].trim();
+              break;
             case 'status':
-              updateData[key] = typeof data[key] === 'string' ? data[key].trim() : data[key];
+              updateData['Status'] = data[key].trim();
               break;
             case 'dataAdmissao':
-              updateData[key] = new Date(data[key]);
+              updateData['DataAdmissao'] = new Date(data[key]);
               break;
             case 'codigoUtilizador':
               updateData['Codigo_Utilizador'] = parseInt(data[key]);
@@ -286,13 +325,43 @@ export class ProfessorEvaluationService {
         }
       });
 
-      const professor = await prisma.tb_professores.update({
-        where: { Codigo: professorId },
-        data: updateData
+      // Executar a atualização em uma transação para manter tb_docente sincronizado
+      const result = await prisma.$transaction(async (tx) => {
+        // Mapear campos para tb_docente
+        const docenteUpdateData = {};
+        if (data.nome) docenteUpdateData.nome = data.nome.trim();
+        if (data.email) docenteUpdateData.email = data.email.toLowerCase().trim();
+        if (data.telefone !== undefined) docenteUpdateData.contacto = data.telefone?.trim() || null;
+        if (data.status) docenteUpdateData.status = data.status === 'Activo' ? 1 : 0;
+        if (data.codigoUtilizador !== undefined) docenteUpdateData.codigo_Utilizador = data.codigoUtilizador ? parseInt(data.codigoUtilizador) : null;
+
+        // Se especialidade foi alterada, resolver o ID
+        if (data.especialidade) {
+          const espObj = await tx.tb_especialidade.findFirst({
+            where: { designacao: { contains: data.especialidade.trim() } }
+          });
+          if (espObj) {
+            docenteUpdateData.codigo_Especialidade = espObj.codigo;
+          }
+        }
+
+        // Atualizar tb_docente se houver campos para atualizar
+        if (Object.keys(docenteUpdateData).length > 0) {
+          await tx.tb_docente.update({
+            where: { codigo: professorId },
+            data: docenteUpdateData
+          }).catch(e => console.error('Erro ao atualizar tb_docente correspondente:', e));
+        }
+
+        // Atualizar tb_professores
+        return await tx.tb_professores.update({
+          where: { Codigo: professorId },
+          data: updateData
+        });
       });
 
       return {
-        ...professor,
+        ...result,
         mensagem: 'Professor atualizado com sucesso'
       };
     } catch (error) {
@@ -421,10 +490,17 @@ export class ProfessorEvaluationService {
         );
       }
 
-      // Arquivar em vez de deletar (soft delete)
-      await prisma.tb_professores.update({
-        where: { Codigo: professorId },
-        data: { status: 'Inactivo' }
+      // Arquivar em vez de deletar (soft delete) nas duas tabelas
+      await prisma.$transaction(async (tx) => {
+        await tx.tb_professores.update({
+          where: { Codigo: professorId },
+          data: { Status: 'Inactivo' }
+        });
+
+        await tx.tb_docente.update({
+          where: { codigo: professorId },
+          data: { status: 0 }
+        }).catch(e => console.error('Erro ao desativar tb_docente correspondente:', e));
       });
 
       return {

@@ -56,6 +56,17 @@ export interface IDocente {
     codigo_turma: number;
   }>;
   
+  // Novos campos tb_professores
+  formacao?: string;
+  nivelAcademico?: string;
+  numeroFuncionario?: string;
+  dataAdmissao?: string;
+  usuario?: {
+    username: string;
+    senhaTemporaria: string;
+    tipo: string;
+  } | null;
+  
   // Contador de relacionamentos (usado na listagem)
   _count?: {
     tb_disciplinas_docente: number;
@@ -74,6 +85,13 @@ export interface IDocenteInput {
   contacto: string;
   email: string;
   user_id?: string;
+  
+  // Novos campos tb_professores
+  formacao?: string;
+  nivelAcademico?: string;
+  numeroFuncionario?: string;
+  dataAdmissao?: string;
+  criarUsuario?: boolean;
 }
 
 // Interface para paginação
