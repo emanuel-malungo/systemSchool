@@ -2468,25 +2468,33 @@ export class StudentManagementService {
           where,
           skip,
           take,
-          orderBy: { dataTransferencia: 'desc' },
-          include: {
-            tb_alunos: {
-              select: {
-                codigo: true,
-                nome: true,
-                dataNascimento: true,
-                sexo: true,
-                url_Foto: true
-              }
-            }
-          }
+          orderBy: { dataTransferencia: 'desc' }
         }),
         prisma.tb_transferencias.count({ where })
       ]);
 
-      // Buscar dados relacionados manualmente (utilizador)
+      // Buscar dados relacionados manualmente (sem relações no schema Prisma)
       const transferenciasComDados = await Promise.all(
         transferencias.map(async (transferencia) => {
+          // Buscar aluno
+          let aluno = null;
+          if (transferencia.codigoAluno) {
+            try {
+              aluno = await prisma.tb_alunos.findUnique({
+                where: { codigo: transferencia.codigoAluno },
+                select: {
+                  codigo: true,
+                  nome: true,
+                  dataNascimento: true,
+                  sexo: true,
+                  url_Foto: true
+                }
+              });
+            } catch (error) {
+              // Continuar sem o aluno em vez de falhar
+            }
+          }
+
           // Buscar utilizador
           let utilizador = null;
           if (transferencia.codigoUtilizador) {
@@ -2523,6 +2531,7 @@ export class StudentManagementService {
 
           return {
             ...transferencia,
+            tb_alunos: aluno,
             tb_utilizadores: utilizador,
             tb_proveniencias: proveniencia
           };
@@ -2545,31 +2554,40 @@ export class StudentManagementService {
 
   static async getTransferenciaDocumentoData(id) {
     try {
+      // tb_transferencias não possui relações no schema Prisma, buscar tudo manualmente
       const transferencia = await prisma.tb_transferencias.findUnique({
-        where: { codigo: parseInt(id) },
-        include: {
-          tb_alunos: {
-            include: {
-              tb_comunas: {
-                include: {
-                  tb_municipios: {
-                    include: {
-                      tb_provincias: true
-                    }
+        where: { codigo: parseInt(id) }
+      });
+
+      if (!transferencia) {
+        throw new AppError('Transferência não encontrada', 404);
+      }
+
+      // Buscar dados do aluno com todas as relações necessárias
+      let aluno = null;
+      if (transferencia.codigoAluno) {
+        aluno = await prisma.tb_alunos.findUnique({
+          where: { codigo: transferencia.codigoAluno },
+          include: {
+            tb_comunas: {
+              include: {
+                tb_municipios: {
+                  include: {
+                    tb_provincias: true
                   }
                 }
-              },
-              tb_nacionalidades: true,
-              tb_matriculas: {
-                include: {
-                  tb_cursos: true,
-                  tb_confirmacoes: {
-                    include: {
-                      tb_turmas: {
-                        include: {
-                          tb_classes: true,
-                          tb_periodos: true
-                        }
+              }
+            },
+            tb_nacionalidades: true,
+            tb_matriculas: {
+              include: {
+                tb_cursos: true,
+                tb_confirmacoes: {
+                  include: {
+                    tb_turmas: {
+                      include: {
+                        tb_classes: true,
+                        tb_periodos: true
                       }
                     }
                   }
@@ -2577,20 +2595,19 @@ export class StudentManagementService {
               }
             }
           }
-        }
-      });
-
-      if (!transferencia) {
-        throw new AppError('Transferência não encontrada', 404);
+        });
       }
 
       // Buscar proveniência (escola destino)
-      const proveniencia = await prisma.tb_proveniencias.findUnique({
-        where: { codigo: transferencia.codigoEscola }
-      });
+      const proveniencia = transferencia.codigoEscola
+        ? await prisma.tb_proveniencias.findUnique({
+            where: { codigo: transferencia.codigoEscola }
+          })
+        : null;
 
       // Buscar dados da instituição
-      const instituicao = await prisma.tb_dados_instituicao.findFirst() || {
+      const instituicaoDb = await prisma.tb_dados_instituicao.findFirst();
+      const instituicao = instituicaoDb || {
         nome: 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
         endereco: 'Cabinda, Angola',
         telefone: '+244 915 312 187',
@@ -2598,13 +2615,15 @@ export class StudentManagementService {
       };
 
       // Obter utilizador
-      const utilizador = await prisma.tb_utilizadores.findUnique({
-        where: { codigo: transferencia.codigoUtilizador },
-        select: { nome: true }
-      });
+      const utilizador = transferencia.codigoUtilizador
+        ? await prisma.tb_utilizadores.findUnique({
+            where: { codigo: transferencia.codigoUtilizador },
+            select: { nome: true }
+          })
+        : null;
 
       return {
-        transferencia,
+        transferencia: { ...transferencia, tb_alunos: aluno },
         proveniencia,
         instituicao,
         utilizador
