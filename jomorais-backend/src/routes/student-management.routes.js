@@ -2014,6 +2014,7 @@ router.put('/transferencias/:id', StudentManagementController.updateTransferenci
  *         $ref: '#/components/responses/UnauthorizedError'
  */
 router.delete('/transferencias/:id', StudentManagementController.deleteTransferencia);
+router.get('/transferencias/:id/pdf-data', StudentManagementController.getTransferenciaPdfData);
 
 // ===============================
 // ROTAS PARA ESTATÍSTICAS

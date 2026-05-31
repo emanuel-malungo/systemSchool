@@ -1,4 +1,4 @@
-import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Printer } from 'lucide-react'
 import type { ITransfer } from '../../types/transfer.types'
 
 interface TransferTableProps {
@@ -7,6 +7,7 @@ interface TransferTableProps {
   onEdit: (transfer: ITransfer) => void
   onView: (transfer: ITransfer) => void
   onDelete: (transfer: ITransfer) => void
+  onPrint?: (transfer: ITransfer) => void
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
@@ -18,6 +19,7 @@ export default function TransferTable({
   onEdit,
   onView,
   onDelete,
+  onPrint,
   currentPage,
   totalPages,
   onPageChange,
@@ -129,7 +131,7 @@ export default function TransferTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">
-                    Escola #{transfer.codigoEscola}
+                    {transfer.tb_proveniencias?.designacao || `Escola #${transfer.codigoEscola}`}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -150,6 +152,17 @@ export default function TransferTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
+                    {/* Imprimir Guia */}
+                    {onPrint && (
+                      <button
+                        onClick={() => onPrint(transfer)}
+                        className="text-blue-600 hover:text-blue-900 transition-colors p-1 hover:bg-blue-50 rounded"
+                        title="Imprimir Guia"
+                      >
+                        <Printer className="h-5 w-5" />
+                      </button>
+                    )}
+
                     {/* Visualizar */}
                     <button
                       onClick={() => onView(transfer)}

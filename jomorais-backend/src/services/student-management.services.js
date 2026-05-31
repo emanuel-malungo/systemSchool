@@ -2336,21 +2336,36 @@ export class StudentManagementService {
         throw new AppError('Aluno não encontrado', 404);
       }
 
+      // Validar status do aluno (deve estar ativo)
+      if (alunoExists.codigo_Status !== 1) {
+        throw new AppError(`O aluno não possui uma matrícula ativa. Status atual: ${alunoExists.codigo_Status === 3 ? 'Transferido' : 'Inativo'}.`, 400);
+      }
+
       const cleanData = { ...data };
       if (cleanData.obs) cleanData.obs = cleanData.obs.trim();
 
-      return await prisma.tb_transferencias.create({
-        data: cleanData,
-        include: {
-          tb_alunos: {
-            select: {
-              codigo: true,
-              nome: true,
-              dataNascimento: true,
-              sexo: true
+      // Executar criação e atualização de status em transação
+      return await prisma.$transaction(async (tx) => {
+        // Atualizar status do aluno para 3 (TRANSFERIDO)
+        await tx.tb_alunos.update({
+          where: { codigo: data.codigoAluno },
+          data: { codigo_Status: 3 }
+        });
+
+        // Criar a transferência
+        return await tx.tb_transferencias.create({
+          data: cleanData,
+          include: {
+            tb_alunos: {
+              select: {
+                codigo: true,
+                nome: true,
+                dataNascimento: true,
+                sexo: true
+              }
             }
           }
-        }
+        });
       });
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -2489,9 +2504,27 @@ export class StudentManagementService {
             }
           }
 
+          // Buscar proveniência (escola destino)
+          let proveniencia = null;
+          if (transferencia.codigoEscola) {
+            try {
+              proveniencia = await prisma.tb_proveniencias.findUnique({
+                where: { codigo: transferencia.codigoEscola },
+                select: {
+                  codigo: true,
+                  designacao: true,
+                  localizacao: true
+                }
+              });
+            } catch (error) {
+              // Continuar sem a escola
+            }
+          }
+
           return {
             ...transferencia,
-            tb_utilizadores: utilizador
+            tb_utilizadores: utilizador,
+            tb_proveniencias: proveniencia
           };
         })
       );
@@ -2507,6 +2540,78 @@ export class StudentManagementService {
       };
     } catch (error) {
       throw new AppError(`Erro ao buscar transferências: ${error.message}`, 500);
+    }
+  }
+
+  static async getTransferenciaDocumentoData(id) {
+    try {
+      const transferencia = await prisma.tb_transferencias.findUnique({
+        where: { codigo: parseInt(id) },
+        include: {
+          tb_alunos: {
+            include: {
+              tb_comunas: {
+                include: {
+                  tb_municipios: {
+                    include: {
+                      tb_provincias: true
+                    }
+                  }
+                }
+              },
+              tb_nacionalidades: true,
+              tb_matriculas: {
+                include: {
+                  tb_cursos: true,
+                  tb_confirmacoes: {
+                    include: {
+                      tb_turmas: {
+                        include: {
+                          tb_classes: true,
+                          tb_periodos: true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!transferencia) {
+        throw new AppError('Transferência não encontrada', 404);
+      }
+
+      // Buscar proveniência (escola destino)
+      const proveniencia = await prisma.tb_proveniencias.findUnique({
+        where: { codigo: transferencia.codigoEscola }
+      });
+
+      // Buscar dados da instituição
+      const instituicao = await prisma.tb_dados_instituicao.findFirst() || {
+        nome: 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
+        endereco: 'Cabinda, Angola',
+        telefone: '+244 915 312 187',
+        email: 'itpsjomorais@gmail.com'
+      };
+
+      // Obter utilizador
+      const utilizador = await prisma.tb_utilizadores.findUnique({
+        where: { codigo: transferencia.codigoUtilizador },
+        select: { nome: true }
+      });
+
+      return {
+        transferencia,
+        proveniencia,
+        instituicao,
+        utilizador
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao buscar dados do documento de transferência: ${error.message}`, 500);
     }
   }
 

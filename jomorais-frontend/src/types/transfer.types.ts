@@ -63,6 +63,11 @@ export interface ITransfer {
   dataActualizacao?: string | object | null // API retorna {} às vezes
   tb_alunos: IStudent
   tb_utilizadores?: IUser | null
+  tb_proveniencias?: {
+    codigo: number
+    designacao: string
+    localizacao?: string
+  } | null
   // Nota: tb_escolas e tb_motivo_transferencia não existem no schema do banco
   // Os dados dessas entidades devem ser buscados através dos códigos usando mapeamentos estáticos
 }

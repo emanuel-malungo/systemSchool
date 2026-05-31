@@ -7,6 +7,9 @@ import TransferFormModal from '../../../components/transfer-management/TransferF
 import DeleteConfirmModal from '../../../components/transfer-management/DeleteConfirmModal'
 import type { ITransfer, ITransferInput } from '../../../types/transfer.types'
 import Container from '../../../components/layout/Container'
+import { TransferPdfGenerator } from '../../../utils/TransferPdfGenerator'
+import transferService from '../../../services/transfer.service'
+import { toast } from 'react-toastify'
 
 export default function TransferManagement() {
   // Estados
@@ -90,6 +93,22 @@ export default function TransferManagement() {
       } catch (error) {
         console.error('Erro ao deletar transferência:', error)
       }
+    }
+  }
+
+  const handlePrintTransfer = async (transfer: ITransfer) => {
+    try {
+      toast.info('Buscando dados para emissão da guia...')
+      const response = await transferService.getTransferPdfData(transfer.codigo)
+      if (response.success && response.data) {
+        TransferPdfGenerator.generatePDF(response.data)
+        toast.success('Guia de transferência gerada com sucesso!')
+      } else {
+        toast.error('Erro ao buscar dados para emissão da guia')
+      }
+    } catch (error) {
+      console.error('Erro ao gerar guia de transferência:', error)
+      toast.error('Erro ao gerar guia de transferência. Tente novamente.')
     }
   }
 
@@ -229,6 +248,7 @@ export default function TransferManagement() {
         onEdit={handleEditTransfer}
         onView={handleViewTransfer}
         onDelete={handleDeleteClick}
+        onPrint={handlePrintTransfer}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}

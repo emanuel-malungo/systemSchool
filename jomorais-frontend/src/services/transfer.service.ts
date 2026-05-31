@@ -104,6 +104,23 @@ class TransferService {
   }
 
   /**
+   * Busca dados consolidados para gerar o PDF da Guia de Transferência
+   * @param id - ID da transferência
+   * @returns Promise com dados para geração do PDF
+   */
+  async getTransferPdfData(id: number): Promise<ApiResponse<any>> {
+    try {
+      const response = await api.get<ApiResponse<any>>(
+        `${this.baseUrl}/${id}/pdf-data`
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar dados do PDF da transferência ${id}:`, error)
+      throw error
+    }
+  }
+
+  /**
    * Atualiza uma transferência existente
    * @param id - ID da transferência
    * @param payload - Dados a serem atualizados

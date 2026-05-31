@@ -685,6 +685,22 @@ export class StudentManagementController {
     }
   }
 
+  static async getTransferenciaPdfData(req, res) {
+    try {
+      const { id } = idParamSchema.parse(req.params);
+
+      const data = await StudentManagementService.getTransferenciaDocumentoData(id);
+      
+      res.json({
+        success: true,
+        message: "Dados da guia de transferência obtidos com sucesso",
+        data: convertBigIntToString(data)
+      });
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao obter dados do documento de transferência", 400);
+    }
+  }
+
   // ===============================
   // OPERAÇÕES ESPECIAIS
   // ===============================
