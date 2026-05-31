@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { BookOpen, School, Calendar, Filter, Loader2, RefreshCw, BarChart3 } from 'lucide-react'
+import { Filter, Loader2, RefreshCw, BarChart3 } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IAtribuicaoTurma, type INotaAlunoResponse } from '../../services/professor.service'
 import { toast } from 'react-toastify'

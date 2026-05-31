@@ -2,12 +2,8 @@ import { useState, useMemo } from 'react'
 import {
   Award,
   Plus,
-  Download,
   Eye,
   Trash2,
-  CheckCircle,
-  Clock,
-  XCircle,
   Filter,
   Loader2,
   AlertCircle,
@@ -50,7 +46,7 @@ export default function CertificateManagement() {
   })
 
   // Hooks de dados
-  const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({
+  const { data: anosLetivosData } = useAnosLectivos({
     page: 1,
     limit: 100,
   })
@@ -80,10 +76,9 @@ export default function CertificateManagement() {
     {
       codigoAluno: filterAluno ? parseInt(filterAluno) : undefined,
       codigoDisciplina: filterDisciplina ? parseInt(filterDisciplina) : undefined,
-      status: filterStatus || undefined,
+      status: (filterStatus || undefined) as "Pendente" | "Assinado" | undefined,
       codigoAnoLectivo: filterAnoLectivo ? parseInt(filterAnoLectivo) : undefined,
-    },
-    true
+    }
   )
 
   const certificates = certificatesResponse?.data || []
@@ -123,7 +118,7 @@ export default function CertificateManagement() {
   }
 
   const handleSignCertificate = async (certificateId: number) => {
-    if (!user?.codigo) {
+    if (!user?.id) {
       toast.error('Usuário não identificado')
       return
     }
@@ -131,7 +126,7 @@ export default function CertificateManagement() {
     try {
       await signCertificate({
         id: certificateId,
-        codigoUtilizador: user.codigo,
+        codigoUtilizador: Number(user.id),
       })
       toast.success('Certificado assinado com sucesso')
     } catch (error: any) {

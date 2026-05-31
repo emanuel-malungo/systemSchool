@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { User, Mail, Phone, Award, Shield, Key, Loader2, CheckCircle2, UserCheck } from 'lucide-react'
+import { User, Mail, Phone, Award, Shield, Key, Loader2, UserCheck } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IProfessorPerfil } from '../../services/professor.service'
 import { toast } from 'react-toastify'

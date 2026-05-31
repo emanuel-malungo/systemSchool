@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { BookOpen, School, Calendar, Filter, Loader2, Save, AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IAtribuicaoTurma, type IProfessorAluno } from '../../services/professor.service'
 import api from '../../utils/api.utils'
@@ -7,11 +7,17 @@ import { toast } from 'react-toastify'
 
 interface IPeriodoLancamento {
   codigo: number;
-  TipoAvaliacao: string;
-  Trimestre: number;
-  AnoLectivo: string;
-  DataInicio: string;
-  DataFim: string;
+  TipoAvaliacao?: string;
+  tipoNota?: string;
+  Trimestre?: number;
+  trimestre?: number;
+  AnoLectivo?: string;
+  anoLectivo?: string;
+  DataInicio?: string;
+  dataInicio?: string;
+  DataFim?: string;
+  dataFim?: string;
+  nome?: string;
 }
 
 export default function ProfessorLancamento() {
@@ -24,11 +30,24 @@ export default function ProfessorLancamento() {
   const [students, setStudents] = useState<IProfessorAluno[]>([])
 
   // Seletores de contexto
-  const [selectedAnoLectivo, setSelectedAnoLectivo] = useState('')
-  const [selectedTurmaId, setSelectedTurmaId] = useState('')
-  const [selectedDisciplinaId, setSelectedDisciplinaId] = useState('')
-  const [selectedTrimestre, setSelectedTrimestre] = useState('')
-  const [selectedTipoNota, setSelectedTipoNota] = useState<'MAC' | 'PP' | 'PT' | ''>('')
+  const [selectedAtribId, setSelectedAtribId] = useState('')
+  const [selectedPeriodoId, setSelectedPeriodoId] = useState('')
+
+  // Estado derivado para manter tudo perfeitamente sincronizado
+  const selectedAtrib = useMemo(() => {
+    return atribuicoes.find(a => a.codigo.toString() === selectedAtribId)
+  }, [atribuicoes, selectedAtribId])
+
+  const selectedPeriod = useMemo(() => {
+    return openPeriods.find(p => p.codigo.toString() === selectedPeriodoId)
+  }, [openPeriods, selectedPeriodoId])
+
+  const selectedAnoLectivo = selectedAtrib ? selectedAtrib.anoLectivo : ''
+  const selectedTurmaId = selectedAtrib ? selectedAtrib.codigo_Turma.toString() : ''
+  const selectedDisciplinaId = selectedAtrib ? selectedAtrib.codigo_Disciplina.toString() : ''
+
+  const selectedTrimestre = selectedPeriod ? (selectedPeriod.trimestre || selectedPeriod.Trimestre)?.toString() : ''
+  const selectedTipoNota = selectedPeriod ? (selectedPeriod.tipoNota || selectedPeriod.TipoAvaliacao) : ''
 
   // Estado das notas locais (objeto [codigoAluno]: notaValue)
   const [notasLocais, setNotasLocais] = useState<Record<number, string>>({})
@@ -44,18 +63,10 @@ export default function ProfessorLancamento() {
       const atrib = await ProfessorService.getMinhasAtribuicoes()
       setAtribuicoes(atrib.turmas || [])
 
-      // Buscar períodos de lançamento gerais
-      const periodsRes = await api.get('/api/periodos-lancamento')
+      // Buscar períodos de lançamento ativos do docente
+      const periodsRes = await api.get('/api/periodos-lancamento/ativos')
       if (periodsRes.data && periodsRes.data.success) {
         setOpenPeriods(periodsRes.data.data || [])
-      }
-
-      // Auto-selecionar o ano letivo se houver
-      if (atrib.turmas && atrib.turmas.length > 0) {
-        const anos = Array.from(new Set(atrib.turmas.map(t => t.anoLectivo)))
-        if (anos.length > 0) {
-          setSelectedAnoLectivo(anos[0])
-        }
       }
     } catch (error) {
       toast.error('Erro ao carregar dados iniciais de lançamento')
@@ -64,51 +75,22 @@ export default function ProfessorLancamento() {
     }
   }
 
-  // Anos letivos únicos atribuídos
-  const uniqueAnosLectivos = useMemo(() => {
-    return Array.from(new Set(atribuicoes.map(t => t.anoLectivo)))
-  }, [atribuicoes])
-
-  // Filtrar as turmas disponíveis para o ano letivo selecionado
-  const availableTurmas = useMemo(() => {
-    if (!selectedAnoLectivo) return [];
-    const filtered = atribuicoes.filter(a => a.anoLectivo === selectedAnoLectivo);
-    const map = new Map();
-    filtered.forEach(a => {
-      if (a.tb_turmas) {
-        map.set(a.tb_turmas.codigo, a.tb_turmas);
-      }
-    });
-    return Array.from(map.values());
-  }, [atribuicoes, selectedAnoLectivo])
-
-  // Filtrar as disciplinas associadas à turma selecionada
-  const availableDisciplinas = useMemo(() => {
-    if (!selectedTurmaId) return [];
-    const filtered = atribuicoes.filter(
-      a => a.codigo_Turma.toString() === selectedTurmaId && a.anoLectivo === selectedAnoLectivo
-    );
-    const map = new Map();
-    filtered.forEach(a => {
-      if (a.tb_disciplinas) {
-        map.set(a.tb_disciplinas.codigo, a.tb_disciplinas);
-      }
-    });
-    return Array.from(map.values());
-  }, [atribuicoes, selectedTurmaId, selectedAnoLectivo])
-
   // Verificar se o período de lançamento selecionado está ATIVO
   const isPeriodoAtivo = useMemo((): boolean => {
     if (!selectedAnoLectivo || !selectedTrimestre || !selectedTipoNota) return false;
     
     const agora = new Date()
     const active = openPeriods.find(p => {
-      const inicio = new Date(p.DataInicio)
-      const fim = new Date(p.DataFim)
+      const pAno = p.anoLectivo || p.AnoLectivo;
+      const pTrim = p.trimestre || p.Trimestre;
+      const pTipo = p.tipoNota || p.TipoAvaliacao;
+      const inicio = new Date(p.dataInicio || p.DataInicio || '')
+      const fim = new Date(p.dataFim || p.DataFim || '')
+      
       return (
-        p.AnoLectivo === selectedAnoLectivo &&
-        p.Trimestre === parseInt(selectedTrimestre) &&
-        p.TipoAvaliacao === selectedTipoNota &&
+        pAno?.toString() === selectedAnoLectivo &&
+        pTrim?.toString() === selectedTrimestre &&
+        pTipo === selectedTipoNota &&
         inicio <= agora &&
         fim >= agora
       );
@@ -120,12 +102,17 @@ export default function ProfessorLancamento() {
   // Verificar data final do período de lançamento se houver
   const dataFimPeriodo = useMemo(() => {
     if (!selectedAnoLectivo || !selectedTrimestre || !selectedTipoNota) return null;
-    const active = openPeriods.find(p => (
-      p.AnoLectivo === selectedAnoLectivo &&
-      p.Trimestre === parseInt(selectedTrimestre) &&
-      p.TipoAvaliacao === selectedTipoNota
-    ));
-    return active ? new Date(active.DataFim).toLocaleDateString('pt-AO') : null;
+    const active = openPeriods.find(p => {
+      const pAno = p.anoLectivo || p.AnoLectivo;
+      const pTrim = p.trimestre || p.Trimestre;
+      const pTipo = p.tipoNota || p.TipoAvaliacao;
+      return (
+        pAno?.toString() === selectedAnoLectivo &&
+        pTrim?.toString() === selectedTrimestre &&
+        pTipo === selectedTipoNota
+      );
+    });
+    return active ? new Date(active.dataFim || active.DataFim || '').toLocaleDateString('pt-AO') : null;
   }, [openPeriods, selectedAnoLectivo, selectedTrimestre, selectedTipoNota])
 
   // Buscar alunos da turma e notas existentes ao selecionar o contexto completo
@@ -219,8 +206,8 @@ export default function ProfessorLancamento() {
       const res = await ProfessorService.lancarNotas({
         codigoTurma: parseInt(selectedTurmaId),
         codigoDisciplina: parseInt(selectedDisciplinaId),
-        codigoTrimestre: parseInt(selectedTrimestre),
-        anoLectivo: selectedAnoLectivo,
+        codigoTrimestre: parseInt(selectedTrimestre || ''),
+        anoLectivo: selectedAnoLectivo || '',
         tipoNota: selectedTipoNota as 'MAC' | 'PP' | 'PT',
         notas: payloadNotas
       })
@@ -232,8 +219,8 @@ export default function ProfessorLancamento() {
         const notasExistentes = await ProfessorService.getMinhasNotas({
           turmaId: parseInt(selectedTurmaId),
           disciplinaId: parseInt(selectedDisciplinaId),
-          trimestreId: parseInt(selectedTrimestre),
-          anoLectivo: selectedAnoLectivo
+          trimestreId: parseInt(selectedTrimestre || ''),
+          anoLectivo: selectedAnoLectivo || ''
         })
 
         const localMap: Record<number, string> = {}
@@ -265,102 +252,58 @@ export default function ProfessorLancamento() {
 
         {/* Seletores de Contexto */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xs space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {/* Ano Letivo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Turma & Disciplina */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase">Ano Letivo</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase">Turma & Disciplina</label>
               <select
-                value={selectedAnoLectivo}
+                value={selectedAtribId}
                 onChange={e => {
-                  setSelectedAnoLectivo(e.target.value)
-                  setSelectedTurmaId('')
-                  setSelectedDisciplinaId('')
-                  setSelectedTrimestre('')
-                  setSelectedTipoNota('')
+                  setSelectedAtribId(e.target.value)
+                  setSelectedPeriodoId('') // resetar período ao trocar de turma
                 }}
                 className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] outline-none"
               >
                 <option value="">Selecione...</option>
-                {uniqueAnosLectivos.map(ano => (
-                  <option key={ano} value={ano}>{ano}</option>
+                {atribuicoes.map(a => (
+                  <option key={a.codigo} value={a.codigo}>
+                    {a.tb_turmas?.designacao} - {a.tb_turmas?.tb_classes?.designacao || ''} ({a.tb_disciplinas?.designacao})
+                  </option>
                 ))}
               </select>
+              {selectedAtribId && (
+                <div className="mt-2 text-xs text-gray-400">
+                  Ano Letivo Selecionado: <span className="font-bold text-[#007C00]">{selectedAnoLectivo}</span>
+                </div>
+              )}
             </div>
 
-            {/* Turma */}
+            {/* Período de Lançamento */}
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase">Turma</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase">Período de Lançamento Ativo</label>
               <select
-                disabled={!selectedAnoLectivo}
-                value={selectedTurmaId}
-                onChange={e => {
-                  setSelectedTurmaId(e.target.value)
-                  setSelectedDisciplinaId('')
-                  setSelectedTrimestre('')
-                  setSelectedTipoNota('')
-                }}
+                disabled={!selectedAtribId}
+                value={selectedPeriodoId}
+                onChange={e => setSelectedPeriodoId(e.target.value)}
                 className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] outline-none disabled:bg-gray-50"
               >
                 <option value="">Selecione...</option>
-                {availableTurmas.map(t => (
-                  <option key={t.codigo} value={t.codigo}>{t.designacao}</option>
-                ))}
+                {openPeriods.map(p => {
+                  const pTrim = p.trimestre || p.Trimestre
+                  const pTipo = p.tipoNota || p.TipoAvaliacao
+                  const pAno = p.anoLectivo || p.AnoLectivo
+                  return (
+                    <option key={p.codigo} value={p.codigo}>
+                      {p.nome || `${pTrim}º Trimestre - ${pTipo}`} ({pAno})
+                    </option>
+                  )
+                })}
               </select>
-            </div>
-
-            {/* Disciplina */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase">Disciplina</label>
-              <select
-                disabled={!selectedTurmaId}
-                value={selectedDisciplinaId}
-                onChange={e => {
-                  setSelectedDisciplinaId(e.target.value)
-                  setSelectedTrimestre('')
-                  setSelectedTipoNota('')
-                }}
-                className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] outline-none disabled:bg-gray-50"
-              >
-                <option value="">Selecione...</option>
-                {availableDisciplinas.map(d => (
-                  <option key={d.codigo} value={d.codigo}>{d.designacao}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Trimestre */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase">Trimestre</label>
-              <select
-                disabled={!selectedDisciplinaId}
-                value={selectedTrimestre}
-                onChange={e => {
-                  setSelectedTrimestre(e.target.value)
-                  setSelectedTipoNota('')
-                }}
-                className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] outline-none disabled:bg-gray-50"
-              >
-                <option value="">Selecione...</option>
-                <option value="1">1º Trimestre</option>
-                <option value="2">2º Trimestre</option>
-                <option value="3">3º Trimestre</option>
-              </select>
-            </div>
-
-            {/* Tipo de Nota */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase">Tipo de Nota</label>
-              <select
-                disabled={!selectedTrimestre}
-                value={selectedTipoNota}
-                onChange={e => setSelectedTipoNota(e.target.value as any)}
-                className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] outline-none disabled:bg-gray-50"
-              >
-                <option value="">Selecione...</option>
-                <option value="MAC">MAC (Média de Avaliação Contínua)</option>
-                <option value="PP">PP (Prova de Professor)</option>
-                <option value="PT">PT (Prova Trimestral)</option>
-              </select>
+              {openPeriods.length === 0 && (
+                <div className="mt-2 text-xs text-amber-600 flex items-center gap-1 font-semibold">
+                  ⚠️ Nenhum período ativo cadastrado pelo administrador para este ano letivo.
+                </div>
+              )}
             </div>
           </div>
         </div>

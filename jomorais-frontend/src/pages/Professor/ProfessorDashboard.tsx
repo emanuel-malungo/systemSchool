@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BookOpen, School, BarChart3, Clock, Calendar, ShieldAlert, Award, FileText, ChevronRight, User } from 'lucide-react'
+import { BookOpen, School, BarChart3, Clock, Calendar, ShieldAlert, ChevronRight } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IAtribuicaoDisciplina, type IAtribuicaoTurma } from '../../services/professor.service'
 import api from '../../utils/api.utils'
@@ -8,11 +8,17 @@ import { Link } from 'react-router-dom'
 
 interface IPeriodoLancamento {
   codigo: number;
-  TipoAvaliacao: string;
-  Trimestre: number;
-  AnoLectivo: string;
-  DataInicio: string;
-  DataFim: string;
+  TipoAvaliacao?: string;
+  tipoNota?: string;
+  Trimestre?: number;
+  trimestre?: number;
+  AnoLectivo?: string;
+  anoLectivo?: string;
+  DataInicio?: string;
+  dataInicio?: string;
+  DataFim?: string;
+  dataFim?: string;
+  nome?: string;
 }
 
 export default function ProfessorDashboard() {
@@ -54,8 +60,8 @@ export default function ProfessorDashboard() {
         // Filtrar apenas os que estão ativos hoje
         const agora = new Date()
         const ativos = (periodsRes.data.data || []).filter((p: any) => {
-          const inicio = new Date(p.DataInicio)
-          const fim = new Date(p.DataFim)
+          const inicio = new Date(p.dataInicio || p.DataInicio)
+          const fim = new Date(p.dataFim || p.DataFim)
           return inicio <= agora && fim >= agora
         })
         setOpenPeriods(ativos)
@@ -165,17 +171,17 @@ export default function ProfessorDashboard() {
                         <div key={p.codigo} className="border border-green-100 bg-green-50/30 rounded-xl p-4 flex flex-col gap-2">
                           <div className="flex items-center justify-between">
                             <span className="px-2 py-0.5 bg-[#007C00] text-white text-[10px] font-extrabold rounded-md uppercase">
-                              {p.TipoAvaliacao}
+                              {p.tipoNota || p.TipoAvaliacao}
                             </span>
                             <span className="text-[11px] font-bold text-gray-500">
-                              {p.Trimestre}º Trimestre
+                              {p.trimestre || p.Trimestre}º Trimestre
                             </span>
                           </div>
                           <div>
-                            <p className="text-xs font-semibold text-gray-700">Ano Letivo: {p.AnoLectivo}</p>
+                            <p className="text-xs font-semibold text-gray-700">Ano Letivo: {p.anoLectivo || p.AnoLectivo}</p>
                             <p className="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
                               <Calendar size={12} />
-                              Expira em {new Date(p.DataFim).toLocaleDateString('pt-AO')}
+                               Expira em {(p.dataFim || p.DataFim) ? new Date(p.dataFim || p.DataFim || '').toLocaleDateString('pt-AO') : ''}
                             </p>
                           </div>
                           <Link 

@@ -15,6 +15,56 @@ export class ProfessorController {
   }
 
   /**
+   * Helper robusto para encontrar o ano letivo na tb_ano_lectivo
+   * Suporta formatos diferentes como "2025/2026" e "2025-2026"
+   */
+  static async findAnoLectivo(anoLectivo) {
+    if (!anoLectivo) return null;
+    
+    // 1. Tentar correspondência direta
+    let anoObj = await prisma.tb_ano_lectivo.findFirst({
+      where: {
+        OR: [
+          { designacao: anoLectivo },
+          { anoInicial: anoLectivo }
+        ]
+      }
+    });
+    
+    if (anoObj) return anoObj;
+    
+    // 2. Se tiver barra, tentar substituir por traço
+    if (anoLectivo.includes('/')) {
+      const comTraco = anoLectivo.replace('/', '-');
+      anoObj = await prisma.tb_ano_lectivo.findFirst({
+        where: {
+          OR: [
+            { designacao: comTraco },
+            { anoInicial: comTraco }
+          ]
+        }
+      });
+      if (anoObj) return anoObj;
+    }
+    
+    // 3. Se tiver traço, tentar substituir por barra
+    if (anoLectivo.includes('-')) {
+      const comBarra = anoLectivo.replace('-', '/');
+      anoObj = await prisma.tb_ano_lectivo.findFirst({
+        where: {
+          OR: [
+            { designacao: comBarra },
+            { anoInicial: comBarra }
+          ]
+        }
+      });
+      if (anoObj) return anoObj;
+    }
+    
+    return null;
+  }
+
+  /**
    * Obter perfil do professor autenticado
    * GET /api/professor/perfil
    */
@@ -184,14 +234,7 @@ export class ProfessorController {
       }
 
       // Resolver o código do ano letivo a partir da designação
-      const anoObj = await prisma.tb_ano_lectivo.findFirst({
-        where: {
-          OR: [
-            { designacao: anoLectivo },
-            { anoInicial: anoLectivo }
-          ]
-        }
-      });
+      const anoObj = await ProfessorController.findAnoLectivo(anoLectivo);
 
       if (!anoObj) {
         return res.status(404).json({
@@ -266,14 +309,7 @@ export class ProfessorController {
       // Obter código do ano letivo de forma flexível
       let codigoAnoLectivo = null;
       if (anoLectivo) {
-        const anoObj = await prisma.tb_ano_lectivo.findFirst({
-          where: {
-            OR: [
-              { designacao: anoLectivo },
-              { anoInicial: anoLectivo }
-            ]
-          }
-        });
+        const anoObj = await ProfessorController.findAnoLectivo(anoLectivo);
         codigoAnoLectivo = anoObj?.codigo;
       }
 
@@ -403,14 +439,7 @@ export class ProfessorController {
 
       // 3. Obter IDs reais de tabelas de suporte do banco (ano letivo, tipo avaliação)
       const [anoObj, tipoObj] = await Promise.all([
-        prisma.tb_ano_lectivo.findFirst({
-          where: {
-            OR: [
-              { designacao: anoLectivo },
-              { anoInicial: anoLectivo }
-            ]
-          }
-        }),
+        ProfessorController.findAnoLectivo(anoLectivo),
         prisma.tb_tipo_avaliacao.findFirst({
           where: { descricao: tipoNota }
         })

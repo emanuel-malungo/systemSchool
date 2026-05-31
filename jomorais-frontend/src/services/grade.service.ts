@@ -359,7 +359,7 @@ class GradeService {
    */
   async publishPauta(codigoTurma: number, codigoTrimestre: number): Promise<void> {
     try {
-      await api.post(`${this.pautaURL}/publish`, {
+      await api.post(`${this.baseURL}/pautas/publish`, {
         codigoTurma,
         codigoTrimestre,
       })

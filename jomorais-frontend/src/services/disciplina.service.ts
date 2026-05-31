@@ -1,5 +1,5 @@
 import api from '../utils/api.utils'
-import type { ApiResponse } from '../types/api.types'
+import type { ApiResponse } from '../types/course.types'
 
 interface IDisciplina {
   codigo: number

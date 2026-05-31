@@ -144,7 +144,7 @@ export default function GradeLaunching() {
 
     setLocalGrades(prev => {
       const key = studentId.toString()
-      const entry = { ...prev[key] } || {}
+      const entry = prev[key] ? { ...prev[key] } : {}
       entry[field] = numValue
       
       // Calcular nota final = (MAC + PT) / 2
