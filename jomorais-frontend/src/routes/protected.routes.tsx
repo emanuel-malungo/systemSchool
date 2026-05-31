@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useEffect } from 'react'
 import authService from '../services/auth.service'
@@ -13,6 +13,7 @@ export function ProtectedRoute({
   requiredRole
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, logout } = useAuth()
+  const location = useLocation()
 
   // Verificar validade do token periodicamente
   useEffect(() => {
@@ -35,6 +36,11 @@ export function ProtectedRoute({
   // Redirecionar para login se não estiver autenticado
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />
+  }
+
+  // Redirecionar professores tentando acessar a área administrativa
+  if (user?.tipo === 4 && location.pathname.startsWith('/admin')) {
+    return <Navigate to="/professor/dashboard" replace />
   }
 
   // Verificar role se especificado

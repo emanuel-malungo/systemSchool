@@ -220,6 +220,11 @@ export function canAccessRoute(path: string, permissions: UserPermissions): bool
     return true
   }
   
+  // Rotas do portal do professor
+  if (path.startsWith('/professor')) {
+    return true // As rotas /professor/* são autorizadas para usuários autenticados (verificação fina feita nos componentes/rotas)
+  }
+
   // Por padrão, negar acesso
   return false
 }

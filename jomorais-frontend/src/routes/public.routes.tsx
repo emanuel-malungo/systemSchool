@@ -8,11 +8,12 @@ interface PublicRouteProps {
 export function PublicRoute({ 
   redirectTo = '/admin'
 }: PublicRouteProps) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
-  // Se estiver autenticado, redirecionar para área protegida
+  // Se estiver autenticado, redirecionar para área protegida correspondente
   if (isAuthenticated) {
-    return <Navigate to={redirectTo} replace />
+    const isProfessor = user?.tipo === 4
+    return <Navigate to={isProfessor ? '/professor/dashboard' : redirectTo} replace />
   }
 
   // Renderizar rota pública

@@ -30,6 +30,7 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import reportsManagementRoutes from './routes/reports-management.routes.js';
 import financialManagementReportsRoutes from './routes/financial-management-reports.routes.js';
 import periodosLancamentoRoutes from './routes/periodos-lancamento.routes.js';
+import professorRoutes from './routes/professor.routes.js';
 
 // Importar Swagger
 import { swaggerDocs } from './config/swagger.js';
@@ -115,6 +116,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports-management', reportsManagementRoutes);
 app.use('/api/financial-management/reports', financialManagementReportsRoutes);
 app.use('/api/periodos-lancamento', periodosLancamentoRoutes);
+app.use('/api/professor', professorRoutes);
 
 // Documentação Swagger
 swaggerDocs(app);

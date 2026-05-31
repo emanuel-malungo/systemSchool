@@ -38,6 +38,12 @@ import PeriodosLancamentoManagement from '../pages/Admin/settings-management/Per
 import { ProtectedRoute } from './protected.routes'
 import { PublicRoute } from './public.routes'
 
+// Importações do Portal do Professor
+import ProfessorDashboard from '../pages/Professor/ProfessorDashboard'
+import ProfessorPerfil from '../pages/Professor/ProfessorPerfil'
+import ProfessorLancamento from '../pages/Professor/ProfessorLancamento'
+import ProfessorNotas from '../pages/Professor/ProfessorNotas'
+
 export default function IndexRoutes() {
   return (
 	<Routes>
@@ -90,6 +96,13 @@ export default function IndexRoutes() {
 	  	<Route path='/admin/financeiro/saft' element={<SAFTExport />} />
 	  	<Route path='/admin/financeiro/notas-credito' element={<CreditNotes />} />
 	  	<Route path='/admin/debug/permissions' element={<DebugPermissions />} />
+
+	  	{/* Rotas do Portal do Professor */}
+	  	<Route path='/professor' element={<Navigate to='/professor/dashboard' replace />} />
+	  	<Route path='/professor/dashboard' element={<ProfessorDashboard />} />
+	  	<Route path='/professor/perfil' element={<ProfessorPerfil />} />
+	  	<Route path='/professor/lancar-notas' element={<ProfessorLancamento />} />
+	  	<Route path='/professor/minhas-notas' element={<ProfessorNotas />} />
 	  </Route>
 
 	  {/* Rota 404 - redireciona para auth */}

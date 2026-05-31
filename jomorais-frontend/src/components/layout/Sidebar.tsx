@@ -35,9 +35,32 @@ interface MenuItem {
 export default function Sidebar() {
   const location = useLocation()
   const { logout } = useAuth()
-  const { permissions, canAccess } = usePermissions()
+  const { permissions, canAccess, userType } = usePermissions()
   const sidebarRef = useRef<HTMLDivElement>(null)
   const [openMenus, setOpenMenus] = useState<string[]>([])
+
+  const professorMenuItems: MenuItem[] = React.useMemo(() => [
+    {
+      title: "Dashboard",
+      icon: Home,
+      href: "/professor/dashboard"
+    },
+    {
+      title: "Meu Perfil",
+      icon: Users,
+      href: "/professor/perfil"
+    },
+    {
+      title: "Lançamento de Notas",
+      icon: BarChart3,
+      href: "/professor/lancar-notas"
+    },
+    {
+      title: "Minhas Notas",
+      icon: BookOpen,
+      href: "/professor/minhas-notas"
+    }
+  ], [])
 
   const menuItems: MenuItem[] = React.useMemo(() => [
     {
@@ -176,10 +199,12 @@ export default function Sidebar() {
     }).filter(Boolean) as MenuItem[]
   }, [permissions, canAccess])
 
-  const visibleMenuItems = React.useMemo(
-    () => filterMenuItems(menuItems),
-    [filterMenuItems, menuItems]
-  )
+  const visibleMenuItems = React.useMemo(() => {
+    if (userType === 'professor') {
+      return professorMenuItems
+    }
+    return filterMenuItems(menuItems)
+  }, [userType, professorMenuItems, filterMenuItems, menuItems])
 
   // Função auxiliar para verificar se algum filho está ativo
   const hasActiveChild = React.useCallback((item: MenuItem): boolean => {
