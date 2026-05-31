@@ -88,12 +88,7 @@ export class BoletimPdfGenerator {
     const getCardX = (c: number) => marginPage + c * (boletimW + gapH)
     const getCardY = (r: number) => marginPage + r * (boletimH + 2)
 
-    const hexToRgb = (hex: string) => {
-      const r = parseInt(hex.slice(1, 3), 16)
-      const g = parseInt(hex.slice(3, 5), 16)
-      const b = parseInt(hex.slice(5, 7), 16)
-      return { r, g, b }
-    }
+
 
     const drawBoletim = (boletim: IBoletimAlunoData, cx: number, cy: number) => {
       const w = boletimW
@@ -208,7 +203,7 @@ export class BoletimPdfGenerator {
       doc.line(x + colNr + colNome, y, x + colNr + colNome, y + headerRowH)
 
       let colX = x + colNr + colNome
-      colsDisciplinas.forEach((disc, i) => {
+      colsDisciplinas.forEach((disc) => {
         const label = disc.abreviatura || disc.designacao.substring(0, 6)
         doc.text(label, colX + colsDW / 2, y + headerRowH / 2, { align: 'center', baseline: 'middle' })
         colX += colsDW
