@@ -388,26 +388,22 @@ export class GradeManagementService {
         where: { codigo: parseInt(codigoTrimestre) }
       });
 
-      // 4. Buscar director de turma
-      const directorTurma = await prisma.tb_director_turma.findFirst({
+      // 4. Buscar director de turma (tb_directores_turmas → tb_docente)
+      const directorTurma = await prisma.tb_directores_turmas.findFirst({
         where: {
-          CodigoTurma: parseInt(codigoTurma),
-          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+          codigoTurma: parseInt(codigoTurma),
+          codigoAnoLectivo: parseInt(codigoAnoLectivo)
         },
         include: {
-          tb_professores: {
-            include: {
-              tb_funcionarios: true
-            }
-          }
+          tb_docente: true
         }
       });
 
       // 5. Buscar alunos confirmados na turma
       const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
-          CodigoTurma: parseInt(codigoTurma),
-          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+          codigo_Turma: parseInt(codigoTurma),
+          codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
         },
         include: {
           tb_matriculas: {
@@ -431,20 +427,29 @@ export class GradeManagementService {
           CodigoAnoLectivo: parseInt(codigoAnoLectivo)
         },
         include: {
-          tb_disciplinas: { select: { codigo: true, designacao: true, abreviatura: true } }
+          tb_disciplinas: { select: { codigo: true, designacao: true } }
         }
       });
 
-      // 7. Buscar faltas da turma
-      const faltas = await prisma.tb_faltas.findMany({
-        where: {
-          CodigoTurma: parseInt(codigoTurma),
-          CodigoTrimestre: parseInt(codigoTrimestre),
-          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
-        }
-      }).catch(() => []);
+      // 7. Buscar faltas dos alunos confirmados (tb_faltas usa Codigo_Matricula, Trimestre e AnoLectivo como strings)
+      const codigosMatricula = confirmacoes.map(c => c.codigo_Matricula);
+      const trimestreDesignacao = trimestre?.designacao || `${codigoTrimestre}`;
+      const anoLetivoDesignacao = anoLetivo?.designacao || `${codigoAnoLectivo}`;
+      let faltas = [];
+      try {
+        faltas = await prisma.tb_faltas.findMany({
+          where: {
+            Codigo_Matricula: { in: codigosMatricula },
+            Trimestre: trimestreDesignacao,
+            AnoLectivo: anoLetivoDesignacao
+          }
+        });
+      } catch (e) {
+        // Se falhar, ignora faltas
+        faltas = [];
+      }
 
-      // 8. Buscar lista de disciplinas da turma (via notas ou atribuições)
+      // 8. Buscar lista de disciplinas da turma (via notas)
       const disciplinasMap = {};
       notas.forEach(n => {
         if (n.tb_disciplinas) {
@@ -452,6 +457,14 @@ export class GradeManagementService {
         }
       });
       const disciplinas = Object.values(disciplinasMap);
+
+      // Mapear código de matrícula → código de aluno para cruzar faltas
+      const matriculaParaAluno = {};
+      confirmacoes.forEach(conf => {
+        if (conf.tb_matriculas?.tb_alunos) {
+          matriculaParaAluno[conf.codigo_Matricula] = conf.tb_matriculas.tb_alunos.codigo;
+        }
+      });
 
       // 9. Montar boletim por aluno
       const boletins = confirmacoes.map((conf, idx) => {
@@ -474,7 +487,7 @@ export class GradeManagementService {
 
         const notasFinais = Object.entries(notasPorDisciplina).map(([codDisc, val]) => ({
           codigoDisciplina: parseInt(codDisc),
-          disciplina: val.disciplina?.abreviatura || val.disciplina?.designacao || '',
+          disciplina: val.disciplina?.designacao || '',
           nota: parseFloat((val.soma / val.count).toFixed(1))
         }));
 
@@ -486,10 +499,10 @@ export class GradeManagementService {
         // Situação do aluno
         const situacao = mediaGeral >= 10 ? 'TRANSITA' : 'N-TRANSITA';
 
-        // Faltas do aluno
+        // Faltas do aluno (cruzar via código de matrícula)
         const faltasAluno = faltas
-          .filter(f => f.CodigoAluno === aluno.codigo)
-          .reduce((sum, f) => sum + (parseInt(f.NumeroFaltas) || 1), 0);
+          .filter(f => matriculaParaAluno[f.Codigo_Matricula] === aluno.codigo)
+          .reduce((sum, f) => sum + (parseInt(f.nFaltas) || 1), 0);
 
         return {
           numero: idx + 1,
@@ -506,20 +519,28 @@ export class GradeManagementService {
         };
       }).filter(Boolean);
 
-      // 10. Dados do director de turma
+      // 10. Dados do director de turma (tb_docente tem nome e contacto)
       let nomeDirector = 'N/D';
       let contactoDirector = 'N/D';
-      if (directorTurma?.tb_professores?.tb_funcionarios) {
-        nomeDirector = directorTurma.tb_professores.tb_funcionarios.nome || 'N/D';
-        contactoDirector = directorTurma.tb_professores.tb_funcionarios.contacto || 'N/D';
+      if (directorTurma?.tb_docente) {
+        nomeDirector = directorTurma.tb_docente.nome || 'N/D';
+        contactoDirector = directorTurma.tb_docente.contacto || 'N/D';
       }
 
       // 11. Dados da instituição
-      const instituicao = await prisma.tb_dados_instituicao.findFirst() || {
-        nome: 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
-        endereco: 'Cabinda, Angola',
-        telefone: '+244 915 312 187'
-      };
+      let instituicao;
+      try {
+        instituicao = await prisma.tb_dados_instituicao.findFirst();
+      } catch (e) {
+        instituicao = null;
+      }
+      if (!instituicao) {
+        instituicao = {
+          nome: 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
+          localidade: 'Cabinda, Angola',
+          telefone_Movel: '+244 915 312 187'
+        };
+      }
 
       return {
         turma: {
@@ -535,7 +556,12 @@ export class GradeManagementService {
         disciplinas,
         directorTurma: nomeDirector,
         contactoDirector,
-        instituicao,
+        instituicao: {
+          nome: instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
+          endereco: instituicao.localidade || 'Cabinda, Angola',
+          telefone: instituicao.telefone_Movel || instituicao.telefone_Fixo || '+244 915 312 187',
+          email: instituicao.email || ''
+        },
         boletins,
         totalAlunos: boletins.length,
         dataGeracao: new Date().toISOString()
