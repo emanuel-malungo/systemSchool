@@ -39,7 +39,7 @@ export function ProtectedRoute({
   }
 
   // Redirecionar professores tentando acessar a área administrativa
-  if (user?.tipo === 4 && location.pathname.startsWith('/admin')) {
+  if (Number(user?.tipo) === 4 && location.pathname.startsWith('/admin')) {
     return <Navigate to="/professor/dashboard" replace />
   }
 

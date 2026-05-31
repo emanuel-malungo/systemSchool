@@ -92,17 +92,17 @@ export interface ILancarNotasInput {
 
 export class ProfessorService {
   static async getPerfil(): Promise<IProfessorPerfil> {
-    const response = await api.get('/professor/perfil');
+    const response = await api.get('/api/professor/perfil');
     return response.data.data;
   }
 
   static async getMinhasAtribuicoes(): Promise<IMinhasAtribuicoes> {
-    const response = await api.get('/professor/minhas-atribuicoes');
+    const response = await api.get('/api/professor/minhas-atribuicoes');
     return response.data.data;
   }
 
   static async getAlunosDaTurma(turmaId: number, anoLectivo: string): Promise<IProfessorAluno[]> {
-    const response = await api.get(`/professor/turmas/${turmaId}/alunos`, {
+    const response = await api.get(`/api/professor/turmas/${turmaId}/alunos`, {
       params: { anoLectivo }
     });
     return response.data.data;
@@ -114,17 +114,17 @@ export class ProfessorService {
     trimestreId?: number;
     anoLectivo?: string;
   }): Promise<INotaAlunoResponse[]> {
-    const response = await api.get('/professor/minhas-notas', { params });
+    const response = await api.get('/api/professor/minhas-notas', { params });
     return response.data.data;
   }
 
   static async lancarNotas(data: ILancarNotasInput): Promise<any> {
-    const response = await api.post('/professor/lancar-notas', data);
+    const response = await api.post('/api/professor/lancar-notas', data);
     return response.data;
   }
 
   static async alterarSenha(senhaAtual: string, novaSenha: string): Promise<any> {
-    const response = await api.put('/professor/alterar-senha', { senhaAtual, novaSenha });
+    const response = await api.put('/api/professor/alterar-senha', { senhaAtual, novaSenha });
     return response.data;
   }
 }

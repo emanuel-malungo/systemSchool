@@ -40,12 +40,12 @@ export function usePermissions() {
     }
 
     // Para usuários legados, usar tipoDesignacao se disponível
-    if ('tipoDesignacao' in user) {
-      return getUserPermissions(user.tipo, user.tipoDesignacao)
+    if ('tipoDesignacao' in user && user.tipoDesignacao) {
+      return getUserPermissions(Number(user.tipo), user.tipoDesignacao)
     }
 
     // Para usuários modernos, usar apenas o tipo
-    return getUserPermissions(user.tipo)
+    return getUserPermissions(Number(user.tipo))
   }, [user])
 
   const canAccess = useMemo(() => ({
@@ -55,7 +55,7 @@ export function usePermissions() {
 
   const hasRole = (roleCode: number): boolean => {
     if (!user) return false
-    return user.tipo === roleCode
+    return Number(user.tipo) === roleCode
   }
 
   const getUserTypeDesignation = (): string => {
@@ -63,7 +63,15 @@ export function usePermissions() {
     
     // Para usuários legados
     if ('tipoDesignacao' in user && user.tipoDesignacao) {
-      return user.tipoDesignacao.toLowerCase()
+      const designation = user.tipoDesignacao.toLowerCase()
+      if (designation.includes('professor')) return 'professor'
+      if (designation.includes('administrador')) return 'administrador'
+      if (designation.includes('chefe') || designation.includes('secretaria') || designation.includes('secretária')) return 'chefe de secretaria'
+      if (designation.includes('assistente')) return 'assistente administrativo'
+      if (designation.includes('lidia')) return 'lidia'
+      if (designation.includes('operador')) return 'operador'
+      if (designation.includes('pedagogico') || designation.includes('pedagógico')) return 'pedagogico'
+      return designation
     }
     
     // Para usuários modernos ou fallback
@@ -77,7 +85,7 @@ export function usePermissions() {
       7: 'chefe de secretaria'
     }
     
-    return typeMapping[user.tipo] || 'unknown'
+    return typeMapping[Number(user.tipo)] || 'unknown'
   }
 
   return {

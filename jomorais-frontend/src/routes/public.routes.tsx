@@ -12,7 +12,7 @@ export function PublicRoute({
 
   // Se estiver autenticado, redirecionar para área protegida correspondente
   if (isAuthenticated) {
-    const isProfessor = user?.tipo === 4
+    const isProfessor = Number(user?.tipo) === 4
     return <Navigate to={isProfessor ? '/professor/dashboard' : redirectTo} replace />
   }
 
