@@ -243,11 +243,17 @@ export class ProfessorController {
         });
       }
 
+      // Buscar a turma física no banco de dados para usar o seu próprio ano letivo real
+      const turma = await prisma.tb_turmas.findUnique({
+        where: { codigo: parseInt(turmaId) }
+      });
+      const codigoAnoLectivoReal = turma ? turma.codigo_AnoLectivo : anoObj.codigo;
+
       // Buscar confirmações de matrícula dos alunos da turma neste ano letivo
       const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
           codigo_Turma: parseInt(turmaId),
-          codigo_Ano_lectivo: anoObj.codigo,
+          codigo_Ano_lectivo: codigoAnoLectivoReal,
           codigo_Status: 1
         },
         include: {
@@ -311,6 +317,15 @@ export class ProfessorController {
       if (anoLectivo) {
         const anoObj = await ProfessorController.findAnoLectivo(anoLectivo);
         codigoAnoLectivo = anoObj?.codigo;
+      }
+
+      if (turmaId) {
+        const turma = await prisma.tb_turmas.findUnique({
+          where: { codigo: parseInt(turmaId) }
+        });
+        if (turma) {
+          codigoAnoLectivo = turma.codigo_AnoLectivo;
+        }
       }
 
       // Filtro para buscar notas do professor ou de suas turmas atribuídas
@@ -420,11 +435,15 @@ export class ProfessorController {
 
       // 2. Verificar se o período de lançamento está ativo
       const agora = new Date();
+      const alternativoAno = anoLectivo.includes('/') ? anoLectivo.replace('/', '-') : anoLectivo.replace('-', '/');
       const periodoAtivo = await prisma.tb_periodos_avaliacao.findFirst({
         where: {
           TipoAvaliacao: tipoNota,
           Trimestre: parseInt(codigoTrimestre),
-          AnoLectivo: anoLectivo,
+          OR: [
+            { AnoLectivo: anoLectivo },
+            { AnoLectivo: alternativoAno }
+          ],
           DataInicio: { lte: agora },
           DataFim: { gte: agora }
         }
@@ -448,7 +467,9 @@ export class ProfessorController {
       if (!anoObj) return res.status(404).json({ success: false, message: 'Ano letivo do sistema não encontrado' });
       if (!tipoObj) return res.status(404).json({ success: false, message: 'Tipo de avaliação do sistema não encontrado' });
 
-      const codigoAnoLectivo = anoObj.codigo;
+      const codigoAnoLectivo = atribuicao ? (await prisma.tb_turmas.findUnique({
+        where: { codigo: parseInt(codigoTurma) }
+      }))?.codigo_AnoLectivo || anoObj.codigo : anoObj.codigo;
       const codigoTipoAvaliacao = tipoObj.codigo;
 
       // 4. Executar transação para salvar as notas

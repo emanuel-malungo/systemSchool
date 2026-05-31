@@ -87,8 +87,11 @@ export default function ProfessorLancamento() {
       const inicio = new Date(p.dataInicio || p.DataInicio || '')
       const fim = new Date(p.dataFim || p.DataFim || '')
       
+      const normPAno = pAno?.toString().replace('-', '/');
+      const normSelAno = selectedAnoLectivo.replace('-', '/');
+      
       return (
-        pAno?.toString() === selectedAnoLectivo &&
+        normPAno === normSelAno &&
         pTrim?.toString() === selectedTrimestre &&
         pTipo === selectedTipoNota &&
         inicio <= agora &&
@@ -106,8 +109,12 @@ export default function ProfessorLancamento() {
       const pAno = p.anoLectivo || p.AnoLectivo;
       const pTrim = p.trimestre || p.Trimestre;
       const pTipo = p.tipoNota || p.TipoAvaliacao;
+
+      const normPAno = pAno?.toString().replace('-', '/');
+      const normSelAno = selectedAnoLectivo.replace('-', '/');
+
       return (
-        pAno?.toString() === selectedAnoLectivo &&
+        normPAno === normSelAno &&
         pTrim?.toString() === selectedTrimestre &&
         pTipo === selectedTipoNota
       );
