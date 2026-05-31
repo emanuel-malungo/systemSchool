@@ -272,6 +272,7 @@ router.get('/pautas', GradeManagementController.generatePauta);
  *         description: Boletim gerado com sucesso
  */
 router.get('/boletins', GradeManagementController.generateBoletim);
+router.get('/boletins-turma', GradeManagementController.generateBoletimTurma);
 
 // ===============================
 // HISTÓRICO DE ALTERAÇÕES

@@ -152,6 +152,33 @@ export class GradeManagementController {
     }
   }
 
+  static async generateBoletimTurma(req, res) {
+    try {
+      const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;
+
+      if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
+        return res.status(400).json({
+          success: false,
+          message: "Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo"
+        });
+      }
+
+      const result = await GradeManagementService.generateBoletimTurma(
+        codigoTurma,
+        codigoTrimestre,
+        codigoAnoLectivo
+      );
+
+      res.json({
+        success: true,
+        message: "Boletim da turma gerado com sucesso",
+        data: result
+      });
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao gerar boletim da turma", 400);
+    }
+  }
+
   // ===============================
   // HISTÓRICO
   // ===============================

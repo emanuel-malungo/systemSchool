@@ -30,6 +30,7 @@ import StudentReports from '../pages/Admin/reports-management/StudentReports'
 import FinancialReports from '../pages/Admin/financial-reports/FinancialReports'
 import AcademicReports from '../pages/Admin/reports-management/AcademicReports'
 import SalesReports from '../pages/Admin/reports-management/SalesReports'
+import BoletimManagement from '../pages/Admin/reports-management/BoletimManagement'
 import { Payments, PaymentCreate, CreditNotes } from '../pages/Admin/payment-management'
 import FinancialServicesManagement from '../pages/Admin/financial-services/FinancialServicesManagement'
 import SAFTExport from '../pages/Admin/SAFTExport'
@@ -90,6 +91,7 @@ export default function IndexRoutes() {
 	  	<Route path='/admin/reports-management/financial' element={<FinancialReports />} />
 	  	<Route path='/admin/reports-management/academic' element={<AcademicReports />} />
 	  	<Route path='/admin/reports-management/sales' element={<SalesReports />} />
+	  	<Route path='/admin/reports-management/boletim' element={<BoletimManagement />} />
 	  	<Route path='/admin/payment-management/payments' element={<Payments />} />
 	  	<Route path='/admin/payment-management/create' element={<PaymentCreate />} />
 	  	<Route path='/admin/financial-services' element={<FinancialServicesManagement />} />

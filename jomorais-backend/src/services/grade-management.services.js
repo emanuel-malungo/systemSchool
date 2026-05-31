@@ -357,8 +357,194 @@ export class GradeManagementService {
   }
 
   // ===============================
-  // BOLETIM (RELATÓRIO POR ALUNO)
+  // BOLETIM (RELATÓRIO POR ALUNO / TURMA)
   // ===============================
+
+  /**
+   * Gera boletim para todos os alunos de uma turma num trimestre específico.
+   * Retorna dados estruturados para geração de PDF no frontend.
+   */
+  static async generateBoletimTurma(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
+    try {
+      // 1. Buscar dados da turma
+      const turma = await prisma.tb_turmas.findUnique({
+        where: { codigo: parseInt(codigoTurma) },
+        include: {
+          tb_classes: true,
+          tb_periodos: true,
+          tb_salas: true,
+          tb_cursos: true,
+        }
+      });
+      if (!turma) throw new AppError('Turma não encontrada', 404);
+
+      // 2. Buscar ano letivo
+      const anoLetivo = await prisma.tb_ano_lectivo.findUnique({
+        where: { codigo: parseInt(codigoAnoLectivo) }
+      });
+
+      // 3. Buscar trimestre
+      const trimestre = await prisma.tb_trimestres.findUnique({
+        where: { codigo: parseInt(codigoTrimestre) }
+      });
+
+      // 4. Buscar director de turma
+      const directorTurma = await prisma.tb_director_turma.findFirst({
+        where: {
+          CodigoTurma: parseInt(codigoTurma),
+          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+        },
+        include: {
+          tb_professores: {
+            include: {
+              tb_funcionarios: true
+            }
+          }
+        }
+      });
+
+      // 5. Buscar alunos confirmados na turma
+      const confirmacoes = await prisma.tb_confirmacoes.findMany({
+        where: {
+          CodigoTurma: parseInt(codigoTurma),
+          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+        },
+        include: {
+          tb_matriculas: {
+            include: {
+              tb_alunos: true
+            }
+          }
+        },
+        orderBy: { codigo: 'asc' }
+      });
+
+      if (confirmacoes.length === 0) {
+        throw new AppError('Nenhum aluno confirmado nesta turma', 404);
+      }
+
+      // 6. Buscar todas as notas da turma no trimestre
+      const notas = await prisma.tb_notas_alunos.findMany({
+        where: {
+          CodigoTurma: parseInt(codigoTurma),
+          CodigoTrimestre: parseInt(codigoTrimestre),
+          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+        },
+        include: {
+          tb_disciplinas: { select: { codigo: true, designacao: true, abreviatura: true } }
+        }
+      });
+
+      // 7. Buscar faltas da turma
+      const faltas = await prisma.tb_faltas.findMany({
+        where: {
+          CodigoTurma: parseInt(codigoTurma),
+          CodigoTrimestre: parseInt(codigoTrimestre),
+          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+        }
+      }).catch(() => []);
+
+      // 8. Buscar lista de disciplinas da turma (via notas ou atribuições)
+      const disciplinasMap = {};
+      notas.forEach(n => {
+        if (n.tb_disciplinas) {
+          disciplinasMap[n.tb_disciplinas.codigo] = n.tb_disciplinas;
+        }
+      });
+      const disciplinas = Object.values(disciplinasMap);
+
+      // 9. Montar boletim por aluno
+      const boletins = confirmacoes.map((conf, idx) => {
+        const aluno = conf.tb_matriculas?.tb_alunos;
+        if (!aluno) return null;
+
+        // Notas deste aluno
+        const notasAluno = notas.filter(n => n.CodigoAluno === aluno.codigo);
+
+        // Mapear nota por disciplina (média se houver múltiplos tipos de avaliação)
+        const notasPorDisciplina = {};
+        notasAluno.forEach(n => {
+          const key = n.CodigoDisciplina;
+          if (!notasPorDisciplina[key]) {
+            notasPorDisciplina[key] = { soma: 0, count: 0, disciplina: n.tb_disciplinas };
+          }
+          notasPorDisciplina[key].soma += parseFloat(n.Nota || 0);
+          notasPorDisciplina[key].count += 1;
+        });
+
+        const notasFinais = Object.entries(notasPorDisciplina).map(([codDisc, val]) => ({
+          codigoDisciplina: parseInt(codDisc),
+          disciplina: val.disciplina?.abreviatura || val.disciplina?.designacao || '',
+          nota: parseFloat((val.soma / val.count).toFixed(1))
+        }));
+
+        // Calcular média geral
+        const mediaGeral = notasFinais.length > 0
+          ? parseFloat((notasFinais.reduce((s, n) => s + n.nota, 0) / notasFinais.length).toFixed(2))
+          : 0;
+
+        // Situação do aluno
+        const situacao = mediaGeral >= 10 ? 'TRANSITA' : 'N-TRANSITA';
+
+        // Faltas do aluno
+        const faltasAluno = faltas
+          .filter(f => f.CodigoAluno === aluno.codigo)
+          .reduce((sum, f) => sum + (parseInt(f.NumeroFaltas) || 1), 0);
+
+        return {
+          numero: idx + 1,
+          aluno: {
+            codigo: aluno.codigo,
+            nome: aluno.nome,
+            dataNascimento: aluno.dataNascimento
+          },
+          notas: notasFinais,
+          mediaGeral,
+          situacao,
+          faltas: faltasAluno,
+          comportamento: 'Bom'
+        };
+      }).filter(Boolean);
+
+      // 10. Dados do director de turma
+      let nomeDirector = 'N/D';
+      let contactoDirector = 'N/D';
+      if (directorTurma?.tb_professores?.tb_funcionarios) {
+        nomeDirector = directorTurma.tb_professores.tb_funcionarios.nome || 'N/D';
+        contactoDirector = directorTurma.tb_professores.tb_funcionarios.contacto || 'N/D';
+      }
+
+      // 11. Dados da instituição
+      const instituicao = await prisma.tb_dados_instituicao.findFirst() || {
+        nome: 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS',
+        endereco: 'Cabinda, Angola',
+        telefone: '+244 915 312 187'
+      };
+
+      return {
+        turma: {
+          codigo: turma.codigo,
+          designacao: turma.designacao,
+          classe: turma.tb_classes?.designacao || '',
+          periodo: turma.tb_periodos?.designacao || '',
+          sala: turma.tb_salas?.designacao || '',
+          curso: turma.tb_cursos?.designacao || ''
+        },
+        anoLetivo: anoLetivo?.designacao || codigoAnoLectivo,
+        trimestre: trimestre?.designacao || `${codigoTrimestre}º`,
+        disciplinas,
+        directorTurma: nomeDirector,
+        contactoDirector,
+        instituicao,
+        boletins,
+        totalAlunos: boletins.length,
+        dataGeracao: new Date().toISOString()
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao gerar boletim da turma: ${error.message}`, 500);
+    }
+  }
 
   static async generateBoletim(codigoAluno, codigoAnoLectivo) {
     try {
