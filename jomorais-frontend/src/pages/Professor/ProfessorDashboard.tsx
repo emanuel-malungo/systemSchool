@@ -49,7 +49,7 @@ export default function ProfessorDashboard() {
       setTotalNotas(notasData?.length || 0)
 
       // Obter períodos ativos de lançamento de notas
-      const periodsRes = await api.get('/periodos-lancamento')
+      const periodsRes = await api.get('/api/periodos-lancamento')
       if (periodsRes.data && periodsRes.data.success) {
         // Filtrar apenas os que estão ativos hoje
         const agora = new Date()

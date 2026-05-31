@@ -45,7 +45,7 @@ export default function ProfessorLancamento() {
       setAtribuicoes(atrib.turmas || [])
 
       // Buscar períodos de lançamento gerais
-      const periodsRes = await api.get('/periodos-lancamento')
+      const periodsRes = await api.get('/api/periodos-lancamento')
       if (periodsRes.data && periodsRes.data.success) {
         setOpenPeriods(periodsRes.data.data || [])
       }
