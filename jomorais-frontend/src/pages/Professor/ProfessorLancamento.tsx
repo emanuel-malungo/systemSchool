@@ -149,9 +149,11 @@ export default function ProfessorLancamento() {
         const localMap: Record<number, string> = {}
         alunosList.forEach(a => {
           // Procurar se esse aluno tem nota correspondente ao tipo de nota selecionado
-          const match = notasExistentes.find(
-            n => n.aluno.codigo === a.codigo && n.tipoAvaliacao.descricao === selectedTipoNota
-          )
+          const match = notasExistentes.find(n => {
+            const normDb = n.tipoAvaliacao.descricao === 'NPP' ? 'PP' : (n.tipoAvaliacao.descricao === 'NPT' ? 'PT' : n.tipoAvaliacao.descricao);
+            const normSel = selectedTipoNota === 'NPP' ? 'PP' : (selectedTipoNota === 'NPT' ? 'PT' : selectedTipoNota);
+            return n.aluno.codigo === a.codigo && normDb === normSel;
+          })
           localMap[a.codigo] = match ? match.nota.toString() : ''
         })
 
@@ -232,9 +234,11 @@ export default function ProfessorLancamento() {
 
         const localMap: Record<number, string> = {}
         students.forEach(a => {
-          const match = notasExistentes.find(
-            n => n.aluno.codigo === a.codigo && n.tipoAvaliacao.descricao === selectedTipoNota
-          )
+          const match = notasExistentes.find(n => {
+            const normDb = n.tipoAvaliacao.descricao === 'NPP' ? 'PP' : (n.tipoAvaliacao.descricao === 'NPT' ? 'PT' : n.tipoAvaliacao.descricao);
+            const normSel = selectedTipoNota === 'NPP' ? 'PP' : (selectedTipoNota === 'NPT' ? 'PT' : selectedTipoNota);
+            return n.aluno.codigo === a.codigo && normDb === normSel;
+          })
           localMap[a.codigo] = match ? match.nota.toString() : ''
         })
         setNotasLocais(localMap)

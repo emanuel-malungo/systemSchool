@@ -457,10 +457,16 @@ export class ProfessorController {
       }
 
       // 3. Obter IDs reais de tabelas de suporte do banco (ano letivo, tipo avaliação)
+      const mappedTipoNota = tipoNota === 'PP' ? 'NPP' : (tipoNota === 'PT' ? 'NPT' : tipoNota);
       const [anoObj, tipoObj] = await Promise.all([
         ProfessorController.findAnoLectivo(anoLectivo),
         prisma.tb_tipo_avaliacao.findFirst({
-          where: { descricao: tipoNota }
+          where: {
+            OR: [
+              { descricao: tipoNota },
+              { descricao: mappedTipoNota }
+            ]
+          }
         })
       ]);
 
