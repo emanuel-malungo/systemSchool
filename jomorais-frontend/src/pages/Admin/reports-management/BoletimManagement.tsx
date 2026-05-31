@@ -28,6 +28,11 @@ export default function BoletimManagement() {
   const anos = anosData?.data || []
   const turmas = turmasData?.data || []
 
+  // Filtrar turmas pelo ano lectivo selecionado
+  const turmasFiltradas = selectedAnoLetivo
+    ? turmas.filter((t: any) => t.codigo_AnoLectivo === parseInt(selectedAnoLetivo))
+    : turmas
+
   const canGenerate = selectedTurma && selectedTrimestre && selectedAnoLetivo
 
   const handlePreview = async () => {
@@ -123,7 +128,7 @@ export default function BoletimManagement() {
                 <select
                   id="select-ano-letivo"
                   value={selectedAnoLetivo}
-                  onChange={e => setSelectedAnoLetivo(e.target.value)}
+                  onChange={e => { setSelectedAnoLetivo(e.target.value); setSelectedTurma(''); }}
                   className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 transition"
                 >
                   <option value="">Selecione o ano lectivo...</option>
@@ -150,7 +155,7 @@ export default function BoletimManagement() {
                   className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 transition"
                 >
                   <option value="">Selecione a turma...</option>
-                  {turmas.map((turma: any) => (
+                  {turmasFiltradas.map((turma: any) => (
                     <option key={turma.codigo} value={turma.codigo}>
                       {turma.designacao}
                       {turma.tb_classes?.designacao ? ` – ${turma.tb_classes.designacao}ª Cl.` : ''}
@@ -205,11 +210,11 @@ export default function BoletimManagement() {
 
         {/* ── Erro ── */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-red-700">Erro ao carregar boletim</p>
-              <p className="text-red-600 text-sm mt-1">{error}</p>
+              <p className="font-semibold text-yellow-800">Aviso</p>
+              <p className="text-yellow-600 text-sm mt-1">{error}</p>
             </div>
           </div>
         )}

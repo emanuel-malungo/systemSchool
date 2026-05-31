@@ -416,7 +416,8 @@ export class GradeManagementService {
       });
 
       if (confirmacoes.length === 0) {
-        throw new AppError('Nenhum aluno confirmado nesta turma', 404);
+        // No confirmed students for the selected class – client-side issue, not a server error
+        throw new AppError('Não há alunos confirmados para a turma selecionada.', 400);
       }
 
       // 6. Buscar todas as notas da turma no trimestre
