@@ -1,6 +1,67 @@
 // services/professor-evaluation.services.js
 import prisma from '../config/database.js';
 import { AppError } from '../utils/validation.utils.js';
+import { hashLegacyPassword } from '../utils/encryption.utils.js';
+
+// ==========================================
+// FUNÇÕES AUXILIARES DE GERAÇÃO DE USERNAME
+// ==========================================
+
+async function verificarUsernameExiste(username, tx) {
+  const db = tx || prisma;
+  const usuario = await db.tb_utilizadores.findFirst({
+    where: { user: username }
+  });
+  return !!usuario;
+}
+
+async function gerarUsername(nomeCompleto, tx) {
+  if (!nomeCompleto || typeof nomeCompleto !== 'string') {
+    throw new AppError('Nome completo é obrigatório para gerar username', 400);
+  }
+
+  // Limpar e normalizar o nome
+  const nomeNormalizado = nomeCompleto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .replace(/[^a-z\s]/g, '') // Remove caracteres especiais
+    .trim();
+
+  if (!nomeNormalizado) {
+    throw new AppError('Nome inválido para gerar username', 400);
+  }
+
+  const partesNome = nomeNormalizado.split(/\s+/).filter(parte => parte.length > 0);
+  
+  if (partesNome.length === 0) {
+    throw new AppError('Nome deve conter pelo menos uma palavra válida', 400);
+  }
+
+  let baseUsername;
+  
+  if (partesNome.length === 1) {
+    baseUsername = partesNome[0];
+  } else {
+    baseUsername = `${partesNome[0]}.${partesNome[partesNome.length - 1]}`;
+  }
+
+  let username = baseUsername;
+  let contador = 1;
+  
+  while (await verificarUsernameExiste(username, tx)) {
+    username = `${baseUsername}${contador}`;
+    contador++;
+    
+    if (contador > 999) {
+      username = `${baseUsername}${Date.now()}`;
+      break;
+    }
+  }
+
+  return username;
+}
+
 
 export class ProfessorEvaluationService {
   // ===============================
@@ -19,7 +80,8 @@ export class ProfessorEvaluationService {
         numeroFuncionario,
         dataAdmissao,
         status = 'Activo',
-        codigoUtilizador
+        codigoUtilizador,
+        criarUsuario = true // Por padrão, criar usuário automaticamente se não for fornecido
       } = data;
 
       // Validações básicas
@@ -29,40 +91,133 @@ export class ProfessorEvaluationService {
 
       // Verificar se professor com mesmo email já existe
       const existingProfessor = await prisma.tb_professores.findFirst({
-        where: { email: email.toLowerCase().trim() }
+        where: { Email: email.toLowerCase().trim() }
       });
 
       if (existingProfessor) {
         throw new AppError('Já existe um professor com este email', 409);
       }
 
-      // Se codigoUtilizador fornecido, validar
-      if (codigoUtilizador) {
-        const utilizadorExists = await prisma.tb_utilizadores.findUnique({
-          where: { codigo: parseInt(codigoUtilizador) }
-        });
-        if (!utilizadorExists) {
-          throw new AppError('Utilizador não encontrado', 404);
-        }
-      }
+      // Executar a criação em uma transação do Prisma
+      const result = await prisma.$transaction(async (tx) => {
+        let finalCodigoUtilizador = codigoUtilizador ? parseInt(codigoUtilizador) : null;
+        let dadosUsuario = null;
 
-      const professor = await prisma.tb_professores.create({
-        data: {
-          nome: nome.trim(),
-          email: email.toLowerCase().trim(),
-          telefone: telefone?.trim() || null,
-          formacao: formacao.trim(),
-          nivelAcademico: nivelAcademico.trim(),
-          especialidade: especialidade?.trim() || null,
-          numeroFuncionario: numeroFuncionario?.trim() || null,
-          dataAdmissao: dataAdmissao ? new Date(dataAdmissao) : null,
-          status,
-          Codigo_Utilizador: codigoUtilizador ? parseInt(codigoUtilizador) : null
+        // Se codigoUtilizador foi fornecido, validar utilizador existente
+        if (finalCodigoUtilizador) {
+          const utilizadorExists = await tx.tb_utilizadores.findUnique({
+            where: { codigo: finalCodigoUtilizador }
+          });
+          if (!utilizadorExists) {
+            throw new AppError('Utilizador não encontrado', 404);
+          }
+        } 
+        // Caso contrário, se criarUsuario for true, criar o utilizador automaticamente
+        else if (criarUsuario) {
+          try {
+            // Gerar username único
+            const username = await gerarUsername(nome, tx);
+            
+            // Gerar hash da senha padrão (MD5 para compatibilidade com sistema legado do JoMorais)
+            const senhaHash = hashLegacyPassword('123456');
+
+            // Buscar tipo de usuário "Professor" ou "PROFESSOR (A)"
+            let tipoUsuarioProfessor = await tx.tb_tipos_utilizador.findFirst({
+              where: {
+                OR: [
+                  { designacao: 'Professor' },
+                  { designacao: 'PROFESSOR (A)' }
+                ]
+              }
+            });
+
+            let codigoTipoUtilizador = tipoUsuarioProfessor?.codigo;
+            if (!codigoTipoUtilizador) {
+              const checkId8 = await tx.tb_tipos_utilizador.findUnique({
+                where: { codigo: 8 }
+              });
+              if (checkId8) {
+                codigoTipoUtilizador = 8;
+              } else {
+                try {
+                  const maxTipo = await tx.tb_tipos_utilizador.findFirst({
+                    orderBy: { codigo: 'desc' },
+                    select: { codigo: true }
+                  });
+                  const proximoTipoCodigo = maxTipo ? maxTipo.codigo + 1 : 1;
+
+                  const novoTipo = await tx.tb_tipos_utilizador.create({
+                    data: {
+                      codigo: proximoTipoCodigo,
+                      designacao: 'PROFESSOR (A)'
+                    }
+                  });
+                  codigoTipoUtilizador = novoTipo.codigo;
+                } catch (e) {
+                  // Fallback final
+                  codigoTipoUtilizador = 8;
+                }
+              }
+            }
+
+            // Obter o próximo código (ID) manual para tb_utilizadores
+            const maxUtilizador = await tx.tb_utilizadores.findFirst({
+              orderBy: { codigo: 'desc' },
+              select: { codigo: true }
+            });
+            const proximoCodigo = maxUtilizador ? maxUtilizador.codigo + 1 : 1;
+
+            // Criar utilizador
+            const novoUsuario = await tx.tb_utilizadores.create({
+              data: {
+                codigo: proximoCodigo,
+                nome: nome.trim(),
+                user: username,
+                passe: senhaHash,
+                codigo_Tipo_Utilizador: codigoTipoUtilizador,
+                estadoActual: 'Activo',
+                dataCadastro: new Date(),
+                loginStatus: 'OFF'
+              }
+            });
+
+            finalCodigoUtilizador = novoUsuario.codigo;
+            dadosUsuario = {
+              username: username,
+              senhaTemporaria: '123456',
+              tipo: 'Professor'
+            };
+          } catch (userError) {
+            console.error('Erro ao criar usuário automático para o professor:', userError);
+            throw new AppError(`Erro ao criar utilizador automático: ${userError.message}`, 500);
+          }
         }
+
+        // Criar o professor vinculando ao utilizador
+        const professor = await tx.tb_professores.create({
+          data: {
+            Nome: nome.trim(),
+            Email: email.toLowerCase().trim(),
+            Telefone: telefone?.trim() || null,
+            Formacao: formacao.trim(),
+            NivelAcademico: nivelAcademico.trim(),
+            Especialidade: especialidade?.trim() || null,
+            NumeroFuncionario: numeroFuncionario?.trim() || null,
+            DataAdmissao: dataAdmissao ? new Date(dataAdmissao) : null,
+            Status: status,
+            Codigo_Utilizador: finalCodigoUtilizador
+          }
+        });
+
+        return {
+          professor,
+          dadosUsuario
+        };
       });
 
       return {
-        ...professor,
+        ...result.professor,
+        usuario: result.dadosUsuario,
         mensagem: 'Professor criado com sucesso'
       };
     } catch (error) {
