@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Plus, Search, BookOpen } from 'lucide-react'
-import { useDisciplineTeachersManager } from '../../../hooks/useDisciplineTeacher'
-import type { IDisciplinaDocente, IDisciplinaDocenteInput } from '../../../types/disciplineTeacher.types'
+import { useState, useMemo } from 'react'
+import { Plus, Search, BookOpen, GraduationCap, Users, Award } from 'lucide-react'
+import { useDisciplineTeachersManager, useProfessoresComplete } from '../../../hooks/useDisciplineTeacher'
+import { useDisciplinesComplete } from '../../../hooks/useDiscipline'
+import type { AtribuicaoCompleta, IAtribuicaoCompletaInput } from '../../../types/disciplineTeacher.types'
 import DisciplineTeacherTable from '../../../components/discipline-teacher-management/DisciplineTeacherTable'
 import DisciplineTeacherFormModal from '../../../components/discipline-teacher-management/DisciplineTeacherFormModal'
 import DeleteConfirmModal from '../../../components/discipline-teacher-management/DeleteConfirmModal'
@@ -11,66 +12,99 @@ export default function DisciplineTeacherManagement() {
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [professorFilter, setProfessorFilter] = useState('all')
+  const [disciplinaFilter, setDisciplinaFilter] = useState('all')
+  const [tipoFilter, setTipoFilter] = useState('all')
   
   // Modais
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [disciplineTeacherToDelete, setDisciplineTeacherToDelete] = useState<IDisciplinaDocente | null>(null)
-  const [disciplineTeacherToEdit, setDisciplineTeacherToEdit] = useState<IDisciplinaDocente | null>(null)
+  const [disciplineTeacherToDelete, setDisciplineTeacherToDelete] = useState<AtribuicaoCompleta | null>(null)
 
   // Hook de gerenciamento
   const {
     disciplineTeachers,
-    pagination,
     isLoading,
     isCreating,
-    isUpdating,
     isDeleting,
     createDisciplineTeacherAsync,
-    updateDisciplineTeacherAsync,
-    deleteDisciplineTeacherAsync,
-  } = useDisciplineTeachersManager({ 
-    page: currentPage,
-    search: searchTerm,
-  })
+    deleteProfessorDisciplinaAsync,
+    deleteProfessorTurmaAsync,
+  } = useDisciplineTeachersManager()
+
+  const { data: professoresData } = useProfessoresComplete()
+  const { data: disciplinasData } = useDisciplinesComplete()
+
+  const professoresList = useMemo(() => professoresData?.data || [], [professoresData])
+  const disciplinasList = useMemo(() => disciplinasData?.data || [], [disciplinasData])
+
+  // Filtrar atribuições
+  const filteredAtribuicoes = useMemo(() => {
+    return disciplineTeachers.filter(atribuicao => {
+      const matchesSearch = 
+        atribuicao.professor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        atribuicao.disciplina.designacao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        atribuicao.curso.designacao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (atribuicao.turma && atribuicao.turma.designacao.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesProfessor = professorFilter === 'all' || atribuicao.professor.codigo.toString() === professorFilter;
+      const matchesDisciplina = disciplinaFilter === 'all' || atribuicao.disciplina.codigo.toString() === disciplinaFilter;
+      const matchesTipo = tipoFilter === 'all' || atribuicao.tipo === tipoFilter;
+      
+      return matchesSearch && matchesProfessor && matchesDisciplina && matchesTipo;
+    });
+  }, [disciplineTeachers, searchTerm, professorFilter, disciplinaFilter, tipoFilter]);
+
+  // Estatísticas
+  const stats = useMemo(() => {
+    const total = disciplineTeachers.length;
+    const disciplinasCount = disciplineTeachers.filter(a => a.tipo === 'disciplina').length;
+    const turmasCount = disciplineTeachers.filter(a => a.tipo === 'turma').length;
+    const professoresAtivos = professoresList.filter((p: any) => p.status === 'Activo').length;
+    
+    return {
+      total,
+      disciplinas: disciplinasCount,
+      turmas: turmasCount,
+      professoresAtivos
+    };
+  }, [disciplineTeachers, professoresList]);
+
+  // Paginação
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(filteredAtribuicoes.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAtribuicoes = useMemo(() => {
+    return filteredAtribuicoes.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAtribuicoes, startIndex]);
 
   // Handlers
   const handleCreateDisciplineTeacher = () => {
-    setDisciplineTeacherToEdit(null)
     setIsFormModalOpen(true)
   }
 
-  const handleEditDisciplineTeacher = (disciplineTeacher: IDisciplinaDocente) => {
-    setDisciplineTeacherToEdit(disciplineTeacher)
-    setIsFormModalOpen(true)
-  }
-
-  const handleFormSubmit = async (data: IDisciplinaDocenteInput) => {
+  const handleFormSubmit = async (data: IAtribuicaoCompletaInput) => {
     try {
-      if (disciplineTeacherToEdit) {
-        await updateDisciplineTeacherAsync({
-          id: disciplineTeacherToEdit.codigo,
-          data,
-        })
-      } else {
-        await createDisciplineTeacherAsync(data)
-      }
+      await createDisciplineTeacherAsync(data)
       setIsFormModalOpen(false)
-      setDisciplineTeacherToEdit(null)
     } catch (error) {
       console.error('Erro ao salvar associação:', error)
     }
   }
 
-  const handleDeleteClick = (disciplineTeacher: IDisciplinaDocente) => {
-    setDisciplineTeacherToDelete(disciplineTeacher)
+  const handleDeleteClick = (atribuicao: AtribuicaoCompleta) => {
+    setDisciplineTeacherToDelete(atribuicao)
     setIsDeleteModalOpen(true)
   }
 
   const handleDeleteConfirm = async () => {
     if (disciplineTeacherToDelete) {
       try {
-        await deleteDisciplineTeacherAsync(disciplineTeacherToDelete.codigo)
+        if (disciplineTeacherToDelete.tipo === 'disciplina') {
+          await deleteProfessorDisciplinaAsync(disciplineTeacherToDelete.codigo)
+        } else {
+          await deleteProfessorTurmaAsync(disciplineTeacherToDelete.codigo)
+        }
         setIsDeleteModalOpen(false)
         setDisciplineTeacherToDelete(null)
       } catch (error) {
@@ -82,9 +116,6 @@ export default function DisciplineTeacherManagement() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
-
-  const totalPages = pagination?.totalPages || 1
-  const totalItems = pagination?.totalItems || 0
 
   return (
     <Container>
@@ -102,17 +133,17 @@ export default function DisciplineTeacherManagement() {
               
               <div>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Disciplinas dos Professores
+                  Atribuições de Professores
                 </h1>
                 <p className="text-gray-600 text-lg">
-                  Gerencie as disciplinas atribuídas aos professores
+                  Gerencie as atribuições de disciplinas e turmas para os professores
                 </p>
               </div>
             </div>
             
             <button
               onClick={handleCreateDisciplineTeacher}
-              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-purple-600 to-purple-800 text-white rounded-xl hover:from-purple-700 hover:to-purple-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-purple-600 to-purple-800 text-white rounded-xl hover:from-purple-700 hover:to-purple-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium cursor-pointer"
             >
               <Plus className="h-5 w-5" />
               Nova Atribuição
@@ -121,50 +152,148 @@ export default function DisciplineTeacherManagement() {
         </div>
       </div>
 
+      {/* Estatísticas */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Atribuições */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
+          <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-500">Total Atribuições</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          </div>
+        </div>
+        {/* Disciplinas Atribuídas */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
+          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+            <GraduationCap className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-500">Disciplinas</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.disciplinas}</p>
+          </div>
+        </div>
+        {/* Turmas Atribuídas */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
+          <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-500">Turmas</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.turmas}</p>
+          </div>
+        </div>
+        {/* Professores Ativos */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
+          <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
+            <Award className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-500">Professores Ativos</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.professoresAtivos}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Filtros e Pesquisa */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Barra de Pesquisa */}
-          <div className="flex-1 relative">
+          <div className="relative md:col-span-4">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Pesquisar por professor ou disciplina..."
+              placeholder="Pesquisar por professor, disciplina ou curso..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value)
                 setCurrentPage(1)
               }}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all bg-gray-50/30"
             />
           </div>
-        </div>
 
-        {/* Contador de Resultados */}
-        <div className="mt-5 pt-4 border-t border-gray-200 flex items-center justify-between">
-          <span className="text-sm text-gray-600 font-medium">
-            Mostrando <span className="text-purple-600 font-bold">{disciplineTeachers.length}</span> de <span className="text-gray-900 font-bold">{totalItems}</span> atribuições
-          </span>
-          {searchTerm && (
+          {/* Professor Select */}
+          <div>
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Professor</label>
+            <select
+              value={professorFilter}
+              onChange={(e) => {
+                setProfessorFilter(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
+            >
+              <option value="all">Todos os Professores</option>
+              {professoresList.map((prof: any) => (
+                <option key={prof.codigo} value={prof.codigo}>
+                  {prof.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Disciplina Select */}
+          <div>
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Disciplina</label>
+            <select
+              value={disciplinaFilter}
+              onChange={(e) => {
+                setDisciplinaFilter(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
+            >
+              <option value="all">Todas as Disciplinas</option>
+              {disciplinasList.map((disc: any) => (
+                <option key={disc.codigo} value={disc.codigo}>
+                  {disc.designacao}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tipo Select */}
+          <div>
+            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tipo</label>
+            <select
+              value={tipoFilter}
+              onChange={(e) => {
+                setTipoFilter(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
+            >
+              <option value="all">Todos os Tipos</option>
+              <option value="disciplina">Apenas Disciplinas</option>
+              <option value="turma">Apenas Turmas</option>
+            </select>
+          </div>
+
+          {/* Limpar Filtros */}
+          <div className="flex items-end">
             <button
               onClick={() => {
                 setSearchTerm('')
+                setProfessorFilter('all')
+                setDisciplinaFilter('all')
+                setTipoFilter('all')
                 setCurrentPage(1)
               }}
-              className="text-sm text-purple-600 hover:text-purple-800 font-medium hover:underline transition-all"
+              className="w-full py-3 px-4 border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all font-semibold text-sm active:scale-95 cursor-pointer"
             >
-              Limpar pesquisa
+              Limpar Filtros
             </button>
-          )}
+          </div>
         </div>
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
         <DisciplineTeacherTable
-          disciplineTeachers={disciplineTeachers}
+          disciplineTeachers={paginatedAtribuicoes}
           isLoading={isLoading}
-          onEdit={handleEditDisciplineTeacher}
           onDelete={handleDeleteClick}
           currentPage={currentPage}
           totalPages={totalPages}
@@ -177,11 +306,9 @@ export default function DisciplineTeacherManagement() {
         isOpen={isFormModalOpen}
         onClose={() => {
           setIsFormModalOpen(false)
-          setDisciplineTeacherToEdit(null)
         }}
         onSubmit={handleFormSubmit}
-        disciplineTeacher={disciplineTeacherToEdit}
-        isLoading={isCreating || isUpdating}
+        isLoading={isCreating}
       />
 
       <DeleteConfirmModal
@@ -193,7 +320,7 @@ export default function DisciplineTeacherManagement() {
         onConfirm={handleDeleteConfirm}
         disciplineTeacherInfo={
           disciplineTeacherToDelete
-            ? `${disciplineTeacherToDelete.tb_disciplinas?.designacao} - ${disciplineTeacherToDelete.tb_docente?.nome}`
+            ? `${disciplineTeacherToDelete.disciplina.designacao} - ${disciplineTeacherToDelete.professor.nome}`
             : ''
         }
         isLoading={isDeleting}
@@ -201,3 +328,4 @@ export default function DisciplineTeacherManagement() {
     </Container>
   )
 }
+

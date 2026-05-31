@@ -46,3 +46,41 @@ export interface IDisciplinaDocenteActionResponse {
   message: string;
   data?: IDisciplinaDocente;
 }
+
+// ===============================================================
+// ALIGNMENT TYPES FOR JUNQUEIRA FLOW
+// ===============================================================
+
+export interface AtribuicaoCompleta {
+  codigo: number;
+  professor: {
+    codigo: number;
+    nome: string;
+    numeroFuncionario?: string;
+  };
+  disciplina: {
+    codigo: number;
+    designacao: string;
+  };
+  curso: {
+    codigo: number;
+    designacao: string;
+  };
+  turma?: {
+    codigo: number;
+    designacao: string;
+  };
+  anoLectivo: string;
+  tipo: 'disciplina' | 'turma';
+  status: string;
+}
+
+export interface IAtribuicaoCompletaInput {
+  professorId: number;
+  disciplinaId: number;
+  cursoId: number;
+  turmaId?: number;
+  anoLectivo: string;
+  incluirTurma?: boolean;
+}
+
