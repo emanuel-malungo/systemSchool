@@ -376,10 +376,10 @@ export class ProfessorEvaluationService {
 
       const where = search ? {
         OR: [
-          { nome: { contains: search } },
-          { email: { contains: search } },
-          { telefone: { contains: search } },
-          { especialidade: { contains: search } }
+          { Nome: { contains: search } },
+          { Email: { contains: search } },
+          { Telefone: { contains: search } },
+          { Especialidade: { contains: search } }
         ]
       } : {};
 
@@ -396,7 +396,7 @@ export class ProfessorEvaluationService {
               }
             }
           },
-          orderBy: { nome: 'asc' }
+          orderBy: { Nome: 'asc' }
         }),
         prisma.tb_professores.count({ where })
       ]);
@@ -515,14 +515,14 @@ export class ProfessorEvaluationService {
   static async getProfessoresAtivos() {
     try {
       return await prisma.tb_professores.findMany({
-        where: { status: 'Activo' },
+        where: { Status: 'Activo' },
         select: {
           Codigo: true,
-          nome: true,
-          email: true,
-          especialidade: true
+          Nome: true,
+          Email: true,
+          Especialidade: true
         },
-        orderBy: { nome: 'asc' }
+        orderBy: { Nome: 'asc' }
       });
     } catch (error) {
       throw new AppError(`Erro ao buscar professores ativos: ${error.message}`, 500);

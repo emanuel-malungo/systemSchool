@@ -5,12 +5,12 @@ import type { SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { toast } from 'react-toastify'
-import { 
-  UserCog, 
-  ArrowLeft, 
-  Save, 
-  User, 
-  FileText, 
+import {
+  UserCog,
+  ArrowLeft,
+  Save,
+  User,
+  FileText,
   Users,
   Loader2,
   AlertCircle
@@ -22,7 +22,7 @@ import { useProfessions } from '../../../hooks/useProfession'
 import Container from '../../../components/layout/Container'
 import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
-import { 
+import {
   useGeographicFormData,
   useEnderecoCompleto,
   useComunas,
@@ -65,16 +65,16 @@ export default function EditStudent() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const studentId = id ? parseInt(id) : 0
-  
+
   const [activeTab, setActiveTab] = useState<'personal' | 'document' | 'guardian'>('personal')
 
   const { data: studentData, isLoading: loadingStudent, isError: errorStudent } = useStudent(studentId)
   const updateStudent = useUpdateStudent()
-  
+
   const { nacionalidades, estadoCivil, isLoading: loadingGeographic } = useGeographicFormData()
   const { data: documentTypes = [], isLoading: loadingDocTypes } = useDocumentTypes()
   const { data: professions = [], isLoading: loadingProfessions } = useProfessions()
-  
+
   // Buscar todas as comunas e municípios para encontrar província e município
   const { data: allComunas = [] } = useComunas()
   const { data: allMunicipios = [] } = useMunicipios()
@@ -113,7 +113,7 @@ export default function EditStudent() {
 
   const watchProvincia = watch('provincia')
   const watchMunicipio = watch('municipio')
-  
+
   const { provincias, municipios, comunas, isLoadingProvincias, isLoadingMunicipios, isLoadingComunas } = useEnderecoCompleto(
     watchProvincia ? parseInt(watchProvincia) : undefined,
     watchMunicipio ? parseInt(watchMunicipio) : undefined
@@ -122,11 +122,11 @@ export default function EditStudent() {
   useEffect(() => {
     if (studentData?.data && allComunas.length > 0 && allMunicipios.length > 0) {
       const student = studentData.data
-      
+
       // Encontrar província e município a partir da comuna
       let provinciaId = ''
       let municipioId = ''
-      
+
       if (student.codigo_Comuna) {
         const comuna = allComunas.find(c => c.codigo === student.codigo_Comuna)
         if (comuna) {
@@ -137,7 +137,7 @@ export default function EditStudent() {
           }
         }
       }
-      
+
       // Converter sexo - pode vir como 'M', 'F', 'Masculino' ou 'Feminino'
       let sexoValue: 'M' | 'F' | undefined
       if (student.sexo === 'Masculino' || student.sexo === 'M') {
@@ -148,10 +148,10 @@ export default function EditStudent() {
         // Se tiver valor mas não for reconhecido, tentar usar como está
         sexoValue = student.sexo as 'M' | 'F'
       }
-      
+
       // Mapear dados do encarregado (vem como tb_encarregados da API)
       const encarregadoData = student.tb_encarregados || student.encarregado as any
-      
+
       // Converter dataNascimento (pode vir como string ou objeto)
       let dataNascimentoValue: Date | undefined
       if (student.dataNascimento) {
@@ -165,7 +165,7 @@ export default function EditStudent() {
           }
         }
       }
-      
+
       reset({
         nome: student.nome || '',
         pai: student.pai || '',
@@ -201,7 +201,7 @@ export default function EditStudent() {
       // Remover provincia, municipio e preparar dados
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { provincia, municipio, encarregado, ...alunoData } = data
-      
+
       // Função para remover campos vazios
       const removeEmptyFields = (obj: Record<string, any>) => {
         return Object.entries(obj).reduce((acc, [key, value]) => {
@@ -211,23 +211,23 @@ export default function EditStudent() {
           return acc
         }, {} as Record<string, any>)
       }
-      
+
       // Preparar dados do aluno (remover campos vazios)
       const cleanedAlunoData = removeEmptyFields(alunoData)
-      
+
       // Preparar dados do encarregado (remover campos vazios)
       const cleanedEncarregado = encarregado ? removeEmptyFields(encarregado) : undefined
-      
+
       // Montar objeto final
       const studentData: any = {
         ...cleanedAlunoData
       }
-      
+
       // Adicionar encarregado apenas se tiver dados válidos
       if (cleanedEncarregado && Object.keys(cleanedEncarregado).length > 0) {
         studentData.encarregado = cleanedEncarregado
       }
-      
+
       await updateStudent.mutateAsync({ id: studentId, studentData: studentData as unknown as Student })
       toast.success('Aluno atualizado com sucesso!')
       navigate('/admin/student-management')
@@ -242,8 +242,8 @@ export default function EditStudent() {
     (errors) => {
       // Verificar erros em Dados Pessoais
       if (errors.nome || errors.sexo || errors.codigo_Nacionalidade || errors.codigo_Estado_Civil || errors.codigo_Comuna || errors.email) {
-        const errorMsg = errors.nome?.message || errors.sexo?.message || errors.codigo_Nacionalidade?.message || 
-                        errors.codigo_Estado_Civil?.message || errors.codigo_Comuna?.message || errors.email?.message
+        const errorMsg = errors.nome?.message || errors.sexo?.message || errors.codigo_Nacionalidade?.message ||
+          errors.codigo_Estado_Civil?.message || errors.codigo_Comuna?.message || errors.email?.message
         toast.error(errorMsg || 'Preencha os campos obrigatórios em Dados Pessoais')
         setActiveTab('personal')
       }
@@ -255,9 +255,9 @@ export default function EditStudent() {
       }
       // Verificar erros em Encarregado
       else if (errors.encarregado) {
-        const errorMsg = errors.encarregado.nome?.message || errors.encarregado.telefone?.message || 
-                        errors.encarregado.email?.message || errors.encarregado.codigo_Profissao?.message || 
-                        errors.encarregado.local_Trabalho?.message
+        const errorMsg = errors.encarregado.nome?.message || errors.encarregado.telefone?.message ||
+          errors.encarregado.email?.message || errors.encarregado.codigo_Profissao?.message ||
+          errors.encarregado.local_Trabalho?.message
         toast.error(errorMsg || 'Preencha os campos obrigatórios do Encarregado')
         setActiveTab('guardian')
       }

@@ -4,12 +4,12 @@ import { useForm, Controller } from 'react-hook-form'
 import type { SubmitHandler } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { 
-  UserPlus, 
-  ArrowLeft, 
-  Save, 
-  User, 
-  FileText, 
+import {
+  UserPlus,
+  ArrowLeft,
+  Save,
+  User,
+  FileText,
   Users,
   Loader2
 } from 'lucide-react'
@@ -20,7 +20,7 @@ import { useProfessions } from '../../../hooks/useProfession'
 import Container from '../../../components/layout/Container'
 import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
-import { 
+import {
   useGeographicFormData,
   useEnderecoCompleto
 } from '../../../hooks/useGeographic'
@@ -43,11 +43,11 @@ const addStudentSchema = yup.object().shape({
   morada: yup.string().max(60, 'Morada deve ter no máximo 60 caracteres').default('...'),
   saldo: yup.number().min(0, 'Saldo não pode ser negativo').default(0),
   codigo_Status: yup.number().default(1),
-  
+
   // Campos auxiliares para navegação geográfica (não enviados ao backend)
   provincia: yup.string().default(''),
   municipio: yup.string().default(''),
-  
+
   encarregado: yup.object().shape({
     nome: yup.string().required('Nome do encarregado é obrigatório').max(250, 'Nome deve ter no máximo 250 caracteres'),
     telefone: yup.string().required('Telefone do encarregado é obrigatório').max(45, 'Telefone deve ter no máximo 45 caracteres'),
@@ -65,14 +65,14 @@ export default function AddStudent() {
   const [activeTab, setActiveTab] = useState<'personal' | 'document' | 'guardian'>('personal')
 
   const createStudent = useCreateStudent()
-  
+
   // Hooks para dados geográficos e formulário
-  const { 
-    nacionalidades, 
-    estadoCivil, 
-    isLoading: loadingGeographic 
+  const {
+    nacionalidades,
+    estadoCivil,
+    isLoading: loadingGeographic
   } = useGeographicFormData()
-  
+
   // Hooks individuais para tipos de documento e profissões
   const { data: documentTypes = [], isLoading: loadingDocTypes } = useDocumentTypes()
   const { data: professions = [], isLoading: loadingProfessions } = useProfessions()
@@ -117,7 +117,7 @@ export default function AddStudent() {
   // Watch para mudanças geográficas (cascading dropdowns)
   const watchProvincia = watch('provincia')
   const watchMunicipio = watch('municipio')
-  
+
   // Hooks para endereço completo (província -> município -> comuna)
   const {
     provincias,
@@ -178,11 +178,10 @@ export default function AddStudent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('personal')}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'personal'
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'personal'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 <User className="h-4 w-4" />
                 Dados Pessoais
@@ -190,11 +189,10 @@ export default function AddStudent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('document')}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'document'
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'document'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 <FileText className="h-4 w-4" />
                 Documentação
@@ -202,11 +200,10 @@ export default function AddStudent() {
               <button
                 type="button"
                 onClick={() => setActiveTab('guardian')}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'guardian'
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'guardian'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
-                }`}
+                  }`}
               >
                 <Users className="h-4 w-4" />
                 Encarregado
@@ -399,7 +396,7 @@ export default function AddStudent() {
               {/* Endereço - Província, Município, Comuna */}
               <div className="space-y-4">
                 <h3 className="text-base font-semibold text-gray-900">Endereço</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Província</label>
@@ -437,9 +434,9 @@ export default function AddStudent() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
                           <option value="">
-                            {isLoadingMunicipios ? 'Carregando...' : 
-                             !watchProvincia ? 'Selecione primeiro a província' : 
-                             'Selecione o município'}
+                            {isLoadingMunicipios ? 'Carregando...' :
+                              !watchProvincia ? 'Selecione primeiro a província' :
+                                'Selecione o município'}
                           </option>
                           {municipios.map((municipio) => (
                             <option key={municipio.codigo} value={municipio.codigo}>
@@ -466,9 +463,9 @@ export default function AddStudent() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
                           <option value="">
-                            {isLoadingComunas ? 'Carregando...' : 
-                             !watchMunicipio ? 'Selecione primeiro o município' : 
-                             'Selecione a comuna'}
+                            {isLoadingComunas ? 'Carregando...' :
+                              !watchMunicipio ? 'Selecione primeiro o município' :
+                                'Selecione a comuna'}
                           </option>
                           {comunas.map((comuna) => (
                             <option key={comuna.codigo} value={comuna.codigo}>
