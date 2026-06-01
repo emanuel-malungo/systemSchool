@@ -1,6 +1,18 @@
 // services/grade-management.services.js
 import prisma from '../config/database.js';
 import { AppError } from '../utils/validation.utils.js';
+import PDFDocument from 'pdfkit';
+import ExcelJS from 'exceljs';
+
+function columnToLetter(column) {
+  let temp, letter = '';
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(65 + temp) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
 
 export class GradeManagementService {
   // ===============================
@@ -278,73 +290,515 @@ export class GradeManagementService {
   // ===============================
 
   static async exportPautaPDF(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
-    // Reuse existing pauta generation logic
     const pautaData = await this.generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo);
-    const PDFDocument = (await import('pdfkit')).default;
-    const doc = new PDFDocument({ margin: 30, size: 'A4' });
-    const buffers = [];
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', () => {});
-    // Header
-    doc.fontSize(16).text('Pauta de Turma', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(12).text(`Turma: ${pautaData.turma} | Trimestre: ${pautaData.trimestre} | Ano Lectivo: ${pautaData.anoLectivo}`);
-    doc.moveDown();
-    // Table header
-    doc.font('Helvetica-Bold');
-    doc.text('Aluno', 50, doc.y, { continued: true });
-    doc.text('Disciplina', 200, doc.y, { continued: true });
-    doc.text('Nota', 350, doc.y);
-    doc.moveDown();
-    doc.font('Helvetica');
-    // Iterate alunos
-    for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
-      const alunoNome = info.aluno?.nome || 'N/A';
-      if (info.disciplinas && info.disciplinas.length) {
-        for (const d of info.disciplinas) {
-          doc.text(alunoNome, 50, doc.y, { continued: true });
-          doc.text(d.disciplina, 200, doc.y, { continued: true });
-          doc.text(d.nota !== undefined ? d.nota.toString() : '-', 350, doc.y);
-          doc.moveDown();
-        }
-      } else {
-        doc.text(alunoNome, 50, doc.y, { continued: true });
-        doc.text('-', 200, doc.y, { continued: true });
-        doc.text('-', 350, doc.y);
-        doc.moveDown();
+    
+    const metadata = await prisma.tb_turmas.findUnique({
+      where: { codigo: parseInt(codigoTurma) },
+      include: {
+        tb_classes: true,
+        tb_cursos: true,
+        tb_periodos: true,
+        tb_ano_lectivo: true
       }
-    }
-    doc.end();
-    return Buffer.concat(buffers);
+    });
+
+    const trimestre = await prisma.tb_trimestres.findUnique({
+      where: { codigo: parseInt(codigoTrimestre) }
+    });
+
+    const descClasse = metadata?.tb_classes?.designacao || '';
+    const descCurso = metadata?.tb_cursos?.designacao || '';
+    const descPeriodo = metadata?.tb_periodos?.designacao || '';
+    const descTurma = metadata?.designacao || '';
+    const descTrimestre = trimestre?.designacao || '1º Trimestre';
+    const descAno = metadata?.tb_ano_lectivo?.designacao || '';
+
+    // Count genders
+    let totalM = 0;
+    let totalF = 0;
+    const confirmacoesList = await prisma.tb_confirmacoes.findMany({
+      where: {
+        codigo_Turma: parseInt(codigoTurma),
+        codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
+      },
+      include: {
+        tb_matriculas: {
+          include: {
+            tb_alunos: { select: { sexo: true } }
+          }
+        }
+      }
+    });
+
+    confirmacoesList.forEach(c => {
+      const s = c.tb_matriculas?.tb_alunos?.sexo?.toUpperCase();
+      if (s === 'M' || s?.startsWith('MASC')) {
+        totalM++;
+      } else if (s === 'F' || s?.startsWith('FEM') || s === 'W') {
+        totalF++;
+      }
+    });
+
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
+      const buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+      doc.on('error', reject);
+
+      // Header Info
+      doc.fontSize(14).font('Helvetica-Bold').text('INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS', { align: 'center' });
+      doc.fontSize(12).text('PAUTA DE APROVEITAMENTO ESCOLAR', { align: 'center' });
+      doc.fontSize(10).font('Helvetica-Oblique').text('ÁREA DE FORMAÇÃO: SAÚDE', { align: 'center' });
+      doc.moveDown(0.5);
+
+      // Metadata Info Line
+      doc.font('Helvetica-Bold').fontSize(9);
+      doc.text(`${descClasse}   |   CURSO: ${descCurso}   |   TURMA: ${descTurma}   |   PERÍODO: ${descPeriodo}   |   ${descTrimestre}   |   ANO: ${descAno}   |   MF: ${confirmacoesList.length} (M: ${totalM} F: ${totalF})`, { align: 'center' });
+      doc.moveDown();
+
+      // Dynamic Grid
+      const allDisciplinesSet = new Set();
+      for (const info of Object.values(pautaData.pauta)) {
+        if (info.disciplinas) {
+          info.disciplinas.forEach(d => allDisciplinesSet.add(d.disciplina));
+        }
+      }
+      const disciplines = Array.from(allDisciplinesSet).sort();
+
+      // Setup table header position
+      let startX = 35;
+      let startY = doc.y;
+      
+      doc.fontSize(7);
+      
+      // Draw grid headers
+      doc.text('Nº', startX, startY, { width: 25, align: 'center' });
+      doc.text('PROC', startX + 25, startY, { width: 35, align: 'center' });
+      doc.text('NOME DO ALUNO', startX + 60, startY, { width: 140 });
+
+      let curX = startX + 200;
+      disciplines.forEach(d => {
+        const shortName = d.length > 8 ? d.substring(0, 7) + '.' : d;
+        doc.text(shortName, curX, startY, { width: 42, align: 'center' });
+        curX += 42;
+      });
+
+      doc.text('MÉDIA', curX, startY, { width: 35, align: 'center' });
+      doc.text('OBS', curX + 35, startY, { width: 45, align: 'center' });
+
+      doc.moveDown(0.5);
+      doc.font('Helvetica');
+
+      // Draw rows
+      let index = 1;
+      for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
+        let rowY = doc.y;
+
+        if (rowY > 520) {
+          doc.addPage();
+          rowY = 40;
+          doc.font('Helvetica-Bold');
+          doc.text('Nº', startX, rowY, { width: 25, align: 'center' });
+          doc.text('PROC', startX + 25, rowY, { width: 35, align: 'center' });
+          doc.text('NOME DO ALUNO', startX + 60, rowY, { width: 140 });
+
+          let tempX = startX + 200;
+          disciplines.forEach(d => {
+            const shortName = d.length > 8 ? d.substring(0, 7) + '.' : d;
+            doc.text(shortName, tempX, rowY, { width: 42, align: 'center' });
+            tempX += 42;
+          });
+
+          doc.text('MÉDIA', tempX, rowY, { width: 35, align: 'center' });
+          doc.text('OBS', tempX + 35, rowY, { width: 45, align: 'center' });
+
+          doc.font('Helvetica');
+          doc.moveDown(0.5);
+          rowY = doc.y;
+        }
+
+        const alunoNome = (info.aluno?.nome || 'N/A').toUpperCase();
+        const alunoProc = info.aluno?.codigo?.toString() || alunoId;
+
+        doc.text(index.toString(), startX, rowY, { width: 25, align: 'center' });
+        doc.text(alunoProc, startX + 25, rowY, { width: 35, align: 'center' });
+        doc.text(alunoNome, startX + 60, rowY, { width: 140 });
+
+        let valX = startX + 200;
+        let sumGrades = 0;
+        let countGrades = 0;
+
+        disciplines.forEach(dName => {
+          const dObj = info.disciplinas?.find(d => d.disciplina === dName);
+          if (dObj && dObj.nota !== undefined && dObj.nota !== null) {
+            const notaVal = dObj.nota;
+            doc.fillColor(notaVal >= 10 ? 'green' : 'red');
+            doc.text(notaVal.toFixed(1), valX, rowY, { width: 42, align: 'center' });
+            sumGrades += notaVal;
+            countGrades++;
+          } else {
+            doc.fillColor('black');
+            doc.text('-', valX, rowY, { width: 42, align: 'center' });
+          }
+          valX += 42;
+        });
+
+        doc.fillColor('black');
+        const media = countGrades > 0 ? sumGrades / countGrades : 0;
+        if (countGrades > 0) {
+          doc.font('Helvetica-Bold');
+          doc.fillColor(media >= 10 ? 'green' : 'red');
+          doc.text(media.toFixed(2), valX, rowY, { width: 35, align: 'center' });
+          doc.fillColor(media >= 10 ? 'blue' : 'red');
+          doc.text(media >= 10 ? 'TRANS' : 'N/TRAN', valX + 35, rowY, { width: 45, align: 'center' });
+          doc.font('Helvetica');
+        } else {
+          doc.text('-', valX, rowY, { width: 35, align: 'center' });
+          doc.text('-', valX + 35, rowY, { width: 45, align: 'center' });
+        }
+
+        doc.fillColor('black');
+        doc.moveDown(0.6);
+        index++;
+      }
+
+      doc.end();
+    });
   }
 
   static async exportPautaExcel(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
     const pautaData = await this.generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo);
-    const ExcelJS = (await import('exceljs')).default;
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Pauta');
-    // Header rows
-    sheet.addRow(['Pauta de Turma']);
-    sheet.addRow([`Turma: ${pautaData.turma}`, `Trimestre: ${pautaData.trimestre}`, `Ano Lectivo: ${pautaData.anoLectivo}`]);
-    sheet.addRow([]);
-    // Table header
-    sheet.addRow(['Aluno', 'Disciplina', 'Nota']);
-    // Data rows
-    for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
-      const alunoNome = info.aluno?.nome || 'N/A';
-      if (info.disciplinas && info.disciplinas.length) {
-        for (const d of info.disciplinas) {
-          sheet.addRow([alunoNome, d.disciplina, d.nota !== undefined ? d.nota : '-']);
+    
+    const metadata = await prisma.tb_turmas.findUnique({
+      where: { codigo: parseInt(codigoTurma) },
+      include: {
+        tb_classes: true,
+        tb_cursos: true,
+        tb_periodos: true,
+        tb_ano_lectivo: true
+      }
+    });
+
+    const trimestre = await prisma.tb_trimestres.findUnique({
+      where: { codigo: parseInt(codigoTrimestre) }
+    });
+
+    const descClasse = (metadata?.tb_classes?.designacao || '11ª CLASSE').toUpperCase();
+    const descCurso = (metadata?.tb_cursos?.designacao || '').toUpperCase();
+    const descPeriodo = (metadata?.tb_periodos?.designacao || '').toUpperCase();
+    const descTurma = (metadata?.designacao || '').toUpperCase();
+    const descTrimestre = (trimestre?.designacao || '1º TRIMESTRE').toUpperCase();
+    const descAno = (metadata?.tb_ano_lectivo?.designacao || '').toUpperCase();
+
+    // Gender stats
+    let totalM = 0;
+    let totalF = 0;
+    const confirmacoesList = await prisma.tb_confirmacoes.findMany({
+      where: {
+        codigo_Turma: parseInt(codigoTurma),
+        codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
+      },
+      include: {
+        tb_matriculas: {
+          include: {
+            tb_alunos: { select: { sexo: true } }
+          }
         }
-      } else {
-        sheet.addRow([alunoNome, '-', '-']);
+      }
+    });
+
+    confirmacoesList.forEach(c => {
+      const s = c.tb_matriculas?.tb_alunos?.sexo?.toUpperCase();
+      if (s === 'M' || s?.startsWith('MASC')) {
+        totalM++;
+      } else if (s === 'F' || s?.startsWith('FEM') || s === 'W') {
+        totalF++;
+      }
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('PAUTA');
+
+    // Make grid lines visible!
+    sheet.views = [{ showGridLines: true }];
+
+    // Base Styles
+    const borderStyle = {
+      top: { style: 'thin', color: { argb: 'FF000000' } },
+      left: { style: 'thin', color: { argb: 'FF000000' } },
+      bottom: { style: 'thin', color: { argb: 'FF000000' } },
+      right: { style: 'thin', color: { argb: 'FF000000' } }
+    };
+
+    const headerFill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFF2F2F2' }
+    };
+
+    // Row 4: Logo text
+    sheet.mergeCells('A4:AP4');
+    const titleCell = sheet.getCell('A4');
+    titleCell.value = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
+    titleCell.font = { name: 'Calibri', size: 16, bold: true };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Row 7: Subtitle
+    sheet.mergeCells('A7:AP7');
+    const subtitleCell = sheet.getCell('A7');
+    subtitleCell.value = 'PAUTA DE APROVEITAMENTO ESCOLAR';
+    subtitleCell.font = { name: 'Calibri', size: 14, bold: true };
+    subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Row 8: Area de formacao
+    sheet.mergeCells('A8:AP8');
+    const areaCell = sheet.getCell('A8');
+    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE';
+    areaCell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF0070C0' } };
+    areaCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Row 10: Metadata Block
+    sheet.getCell('C10').value = descClasse;
+    sheet.getCell('C10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+    
+    sheet.getCell('E10').value = `TURMA: ${descTurma}`;
+    sheet.getCell('E10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFC00000' } };
+
+    sheet.mergeCells('I10:P10');
+    const cursoCell = sheet.getCell('I10');
+    cursoCell.value = `CURSO: ${descCurso}`;
+    cursoCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } };
+    cursoCell.alignment = { horizontal: 'center' };
+
+    sheet.getCell('V10').value = `PERÍODO: ${descPeriodo}`;
+    sheet.getCell('V10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+
+    sheet.getCell('AA10').value = descTrimestre;
+    sheet.getCell('AA10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFC00000' } };
+
+    sheet.getCell('AE10').value = `ANO LECTIVO: ${descAno}`;
+    sheet.getCell('AE10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+
+    sheet.getCell('AJ10').value = `MF: ${confirmacoesList.length}`;
+    sheet.getCell('AJ10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+    
+    sheet.getCell('AL10').value = `M: ${totalM}`;
+    sheet.getCell('AL10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+
+    sheet.getCell('AN10').value = `F: ${totalF}`;
+    sheet.getCell('AN10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+
+    // Get unique disciplines
+    const allDisciplinesSet = new Set();
+    for (const info of Object.values(pautaData.pauta)) {
+      if (info.disciplinas) {
+        info.disciplinas.forEach(d => allDisciplinesSet.add(d.disciplina));
       }
     }
-    // Auto width
-    sheet.columns.forEach(col => { col.width = 20; });
+    const disciplines = Array.from(allDisciplinesSet).sort();
+
+    // Setup columns & table headers
+    // Merge cells for A14:A16 (Nº), B14:B16 (Nº PROC), C14:C16 (NOME), D14:D16 (DISCIPLINA A REPETIR)
+    const headerPositions = [
+      { cell: 'A14', val: 'Nº', merge: 'A14:A16' },
+      { cell: 'B14', val: 'Nº PROC', merge: 'B14:B16' },
+      { cell: 'C14', val: 'NOME', merge: 'C14:C16' },
+      { cell: 'D14', val: 'DISCIPLINA A REPETIR', merge: 'D14:D16' }
+    ];
+
+    headerPositions.forEach(hp => {
+      sheet.mergeCells(hp.merge);
+      const c = sheet.getCell(hp.cell);
+      c.value = hp.val;
+      c.font = { name: 'Calibri', size: 10, bold: true };
+      c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      c.fill = headerFill;
+      c.border = borderStyle;
+    });
+
+    // We start adding disciplines at column 5 (E)
+    let colIndex = 5;
+    const disciplineColsMap = {};
+
+    disciplines.forEach(dName => {
+      const colLetter1 = columnToLetter(colIndex);
+      const colLetter2 = columnToLetter(colIndex + 1);
+
+      // Merge horizontally for Discipline name
+      sheet.mergeCells(`${colLetter1}14:${colLetter2}14`);
+      const discCell = sheet.getCell(`${colLetter1}14`);
+      discCell.value = dName.toUpperCase();
+      discCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF005080' } };
+      discCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      discCell.fill = headerFill;
+      discCell.border = borderStyle;
+
+      // Row 15: Column 1 = FALTAS, Column 2 = MT[Trimester]
+      const fCell = sheet.getCell(`${colLetter1}15`);
+      fCell.value = 'FALTAS';
+      fCell.font = { name: 'Calibri', size: 7, bold: true };
+      fCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      fCell.fill = headerFill;
+      fCell.border = borderStyle;
+
+      const gCell = sheet.getCell(`${colLetter2}15`);
+      gCell.value = `MT${codigoTrimestre}º`;
+      gCell.font = { name: 'Calibri', size: 8, bold: true, color: { argb: 'FFC00000' } };
+      gCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      gCell.fill = headerFill;
+      gCell.border = borderStyle;
+
+      // Row 16: Column 1 = / / /, Column 2 = empty
+      const slCell = sheet.getCell(`${colLetter1}16`);
+      slCell.value = '/  /  /';
+      slCell.font = { name: 'Calibri', size: 7, italic: true };
+      slCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      slCell.fill = headerFill;
+      slCell.border = borderStyle;
+
+      const emCell = sheet.getCell(`${colLetter2}16`);
+      emCell.fill = headerFill;
+      emCell.border = borderStyle;
+
+      // Save columns mapping
+      disciplineColsMap[dName] = { faltasCol: colLetter1, gradeCol: colLetter2 };
+
+      colIndex += 2;
+    });
+
+    // Add OBS column after disciplines
+    const obsColLetter = columnToLetter(colIndex);
+    sheet.mergeCells(`${obsColLetter}14:${obsColLetter}16`);
+    const obsCell = sheet.getCell(`${obsColLetter}14`);
+    obsCell.value = 'OBS';
+    obsCell.font = { name: 'Calibri', size: 10, bold: true };
+    obsCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    obsCell.fill = headerFill;
+    obsCell.border = borderStyle;
+
+    // Set row heights
+    sheet.getRow(14).height = 25;
+    sheet.getRow(15).height = 18;
+    sheet.getRow(16).height = 15;
+
+    // Draw students rows starting from Row 17
+    let rowNum = 17;
+    let index = 1;
+
+    for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
+      const row = sheet.getRow(rowNum);
+      row.height = 20;
+
+      const cellA = row.getCell(1);
+      cellA.value = index;
+      cellA.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellA.border = borderStyle;
+
+      const cellB = row.getCell(2);
+      cellB.value = parseInt(info.aluno?.codigo) || index;
+      cellB.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellB.border = borderStyle;
+
+      const cellC = row.getCell(3);
+      cellC.value = (info.aluno?.nome || 'N/A').toUpperCase();
+      cellC.alignment = { horizontal: 'left', vertical: 'middle' };
+      cellC.border = borderStyle;
+
+      // Col D: Disciplina a repetir (leave empty or compute if they have < 10)
+      const repeatDiscs = [];
+      
+      let sumGrades = 0;
+      let countGrades = 0;
+
+      // Populate grades
+      disciplines.forEach(dName => {
+        const dObj = info.disciplinas?.find(d => d.disciplina === dName);
+        const { faltasCol, gradeCol } = disciplineColsMap[dName];
+
+        // Faltas column (always empty or slash)
+        const cellF = row.getCell(faltasCol);
+        cellF.border = borderStyle;
+        cellF.alignment = { horizontal: 'center', vertical: 'middle' };
+
+        // Grade column
+        const cellG = row.getCell(gradeCol);
+        cellG.border = borderStyle;
+        cellG.alignment = { horizontal: 'center', vertical: 'middle' };
+
+        if (dObj && dObj.nota !== undefined && dObj.nota !== null) {
+          const n = dObj.nota;
+          cellG.value = n;
+          cellG.numFmt = '0.0';
+          if (n < 10) {
+            cellG.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
+            repeatDiscs.push(dName.substring(0, 5));
+          } else {
+            cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF000000' } };
+          }
+          sumGrades += n;
+          countGrades++;
+        } else {
+          cellG.value = '-';
+          cellG.alignment = { horizontal: 'center', vertical: 'middle' };
+        }
+      });
+
+      // Repeat list
+      const cellD = row.getCell(4);
+      cellD.value = repeatDiscs.join(', ');
+      cellD.font = { name: 'Calibri', size: 8, italic: true };
+      cellD.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellD.border = borderStyle;
+
+      // OBS Column
+      const cellObs = row.getCell(obsColLetter);
+      cellObs.border = borderStyle;
+      cellObs.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const media = countGrades > 0 ? sumGrades / countGrades : 0;
+      if (countGrades > 0) {
+        if (media >= 10) {
+          cellObs.value = 'TRANS';
+          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } }; // Blue
+        } else {
+          cellObs.value = 'N/TRAN';
+          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
+        }
+      } else {
+        cellObs.value = '-';
+      }
+
+      index++;
+      rowNum++;
+    }
+
+    // Adjust column widths
+    sheet.getColumn('A').width = 4;
+    sheet.getColumn('B').width = 10;
+    sheet.getColumn('C').width = 30;
+    sheet.getColumn('D').width = 16;
+    
+    disciplines.forEach(dName => {
+      const { faltasCol, gradeCol } = disciplineColsMap[dName];
+      sheet.getColumn(faltasCol).width = 7;
+      sheet.getColumn(gradeCol).width = 7;
+    });
+    
+    sheet.getColumn(obsColLetter).width = 10;
+
+    // Apply borders to all empty headers of merged title rows
+    for (let r = 14; r <= 16; r++) {
+      for (let c = 1; c <= colIndex; c++) {
+        const cell = sheet.getRow(r).getCell(c);
+        if (!cell.border) cell.border = borderStyle;
+      }
+    }
+
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer;
   }
+
 
   static async generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
     try {
