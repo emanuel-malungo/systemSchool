@@ -373,22 +373,34 @@ export class GradeManagementService {
       doc.fontSize(7);
       
       // Draw grid headers
-      doc.text('Nº', startX, startY, { width: 25, align: 'center' });
-      doc.text('PROC', startX + 25, startY, { width: 35, align: 'center' });
-      doc.text('NOME DO ALUNO', startX + 60, startY, { width: 140 });
+      doc.text('Nº', startX, startY, { width: 20, align: 'center' });
+      doc.text('PROC', startX + 20, startY, { width: 30, align: 'center' });
+      doc.text('NOME DO ALUNO', startX + 50, startY, { width: 125 });
 
-      let curX = startX + 200;
+      let curX = startX + 175;
       disciplines.forEach(d => {
-        const shortName = d.length > 8 ? d.substring(0, 7) + '.' : d;
-        doc.text(shortName, curX, startY, { width: 42, align: 'center' });
-        curX += 42;
+        const shortName = d.length > 7 ? d.substring(0, 6) + '.' : d;
+        doc.text(shortName, curX, startY, { width: 40, align: 'center' });
+        curX += 40;
       });
 
-      doc.text('MÉDIA', curX, startY, { width: 35, align: 'center' });
-      doc.text('OBS', curX + 35, startY, { width: 45, align: 'center' });
+      doc.text('MÉDIA', curX, startY, { width: 30, align: 'center' });
+      doc.text('OBS', curX + 30, startY, { width: 40, align: 'center' });
+      doc.text('ID.', curX + 70, startY, { width: 20, align: 'center' });
+      doc.text('GEN.', curX + 90, startY, { width: 20, align: 'center' });
 
       doc.moveDown(0.5);
       doc.font('Helvetica');
+
+      // Stats tracking
+      let stats = {
+        matriculados: { m: 0, f: 0 },
+        transita: { m: 0, f: 0 },
+        nTransita: { m: 0, f: 0 },
+        desistidos: { m: 0, f: 0 }
+      };
+      let maxMedia = 0;
+      let melhorAluno = { nome: '-', idade: '-' };
 
       // Draw rows
       let index = 1;
@@ -399,19 +411,21 @@ export class GradeManagementService {
           doc.addPage();
           rowY = 40;
           doc.font('Helvetica-Bold');
-          doc.text('Nº', startX, rowY, { width: 25, align: 'center' });
-          doc.text('PROC', startX + 25, rowY, { width: 35, align: 'center' });
-          doc.text('NOME DO ALUNO', startX + 60, rowY, { width: 140 });
+          doc.text('Nº', startX, rowY, { width: 20, align: 'center' });
+          doc.text('PROC', startX + 20, rowY, { width: 30, align: 'center' });
+          doc.text('NOME DO ALUNO', startX + 50, rowY, { width: 125 });
 
-          let tempX = startX + 200;
+          let tempX = startX + 175;
           disciplines.forEach(d => {
-            const shortName = d.length > 8 ? d.substring(0, 7) + '.' : d;
-            doc.text(shortName, tempX, rowY, { width: 42, align: 'center' });
-            tempX += 42;
+            const shortName = d.length > 7 ? d.substring(0, 6) + '.' : d;
+            doc.text(shortName, tempX, rowY, { width: 40, align: 'center' });
+            tempX += 40;
           });
 
-          doc.text('MÉDIA', tempX, rowY, { width: 35, align: 'center' });
-          doc.text('OBS', tempX + 35, rowY, { width: 45, align: 'center' });
+          doc.text('MÉDIA', tempX, rowY, { width: 30, align: 'center' });
+          doc.text('OBS', tempX + 30, rowY, { width: 40, align: 'center' });
+          doc.text('ID.', tempX + 70, rowY, { width: 20, align: 'center' });
+          doc.text('GEN.', tempX + 90, rowY, { width: 20, align: 'center' });
 
           doc.font('Helvetica');
           doc.moveDown(0.5);
@@ -420,12 +434,30 @@ export class GradeManagementService {
 
         const alunoNome = (info.aluno?.nome || 'N/A').toUpperCase();
         const alunoProc = info.aluno?.codigo?.toString() || alunoId;
+        
+        const birthYear = info.aluno?.dataNascimento ? new Date(info.aluno.dataNascimento).getFullYear() : 0;
+        const currentYear = new Date().getFullYear();
+        const idade = birthYear > 0 ? (currentYear - birthYear).toString() : '-';
+        
+        const generoRaw = info.aluno?.sexo?.toUpperCase() || '';
+        const genero = (generoRaw === 'M' || generoRaw.startsWith('MASC')) ? 'M' : ((generoRaw === 'F' || generoRaw.startsWith('FEM') || generoRaw === 'W') ? 'F' : '-');
+        
+        const isM = genero === 'M';
+        const isF = genero === 'F';
+        const isDesistente = info.aluno?.codigo_Status !== 1;
 
-        doc.text(index.toString(), startX, rowY, { width: 25, align: 'center' });
-        doc.text(alunoProc, startX + 25, rowY, { width: 35, align: 'center' });
-        doc.text(alunoNome, startX + 60, rowY, { width: 140 });
+        if (isM) stats.matriculados.m++;
+        if (isF) stats.matriculados.f++;
+        if (isDesistente) {
+          if (isM) stats.desistidos.m++;
+          if (isF) stats.desistidos.f++;
+        }
 
-        let valX = startX + 200;
+        doc.text(index.toString(), startX, rowY, { width: 20, align: 'center' });
+        doc.text(alunoProc, startX + 20, rowY, { width: 30, align: 'center' });
+        doc.text(alunoNome, startX + 50, rowY, { width: 125 });
+
+        let valX = startX + 175;
         let sumGrades = 0;
         let countGrades = 0;
 
@@ -434,34 +466,124 @@ export class GradeManagementService {
           if (dObj && dObj.nota !== undefined && dObj.nota !== null) {
             const notaVal = dObj.nota;
             doc.fillColor(notaVal >= 10 ? 'green' : 'red');
-            doc.text(notaVal.toFixed(1), valX, rowY, { width: 42, align: 'center' });
+            doc.text(notaVal.toFixed(1), valX, rowY, { width: 40, align: 'center' });
             sumGrades += notaVal;
             countGrades++;
           } else {
             doc.fillColor('black');
-            doc.text('-', valX, rowY, { width: 42, align: 'center' });
+            doc.text('-', valX, rowY, { width: 40, align: 'center' });
           }
-          valX += 42;
+          valX += 40;
         });
 
         doc.fillColor('black');
         const media = countGrades > 0 ? sumGrades / countGrades : 0;
         if (countGrades > 0) {
           doc.font('Helvetica-Bold');
-          doc.fillColor(media >= 10 ? 'green' : 'red');
-          doc.text(media.toFixed(2), valX, rowY, { width: 35, align: 'center' });
-          doc.fillColor(media >= 10 ? 'blue' : 'red');
-          doc.text(media >= 10 ? 'TRANS' : 'N/TRAN', valX + 35, rowY, { width: 45, align: 'center' });
+          doc.fillColor(media < 10 ? 'red' : 'black');
+          doc.text(media.toFixed(2), valX, rowY, { width: 30, align: 'center' });
+
+          if (!isDesistente) {
+            doc.fillColor(media >= 10 ? 'blue' : 'red');
+            doc.text(media >= 10 ? 'TRANS' : 'N/TRAN', valX + 30, rowY, { width: 40, align: 'center' });
+            
+            if (media >= 10) {
+              if (isM) stats.transita.m++;
+              if (isF) stats.transita.f++;
+            } else {
+              if (isM) stats.nTransita.m++;
+              if (isF) stats.nTransita.f++;
+            }
+
+            if (media > maxMedia) {
+              maxMedia = media;
+              melhorAluno = { nome: alunoNome, idade: idade };
+            }
+          } else {
+            doc.fillColor('black');
+            doc.font('Helvetica-Oblique');
+            doc.text('DESIST.', valX + 30, rowY, { width: 40, align: 'center' });
+          }
           doc.font('Helvetica');
         } else {
-          doc.text('-', valX, rowY, { width: 35, align: 'center' });
-          doc.text('-', valX + 35, rowY, { width: 45, align: 'center' });
+          doc.text('-', valX, rowY, { width: 30, align: 'center' });
+          doc.font(isDesistente ? 'Helvetica-Oblique' : 'Helvetica');
+          doc.text(isDesistente ? 'DESIST.' : '-', valX + 30, rowY, { width: 40, align: 'center' });
+          doc.font('Helvetica');
         }
+
+        doc.fillColor('black');
+        doc.text(idade, valX + 70, rowY, { width: 20, align: 'center' });
+        doc.text(genero, valX + 90, rowY, { width: 20, align: 'center' });
 
         doc.fillColor('black');
         doc.moveDown(0.6);
         index++;
       }
+
+      // Check if there is space for stats and signatures (approx 150pt needed)
+      if (doc.y > 400) {
+        doc.addPage();
+      } else {
+        doc.moveDown(2);
+      }
+
+      const statY = doc.y;
+      
+      // Draw Stats Block
+      doc.font('Helvetica-Bold').fontSize(9);
+      doc.text('DADOS ESTATÍSTICOS', startX, statY);
+      doc.moveDown(0.5);
+      const ty = doc.y;
+
+      doc.text('M', startX + 100, ty);
+      doc.text('F', startX + 130, ty);
+      doc.text('SOMA', startX + 160, ty);
+      
+      doc.font('Helvetica').fontSize(8);
+      const statRowsData = [
+        { label: 'MATRICULADOS', m: stats.matriculados.m, f: stats.matriculados.f },
+        { label: 'TRANSITA', m: stats.transita.m, f: stats.transita.f },
+        { label: 'N/TRANSITA', m: stats.nTransita.m, f: stats.nTransita.f },
+        { label: 'DESISTIDO/A', m: stats.desistidos.m, f: stats.desistidos.f }
+      ];
+
+      let ry = ty + 15;
+      statRowsData.forEach(sr => {
+        doc.text(sr.label, startX, ry);
+        doc.text(sr.m.toString(), startX + 100, ry);
+        doc.text(sr.f.toString(), startX + 130, ry);
+        doc.text((sr.m + sr.f).toString(), startX + 160, ry);
+        ry += 15;
+      });
+
+      // Melhor Aluno Box
+      doc.font('Helvetica-Bold').fontSize(9);
+      doc.text(`MÁXIMA: ${maxMedia.toFixed(1)}`, startX + 220, ty);
+      doc.font('Helvetica').fontSize(8);
+      doc.text(`NOME DO/A ALUNO/A: ${melhorAluno.nome}`, startX + 220, ty + 15);
+      doc.text(`IDADE: ${melhorAluno.idade}`, startX + 220, ty + 30);
+
+      // Signatures
+      doc.moveDown(3);
+      const sigY = Math.max(ry + 30, doc.y);
+      
+      const sig1X = startX + 50;
+      const sig2X = startX + 450;
+
+      doc.font('Helvetica-Bold').fontSize(10);
+      doc.text(`DATA DO CONSELHO DE TURMA ___ / ___ / ${new Date().getFullYear()}`, startX, sigY);
+      
+      doc.text('A Directora da Turma', sig1X, sigY + 40, { width: 200, align: 'center' });
+      doc.text('__________________________________________', sig1X, sigY + 70, { width: 200, align: 'center' });
+      doc.font('Helvetica').fontSize(9);
+      doc.text(pautaData.directorTurma?.tb_docente?.nome || '', sig1X, sigY + 85, { width: 200, align: 'center' });
+
+      doc.font('Helvetica-Bold').fontSize(10);
+      doc.text('O Subdirector Pedagógico', sig2X, sigY + 40, { width: 200, align: 'center' });
+      doc.text('__________________________________________', sig2X, sigY + 70, { width: 200, align: 'center' });
+      doc.font('Helvetica').fontSize(9);
+      doc.text(pautaData.instituicao?.subDirector || '', sig2X, sigY + 85, { width: 200, align: 'center' });
 
       doc.end();
     });
@@ -669,18 +791,42 @@ export class GradeManagementService {
 
     // Add OBS column after disciplines
     const obsColLetter = columnToLetter(colIndex);
-    sheet.mergeCells(`${obsColLetter}14:${obsColLetter}16`);
-    const obsCell = sheet.getCell(`${obsColLetter}14`);
-    obsCell.value = 'OBS';
-    obsCell.font = { name: 'Calibri', size: 10, bold: true };
-    obsCell.alignment = { horizontal: 'center', vertical: 'middle' };
-    obsCell.fill = headerFill;
-    obsCell.border = borderStyle;
+    const mediaColLetter = columnToLetter(colIndex + 1);
+    const idadeColLetter = columnToLetter(colIndex + 2);
+    const generoColLetter = columnToLetter(colIndex + 3);
+    colIndex += 3; // Update colIndex for the new columns
+
+    const extraCols = [
+      { letter: obsColLetter, val: 'OBS' },
+      { letter: mediaColLetter, val: 'MÉDIA' },
+      { letter: idadeColLetter, val: 'Idade' },
+      { letter: generoColLetter, val: 'Género' }
+    ];
+
+    extraCols.forEach(col => {
+      sheet.mergeCells(`${col.letter}14:${col.letter}16`);
+      const cell = sheet.getCell(`${col.letter}14`);
+      cell.value = col.val;
+      cell.font = { name: 'Calibri', size: 10, bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle', textRotation: col.val === 'Idade' || col.val === 'Género' ? 90 : 0 };
+      cell.fill = headerFill;
+      cell.border = borderStyle;
+    });
 
     // Set row heights
     sheet.getRow(14).height = 25;
     sheet.getRow(15).height = 18;
     sheet.getRow(16).height = 15;
+
+    // Track statistics
+    let stats = {
+      matriculados: { m: 0, f: 0 },
+      transita: { m: 0, f: 0 },
+      nTransita: { m: 0, f: 0 },
+      desistidos: { m: 0, f: 0 }
+    };
+    let maxMedia = 0;
+    let melhorAluno = { nome: '-', idade: '-' };
 
     // Draw students rows starting from Row 17
     let rowNum = 17;
@@ -751,22 +897,71 @@ export class GradeManagementService {
       cellD.alignment = { horizontal: 'center', vertical: 'middle' };
       cellD.border = borderStyle;
 
-      // OBS Column
+      // Calculate Idade and Genero
+      const birthYear = info.aluno?.dataNascimento ? new Date(info.aluno.dataNascimento).getFullYear() : 0;
+      const currentYear = new Date().getFullYear();
+      const idade = birthYear > 0 ? currentYear - birthYear : '-';
+      const generoRaw = info.aluno?.sexo?.toUpperCase() || '';
+      const genero = (generoRaw === 'M' || generoRaw.startsWith('MASC')) ? 'M' : ((generoRaw === 'F' || generoRaw.startsWith('FEM') || generoRaw === 'W') ? 'F' : '-');
+      const isM = genero === 'M';
+      const isF = genero === 'F';
+      const isDesistente = info.aluno?.codigo_Status !== 1;
+
+      if (isM) stats.matriculados.m++;
+      if (isF) stats.matriculados.f++;
+
+      if (isDesistente) {
+        if (isM) stats.desistidos.m++;
+        if (isF) stats.desistidos.f++;
+      }
+
+      // OBS Column and MÉDIA Column
       const cellObs = row.getCell(obsColLetter);
       cellObs.border = borderStyle;
       cellObs.alignment = { horizontal: 'center', vertical: 'middle' };
 
+      const cellMedia = row.getCell(mediaColLetter);
+      cellMedia.border = borderStyle;
+      cellMedia.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const cellIdade = row.getCell(idadeColLetter);
+      cellIdade.border = borderStyle;
+      cellIdade.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellIdade.value = idade;
+
+      const cellGenero = row.getCell(generoColLetter);
+      cellGenero.border = borderStyle;
+      cellGenero.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellGenero.value = genero;
+
       const media = countGrades > 0 ? sumGrades / countGrades : 0;
       if (countGrades > 0) {
-        if (media >= 10) {
-          cellObs.value = 'TRANS';
-          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } }; // Blue
-        } else {
-          cellObs.value = 'N/TRAN';
-          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
+        cellMedia.value = media;
+        cellMedia.numFmt = '0.0';
+        cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF000000' } };
+
+        if (!isDesistente) {
+          if (media >= 10) {
+            cellObs.value = 'TRANS';
+            cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } }; // Blue
+            if (isM) stats.transita.m++;
+            if (isF) stats.transita.f++;
+          } else {
+            cellObs.value = 'N/TRAN';
+            cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
+            if (isM) stats.nTransita.m++;
+            if (isF) stats.nTransita.f++;
+          }
+
+          if (media > maxMedia) {
+            maxMedia = media;
+            melhorAluno = { nome: info.aluno?.nome || '', idade: idade };
+          }
         }
       } else {
-        cellObs.value = '-';
+        cellObs.value = isDesistente ? 'DESIST.' : '-';
+        if (isDesistente) cellObs.font = { name: 'Calibri', size: 9, bold: true, italic: true };
+        cellMedia.value = '-';
       }
 
       index++;
@@ -786,6 +981,150 @@ export class GradeManagementService {
     });
     
     sheet.getColumn(obsColLetter).width = 10;
+    sheet.getColumn(mediaColLetter).width = 9;
+    sheet.getColumn(idadeColLetter).width = 7;
+    sheet.getColumn(generoColLetter).width = 8;
+
+    // DADOS ESTATÍSTICOS BLOCK
+    const statsStartColIndex = colIndex + 2;
+    const statsStartCol = columnToLetter(statsStartColIndex);
+    const statsEndCol = columnToLetter(statsStartColIndex + 5);
+
+    // Title
+    sheet.mergeCells(`${statsStartCol}17:${statsEndCol}17`);
+    const statTitle = sheet.getCell(`${statsStartCol}17`);
+    statTitle.value = 'DADOS ESTATÍSTICOS';
+    statTitle.font = { name: 'Calibri', size: 11, bold: true };
+    statTitle.alignment = { horizontal: 'center', vertical: 'middle' };
+    statTitle.fill = headerFill;
+    statTitle.border = borderStyle;
+
+    // Headers
+    const labels = ['', 'M', 'F', 'SOMA'];
+    labels.forEach((val, i) => {
+      const cLetter = columnToLetter(statsStartColIndex + (i === 0 ? 0 : i + 1));
+      if (i === 0) {
+        sheet.mergeCells(`${cLetter}18:${columnToLetter(statsStartColIndex + 1)}18`);
+      }
+      const targetCol = i === 0 ? cLetter : columnToLetter(statsStartColIndex + i + 1);
+      const c = sheet.getCell(`${targetCol}18`);
+      c.value = val;
+      c.font = { name: 'Calibri', size: 10, bold: true };
+      c.alignment = { horizontal: 'center', vertical: 'middle' };
+      c.border = borderStyle;
+      if (i > 0) c.fill = headerFill;
+    });
+
+    const statRowsData = [
+      { label: 'MATRICULADOS', m: stats.matriculados.m, f: stats.matriculados.f },
+      { label: 'TRANSITA', m: stats.transita.m, f: stats.transita.f },
+      { label: 'N/TRANSITA', m: stats.nTransita.m, f: stats.nTransita.f },
+      { label: 'DESISTIDO/A', m: stats.desistidos.m, f: stats.desistidos.f }
+    ];
+
+    let sr = 19;
+    statRowsData.forEach(sData => {
+      sheet.mergeCells(`${statsStartCol}${sr}:${columnToLetter(statsStartColIndex + 1)}${sr}`);
+      const lCell = sheet.getCell(`${statsStartCol}${sr}`);
+      lCell.value = sData.label;
+      lCell.font = { name: 'Calibri', size: 10, bold: true };
+      lCell.border = borderStyle;
+
+      const mCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 2)}${sr}`);
+      mCell.value = sData.m;
+      mCell.border = borderStyle;
+      mCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const fCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 3)}${sr}`);
+      fCell.value = sData.f;
+      fCell.border = borderStyle;
+      fCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      const somaCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 4)}${sr}`);
+      somaCell.value = sData.m + sData.f;
+      somaCell.border = borderStyle;
+      somaCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      somaCell.fill = headerFill;
+      sr++;
+    });
+
+    // MÁXIMA ALUNO BLOCK
+    sr++;
+    const maxBoxStartCol = columnToLetter(statsStartColIndex + 1);
+    const maxBoxEndCol = columnToLetter(statsStartColIndex + 4);
+
+    sheet.mergeCells(`${maxBoxStartCol}${sr}:${columnToLetter(statsStartColIndex + 2)}${sr}`);
+    const lblMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
+    lblMax.value = 'MÁXIMA';
+    lblMax.font = { name: 'Calibri', size: 10, bold: true };
+    lblMax.border = borderStyle;
+
+    sheet.mergeCells(`${columnToLetter(statsStartColIndex + 3)}${sr}:${maxBoxEndCol}${sr}`);
+    const valMax = sheet.getCell(`${columnToLetter(statsStartColIndex + 3)}${sr}`);
+    valMax.value = maxMedia.toFixed(1);
+    valMax.font = { name: 'Calibri', size: 10, bold: true };
+    valMax.border = borderStyle;
+    valMax.alignment = { horizontal: 'center', vertical: 'middle' };
+    sr++;
+
+    sheet.mergeCells(`${maxBoxStartCol}${sr}:${maxBoxEndCol}${sr}`);
+    const nomeMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
+    nomeMax.value = `NOME DO/A ALUNO/A: ${melhorAluno.nome}`;
+    nomeMax.font = { name: 'Calibri', size: 9 };
+    nomeMax.border = borderStyle;
+    sr++;
+
+    sheet.mergeCells(`${maxBoxStartCol}${sr}:${maxBoxEndCol}${sr}`);
+    const idadeMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
+    idadeMax.value = `IDADE: ${melhorAluno.idade}`;
+    idadeMax.font = { name: 'Calibri', size: 9 };
+    idadeMax.border = borderStyle;
+
+    // ASSINATURAS E DATA
+    let footRow = Math.max(rowNum + 4, sr + 2);
+    sheet.mergeCells(`B${footRow}:F${footRow}`);
+    const dataCell = sheet.getCell(`B${footRow}`);
+    dataCell.value = `DATA DO CONSELHO DE TURMA ___ / ___ / ${new Date().getFullYear()}`;
+    dataCell.font = { name: 'Calibri', size: 11, bold: true };
+
+    footRow += 4;
+    sheet.mergeCells(`C${footRow}:I${footRow}`);
+    const dirTurmaCell = sheet.getCell(`C${footRow}`);
+    dirTurmaCell.value = 'A Directora da Turma';
+    dirTurmaCell.font = { name: 'Calibri', size: 11, bold: true };
+    dirTurmaCell.alignment = { horizontal: 'center' };
+
+    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
+    const subDirCell = sheet.getCell(`${statsStartCol}${footRow}`);
+    subDirCell.value = 'O Subdirector Pedagógico';
+    subDirCell.font = { name: 'Calibri', size: 11, bold: true };
+    subDirCell.alignment = { horizontal: 'center' };
+
+    footRow++;
+    sheet.mergeCells(`C${footRow}:I${footRow}`);
+    const dirTurmaLine = sheet.getCell(`C${footRow}`);
+    dirTurmaLine.value = '__________________________________________';
+    dirTurmaLine.alignment = { horizontal: 'center' };
+
+    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
+    const subDirLine = sheet.getCell(`${statsStartCol}${footRow}`);
+    subDirLine.value = '__________________________________________';
+    subDirLine.alignment = { horizontal: 'center' };
+
+    footRow++;
+    const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || '';
+    sheet.mergeCells(`C${footRow}:I${footRow}`);
+    const dirTurmaNameCell = sheet.getCell(`C${footRow}`);
+    dirTurmaNameCell.value = nomeDirTurma;
+    dirTurmaNameCell.font = { name: 'Calibri', size: 10 };
+    dirTurmaNameCell.alignment = { horizontal: 'center' };
+
+    const nomeSubdir = pautaData.instituicao?.subDirector || '';
+    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
+    const subDirNameCell = sheet.getCell(`${statsStartCol}${footRow}`);
+    subDirNameCell.value = nomeSubdir;
+    subDirNameCell.font = { name: 'Calibri', size: 10 };
+    subDirNameCell.alignment = { horizontal: 'center' };
 
     // Apply borders to all empty headers of merged title rows
     for (let r = 14; r <= 16; r++) {
@@ -802,6 +1141,19 @@ export class GradeManagementService {
 
   static async generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
     try {
+      // Step 0: Buscar dados institucionais e director de turma
+      const instituicao = await prisma.tb_dados_instituicao.findFirst();
+      const directorTurma = await prisma.tb_directores_turmas.findFirst({
+        where: { codigoTurma: parseInt(codigoTurma), codigoAnoLectivo: parseInt(codigoAnoLectivo) },
+        include: { tb_docente: { select: { nome: true } } }
+      });
+      const turmaObj = await prisma.tb_turmas.findUnique({ 
+        where: { codigo: parseInt(codigoTurma) },
+        include: { tb_classes: true, tb_cursos: true, tb_periodos: true }
+      });
+      const trimestreObj = await prisma.tb_trimestres.findUnique({ where: { codigo: parseInt(codigoTrimestre) } });
+      const anoLetivoObj = await prisma.tb_ano_lectivo.findUnique({ where: { codigo: parseInt(codigoAnoLectivo) } });
+
       // Step 1: Buscar todos os alunos confirmados nesta turma e ano letivo
       const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
@@ -811,7 +1163,7 @@ export class GradeManagementService {
         include: {
           tb_matriculas: {
             include: {
-              tb_alunos: { select: { codigo: true, nome: true } }
+              tb_alunos: { select: { codigo: true, nome: true, sexo: true, dataNascimento: true, codigo_Status: true } }
             }
           }
         }
@@ -867,6 +1219,11 @@ export class GradeManagementService {
 
       return {
         turma: parseInt(codigoTurma),
+        turmaObj,
+        trimestreObj,
+        anoLetivoObj,
+        instituicao,
+        directorTurma,
         trimestre: parseInt(codigoTrimestre),
         anoLectivo: parseInt(codigoAnoLectivo),
         totalAlunos: confirmacoes.length,

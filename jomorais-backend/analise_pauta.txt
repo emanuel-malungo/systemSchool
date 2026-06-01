@@ -1,0 +1,66 @@
+ANÁLISE DETALHADA: MODELO OFICIAL DE PAUTA vs SISTEMA ACTUAL
+
+Com base nas imagens e no documento oficial da instituição ("11CL - AC-A-VESP.xlsx") que servem de modelo para as pautas do 1º e 2º trimestre (Curso de Análises Clínicas), foi feita uma análise rigorosa da estrutura visual, dos dados apresentados e do que o sistema Jomorais actualmente consegue fornecer versus o que falta implementar para atingir 100% de conformidade.
+
+================================================================================
+1. O QUE O SISTEMA ACTUALMENTE FORNECE E FAZ BEM (JÁ IMPLEMENTADO)
+================================================================================
+- Estrutura Matricial Básica: O sistema consegue listar os alunos nas linhas e as disciplinas nas colunas dinamicamente.
+- Cálculo de Médias: O sistema consegue calcular a média por disciplina (quando aplicável) e usar isso para ditar o estado do aluno.
+- OBS Básica: Consegue ditar "TRANSITA" (azul) ou "N/TRANSITA" (vermelho) baseado na nota.
+- Identificação do Aluno: Mostra o Nº (índice), Nº PROC (código do aluno) e NOME.
+- Cabeçalho Superior: Já conseguimos buscar os metadados da turma (Classe, Curso, Período, Trimestre, Ano Lectivo) e o logo/título da instituição.
+
+================================================================================
+2. DADOS E COLUNAS QUE ESTÃO NO MODELO MAS FALTAM NO SISTEMA (A ADICIONAR)
+================================================================================
+Analisando a estrutura da grelha de notas (linhas 14 a 16 e seguintes):
+
+A. Sub-Colunas de Disciplina Exactas:
+   No modelo oficial, CADA disciplina ocupa exactamente DUAS sub-colunas:
+   1ª Coluna: "FALTAS" (na linha 15) com o preenchimento "/ / /" (na linha 16). O sistema precisa gerar esta coluna vazia/com barras para preenchimento manual ou ir buscar as faltas reais caso estejam registadas na BD (`tb_faltas`).
+   2ª Coluna: "MT2º" (Média Trimestral do 2º Trimestre) - Esta é a coluna onde a nota final do trimestre entra. Actualmente o sistema mapeia a nota, mas o cabeçalho deve ser dinâmico (MT1º, MT2º, MT3º dependendo do filtro).
+
+B. Colunas de Informação Extra do Aluno (Lado Direito):
+   Após a última disciplina e a coluna "OBS", o modelo oficial exige:
+   1. Coluna "MÉDIA": A média geral do aluno naquele trimestre (aritmética de todas as notas).
+   2. Coluna "Idade": A idade do aluno. O sistema precisa calcular isto a partir da `DataNascimento` na tabela `tb_alunos`.
+   3. Coluna "Género": "M" ou "F". O sistema precisa extrair isto da tabela `tb_alunos` (coluna `sexo`) e exibir na grelha.
+
+C. Coluna "DISCIPLINA A REPETIR":
+   Logo após o NOME, existe a coluna "DISCIPLINA A REPETIR". Para o 1º e 2º Trimestre, isto pode ser baseado nas disciplinas onde o aluno teve nota < 10, mas oficialmente as "cadeiras em atraso" ou "recursos" devem vir do histórico escolar do aluno. O sistema precisa de uma lógica para listar as siglas das disciplinas reprovadas.
+
+================================================================================
+3. BLOCOS ESTATÍSTICOS E ASSINATURAS (FALTAM COMPLETAMENTE NO EXCEL)
+================================================================================
+Observando as imagens (especialmente a imagem 2), existe um bloco robusto de "DADOS ESTATÍSTICOS" no lado direito da pauta (nas colunas AM a AR, aproximadamente) que o sistema NÃO GERA:
+
+A. Quadro de Estatísticas por Género:
+   - MATRICULADOS: Total M, Total F, e Soma.
+   - TRANSITA: Total M, Total F, e Soma.
+   - N/TRANSITA: Total M, Total F, e Soma.
+   - DESISTIDO/A: Total M, Total F, e Soma. (O sistema precisa filtrar alunos cujo estado seja "Desistente" / "Anulado").
+
+B. Quadro de Nota Máxima (Destaque do Trimestre):
+   - MÁXIMA: O valor da maior Média Geral (ex: 17,0).
+   - NOME DO/A ALUNO/A: O nome do aluno que obteve essa média.
+   - IDADE: A idade desse aluno.
+
+C. Rodapé e Assinaturas (Linhas 61+):
+   - "DATA DO CONSELHO DE TURMA ___ / ___ / 2026"
+   - Espaço para assinatura: "A Directora da Turma" (Nome do director associado à turma na `tb_directores_turmas`).
+   - Espaço para assinatura: "O Subdirector Pedagógico" (Nome do subdirector da instituição `tb_dados_instituicao`).
+   - Espaço para assinatura (Topo Esquerdo): "O Director do Instituto" (Nome do director `tb_dados_instituicao`).
+
+================================================================================
+4. RESUMO DA VIABILIDADE DE IMPLEMENTAÇÃO
+================================================================================
+É 100% POSSÍVEL o sistema gerar um Excel exactamente igual ao modelo oficial. Para isso, será necessário:
+
+1. Modificar o serviço `exportPautaExcel` para incluir as colunas "MÉDIA", "Idade" e "Género".
+2. Calcular a idade usando `DataNascimento`.
+3. Criar a lógica para desenhar a tabela de "DADOS ESTATÍSTICOS" usando o `exceljs`, fundindo as células na lateral direita da folha.
+4. Identificar o "Melhor Aluno" (Nota Máxima) durante o loop de processamento das notas e desenhar a respectiva caixa.
+5. Inserir os nomes do Director da Turma, Director Geral e Subdirector (pesquisando nas tabelas `tb_directores_turmas` e `tb_dados_instituicao`) no rodapé da folha de Excel.
+
+Este documento serve como mapa para a próxima actualização profunda do gerador de Excel/PDF.
