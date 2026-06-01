@@ -112,9 +112,17 @@ export class UsersServices {
         throw new AppError("Tipo de usuário não encontrado", 400);
       }
 
+      // Obter o próximo código (ID) manual para tb_utilizadores
+      const maxUtilizador = await prisma.tb_utilizadores.findFirst({
+        orderBy: { codigo: 'desc' },
+        select: { codigo: true }
+      });
+      const proximoCodigo = maxUtilizador ? maxUtilizador.codigo + 1 : 1;
+
       // Criar o usuário
       const user = await prisma.tb_utilizadores.create({
         data: {
+          codigo: proximoCodigo,
           nome: userData.nome,
           user: userData.user,
           passe: userData.passe, // Em produção, deve ser hasheada

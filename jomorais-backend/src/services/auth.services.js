@@ -169,9 +169,17 @@ export class AuthService {
     // Hash da senha usando MD5 para compatibilidade com sistema legado
     const hashedPassword = hashLegacyPassword(passe);
 
+    // Obter o próximo código (ID) manual para tb_utilizadores
+    const maxUtilizador = await prisma.tb_utilizadores.findFirst({
+      orderBy: { codigo: 'desc' },
+      select: { codigo: true }
+    });
+    const proximoCodigo = maxUtilizador ? maxUtilizador.codigo + 1 : 1;
+
     // Criar usuário legado
     const user = await prisma.tb_utilizadores.create({
       data: {
+        codigo: proximoCodigo,
         nome,
         user: username,
         passe: hashedPassword,
