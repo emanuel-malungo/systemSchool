@@ -293,10 +293,11 @@ export class GradeManagementService {
           }
         }
       });
-
       if (confirmacoes.length === 0) {
-        throw new AppError('Nenhum aluno confirmado para esta turma e ano letivo', 404);
+        throw new AppError('Nenhum aluno confirmado para esta turma e ano letivo', 400);
       }
+
+
 
       // Step 2: Para cada aluno, buscar suas notas no trimestre
       const pautaPorAluno = {};
