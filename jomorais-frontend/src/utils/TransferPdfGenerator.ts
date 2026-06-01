@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf'
+import icon from "../assets/images/icon.png"
 
 export interface ITransferPdfData {
   transferencia: {
@@ -217,23 +218,12 @@ export class TransferPdfGenerator {
     const logoY = y
     const logoSize = 22
 
-    // Desenhar escudo simulado (círculo verde + contorno)
-    doc.setFillColor(34, 120, 34)
-    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 'F')
-    doc.setFillColor(255, 200, 0)
-    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2 - 3, 'F')
-    doc.setFillColor(34, 120, 34)
-    doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2 - 5, 'F')
-    // Texto "ITPS" dentro do logo
-    doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(5)
-    doc.setTextColor(255, 255, 255)
-    doc.text('ITPS', logoX + logoSize / 2, logoY + logoSize / 2 + 1, { align: 'center' })
-    doc.setTextColor(0, 0, 0)
+    // Desenhar escudo simulado (círculo verde + contorno) coloque a logo import icon from "../assets/images/icon.png"
+    doc.addImage(icon, 'PNG', logoX, logoY, logoSize, logoSize)
 
     // Nome da instituição alinhado verticalmente ao centro do logo
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
-    doc.setFont('Helvetica', 'bold')
+    doc.setFont('Agency FB', 'bold')
     doc.setFontSize(13)
     const textX = logoX + logoSize + 5
     doc.text(instNome, textX, logoY + logoSize / 2 + 2)
@@ -254,7 +244,7 @@ export class TransferPdfGenerator {
     const sigla = 'DCITPSJM'
     const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
 
-    doc.setFont('Helvetica', 'bold')
+    doc.setFont('Comic Sans MS', 'bold')
     doc.setFontSize(13)
     const tituloWidth = (doc.getStringUnitWidth(titulo) * 13) / doc.internal.scaleFactor
     const tituloX = (pageWidth - tituloWidth) / 2
@@ -294,7 +284,7 @@ export class TransferPdfGenerator {
     const p1: Array<{ text: string; bold: boolean; underline?: boolean }> = [
       { text: 'Para os fins julgados convenientes e conforme solicitado pelo (a) Encarregado (a) da educação, é transferido o aluno ', bold: false },
       { text: nomeAluno + ',', bold: true },
-      { text: ` da ${classe}ª Classe, n.º`, bold: false },
+      { text: ` da ${classe}ª Classe, nº.`, bold: false },
       { text: numTurma + ',', bold: true },
       { text: ' turma: ', bold: false },
       { text: letraTurma + ',', bold: true },
@@ -361,11 +351,10 @@ export class TransferPdfGenerator {
     y += 10
 
     // ── DATA E LOCAL ─────────────────────────────────────────────────────────
-    const cidade = 'Cabinda'
     const dataDoc = this.formatDateLong(transferencia.dataTransferencia)
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(11)
-    doc.text(`${cidade}, ${dataDoc}.`, marginL, y)
+    doc.text(`${instNome}, ${dataDoc}. –`, marginL, y)
     y += 20
 
     // ── ASSINATURA ───────────────────────────────────────────────────────────
@@ -388,15 +377,17 @@ export class TransferPdfGenerator {
     // ── RODAPÉ ───────────────────────────────────────────────────────────────
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(8)
-    doc.setTextColor(120, 120, 120)
-    if (instituicao.endereco || instituicao.telefone) {
-      const rodape = [
-        instituicao.endereco,
-        instituicao.telefone ? `Tel: ${instituicao.telefone}` : '',
-        instituicao.email ? `Email: ${instituicao.email}` : ''
-      ].filter(Boolean).join(' | ')
-      doc.text(rodape, pageWidth / 2, pageHeight - 10, { align: 'center' })
-    }
+    doc.setTextColor(100, 100, 100)
+
+    const footerBairro = (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') 
+      + '. TELEFONE: ' + (instituicao.telefone || '915 312 187')
+    const footerEmail = 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com')
+    const footerFacebook = 'FACEBOOK: Colégio Jomorais'
+
+    doc.text(footerBairro, pageWidth / 2, pageHeight - 16, { align: 'center' })
+    doc.text(footerEmail, pageWidth / 2, pageHeight - 12, { align: 'center' })
+    doc.text(footerFacebook, pageWidth / 2, pageHeight - 8, { align: 'center' })
+
     doc.setTextColor(0, 0, 0)
 
     // Salvar PDF
