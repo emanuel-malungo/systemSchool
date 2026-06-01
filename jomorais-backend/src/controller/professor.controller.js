@@ -435,15 +435,10 @@ export class ProfessorController {
 
       // 2. Verificar se o período de lançamento está ativo
       const agora = new Date();
-      const alternativoAno = anoLectivo.includes('/') ? anoLectivo.replace('/', '-') : anoLectivo.replace('-', '/');
       const periodoAtivo = await prisma.tb_periodos_avaliacao.findFirst({
         where: {
           TipoAvaliacao: tipoNota,
           Trimestre: parseInt(codigoTrimestre),
-          OR: [
-            { AnoLectivo: anoLectivo },
-            { AnoLectivo: alternativoAno }
-          ],
           DataInicio: { lte: agora },
           DataFim: { gte: agora }
         }
@@ -452,7 +447,7 @@ export class ProfessorController {
       if (!periodoAtivo) {
         return res.status(400).json({
           success: false,
-          message: `O período de lançamento para ${tipoNota} do ${codigoTrimestre}º Trimestre de ${anoLectivo} está FECHADO ou INATIVO.`
+          message: `O período de lançamento para ${tipoNota} do ${codigoTrimestre}º Trimestre está FECHADO ou INATIVO.`
         });
       }
 

@@ -81,17 +81,12 @@ export default function ProfessorLancamento() {
     
     const agora = new Date()
     const active = openPeriods.find(p => {
-      const pAno = p.anoLectivo || p.AnoLectivo;
       const pTrim = p.trimestre || p.Trimestre;
       const pTipo = p.tipoNota || p.TipoAvaliacao;
       const inicio = new Date(p.dataInicio || p.DataInicio || '')
       const fim = new Date(p.dataFim || p.DataFim || '')
       
-      const normPAno = pAno?.toString().replace('-', '/');
-      const normSelAno = selectedAnoLectivo.replace('-', '/');
-      
       return (
-        normPAno === normSelAno &&
         pTrim?.toString() === selectedTrimestre &&
         pTipo === selectedTipoNota &&
         inicio <= agora &&
@@ -106,15 +101,10 @@ export default function ProfessorLancamento() {
   const dataFimPeriodo = useMemo(() => {
     if (!selectedAnoLectivo || !selectedTrimestre || !selectedTipoNota) return null;
     const active = openPeriods.find(p => {
-      const pAno = p.anoLectivo || p.AnoLectivo;
       const pTrim = p.trimestre || p.Trimestre;
       const pTipo = p.tipoNota || p.TipoAvaliacao;
 
-      const normPAno = pAno?.toString().replace('-', '/');
-      const normSelAno = selectedAnoLectivo.replace('-', '/');
-
       return (
-        normPAno === normSelAno &&
         pTrim?.toString() === selectedTrimestre &&
         pTipo === selectedTipoNota
       );
