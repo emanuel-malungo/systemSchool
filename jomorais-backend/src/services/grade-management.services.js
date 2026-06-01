@@ -660,56 +660,131 @@ export class GradeManagementService {
     };
 
     // Row 4: Logo text
-    sheet.mergeCells('A4:AP4');
-    const titleCell = sheet.getCell('A4');
+    sheet.mergeCells('B4:P4');
+    const titleCell = sheet.getCell('B4');
     titleCell.value = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
-    titleCell.font = { name: 'Calibri', size: 16, bold: true };
-    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    titleCell.font = { name: 'Calibri', size: 14, bold: true };
+    titleCell.alignment = { horizontal: 'left', vertical: 'middle' };
 
-    // Row 7: Subtitle
-    sheet.mergeCells('A7:AP7');
-    const subtitleCell = sheet.getCell('A7');
+    // Row 5: Green thick line
+    sheet.mergeCells('A5:AT5');
+    const greenLine = sheet.getCell('A5');
+    greenLine.border = { top: { style: 'medium', color: { argb: 'FF548235' } } }; // Green
+
+    // Row 6: Subtitle
+    sheet.mergeCells('A6:AT6');
+    const subtitleCell = sheet.getCell('A6');
     subtitleCell.value = 'PAUTA DE APROVEITAMENTO ESCOLAR';
     subtitleCell.font = { name: 'Calibri', size: 14, bold: true };
     subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    // Row 8: Area de formacao
-    sheet.mergeCells('A8:AP8');
-    const areaCell = sheet.getCell('A8');
-    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE';
-    areaCell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF0070C0' } };
+    // Row 7: Area de formacao
+    sheet.mergeCells('A7:AT7');
+    const areaCell = sheet.getCell('A7');
+    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE'; // To make SAÚDE blue, rich text is needed, but simple value is OK for now
+    areaCell.font = { name: 'Calibri', size: 11, bold: true };
     areaCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    // Row 10: Metadata Block
-    sheet.getCell('C10').value = descClasse;
-    sheet.getCell('C10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
-    
-    sheet.getCell('E10').value = `TURMA: ${descTurma}`;
-    sheet.getCell('E10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFC00000' } };
+    // Director Block (Left Side)
+    sheet.mergeCells('B9:E9');
+    const dirTitle = sheet.getCell('B9');
+    dirTitle.value = 'O Director do Instituto';
+    dirTitle.font = { name: 'Calibri', size: 9, bold: true };
+    dirTitle.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    sheet.mergeCells('I10:P10');
-    const cursoCell = sheet.getCell('I10');
+    sheet.mergeCells('B11:E11');
+    const dirLine = sheet.getCell('B11');
+    dirLine.value = '________________________________________';
+    dirLine.alignment = { horizontal: 'center', vertical: 'bottom' };
+
+    sheet.mergeCells('B12:E12');
+    const dirName = sheet.getCell('B12');
+    dirName.value = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MADIALA').toUpperCase();
+    dirName.font = { name: 'Calibri', size: 9, bold: true };
+    dirName.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    sheet.mergeCells('B13:E13');
+    const dirDate = sheet.getCell('B13');
+    dirDate.value = `DATA ___ / ___ / ${new Date().getFullYear()}`;
+    dirDate.font = { name: 'Calibri', size: 9, bold: true };
+    dirDate.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Center Block (Classe, Turma, Curso, Periodo, Trimestre, Ano)
+    // Classe
+    sheet.mergeCells('I9:K9');
+    const clsCell = sheet.getCell('I9');
+    clsCell.value = descClasse;
+    clsCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+    clsCell.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // Turma
+    sheet.mergeCells('I11:K11');
+    const trmCell = sheet.getCell('I11');
+    trmCell.value = `TURMA: ${descTurma}`;
+    trmCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFC00000' } };
+    trmCell.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // Curso (Center Large)
+    sheet.mergeCells('M10:U10');
+    const cursoCell = sheet.getCell('M10');
     cursoCell.value = `CURSO: ${descCurso}`;
     cursoCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } };
-    cursoCell.alignment = { horizontal: 'center' };
-
-    sheet.getCell('V10').value = `PERÍODO: ${descPeriodo}`;
-    sheet.getCell('V10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
-
-    sheet.getCell('AA10').value = descTrimestre;
-    sheet.getCell('AA10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFC00000' } };
-
-    sheet.getCell('AE10').value = `ANO LECTIVO: ${descAno}`;
-    sheet.getCell('AE10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
-
-    sheet.getCell('AJ10').value = `MF: ${confirmacoesList.length}`;
-    sheet.getCell('AJ10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+    cursoCell.alignment = { horizontal: 'center', vertical: 'middle' };
     
-    sheet.getCell('AL10').value = `M: ${totalM}`;
-    sheet.getCell('AL10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+    // Underline for Curso
+    sheet.mergeCells('M11:U11');
+    sheet.getCell('M11').border = { top: { style: 'thin', color: { argb: 'FF000000' } } };
 
-    sheet.getCell('AN10').value = `F: ${totalF}`;
-    sheet.getCell('AN10').font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } };
+    // Período
+    sheet.mergeCells('W8:AA8');
+    const perCell = sheet.getCell('W8');
+    perCell.value = `PERÍODO: ${descPeriodo}`;
+    perCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
+    perCell.alignment = { horizontal: 'left', vertical: 'middle' };
+
+    // Trimestre
+    sheet.mergeCells('W10:AA10');
+    const trimCell = sheet.getCell('W10');
+    trimCell.value = descTrimestre;
+    trimCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
+    trimCell.alignment = { horizontal: 'left', vertical: 'middle' };
+
+    // Ano Lectivo
+    sheet.mergeCells('W11:AA11');
+    const anoCell = sheet.getCell('W11');
+    anoCell.value = `ANO LECTIVO: ${descAno}`;
+    anoCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
+    anoCell.alignment = { horizontal: 'left', vertical: 'middle' };
+
+    // MF Block (Right Side)
+    sheet.getCell('AD9').value = `MF:`;
+    sheet.getCell('AD9').font = { name: 'Calibri', size: 10, bold: true };
+    sheet.getCell('AE9').value = confirmacoesList.length;
+    sheet.getCell('AE9').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+
+    sheet.getCell('AD10').value = `M:`;
+    sheet.getCell('AD10').font = { name: 'Calibri', size: 10, bold: true };
+    sheet.getCell('AE10').value = totalM;
+    sheet.getCell('AE10').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+
+    sheet.getCell('AD11').value = `F:`;
+    sheet.getCell('AD11').font = { name: 'Calibri', size: 10, bold: true };
+    sheet.getCell('AE11').value = totalF;
+    sheet.getCell('AE11').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFC00000' } };
+
+    // Date Box
+    sheet.mergeCells('AG10:AH11');
+    const dBox = sheet.getCell('AG10');
+    const today = new Date();
+    dBox.value = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear().toString().substring(2)}`;
+    dBox.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+    dBox.alignment = { horizontal: 'center', vertical: 'middle' };
+    dBox.border = {
+      top: { style: 'medium', color: { argb: 'FF000000' } },
+      left: { style: 'medium', color: { argb: 'FF000000' } },
+      bottom: { style: 'medium', color: { argb: 'FF000000' } },
+      right: { style: 'medium', color: { argb: 'FF000000' } }
+    };
 
     // Get unique disciplines
     const allDisciplinesSet = new Set();
