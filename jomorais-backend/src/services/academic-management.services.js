@@ -1200,9 +1200,11 @@ export class AcademicManagementService {
   }
 
   // Novo método: Retorna TODAS as disciplinas sem paginação (para select dropdowns)
-  static async getAllDisciplinas() {
+  static async getAllDisciplinas(codigo_Curso = null) {
     try {
+      const where = codigo_Curso ? { codigo_Curso: parseInt(codigo_Curso) } : {};
       const disciplinas = await prisma.tb_disciplinas.findMany({
+        where,
         select: {
           codigo: true,
           designacao: true

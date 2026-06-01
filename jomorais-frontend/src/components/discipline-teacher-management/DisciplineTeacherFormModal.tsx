@@ -74,14 +74,15 @@ export default function DisciplineTeacherFormModal({
     false,
     isOpen // Só busca quando o modal está aberto
   )
-  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(
-    '',
-    isOpen // Só busca quando o modal está aberto
-  )
-  
-  // Observa o curso selecionado para buscar disciplinas filtradas
+  // Observa o curso selecionado para buscar disciplinas e turmas filtradas
   const selectedCurso = watch('cursoId')
   const incluirTurma = watch('incluirTurma')
+
+  const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete(
+    '',
+    selectedCurso !== 0 ? selectedCurso : undefined,
+    isOpen // Só busca quando o modal está aberto
+  )
   
   // Busca disciplinas filtradas por curso (usa a API)
   const { data: disciplinasData, isLoading: isLoadingDisciplinas } = useDisciplinesComplete(
@@ -126,11 +127,13 @@ export default function DisciplineTeacherFormModal({
     })
   }, [turmas, turmaSearch])
 
-  // Reseta a disciplina quando o curso mudar
+  // Reseta a disciplina e turma quando o curso mudar
   useEffect(() => {
     if (selectedCurso !== 0) {
       setValue('disciplinaId', 0)
       setDisciplinaSearch('')
+      setValue('turmaId', 0)
+      setTurmaSearch('')
     }
   }, [selectedCurso, setValue])
 

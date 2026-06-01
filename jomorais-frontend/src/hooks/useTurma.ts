@@ -56,10 +56,10 @@ export function useTurmas(params: PaginationParams = { page: 1, limit: 10 }) {
  * @param enabled - Se a query deve ser executada
  * @returns Query com lista completa de turmas
  */
-export function useTurmasComplete(search = '', enabled = true) {
+export function useTurmasComplete(search = '', codigo_Curso?: number, enabled = true) {
   return useQuery({
-    queryKey: [...turmaKeys.complete(), search],
-    queryFn: () => turmaService.getAllTurmas(search),
+    queryKey: [...turmaKeys.complete(), search, codigo_Curso],
+    queryFn: () => turmaService.getAllTurmas(search, codigo_Curso),
     enabled,
     staleTime: 1000 * 60 * 10, // Cache válido por 10 minutos (dados mais estáveis)
     gcTime: 1000 * 60 * 30,

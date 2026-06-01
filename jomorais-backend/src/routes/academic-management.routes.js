@@ -1257,7 +1257,7 @@ router.get('/disciplinas/stats', AcademicManagementController.getDisciplineStati
  *       200:
  *         description: Lista completa de disciplinas
  */
-router.get('/disciplinas/complete', AcademicManagementController.getDisciplinas);
+router.get('/disciplinas/complete', AcademicManagementController.getAllDisciplinas);
 
 router.get('/disciplinas/:id', AcademicManagementController.getDisciplinaById);
 

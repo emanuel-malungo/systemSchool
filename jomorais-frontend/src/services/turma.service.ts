@@ -49,10 +49,13 @@ class TurmaService {
    * @param search - Termo de busca opcional
    * @returns Promise com lista completa de turmas
    */
-  async getAllTurmas(search = ''): Promise<ApiResponse<ITurma[]>> {
+  async getAllTurmas(search = '', codigo_Curso?: number): Promise<ApiResponse<ITurma[]>> {
     try {
+      const params: Record<string, string | number> = { search }
+      if (codigo_Curso) params.codigo_Curso = codigo_Curso
+
       const response = await api.get<ApiResponse<ITurma[]>>(`${this.baseURL}/complete`, {
-        params: { search }
+        params
       })
 	  console.log('Resposta getAllTurmas:', response.data)
       return response.data

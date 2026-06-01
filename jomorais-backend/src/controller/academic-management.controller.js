@@ -447,7 +447,8 @@ export class AcademicManagementController {
   // Novo método: Retorna todas as disciplinas sem paginação
   static async getAllDisciplinas(req, res) {
     try {
-      const disciplinas = await AcademicManagementService.getAllDisciplinas();
+      const { codigo_Curso } = req.query;
+      const disciplinas = await AcademicManagementService.getAllDisciplinas(codigo_Curso);
       
       res.json({
         success: true,
@@ -721,14 +722,20 @@ export class AcademicManagementController {
 
   static async getTurmasComplete(req, res) {
     try {
-      const { search = '' } = req.query;
+      const { search = '', codigo_Curso } = req.query;
       
-      const whereClause = search ? {
-        designacao: {
+      const whereClause = {};
+      
+      if (search) {
+        whereClause.designacao = {
           contains: search,
           mode: 'insensitive'
-        }
-      } : {};
+        };
+      }
+      
+      if (codigo_Curso) {
+        whereClause.codigo_Curso = parseInt(codigo_Curso);
+      }
       
       const turmas = await prisma.tb_turmas.findMany({
         where: whereClause,
