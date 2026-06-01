@@ -277,6 +277,75 @@ export class GradeManagementService {
   // PAUTA (CONSOLIDAÇÃO DE NOTAS)
   // ===============================
 
+  static async exportPautaPDF(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
+    // Reuse existing pauta generation logic
+    const pautaData = await this.generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo);
+    const PDFDocument = (await import('pdfkit')).default;
+    const doc = new PDFDocument({ margin: 30, size: 'A4' });
+    const buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {});
+    // Header
+    doc.fontSize(16).text('Pauta de Turma', { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(12).text(`Turma: ${pautaData.turma} | Trimestre: ${pautaData.trimestre} | Ano Lectivo: ${pautaData.anoLectivo}`);
+    doc.moveDown();
+    // Table header
+    doc.font('Helvetica-Bold');
+    doc.text('Aluno', 50, doc.y, { continued: true });
+    doc.text('Disciplina', 200, doc.y, { continued: true });
+    doc.text('Nota', 350, doc.y);
+    doc.moveDown();
+    doc.font('Helvetica');
+    // Iterate alunos
+    for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
+      const alunoNome = info.aluno?.nome || 'N/A';
+      if (info.disciplinas && info.disciplinas.length) {
+        for (const d of info.disciplinas) {
+          doc.text(alunoNome, 50, doc.y, { continued: true });
+          doc.text(d.disciplina, 200, doc.y, { continued: true });
+          doc.text(d.nota !== undefined ? d.nota.toString() : '-', 350, doc.y);
+          doc.moveDown();
+        }
+      } else {
+        doc.text(alunoNome, 50, doc.y, { continued: true });
+        doc.text('-', 200, doc.y, { continued: true });
+        doc.text('-', 350, doc.y);
+        doc.moveDown();
+      }
+    }
+    doc.end();
+    return Buffer.concat(buffers);
+  }
+
+  static async exportPautaExcel(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
+    const pautaData = await this.generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo);
+    const ExcelJS = (await import('exceljs')).default;
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Pauta');
+    // Header rows
+    sheet.addRow(['Pauta de Turma']);
+    sheet.addRow([`Turma: ${pautaData.turma}`, `Trimestre: ${pautaData.trimestre}`, `Ano Lectivo: ${pautaData.anoLectivo}`]);
+    sheet.addRow([]);
+    // Table header
+    sheet.addRow(['Aluno', 'Disciplina', 'Nota']);
+    // Data rows
+    for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
+      const alunoNome = info.aluno?.nome || 'N/A';
+      if (info.disciplinas && info.disciplinas.length) {
+        for (const d of info.disciplinas) {
+          sheet.addRow([alunoNome, d.disciplina, d.nota !== undefined ? d.nota : '-']);
+        }
+      } else {
+        sheet.addRow([alunoNome, '-', '-']);
+      }
+    }
+    // Auto width
+    sheet.columns.forEach(col => { col.width = 20; });
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
+  }
+
   static async generatePauta(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
     try {
       // Step 1: Buscar todos os alunos confirmados nesta turma e ano letivo

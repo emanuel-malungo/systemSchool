@@ -95,6 +95,56 @@ export class GradeManagementController {
   // PAUTA
   // ===============================
 
+  static async exportPautaPDF(req, res) {
+    try {
+      const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;
+
+      if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
+        return res.status(400).json({
+          success: false,
+          message: "Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo"
+        });
+      }
+
+      const pdfBuffer = await GradeManagementService.exportPautaPDF(
+        codigoTurma,
+        codigoTrimestre,
+        codigoAnoLectivo
+      );
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="pauta.pdf"');
+      res.send(pdfBuffer);
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao exportar pauta PDF", 400);
+    }
+  }
+
+  static async exportPautaExcel(req, res) {
+    try {
+      const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;
+
+      if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
+        return res.status(400).json({
+          success: false,
+          message: "Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo"
+        });
+      }
+
+      const excelBuffer = await GradeManagementService.exportPautaExcel(
+        codigoTurma,
+        codigoTrimestre,
+        codigoAnoLectivo
+      );
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="pauta.xlsx"');
+      res.send(excelBuffer);
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao exportar pauta Excel", 400);
+    }
+  }
+
   static async generatePauta(req, res) {
     try {
       const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;

@@ -245,6 +245,8 @@ router.delete('/notas/:id', GradeManagementController.deleteGrade);
  *         description: Pauta gerada com sucesso
  */
 router.get('/pautas', GradeManagementController.generatePauta);
+router.get('/pautas/export/pdf', GradeManagementController.exportPautaPDF);
+router.get('/pautas/export/excel', GradeManagementController.exportPautaExcel);
 
 // ===============================
 // BOLETINS
