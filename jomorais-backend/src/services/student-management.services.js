@@ -2352,24 +2352,35 @@ export class StudentManagementService {
           data: { codigo_Status: 3 }
         });
 
+        // Obter o próximo código manual
+        const maxTransferencia = await tx.tb_transferencias.findFirst({
+          orderBy: { codigo: 'desc' },
+          select: { codigo: true }
+        });
+        const proximoCodigo = maxTransferencia ? maxTransferencia.codigo + 1 : 1;
+
         // Criar a transferência
-        return await tx.tb_transferencias.create({
-          data: cleanData,
-          include: {
-            tb_alunos: {
-              select: {
-                codigo: true,
-                nome: true,
-                dataNascimento: true,
-                sexo: true
-              }
-            }
+        const transferencia = await tx.tb_transferencias.create({
+          data: {
+            ...cleanData,
+            codigo: proximoCodigo
           }
         });
+
+        return {
+          ...transferencia,
+          tb_alunos: {
+            codigo: alunoExists.codigo,
+            nome: alunoExists.nome,
+            dataNascimento: alunoExists.dataNascimento,
+            sexo: alunoExists.sexo
+          }
+        };
       });
     } catch (error) {
+      console.error("ERRO DETALHADO AO CRIAR TRANSFERÊNCIA:", error);
       if (error instanceof AppError) throw error;
-      throw new AppError('Erro ao criar transferência', 500);
+      throw new AppError(`Erro ao criar transferência: ${error.message}`, 500);
     }
   }
 
@@ -2398,20 +2409,29 @@ export class StudentManagementService {
       if (updateData.obs) updateData.obs = updateData.obs.trim();
       if (!updateData.dataActualizacao) updateData.dataActualizacao = new Date();
 
-      return await prisma.tb_transferencias.update({
+      const transferenciaAtualizada = await prisma.tb_transferencias.update({
         where: { codigo: parseInt(id) },
-        data: updateData,
-        include: {
-          tb_alunos: {
-            select: {
-              codigo: true,
-              nome: true,
-              dataNascimento: true,
-              sexo: true
-            }
-          }
-        }
+        data: updateData
       });
+
+      // Buscar aluno para manter o mesmo formato de retorno
+      let alunoInfo = null;
+      if (transferenciaAtualizada.codigoAluno) {
+        alunoInfo = await prisma.tb_alunos.findUnique({
+          where: { codigo: transferenciaAtualizada.codigoAluno },
+          select: {
+            codigo: true,
+            nome: true,
+            dataNascimento: true,
+            sexo: true
+          }
+        });
+      }
+
+      return {
+        ...transferenciaAtualizada,
+        tb_alunos: alunoInfo
+      };
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError('Erro ao atualizar transferência', 500);
