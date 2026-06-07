@@ -270,7 +270,67 @@ export class CertificatesService {
         throw new AppError('Certificado não encontrado', 404, 'CERTIFICATE_NOT_FOUND');
       }
 
-      // Buscar e calcular média final das notas na disciplina para injetar no retorno
+      // Buscar todas as notas do aluno para compor as tabelas completas
+      const allGrades = await prisma.tb_notas_alunos.findMany({
+        where: {
+          CodigoAluno: certificado.Codigo_Aluno
+        },
+        include: {
+          tb_disciplinas: { select: { codigo: true, designacao: true } },
+          tb_turmas: {
+            include: {
+              tb_classes: { select: { codigo: true, designacao: true } }
+            }
+          },
+          tb_ano_lectivo: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      // Agrupar notas por disciplina e classe
+      const disciplinasNotas = {};
+      allGrades.forEach(nota => {
+        const discId = nota.CodigoDisciplina;
+        const discNome = nota.tb_disciplinas.designacao;
+        const classeNome = nota.tb_turmas?.tb_classes?.designacao || '7ª';
+        const anoLetivo = nota.tb_ano_lectivo.designacao;
+
+        if (!disciplinasNotas[discId]) {
+          disciplinasNotas[discId] = {
+            codigo: discId,
+            designacao: discNome,
+            notasPorClasse: {}
+          };
+        }
+
+        if (!disciplinasNotas[discId].notasPorClasse[classeNome]) {
+          disciplinasNotas[discId].notasPorClasse[classeNome] = {
+            soma: 0,
+            count: 0,
+            anoLetivo
+          };
+        }
+
+        disciplinasNotas[discId].notasPorClasse[classeNome].soma += nota.Nota;
+        disciplinasNotas[discId].notasPorClasse[classeNome].count += 1;
+      });
+
+      // Calcular médias por classe e formatar
+      const gradeDetails = Object.values(disciplinasNotas).map(disc => {
+        const classesValores = {};
+        Object.entries(disc.notasPorClasse).forEach(([classe, val]) => {
+          classesValores[classe] = {
+            nota: parseFloat((val.soma / val.count).toFixed(1)),
+            anoLetivo: val.anoLetivo
+          };
+        });
+        return {
+          codigo: disc.codigo,
+          designacao: disc.designacao,
+          notas: classesValores
+        };
+      });
+
+      // Buscar e calcular média final das notas na disciplina selecionada para compatibilidade retroativa
       const grades = await prisma.tb_notas_alunos.findMany({
         where: {
           CodigoAluno: certificado.Codigo_Aluno,
@@ -284,7 +344,8 @@ export class CertificatesService {
 
       return {
         ...certificado,
-        mediaFinal: parseFloat(media.toFixed(1))
+        mediaFinal: parseFloat(media.toFixed(1)),
+        gradeDetails
       };
     } catch (error) {
       if (error instanceof AppError) throw error;

@@ -154,7 +154,7 @@ export default function CertificateManagement() {
       setIsDownloading(certificateId)
       const res = await certificateService.getCertificateById(certificateId)
       if (res && res.data) {
-        CertificatePdfGenerator.generatePDF(res.data)
+        CertificatePdfGenerator.generatePDF(res.data as any)
         toast.success('PDF gerado com sucesso')
       } else {
         toast.error('Erro ao obter dados do certificado')
