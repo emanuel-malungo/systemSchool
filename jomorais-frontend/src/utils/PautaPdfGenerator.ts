@@ -3,7 +3,7 @@
 // Ensure npm packages are installed: `npm install jspdf jspdf-autotable`.
 
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 // Types representing the data structure returned by the backend for a pauta.
 interface DisciplinaInfo {
@@ -67,7 +67,7 @@ export const PautaPdfGenerator = {
     });
 
     // Render table using autotable
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: y,
       head: [headers],
       body: rows,

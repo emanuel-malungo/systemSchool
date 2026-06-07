@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import icon from "../assets/images/icon.png"
 
 export interface ICertificatePdfData {
@@ -357,7 +357,7 @@ export class CertificatePdfGenerator {
 
     // Desenhar tabela com jspdf-autotable
     let finalTableY = y
-    ;(doc as any).autoTable({
+    autoTable(doc, {
       startY: y,
       head: [['DISCIPLINAS', '7ª CLASSE', '8ª CLASSE', '9ª CLASSE', 'Média Final', 'Média por Extenso']],
       body: tableRows,
@@ -621,7 +621,7 @@ export class CertificatePdfGenerator {
     tableData.push([{ content: 'Classificação Final do Curso - (4xPC+EC+PAP) / 6 ............................', fontStyle: 'bold', fillColor: [230, 230, 230] }, { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }, { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }])
 
     let finalTableY = y
-    ;(doc as any).autoTable({
+    autoTable(doc, {
       startY: y,
       head: [['Componentes / Disciplinas', 'Nota', 'Nota por extenso']],
       body: tableData,
