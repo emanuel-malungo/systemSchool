@@ -83,6 +83,20 @@ export class CertificatePdfGenerator {
     }
   }
 
+  private static formatDateShort(dateStr: string | null | undefined): string {
+    if (!dateStr) return '___/___/______'
+    try {
+      const date = new Date(dateStr)
+      if (isNaN(date.getTime())) return '___/___/______'
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
+    } catch {
+      return '___/___/______'
+    }
+  }
+
   private static numberToWords(n: number | string): string {
     const num = Math.round(Number(n))
     if (isNaN(num) || num < 0) return '-'
@@ -251,9 +265,9 @@ export class CertificatePdfGenerator {
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
     const pai = (aluno.pai || 'N/A').toUpperCase()
     const mae = (aluno.mae || 'N/A').toUpperCase()
-    const dataNasc = this.formatDateLong(aluno.dataNascimento)
+    const dataNasc = this.formatDateShort(aluno.dataNascimento)
     const biNum = aluno.n_documento_identificacao || 'N/A'
-    const biData = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : 'N/A'
+    const biData = aluno.dataEmissao ? this.formatDateShort(aluno.dataEmissao) : 'N/A'
     const naturalidade = aluno.naturalidade || aluno.tb_comunas?.designacao || 'Cabinda'
     const municipio = aluno.tb_comunas?.tb_municipios?.designacao || 'Cabinda'
     const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || 'Cabinda'
@@ -454,7 +468,7 @@ export class CertificatePdfGenerator {
     doc.text('REPÚBLICA DE ANGOLA', logoX + logoSize + 5, y + 3)
     doc.text('MINISTÉRIO DA EDUCAÇÃO', logoX + logoSize + 5, y + 7)
     doc.setFont('Helvetica', 'bold')
-    doc.text('INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS', logoX + logoSize + 5, y + 11)
+    doc.text('INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', logoX + logoSize + 5, y + 11)
     y += logoSize + 2
 
     // Título do Certificado
@@ -475,27 +489,45 @@ export class CertificatePdfGenerator {
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
     const pai = (aluno.pai || 'N/A').toUpperCase()
     const mae = (aluno.mae || 'N/A').toUpperCase()
-    const dataNasc = this.formatDateLong(aluno.dataNascimento)
+    const dataNasc = this.formatDateShort(aluno.dataNascimento)
     const biNum = aluno.n_documento_identificacao || 'N/A'
-    const curso = (aluno.tb_matriculas?.tb_cursos?.designacao || 'N/A').toUpperCase()
+    const curso = (aluno.tb_matriculas?.tb_cursos?.designacao || 'N/A')
     const anoConclusao = data.tb_ano_lectivo.designacao
     const confirmacao = aluno.tb_matriculas?.tb_confirmacoes?.[0]
     const turma = confirmacao?.tb_turmas?.designacao || 'A'
 
     const nomeDirectora = 'Madalena de Fátima Muila Ngimbi'
 
+    let cursoTexto = curso
+    if (!cursoTexto.toLowerCase().startsWith('técnico de')) {
+      cursoTexto = `Técnico de ${curso}`
+    }
+    // Capitalize first letter of each word
+    cursoTexto = cursoTexto.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
+    
+    if (curso.toLowerCase().includes('análises clínicas') || curso.toLowerCase().includes('enfermagem') || curso.toLowerCase().includes('saúde')) {
+      cursoTexto = `${cursoTexto}, da Área de Formação de Saúde`
+    } else if (curso.toLowerCase().includes('informática') || curso.toLowerCase().includes('tecnologia')) {
+      cursoTexto = `${cursoTexto}, da Área de Formação de Tecnologias`
+    }
+
+    const isFeminino = aluno.sexo?.toLowerCase() === 'f' || aluno.sexo?.toLowerCase() === 'feminino'
+    const filhoFilha = isFeminino ? 'filha' : 'filho'
+    const nascidoNascida = isFeminino ? 'nascida' : 'nascido'
+    const portadorPortadora = isFeminino ? 'portadora' : 'portador'
+
     const pBody = [
       { text: `A Directora do Instituto, `, bold: false },
       { text: nomeDirectora, bold: true },
       { text: `, certifica de acordo com o art.º 25 e 27 dos estatutos de Subsistema do Ensino Técnico Profissional, aprovado pelo Decreto nº 90/04, de 3 de Dezembro de 2004, que `, bold: false },
       { text: nomeAluno, bold: true },
-      { text: `, filha de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, nascida aos ${dataNasc}, portadora do bilhete de identidade n.º `, bold: false },
+      { text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos ${dataNasc}, ${portadorPortadora} do bilhete de identidade n.º `, bold: false },
       { text: biNum, bold: true },
       { text: `, passado pelo Arquivo de Identificação de Cabinda, concluiu, em regime diurno, no ano lectivo `, bold: false },
       { text: anoConclusao, bold: true },
       { text: `, o curso `, bold: false },
-      { text: `TÉCNICO DE ${curso}`, bold: true },
-      { text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, N.º ${aluno.codigo}:`, bold: false }
+      { text: cursoTexto, bold: true },
+      { text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, n.º ${aluno.codigo}:`, bold: false }
     ]
 
     doc.setFontSize(9.5)
@@ -522,7 +554,9 @@ export class CertificatePdfGenerator {
     // Pegar notas do aluno
     const getGradeForMid = (sub: string): number => {
       const disc = data.gradeDetails?.find(d => 
-        d.designacao.toLowerCase().replace(/\s+/g, '') === sub.toLowerCase().replace(/\s+/g, '')
+        d.designacao.toLowerCase().replace(/\s+/g, '') === sub.toLowerCase().replace(/\s+/g, '') ||
+        (sub.toLowerCase().includes('projeto') && d.designacao.toLowerCase().includes('projecto')) ||
+        (sub.toLowerCase().includes('projecto') && d.designacao.toLowerCase().includes('projeto'))
       )
       if (!disc || !disc.notas) return 0
       
@@ -543,12 +577,16 @@ export class CertificatePdfGenerator {
     // As restantes são técnicas
     const listTecnica: Array<{ name: string; grade: number }> = []
     data.gradeDetails?.forEach(d => {
-      const isSociocult = sociocultural.some(s => d.designacao.toLowerCase().includes(s.toLowerCase()))
-      const isCient = cientifica.some(c => d.designacao.toLowerCase().includes(c.toLowerCase()))
-      
-      // Estágio Curricular, PAP e Projeto são tratados à parte
       const nameLower = d.designacao.toLowerCase()
-      const isSpecial = nameLower.includes('estágio') || nameLower.includes('prova de aptidão') || nameLower.includes('projeto') || nameLower.includes('pap')
+      const isSociocult = sociocultural.some(s => nameLower.includes(s.toLowerCase()))
+      const isCient = cientifica.some(c => nameLower.includes(c.toLowerCase()))
+      
+      // Estágio Curricular, PAP e Projeto/Projecto são tratados à parte
+      const isSpecial = nameLower.includes('estágio') || 
+                        nameLower.includes('prova de aptidão') || 
+                        nameLower.includes('projeto') || 
+                        nameLower.includes('projecto') || 
+                        nameLower.includes('pap')
       
       if (!isSociocult && !isCient && !isSpecial) {
         const grade = Object.values(d.notas)[0]
@@ -601,24 +639,24 @@ export class CertificatePdfGenerator {
       tableData.push([item.name, item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    // Projeto Tecnológico se houver
-    const projGrade = getGradeForMid('Projeto Tecnológico') || 14
-    tableData.push(['Projeto Tecnológico', projGrade.toString().padStart(2, '0'), `(${this.numberToWords(projGrade)})`])
+    // Projeto Tecnológico (se houver, e usando grafia do original com C)
+    const projGrade = getGradeForMid('Projecto Tecnológico') || getGradeForMid('Projeto Tecnológico') || 0
+    tableData.push(['Projecto Tecnológico', projGrade.toString().padStart(2, '0'), `(${this.numberToWords(projGrade)})`])
     
-    // Estágio
-    tableData.push(['Estágio Curricular (E C) ..............................................................', estagioGrade.toString().padStart(2, '0'), `(${this.numberToWords(estagioGrade)})`])
+    // Estágio Curricular (E C)
+    tableData.push(['Estágio Curricular (E C) ..………………………………………………………..………………………', estagioGrade.toString().padStart(2, '0'), `(${this.numberToWords(estagioGrade)})`])
 
     // Calcular PC (Média do Plano Curricular)
     const allAcademicGrades = [...listSociocultural, ...listCientifica, ...listTecnica].map(i => i.grade).filter(g => g > 0)
-    const pcVal = Math.round(allAcademicGrades.reduce((a, b) => a + b, 0) / allAcademicGrades.length) || 14
-    tableData.push([{ content: 'Classificação Final do Plano Curricular (PC) ................................', fontStyle: 'bold' }, pcVal.toString().padStart(2, '0'), `(${this.numberToWords(pcVal)})`])
+    const pcVal = Math.round(allAcademicGrades.reduce((a, b) => a + b, 0) / allAcademicGrades.length) || 0
+    tableData.push([{ content: 'Classificação Final do Plano Curricular (PC) ………………………..………………………….', fontStyle: 'bold' }, pcVal.toString().padStart(2, '0'), `(${this.numberToWords(pcVal)})`])
 
     // PAP
-    tableData.push(['Classificação Da Prova de Aptidão Profissional (PAP) .....................', papGrade.toString().padStart(2, '0'), `(${this.numberToWords(papGrade)})`])
+    tableData.push(['Classificação Da Prova de Aptidão Profissional (PAP) ………….…………………………', papGrade.toString().padStart(2, '0'), `(${this.numberToWords(papGrade)})`])
 
     // Classificação Final Curso (4*PC + EC + PAP) / 6
     const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + papGrade) / 6)
-    tableData.push([{ content: 'Classificação Final do Curso - (4xPC+EC+PAP) / 6 ............................', fontStyle: 'bold', fillColor: [230, 230, 230] }, { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }, { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }])
+    tableData.push([{ content: 'Classificação Final do Curso = (4xPC+EC+PAP) /6 ……………………………...............', fontStyle: 'bold', fillColor: [230, 230, 230] }, { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }, { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }])
 
     let finalTableY = y
     autoTable(doc, {
@@ -638,8 +676,8 @@ export class CertificatePdfGenerator {
 
     // ── TEXTO DE VALIDAÇÃO ──
     const pEnd = [
-      { text: 'Pelo que, para efeitos legais e de harmonia com a legislação em vigor, se passou o presente ', bold: false },
-      { text: 'certificado', bold: true },
+      { text: 'Pelo que, para efeitos legais e de harmonia com a legislação em vigor, ', bold: false },
+      { text: 'mandámos-lhe passar o presente certificado', bold: true },
       { text: ', que vai por nós assinado e autenticado pelo selo branco em uso neste Instituto.', bold: false }
     ]
     y = this.writeJustifiedMixed(doc, pEnd, marginL, y, maxWidth, 4.5)
@@ -647,7 +685,7 @@ export class CertificatePdfGenerator {
 
     const dataDoc = this.formatDateLong(data.DataEmissao)
     doc.setFontSize(9)
-    doc.text(`Instituto Técnico de Saúde de Cabinda, em Cabinda, aos ${dataDoc}.`, marginL, y)
+    doc.text(`Instituto Técnico de Saúde de Cabinda, em Cabinda, ${dataDoc}.`, marginL, y)
     y += 14
 
     // ── ASSINATURAS ──
