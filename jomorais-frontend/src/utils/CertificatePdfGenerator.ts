@@ -482,13 +482,13 @@ export class CertificatePdfGenerator {
     doc.setFontSize(6.5)
     doc.text(data.NumeroCertificado || '', pageWidth - marginR - 2, y + logoSize + 12, { align: 'right' })
 
-    y += logoSize + 16
+    y += logoSize + 22
 
     // Título do Certificado
     doc.setFont('times', 'italic')
     doc.setFontSize(18)
     doc.text('Certificado de Habilitações', pageWidth / 2, y, { align: 'center' })
-    y += 6
+    y += 10
     
     // Subtítulo destacado em Vermelho
     doc.setFont('Helvetica', 'bold')
@@ -496,7 +496,7 @@ export class CertificatePdfGenerator {
     doc.setTextColor(200, 0, 0)
     doc.text('(Instituto Técnico Privado de Saúde Jomorais)', pageWidth / 2, y, { align: 'center' })
     doc.setTextColor(0, 0, 0)
-    y += 8
+    y += 12
 
     // ── DADOS DO ESTUDANTE ──
     const aluno = data.tb_alunos
@@ -661,22 +661,27 @@ export class CertificatePdfGenerator {
     // Tabela rows
     const tableData: any[] = []
 
-    // Primeira linha: Componente Sociocultural e Nota alinhadas
+    // Primeira linha: Rótulo "Nota" alinhado acima das notas
     tableData.push([
-      { content: 'Componente Sociocultural', styles: { fontStyle: 'bold' } },
+      { content: '', styles: { fontStyle: 'bold' } },
       { content: 'Nota', styles: { fontStyle: 'bold', halign: 'center' } },
       { content: '', styles: { fontStyle: 'bold' } }
+    ])
+
+    // Componente Sociocultural Centrado
+    tableData.push([
+      { content: 'Componente Sociocultural', colSpan: 3, styles: { fontStyle: 'bold', halign: 'center' } }
     ])
     listSociocultural.forEach(item => {
       tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    tableData.push([{ content: 'Componente Científica', colSpan: 3, styles: { fontStyle: 'bold' } }])
+    tableData.push([{ content: 'Componente Científica', colSpan: 3, styles: { fontStyle: 'bold', halign: 'center' } }])
     listCientifica.forEach(item => {
       tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    tableData.push([{ content: 'Componente Técnica, Tecnológica e Prática', colSpan: 3, styles: { fontStyle: 'bold' } }])
+    tableData.push([{ content: 'Componente Técnica, Tecnológica e Prática', colSpan: 3, styles: { fontStyle: 'bold', halign: 'center' } }])
     listTecnica.forEach(item => {
       tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
