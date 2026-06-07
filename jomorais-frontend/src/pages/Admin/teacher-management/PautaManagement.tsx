@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, Fragment } from 'react'
 import {
   FileText,
   Download,
@@ -449,69 +449,109 @@ export default function PautaManagement() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full whitespace-nowrap">
+            <table className="w-full whitespace-nowrap border-collapse border border-gray-200 text-xs">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 w-16">Nº</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Nome do Aluno</th>
+                <tr className="bg-gray-100 border-b border-gray-300">
+                  <th rowSpan={2} className="px-4 py-3 text-center font-bold text-gray-900 w-12 border border-gray-200">Nº</th>
+                  <th rowSpan={2} className="px-4 py-3 text-center font-bold text-gray-900 w-24 border border-gray-200">Nº PROC</th>
+                  <th rowSpan={2} className="px-6 py-3 text-left font-bold text-gray-900 border border-gray-200 min-w-[200px]">NOME DO ALUNO</th>
                   {consolidatedPauta.uniqueDisciplines.map(disc => (
-                    <th key={disc} className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                      {disc}
+                    <th key={disc} colSpan={2} className="px-2 py-2 text-center font-bold text-gray-900 border border-gray-200 max-w-[120px] truncate" title={disc}>
+                      {disc.toUpperCase()}
                     </th>
                   ))}
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-32">Média</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-32">Status</th>
+                  <th rowSpan={2} className="px-4 py-3 text-center font-bold text-gray-900 w-20 border border-gray-200">MÉDIA</th>
+                  <th rowSpan={2} className="px-4 py-3 text-center font-bold text-gray-900 w-16 border border-gray-200">Idade</th>
+                  <th rowSpan={2} className="px-4 py-3 text-center font-bold text-gray-900 w-16 border border-gray-200">Género</th>
+                  <th rowSpan={2} className="px-6 py-3 text-center font-bold text-gray-900 w-36 border border-gray-200">OBS</th>
+                </tr>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  {consolidatedPauta.uniqueDisciplines.map(disc => (
+                    <Fragment key={disc}>
+                      <th className="px-2 py-1 text-center font-semibold text-gray-500 border border-gray-200 w-10">F</th>
+                      <th className="px-2 py-1 text-center font-semibold text-gray-500 border border-gray-200 w-12">MT</th>
+                    </Fragment>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-200">
                 {paginatedStudentIds.map((studentId, index) => {
                   const studentData = consolidatedPauta.rawPauta[studentId]
                   const student = studentData.aluno
+                  const avg = studentData.mediaGeral || 0
+                  const status = studentData.situacao
+                  const hasGrades = studentData.disciplinas?.some((d: any) => d.nota !== null)
 
                   // Mapeia as notas do aluno para as colunas das disciplinas correspondentes
                   const gradesByDisc = consolidatedPauta.uniqueDisciplines.map(discName => {
                     const d = studentData.disciplinas?.find((item: any) => item.disciplina === discName)
-                    return d ? d.nota : null
+                    return d ? { nota: d.nota, faltas: d.faltas } : { nota: null, faltas: 0 }
                   })
-
-                  // Calcula a média das notas
-                  const filledGrades = gradesByDisc.filter(g => g !== null)
-                  const avg = filledGrades.length > 0 ? filledGrades.reduce((sum, val) => sum + val, 0) / filledGrades.length : 0
-                  const status = avg >= 10 ? 'Aprovado' : 'Reprovado'
 
                   return (
                     <tr key={studentId} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-500 font-medium">
+                      <td className="px-4 py-2.5 text-center text-gray-500 font-medium border border-gray-200">
                         {(filters.page - 1) * filters.limit + index + 1}
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="font-semibold text-gray-900">{student.nome}</p>
-                        <p className="text-xs text-gray-400">Cód: #{student.codigo}</p>
+                      <td className="px-4 py-2.5 text-center text-gray-600 font-medium border border-gray-200">
+                        {student.codigo}
                       </td>
-                      {gradesByDisc.map((grade, idx) => (
-                        <td key={idx} className="px-6 py-4 text-center">
-                          <span
-                            className={`font-semibold text-sm ${
-                              grade !== null ? (grade >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400'
-                            }`}
-                          >
-                            {grade !== null ? grade.toFixed(1) : '-'}
-                          </span>
-                        </td>
+                      <td className="px-6 py-2.5 font-semibold text-gray-900 border border-gray-200">
+                        {student.nome.toUpperCase()}
+                      </td>
+                      {gradesByDisc.map((dObj, idx) => (
+                        <Fragment key={idx}>
+                          {/* Faltas */}
+                          <td className="px-2 py-2.5 text-center text-gray-500 border border-gray-200 font-medium">
+                            {dObj.faltas > 0 ? dObj.faltas : '-'}
+                          </td>
+                          {/* MT */}
+                          <td className="px-2 py-2.5 text-center border border-gray-200 font-bold">
+                            <span
+                              className={
+                                dObj.nota !== null
+                                  ? dObj.nota >= 10
+                                    ? 'text-[#007C00]'
+                                    : 'text-red-600'
+                                  : 'text-gray-400 font-normal'
+                              }
+                            >
+                              {dObj.nota !== null ? dObj.nota.toFixed(1) : '-'}
+                            </span>
+                          </td>
+                        </Fragment>
                       ))}
-                      <td className="px-6 py-4 text-center">
-                        <span className={`font-bold text-sm ${avg >= 10 ? 'text-[#007C00]' : 'text-red-600'}`}>
-                          {avg.toFixed(2)}
+                      {/* Média */}
+                      <td className="px-4 py-2.5 text-center border border-gray-200 font-bold">
+                        <span className={hasGrades ? (avg >= 10 ? 'text-[#007C00]' : 'text-red-600') : 'text-gray-400 font-normal'}>
+                          {hasGrades ? avg.toFixed(2) : '-'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            avg >= 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {status}
-                        </span>
+                      {/* Idade */}
+                      <td className="px-4 py-2.5 text-center text-gray-600 font-medium border border-gray-200">
+                        {student.idade !== null && student.idade !== undefined ? student.idade : '-'}
+                      </td>
+                      {/* Género */}
+                      <td className="px-4 py-2.5 text-center text-gray-600 font-medium border border-gray-200">
+                        {student.genero || '-'}
+                      </td>
+                      {/* OBS */}
+                      <td className="px-6 py-2.5 text-center border border-gray-200">
+                        {status === 'TRANS' ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-[#007C00] border border-green-200">
+                            TRANSITA
+                          </span>
+                        ) : status === 'N/TRAN' ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                            N/TRANSITA
+                          </span>
+                        ) : status === 'DESIST.' ? (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-50 text-gray-600 border border-gray-200 italic">
+                            DESISTIDA
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
                       </td>
                     </tr>
                   )

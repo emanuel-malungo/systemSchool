@@ -492,41 +492,46 @@ export class GradeManagementService {
         doc.text(index.toString(), startX, rowY, { width: 20, align: 'center' });
         doc.text(alunoProc, startX + 20, rowY, { width: 30, align: 'center' });
         doc.text(alunoNome, startX + 50, rowY, { width: 125 });
-
         let valX = startX + 175;
-        let sumGrades = 0;
-        let countGrades = 0;
 
         disciplines.forEach(dName => {
           const dObj = info.disciplinas?.find(d => d.disciplina === dName);
+          const fVal = dObj && dObj.faltas !== undefined && dObj.faltas > 0 ? `${dObj.faltas}` : '0';
+          const nVal = dObj && dObj.nota !== undefined && dObj.nota !== null ? dObj.nota.toFixed(1) : '-';
+
+          // Faltas (left half of column)
+          doc.fillColor('gray');
+          doc.text(fVal, valX, rowY, { width: 15, align: 'center' });
+
+          // Grade (right half of column)
           if (dObj && dObj.nota !== undefined && dObj.nota !== null) {
-            const notaVal = dObj.nota;
-            doc.fillColor(notaVal >= 10 ? 'green' : 'red');
-            doc.text(notaVal.toFixed(1), valX, rowY, { width: 40, align: 'center' });
-            sumGrades += notaVal;
-            countGrades++;
+            doc.fillColor(dObj.nota >= 10 ? 'green' : 'red');
+            doc.text(nVal, valX + 15, rowY, { width: 25, align: 'center' });
           } else {
             doc.fillColor('black');
-            doc.text('-', valX, rowY, { width: 40, align: 'center' });
+            doc.text('-', valX + 15, rowY, { width: 25, align: 'center' });
           }
           valX += 40;
         });
 
         doc.fillColor('black');
-        const media = countGrades > 0 ? sumGrades / countGrades : 0;
-        if (countGrades > 0) {
+        const media = info.mediaGeral || 0;
+        const hasGrades = info.disciplinas?.some(d => d.nota !== null);
+
+        if (hasGrades) {
           doc.font('Helvetica-Bold');
           doc.fillColor(media < 10 ? 'red' : 'black');
           doc.text(media.toFixed(2), valX, rowY, { width: 30, align: 'center' });
 
           if (!isDesistente) {
-            doc.fillColor(media >= 10 ? 'blue' : 'red');
-            doc.text(media >= 10 ? 'TRANS' : 'N/TRAN', valX + 30, rowY, { width: 40, align: 'center' });
-            
-            if (media >= 10) {
+            if (info.situacao === 'TRANS') {
+              doc.fillColor('blue');
+              doc.text('TRANS', valX + 30, rowY, { width: 40, align: 'center' });
               if (isM) stats.transita.m++;
               if (isF) stats.transita.f++;
             } else {
+              doc.fillColor('red');
+              doc.text('N/TRAN', valX + 30, rowY, { width: 40, align: 'center' });
               if (isM) stats.nTransita.m++;
               if (isF) stats.nTransita.f++;
             }
@@ -535,19 +540,22 @@ export class GradeManagementService {
               maxMedia = media;
               melhorAluno = { nome: alunoNome, idade: idade };
             }
-          } else {
-            doc.fillColor('black');
-            doc.font('Helvetica-Oblique');
-            doc.text('DESIST.', valX + 30, rowY, { width: 40, align: 'center' });
           }
-          doc.font('Helvetica');
         } else {
-          doc.text('-', valX, rowY, { width: 30, align: 'center' });
-          doc.font(isDesistente ? 'Helvetica-Oblique' : 'Helvetica');
-          doc.text(isDesistente ? 'DESIST.' : '-', valX + 30, rowY, { width: 40, align: 'center' });
           doc.font('Helvetica');
+          doc.text('-', valX, rowY, { width: 30, align: 'center' });
+          if (!isDesistente) {
+            doc.text('-', valX + 30, rowY, { width: 40, align: 'center' });
+          }
         }
 
+        if (isDesistente) {
+          doc.font('Helvetica-Oblique');
+          doc.fillColor('gray');
+          doc.text('DESIST.', valX + 30, rowY, { width: 40, align: 'center' });
+        }
+
+        doc.font('Helvetica');
         doc.fillColor('black');
         doc.text(idade, valX + 70, rowY, { width: 20, align: 'center' });
         doc.text(genero, valX + 90, rowY, { width: 20, align: 'center' });
@@ -965,18 +973,22 @@ export class GradeManagementService {
       // Col D: Disciplina a repetir (leave empty or compute if they have < 10)
       const repeatDiscs = [];
       
-      let sumGrades = 0;
-      let countGrades = 0;
-
       // Populate grades
       disciplines.forEach(dName => {
         const dObj = info.disciplinas?.find(d => d.disciplina === dName);
         const { faltasCol, gradeCol } = disciplineColsMap[dName];
 
-        // Faltas column (always empty or slash)
+        // Faltas column
         const cellF = row.getCell(faltasCol);
         cellF.border = borderStyle;
         cellF.alignment = { horizontal: 'center', vertical: 'middle' };
+        if (dObj && dObj.faltas !== undefined && dObj.faltas > 0) {
+          cellF.value = dObj.faltas;
+          cellF.font = { name: 'Calibri', size: 9 };
+        } else {
+          cellF.value = '-';
+          cellF.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+        }
 
         // Grade column
         const cellG = row.getCell(gradeCol);
@@ -993,10 +1005,9 @@ export class GradeManagementService {
           } else {
             cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF000000' } };
           }
-          sumGrades += n;
-          countGrades++;
         } else {
           cellG.value = '-';
+          cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
           cellG.alignment = { horizontal: 'center', vertical: 'middle' };
         }
       });
@@ -1045,20 +1056,22 @@ export class GradeManagementService {
       cellGenero.alignment = { horizontal: 'center', vertical: 'middle' };
       cellGenero.value = genero;
 
-      const media = countGrades > 0 ? sumGrades / countGrades : 0;
-      if (countGrades > 0) {
+      const media = info.mediaGeral || 0;
+      const hasGrades = info.disciplinas?.some(d => d.nota !== null);
+
+      if (hasGrades) {
         cellMedia.value = media;
         cellMedia.numFmt = '0.0';
         cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF000000' } };
 
         if (!isDesistente) {
-          if (media >= 10) {
-            cellObs.value = 'TRANS';
+          if (info.situacao === 'TRANS') {
+            cellObs.value = 'TRANSITA';
             cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } }; // Blue
             if (isM) stats.transita.m++;
             if (isF) stats.transita.f++;
           } else {
-            cellObs.value = 'N/TRAN';
+            cellObs.value = 'N/TRANSITA';
             cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
             if (isM) stats.nTransita.m++;
             if (isF) stats.nTransita.f++;
@@ -1070,9 +1083,15 @@ export class GradeManagementService {
           }
         }
       } else {
-        cellObs.value = isDesistente ? 'DESIST.' : '-';
-        if (isDesistente) cellObs.font = { name: 'Calibri', size: 9, bold: true, italic: true };
         cellMedia.value = '-';
+      }
+
+      if (isDesistente) {
+        cellObs.value = 'DESISTIDA';
+        cellObs.font = { name: 'Calibri', size: 9, bold: true, italic: true, color: { argb: 'FF7F7F7F' } };
+        cellMedia.value = '-';
+      } else if (!hasGrades) {
+        cellObs.value = '-';
       }
 
       index++;
@@ -1283,50 +1302,130 @@ export class GradeManagementService {
         throw new AppError('Nenhum aluno confirmado para esta turma e ano letivo', 400);
       }
 
+      // Step 2: Buscar disciplinas via grade curricular
+      const gradesCurricular = await prisma.tb_grade_curricular.findMany({
+        where: { codigo_Classe: turmaObj.codigo_Classe, codigo_Curso: turmaObj.codigo_Curso },
+        include: { tb_disciplinas: { select: { codigo: true, designacao: true } } }
+      });
+      let disciplinas = gradesCurricular
+        .filter(g => g.tb_disciplinas)
+        .map(g => g.tb_disciplinas);
 
+      // Step 3: Buscar todas as notas da turma no trimestre
+      const codigosAlunos = confirmacoes
+        .map(c => c.tb_matriculas?.tb_alunos?.codigo)
+        .filter(Boolean);
 
-      // Step 2: Para cada aluno, buscar suas notas no trimestre
+      const notasWhere = {
+        CodigoTrimestre: parseInt(codigoTrimestre),
+        CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+      };
+      if (codigosAlunos.length > 0) {
+        notasWhere.OR = [
+          { CodigoTurma: parseInt(codigoTurma) },
+          { CodigoAluno: { in: codigosAlunos } }
+        ];
+      } else {
+        notasWhere.CodigoTurma = parseInt(codigoTurma);
+      }
+
+      const notas = await prisma.tb_notas_alunos.findMany({
+        where: notasWhere,
+        include: {
+          tb_disciplinas: { select: { codigo: true, designacao: true } },
+          tb_tipo_avaliacao: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      // Fallback para disciplinas das notas se grade curricular estiver vazia
+      if (disciplinas.length === 0) {
+        const disciplinasMap = {};
+        notas.forEach(n => {
+          if (n.tb_disciplinas) disciplinasMap[n.tb_disciplinas.codigo] = n.tb_disciplinas;
+        });
+        disciplinas = Object.values(disciplinasMap);
+      }
+
+      // Step 4: Buscar faltas da turma no trimestre
+      const trimestreDesignacao = trimestreObj?.designacao || `${codigoTrimestre}`;
+      const anoLetivoDesignacao = anoLetivoObj?.designacao || `${codigoAnoLectivo}`;
+
+      let faltas = await prisma.tb_faltas.findMany({
+        where: {
+          Codigo_Matricula: { in: confirmacoes.map(c => c.codigo_Matricula) },
+          Trimestre: trimestreDesignacao,
+          AnoLectivo: anoLetivoDesignacao
+        }
+      }).catch(() => []);
+
+      // Step 5: Processar a pauta consolidada para cada aluno
       const pautaPorAluno = {};
       
       for (const confirmacao of confirmacoes) {
-        const aluno = confirmacao.tb_matriculas.tb_alunos;
+        const aluno = confirmacao.tb_matriculas?.tb_alunos;
+        if (!aluno) continue;
         const codigoAluno = aluno.codigo;
 
-        // Buscar notas do aluno neste trimestre e ano letivo
-        const notas = await prisma.tb_notas_alunos.findMany({
-          where: {
-            CodigoAluno: codigoAluno,
-            CodigoTrimestre: parseInt(codigoTrimestre),
-            CodigoAnoLectivo: parseInt(codigoAnoLectivo)
-          },
-          include: {
-            tb_disciplinas: { select: { codigo: true, designacao: true } },
-            tb_tipo_avaliacao: { select: { codigo: true, designacao: true } }
-          },
-          orderBy: { tb_disciplinas: { designacao: 'asc' } }
+        const notasAluno = notas.filter(n => n.CodigoAluno === codigoAluno);
+        const notasPorDisciplina = {};
+        notasAluno.forEach(n => {
+          if (!notasPorDisciplina[n.CodigoDisciplina]) {
+            notasPorDisciplina[n.CodigoDisciplina] = [];
+          }
+          notasPorDisciplina[n.CodigoDisciplina].push(n);
         });
 
-        if (notas.length > 0) {
-          pautaPorAluno[codigoAluno] = {
-            aluno,
-            disciplinas: notas.map(nota => ({
-              disciplina: nota.tb_disciplinas.designacao,
-              tipoAvaliacao: nota.tb_tipo_avaliacao.designacao,
-              nota: nota.Nota,
-              dataCadastro: nota.DataCadastro
-            }))
-          };
-        }
-      }
+        // Consolidar notas e faltas para cada disciplina
+        const disciplinasAluno = disciplinas.map(disc => {
+          const listNotas = notasPorDisciplina[disc.codigo] || [];
+          const notaConsolidada = listNotas.length > 0 ? GradeManagementService._calcularNotaTrimestral(listNotas) : null;
+          
+          const faltasAlunoDisc = faltas
+            .filter(f => f.Codigo_Matricula === confirmacao.codigo_Matricula && f.Codigo_Disciplina === disc.codigo)
+            .reduce((sum, f) => sum + (parseInt(f.nFaltas) || 1), 0);
 
-      // Se nenhum aluno tem notas, retornar pauta vazia com todos os alunos
-      const pautaFinal = Object.keys(pautaPorAluno).length > 0 
-        ? pautaPorAluno
-        : confirmacoes.reduce((acc, confirmacao) => {
-            const aluno = confirmacao.tb_matriculas.tb_alunos;
-            acc[aluno.codigo] = { aluno, disciplinas: [] };
-            return acc;
-          }, {});
+          return {
+            codigoDisciplina: disc.codigo,
+            disciplina: disc.designacao,
+            nota: notaConsolidada,
+            faltas: faltasAlunoDisc
+          };
+        });
+
+        // Calcular médias, idade, gênero e situação
+        const birthYear = aluno.dataNascimento ? new Date(aluno.dataNascimento).getFullYear() : 0;
+        const currentYear = new Date().getFullYear();
+        const idade = birthYear > 0 ? currentYear - birthYear : null;
+
+        const generoRaw = aluno.sexo?.toUpperCase() || '';
+        const genero = (generoRaw === 'M' || generoRaw.startsWith('MASC')) ? 'M' : ((generoRaw === 'F' || generoRaw.startsWith('FEM') || generoRaw === 'W') ? 'F' : '-');
+
+        const notasValidas = disciplinasAluno.map(d => d.nota).filter(n => n !== null);
+        const mediaGeral = notasValidas.length > 0 
+          ? parseFloat((notasValidas.reduce((s, n) => s + n, 0) / notasValidas.length).toFixed(2)) 
+          : 0;
+
+        const negativas = disciplinasAluno.filter(d => d.nota !== null && d.nota < 10).length;
+
+        let situacao = 'N/TRAN';
+        if (aluno.codigo_Status !== 1) {
+          situacao = 'DESIST.';
+        } else if (mediaGeral >= 10 && negativas <= 2) {
+          situacao = 'TRANS';
+        }
+
+        pautaPorAluno[codigoAluno] = {
+          aluno: {
+            ...aluno,
+            idade,
+            genero
+          },
+          disciplinas: disciplinasAluno,
+          mediaGeral,
+          negativas,
+          situacao
+        };
+      }
 
       return {
         turma: parseInt(codigoTurma),
@@ -1339,7 +1438,7 @@ export class GradeManagementService {
         anoLectivo: parseInt(codigoAnoLectivo),
         totalAlunos: confirmacoes.length,
         alunosComNotas: Object.keys(pautaPorAluno).length,
-        pauta: pautaFinal,
+        pauta: pautaPorAluno,
         dataGeracao: new Date().toISOString()
       };
     } catch (error) {
