@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf'
+import iconPng from '../assets/images/icon.png'
 
 export interface IBoletimAlunoData {
   numero: number
@@ -156,32 +157,18 @@ export class BoletimPdfGenerator {
       doc.setLineWidth(0.4)
       doc.line(x, y + hHeader, x + boletimW, y + hHeader)
 
-      // Pill-shaped Logo (C.E.I.P.P. JOMORAIS)
-      const logoW = 18
-      const logoH = 7
-      const logoX = x + 3
-      const logoY = y + (hHeader - logoH) / 2
-      
-      // Draw outer green pill
-      doc.setDrawColor(10, 100, 20)
-      doc.setFillColor(230, 210, 0) // Yellow background
-      doc.setLineWidth(0.3)
-      doc.roundedRect(logoX, logoY, logoW, logoH, 1.8, 1.8, 'FD')
-
-      // Text in logo
-      doc.setFont('Helvetica', 'bold')
-      doc.setFontSize(2.8)
-      doc.setTextColor(10, 100, 20) // Green
-      doc.text('C.E.I.P.P.', logoX + logoW / 2, logoY + 2.6, { align: 'center' })
-      doc.setFontSize(3)
-      doc.text('JOMORAIS', logoX + logoW / 2, logoY + 5.8, { align: 'center' })
+      // Icon Logo (same as sidebar)
+      const logoSize = hHeader - 2
+      const logoX = x + 2
+      const logoY = y + 1
+      doc.addImage(iconPng, 'PNG', logoX, logoY, logoSize, logoSize)
 
       // School Name Text
       const instNome = (instituicao.nome || 'INSTITUTO TECNICO PRIVADO DE SAUDE JOMORAIS').toUpperCase()
       doc.setFont('Helvetica', 'bold')
       doc.setFontSize(8.5)
       doc.setTextColor(0, 0, 0)
-      doc.text(instNome, x + (boletimW + logoW + 3) / 2, y + hHeader / 2, {
+      doc.text(instNome, x + logoSize + 4 + (boletimW - logoSize - 4) / 2, y + hHeader / 2, {
         align: 'center',
         baseline: 'middle',
       })
