@@ -545,11 +545,11 @@ export class CertificatePdfGenerator {
     y = this.writeJustifiedMixed(doc, pBody, marginL, y, maxWidth, 5.8)
     y += 3
 
-    // Helper to pad strings with dots to fill 117mm
+    // Helper to pad strings with dots to fill 142mm
     const padWithDots = (name: string, isBold: boolean = false): string => {
       doc.setFont('Helvetica', isBold ? 'bold' : 'normal');
       doc.setFontSize(9.0);
-      const targetWidth = 117; // mm
+      const targetWidth = 142; // mm
       const currentWidth = doc.getTextWidth(name);
       if (currentWidth < targetWidth) {
         const dotWidth = doc.getTextWidth('.');
@@ -739,7 +739,7 @@ export class CertificatePdfGenerator {
       body: tableData,
       theme: 'plain',
       styles: { fontSize: 9.0, cellPadding: 0.5, fontStyle: 'normal' },
-      columnStyles: { 0: { cellWidth: 120 }, 1: { halign: 'center', cellWidth: 15 }, 2: { cellWidth: 40 } },
+      columnStyles: { 0: { cellWidth: 145 }, 1: { halign: 'center', cellWidth: 10 }, 2: { cellWidth: 20 } },
       didDrawPage: (data: any) => {
         finalTableY = data.cursor.y
       }
