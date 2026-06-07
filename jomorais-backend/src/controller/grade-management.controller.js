@@ -179,6 +179,7 @@ export class GradeManagementController {
   static async generateBoletim(req, res) {
     try {
       const { codigoAluno, codigoAnoLectivo } = req.query;
+      const codigoUtilizador = req.user?.id || req.query.codigoUtilizador || 1;
 
       if (!codigoAluno || !codigoAnoLectivo) {
         return res.status(400).json({
@@ -189,7 +190,8 @@ export class GradeManagementController {
 
       const result = await GradeManagementService.generateBoletim(
         codigoAluno,
-        codigoAnoLectivo
+        codigoAnoLectivo,
+        codigoUtilizador
       );
 
       res.json({
@@ -205,6 +207,7 @@ export class GradeManagementController {
   static async generateBoletimTurma(req, res) {
     try {
       const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;
+      const codigoUtilizador = req.user?.id || req.query.codigoUtilizador || 1;
 
       if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
         return res.status(400).json({
@@ -216,7 +219,8 @@ export class GradeManagementController {
       const result = await GradeManagementService.generateBoletimTurma(
         codigoTurma,
         codigoTrimestre,
-        codigoAnoLectivo
+        codigoAnoLectivo,
+        codigoUtilizador
       );
 
       res.json({

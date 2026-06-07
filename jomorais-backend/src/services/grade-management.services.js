@@ -15,6 +15,42 @@ function columnToLetter(column) {
 }
 
 export class GradeManagementService {
+  // Helper para calcular a nota trimestral consolidada por disciplina usando pesos (MAC: 40%, PP: 20%, PT: 40%)
+  static _calcularNotaTrimestral(notasDaDisciplina) {
+    const macNotas = notasDaDisciplina.filter(n => n.CodigoTipoAvaliacao === 1);
+    const ppNotas = notasDaDisciplina.filter(n => n.CodigoTipoAvaliacao === 2 || n.CodigoTipoAvaliacao === 9);
+    const ptNotas = notasDaDisciplina.filter(n => n.CodigoTipoAvaliacao === 3 || n.CodigoTipoAvaliacao === 10);
+
+    // Se não houver nenhuma nota nos tipos padrão, faz fallback para média simples de qualquer nota disponível
+    if (macNotas.length === 0 && ppNotas.length === 0 && ptNotas.length === 0) {
+      if (notasDaDisciplina.length === 0) return null;
+      const sum = notasDaDisciplina.reduce((acc, n) => acc + (n.Nota || 0), 0);
+      return parseFloat((sum / notasDaDisciplina.length).toFixed(1));
+    }
+
+    const macVal = macNotas.length > 0 ? (macNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / macNotas.length) : null;
+    const ppVal = ppNotas.length > 0 ? (ppNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / ppNotas.length) : null;
+    const ptVal = ptNotas.length > 0 ? (ptNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / ptNotas.length) : null;
+
+    let totalWeight = 0;
+    let weightedSum = 0;
+
+    if (macVal !== null) {
+      weightedSum += macVal * 0.4;
+      totalWeight += 0.4;
+    }
+    if (ppVal !== null) {
+      weightedSum += ppVal * 0.2;
+      totalWeight += 0.2;
+    }
+    if (ptVal !== null) {
+      weightedSum += ptVal * 0.4;
+      totalWeight += 0.4;
+    }
+
+    return totalWeight > 0 ? parseFloat((weightedSum / totalWeight).toFixed(1)) : 0;
+  }
+
   // ===============================
   // LANÇAMENTO DE NOTAS - CRUD
   // ===============================
@@ -1320,7 +1356,7 @@ export class GradeManagementService {
    * Gera boletim para todos os alunos de uma turma num trimestre específico.
    * Retorna dados estruturados para geração de PDF no frontend.
    */
-  static async generateBoletimTurma(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
+  static async generateBoletimTurma(codigoTurma, codigoTrimestre, codigoAnoLectivo, codigoUtilizador = 1) {
     try {
       // 1. Buscar dados da turma
       const turma = await prisma.tb_turmas.findUnique({
@@ -1431,30 +1467,33 @@ export class GradeManagementService {
         // Notas deste aluno
         const notasAluno = notas.filter(n => n.CodigoAluno === aluno.codigo);
 
-        // Mapear nota por disciplina (média se houver múltiplos tipos de avaliação)
+        // Mapear notas por disciplina (agrupando para calcular a nota ponderada)
         const notasPorDisciplina = {};
         notasAluno.forEach(n => {
           const key = n.CodigoDisciplina;
           if (!notasPorDisciplina[key]) {
-            notasPorDisciplina[key] = { soma: 0, count: 0, disciplina: n.tb_disciplinas };
+            notasPorDisciplina[key] = [];
           }
-          notasPorDisciplina[key].soma += parseFloat(n.Nota || 0);
-          notasPorDisciplina[key].count += 1;
+          notasPorDisciplina[key].push(n);
         });
 
-        const notasFinais = Object.entries(notasPorDisciplina).map(([codDisc, val]) => ({
-          codigoDisciplina: parseInt(codDisc),
-          disciplina: val.disciplina?.designacao || '',
-          nota: parseFloat((val.soma / val.count).toFixed(1))
-        }));
+        const notasFinais = Object.entries(notasPorDisciplina).map(([codDisc, listNotas]) => {
+          const notaConsolidada = GradeManagementService._calcularNotaTrimestral(listNotas);
+          return {
+            codigoDisciplina: parseInt(codDisc),
+            disciplina: listNotas[0].tb_disciplinas?.designacao || '',
+            nota: notaConsolidada
+          };
+        }).filter(item => item.nota !== null);
 
         // Calcular média geral
         const mediaGeral = notasFinais.length > 0
           ? parseFloat((notasFinais.reduce((s, n) => s + n.nota, 0) / notasFinais.length).toFixed(2))
           : 0;
 
-        // Situação do aluno
-        const situacao = mediaGeral >= 10 ? 'TRANSITA' : 'N-TRANSITA';
+        // Situação do aluno: Aprovado se Média Geral >= 10 e no máximo 2 negativas (< 10)
+        const negativas = notasFinais.filter(n => n.nota < 10).length;
+        const situacao = (mediaGeral >= 10 && negativas <= 2) ? 'TRANSITA' : 'N-TRANSITA';
 
         // Faltas do aluno (cruzar via código de matrícula)
         const faltasAluno = faltas
@@ -1499,6 +1538,20 @@ export class GradeManagementService {
         };
       }
 
+      // 12. Registar auditoria de emissão de boletins da turma
+      try {
+        await prisma.tb_logs.create({
+          data: {
+            Descricao: `Geração de boletins para a turma de ID ${codigoTurma} no trimestre ${codigoTrimestre} do ano letivo ID ${codigoAnoLectivo}.`,
+            OBS: `Turma: ${turma.designacao} | Trimestre: ${trimestre?.designacao || codigoTrimestre} | Alunos: ${boletins.length}`,
+            Data: new Date(),
+            CodigoUtilizador: codigoUtilizador ? parseInt(codigoUtilizador) : 1
+          }
+        });
+      } catch (logError) {
+        console.error('Falha ao registar log de auditoria de boletim da turma:', logError);
+      }
+
       return {
         turma: {
           codigo: turma.codigo,
@@ -1529,7 +1582,7 @@ export class GradeManagementService {
     }
   }
 
-  static async generateBoletim(codigoAluno, codigoAnoLectivo) {
+  static async generateBoletim(codigoAluno, codigoAnoLectivo, codigoUtilizador = 1) {
     try {
       // Buscar todas as notas do aluno no ano letivo
       const notas = await prisma.tb_notas_alunos.findMany({
@@ -1550,36 +1603,83 @@ export class GradeManagementService {
         throw new AppError('Nenhuma nota encontrada para este aluno', 404);
       }
 
-      // Agrupar por trimestre
+      // Agrupar por trimestre e depois por disciplina
       const boletimPorTrimestre = {};
-      let totalNotas = 0;
-      let somaNotas = 0;
+      const notasAgrupadas = {}; // { codigoTrimestre: { codigoDisciplina: [notas] } }
+      const trimestresMap = {};
+      const disciplinasMap = {};
 
       notas.forEach(nota => {
-        const codigoTrimestre = nota.CodigoTrimestre;
-        if (!boletimPorTrimestre[codigoTrimestre]) {
-          boletimPorTrimestre[codigoTrimestre] = {
-            trimestre: nota.tb_trimestres.designacao,
-            disciplinas: []
-          };
+        const tCode = nota.CodigoTrimestre;
+        const dCode = nota.CodigoDisciplina;
+        
+        trimestresMap[tCode] = nota.tb_trimestres.designacao;
+        disciplinasMap[dCode] = nota.tb_disciplinas.designacao;
+
+        if (!notasAgrupadas[tCode]) {
+          notasAgrupadas[tCode] = {};
         }
-
-        boletimPorTrimestre[codigoTrimestre].disciplinas.push({
-          disciplina: nota.tb_disciplinas.designacao,
-          tipoAvaliacao: nota.tb_tipo_avaliacao.designacao,
-          nota: nota.Nota
-        });
-
-        totalNotas++;
-        somaNotas += nota.Nota;
+        if (!notasAgrupadas[tCode][dCode]) {
+          notasAgrupadas[tCode][dCode] = [];
+        }
+        notasAgrupadas[tCode][dCode].push(nota);
       });
 
-      const media = totalNotas > 0 ? somaNotas / totalNotas : 0;
+      let totalTrimesters = 0;
+      let somaMediasTrimesters = 0;
+
+      Object.entries(notasAgrupadas).forEach(([tCode, disciplinasNotas]) => {
+        const trimestreDesignacao = trimestresMap[tCode];
+        const disciplinasFinais = [];
+
+        Object.entries(disciplinasNotas).forEach(([dCode, listNotas]) => {
+          const notaConsolidada = GradeManagementService._calcularNotaTrimestral(listNotas);
+          if (notaConsolidada !== null) {
+            disciplinasFinais.push({
+              disciplina: disciplinasMap[dCode],
+              nota: notaConsolidada
+            });
+          }
+        });
+
+        const mediaTrimestre = disciplinasFinais.length > 0
+          ? parseFloat((disciplinasFinais.reduce((acc, curr) => acc + curr.nota, 0) / disciplinasFinais.length).toFixed(2))
+          : 0;
+
+        const negativas = disciplinasFinais.filter(d => d.nota < 10).length;
+        const situacao = (mediaTrimestre >= 10 && negativas <= 2) ? 'TRANSITA' : 'N-TRANSITA';
+
+        boletimPorTrimestre[tCode] = {
+          trimestre: trimestreDesignacao,
+          disciplinas: disciplinasFinais,
+          mediaTrimestre,
+          situacao
+        };
+
+        somaMediasTrimesters += mediaTrimestre;
+        totalTrimesters++;
+      });
+
+      const mediaGeral = totalTrimesters > 0 ? parseFloat((somaMediasTrimesters / totalTrimesters).toFixed(2)) : 0;
+
+      // Auditoria
+      try {
+        await prisma.tb_logs.create({
+          data: {
+            Descricao: `Geração de boletim individual do aluno ID ${codigoAluno} para o ano letivo ID ${codigoAnoLectivo}.`,
+            OBS: `Aluno: ${notas[0].tb_alunos.nome} | Média Geral: ${mediaGeral}`,
+            Data: new Date(),
+            CodigoUtilizador: codigoUtilizador ? parseInt(codigoUtilizador) : 1
+          }
+        });
+      } catch (logError) {
+        console.error('Falha ao registar log de auditoria de boletim individual:', logError);
+      }
 
       return {
         aluno: notas[0].tb_alunos,
         anoLectivo: codigoAnoLectivo,
-        mediaGeral: parseFloat(media.toFixed(2)),
+        mediaGeral,
         boletim: boletimPorTrimestre,
         dataGeracao: new Date().toISOString()
       };
