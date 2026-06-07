@@ -153,6 +153,21 @@ class CertificateService {
       throw error
     }
   }
+
+  /**
+   * Verifica a autenticidade de um certificado publicamente
+   * @param numeroCertificado - Número do certificado
+   * @returns Promise com resultado da verificação
+   */
+  async verifyCertificate(numeroCertificado: string): Promise<any> {
+    try {
+      const response = await api.get<any>(`${this.baseURL}/verificar/${numeroCertificado}`)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao verificar certificado:', error)
+      throw error
+    }
+  }
 }
 
 export default new CertificateService()

@@ -11,9 +11,9 @@ export class CertificatesService {
    * Gerar número sequencial de certificado
    * Formato: CERT-AAAA-NNNNNN
    */
-  static async generateNumeroCertificado(codigoAnoLectivo) {
+  static async generateNumeroCertificado(codigoAnoLectivo, tx = prisma) {
     try {
-      const anoLectivo = await prisma.tb_ano_lectivo.findUnique({
+      const anoLectivo = await tx.tb_ano_lectivo.findUnique({
         where: { codigo: codigoAnoLectivo }
       });
       
@@ -22,7 +22,7 @@ export class CertificatesService {
       }
 
       // Contar certificados deste ano
-      const total = await prisma.tb_certificados.count({
+      const total = await tx.tb_certificados.count({
         where: {
           Codigo_AnoLectivo: codigoAnoLectivo
         }
@@ -30,7 +30,20 @@ export class CertificatesService {
 
       const sequencial = String(total + 1).padStart(6, '0');
       const anoInicial = anoLectivo.anoInicial;
-      return `CERT-${anoInicial}-${sequencial}`;
+      const proposedNumber = `CERT-${anoInicial}-${sequencial}`;
+
+      // Verificar duplicidade de número para concorrência
+      const duplicateNumber = await tx.tb_certificados.findFirst({
+        where: { NumeroCertificado: proposedNumber }
+      });
+      if (duplicateNumber) {
+        const totalRefetched = await tx.tb_certificados.count({
+          where: { Codigo_AnoLectivo: codigoAnoLectivo }
+        });
+        return `CERT-${anoInicial}-${String(totalRefetched + 1).padStart(6, '0')}`;
+      }
+
+      return proposedNumber;
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError('Erro ao gerar número de certificado', 500, 'GENERATION_ERROR', { originalError: error.message });
@@ -54,76 +67,99 @@ export class CertificatesService {
         throw new AppError('Campos obrigatórios: codigoAluno, codigoDisciplina, codigoAnoLectivo', 400, 'MISSING_FIELDS');
       }
 
-      // Validar existência de entidades
-      const [aluno, disciplina, anoLectivo] = await Promise.all([
-        prisma.tb_alunos.findUnique({ where: { codigo: codigoAluno } }),
-        prisma.tb_disciplinas.findUnique({ where: { codigo: codigoDisciplina } }),
-        prisma.tb_ano_lectivo.findUnique({ where: { codigo: codigoAnoLectivo } })
-      ]);
+      // Executar toda a lógica de validação acadêmica e criação dentro de uma transação
+      const certificado = await prisma.$transaction(async (tx) => {
+        // Validar existência de entidades
+        const [aluno, disciplina, anoLectivo] = await Promise.all([
+          tx.tb_alunos.findUnique({ where: { codigo: codigoAluno } }),
+          tx.tb_disciplinas.findUnique({ where: { codigo: codigoDisciplina } }),
+          tx.tb_ano_lectivo.findUnique({ where: { codigo: codigoAnoLectivo } })
+        ]);
 
-      if (!aluno) {
-        throw new AppError('Aluno não encontrado', 404, 'STUDENT_NOT_FOUND');
-      }
-      if (!disciplina) {
-        throw new AppError('Disciplina não encontrada', 404, 'SUBJECT_NOT_FOUND');
-      }
-      if (!anoLectivo) {
-        throw new AppError('Ano letivo não encontrado', 404, 'YEAR_NOT_FOUND');
-      }
+        if (!aluno) {
+          throw new AppError('Aluno não encontrado', 404, 'STUDENT_NOT_FOUND');
+        }
+        if (!disciplina) {
+          throw new AppError('Disciplina não encontrada', 404, 'SUBJECT_NOT_FOUND');
+        }
+        if (!anoLectivo) {
+          throw new AppError('Ano letivo não encontrado', 404, 'YEAR_NOT_FOUND');
+        }
 
-      // Validar se aluno foi aprovado (nota >= 10)
-      // TODO: Implementar validação de nota após preenchimento correto de notas
-      // const nota = await prisma.tb_notas_alunos.findFirst({
-      //   where: {
-      //     CodigoAluno: codigoAluno,
-      //     CodigoDisciplina: codigoDisciplina,
-      //     CodigoAnoLectivo: codigoAnoLectivo
-      //   }
-      // });
-      // if (!nota || nota.Nota < 10) {
-      //   throw new AppError('Aluno não foi aprovado nesta disciplina (nota < 10)', 400, 'NOT_APPROVED');
-      // }
+        // 1. Validar se o aluno tem matrícula confirmada ativa no ano letivo
+        const enrollment = await tx.tb_confirmacoes.findFirst({
+          where: {
+            tb_matriculas: {
+              codigo_Aluno: codigoAluno
+            },
+            codigo_Ano_lectivo: codigoAnoLectivo
+          }
+        });
+        if (!enrollment) {
+          throw new AppError('O aluno não possui confirmação de matrícula ativa para o ano letivo selecionado', 400, 'NO_ENROLLMENT');
+        }
 
-      // Verificar se já existe certificado
-      const existente = await prisma.tb_certificados.findUnique({
-        where: {
-          Codigo_Aluno_Codigo_Disciplina_Codigo_AnoLectivo: {
+        // 2. Validar se o aluno foi aprovado na disciplina (média das notas >= 10)
+        const grades = await tx.tb_notas_alunos.findMany({
+          where: {
+            CodigoAluno: codigoAluno,
+            CodigoDisciplina: codigoDisciplina,
+            CodigoAnoLectivo: codigoAnoLectivo
+          }
+        });
+
+        if (grades.length === 0) {
+          throw new AppError('Não foram encontradas notas lançadas para este aluno nesta disciplina', 400, 'NO_GRADES');
+        }
+
+        const totalNotas = grades.reduce((acc, curr) => acc + curr.Nota, 0);
+        const media = totalNotas / grades.length;
+
+        if (media < 10) {
+          throw new AppError(`Aluno não foi aprovado nesta disciplina. Média final obtida: ${media.toFixed(1)} (mínimo de 10.0 necessário)`, 400, 'NOT_APPROVED');
+        }
+
+        // 3. Verificar se já existe certificado cadastrado
+        const existente = await tx.tb_certificados.findUnique({
+          where: {
+            Codigo_Aluno_Codigo_Disciplina_Codigo_AnoLectivo: {
+              Codigo_Aluno: codigoAluno,
+              Codigo_Disciplina: codigoDisciplina,
+              Codigo_AnoLectivo: codigoAnoLectivo
+            }
+          }
+        });
+
+        if (existente) {
+          throw new AppError('Certificado já existe para este aluno nesta disciplina', 409, 'DUPLICATE_CERTIFICATE');
+        }
+
+        // Gerar número de certificado único dentro da transação
+        const numeroCertificado = await this.generateNumeroCertificado(codigoAnoLectivo, tx);
+
+        // Criar certificado
+        return await tx.tb_certificados.create({
+          data: {
             Codigo_Aluno: codigoAluno,
             Codigo_Disciplina: codigoDisciplina,
-            Codigo_AnoLectivo: codigoAnoLectivo
-          }
-        }
-      });
-
-      if (existente) {
-        throw new AppError('Certificado já existe para este aluno nesta disciplina', 409, 'DUPLICATE_CERTIFICATE');
-      }
-
-      // Gerar número do certificado
-      const numeroCertificado = await this.generateNumeroCertificado(codigoAnoLectivo);
-
-      // Criar certificado
-      const certificado = await prisma.tb_certificados.create({
-        data: {
-          Codigo_Aluno: codigoAluno,
-          Codigo_Disciplina: codigoDisciplina,
-          Codigo_AnoLectivo: codigoAnoLectivo,
-          NumeroCertificado: numeroCertificado,
-          DataEmissao: new Date(),
-          Status: 'Pendente',
-          Observacoes: observacoes || null
-        },
-        include: {
-          tb_alunos: {
-            select: { codigo: true, nome: true }
+            Codigo_AnoLectivo: codigoAnoLectivo,
+            NumeroCertificado: numeroCertificado,
+            DataEmissao: new Date(),
+            Status: 'Pendente',
+            Observacoes: observacoes || null
           },
-          tb_disciplinas: {
-            select: { codigo: true, designacao: true }
-          },
-          tb_ano_lectivo: {
-            select: { codigo: true, designacao: true }
+          include: {
+            tb_alunos: {
+              select: { codigo: true, nome: true }
+            },
+            tb_disciplinas: {
+              select: { codigo: true, designacao: true }
+            },
+            tb_ano_lectivo: {
+              select: { codigo: true, designacao: true }
+            }
           }
-        }
+        });
       });
 
       return certificado;
@@ -191,16 +227,32 @@ export class CertificatesService {
     }
   }
 
-  /**
-   * Obter certificado por ID
-   */
   static async getCertificateById(id) {
     try {
       const certificado = await prisma.tb_certificados.findUnique({
         where: { Codigo: id },
         include: {
           tb_alunos: {
-            select: { codigo: true, nome: true, email: true, dataNascimento: true }
+            include: {
+              tb_matriculas: {
+                include: {
+                  tb_cursos: {
+                    select: { designacao: true }
+                  },
+                  tb_confirmacoes: {
+                    include: {
+                      tb_turmas: {
+                        include: {
+                          tb_classes: {
+                            select: { designacao: true }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           tb_disciplinas: {
             select: { codigo: true, designacao: true }
@@ -218,7 +270,22 @@ export class CertificatesService {
         throw new AppError('Certificado não encontrado', 404, 'CERTIFICATE_NOT_FOUND');
       }
 
-      return certificado;
+      // Buscar e calcular média final das notas na disciplina para injetar no retorno
+      const grades = await prisma.tb_notas_alunos.findMany({
+        where: {
+          CodigoAluno: certificado.Codigo_Aluno,
+          CodigoDisciplina: certificado.Codigo_Disciplina,
+          CodigoAnoLectivo: certificado.Codigo_AnoLectivo
+        }
+      });
+
+      const totalNotas = grades.reduce((acc, curr) => acc + curr.Nota, 0);
+      const media = grades.length > 0 ? (totalNotas / grades.length) : 0;
+
+      return {
+        ...certificado,
+        mediaFinal: parseFloat(media.toFixed(1))
+      };
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError('Erro ao obter certificado', 500, 'GET_ERROR', { originalError: error.message });
@@ -430,6 +497,54 @@ export class CertificatesService {
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError('Erro ao obter estatísticas', 500, 'STATS_ERROR', { originalError: error.message });
+    }
+  }
+
+  /**
+   * Verificar certificado publicamente
+   */
+  static async verifyCertificate(numeroCertificado) {
+    try {
+      if (!numeroCertificado) {
+        throw new AppError('Número do certificado é obrigatório', 400, 'MISSING_FIELDS');
+      }
+
+      const certificado = await prisma.tb_certificados.findFirst({
+        where: { NumeroCertificado: numeroCertificado },
+        include: {
+          tb_alunos: {
+            select: { codigo: true, nome: true }
+          },
+          tb_disciplinas: {
+            select: { codigo: true, designacao: true }
+          },
+          tb_ano_lectivo: {
+            select: { codigo: true, designacao: true }
+          },
+          tb_utilizadores: {
+            select: { codigo: true, nome: true }
+          }
+        }
+      });
+
+      if (!certificado) {
+        throw new AppError('Certificado não encontrado ou número inválido', 404, 'CERTIFICATE_NOT_FOUND');
+      }
+
+      return {
+        valido: certificado.Status === 'Assinado',
+        status: certificado.Status,
+        numero: certificado.NumeroCertificado,
+        aluno: certificado.tb_alunos.nome,
+        disciplina: certificado.tb_disciplinas.designacao,
+        anoLectivo: certificado.tb_ano_lectivo.designacao,
+        dataEmissao: certificado.DataEmissao,
+        dataAssinatura: certificado.DataAssinatura,
+        assinadoPor: certificado.tb_utilizadores?.nome || null
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Erro ao verificar certificado', 500, 'VERIFICATION_ERROR', { originalError: error.message });
     }
   }
 }

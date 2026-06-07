@@ -8,6 +8,7 @@ import {
   Loader2,
   AlertCircle,
   PenTool,
+  Download,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import {
@@ -22,6 +23,8 @@ import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useAuth } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
 import type { ITurma } from '../../../types/turma.types'
+import { CertificatePdfGenerator } from '../../../utils/CertificatePdfGenerator'
+import certificateService from '../../../services/certificate.service'
 
 export default function CertificateManagement() {
   const { user } = useAuth()
@@ -35,6 +38,7 @@ export default function CertificateManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedCertificate, setSelectedCertificate] = useState<any>(null)
+  const [isDownloading, setIsDownloading] = useState<number | null>(null)
 
   // Formulário criação
   const [createForm, setCreateForm] = useState({
@@ -142,6 +146,23 @@ export default function CertificateManagement() {
       toast.success('Certificado cancelado')
     } catch (error: any) {
       toast.error(error.message || 'Erro ao cancelar certificado')
+    }
+  }
+
+  const handleDownloadPdf = async (certificateId: number) => {
+    try {
+      setIsDownloading(certificateId)
+      const res = await certificateService.getCertificateById(certificateId)
+      if (res && res.data) {
+        CertificatePdfGenerator.generatePDF(res.data)
+        toast.success('PDF gerado com sucesso')
+      } else {
+        toast.error('Erro ao obter dados do certificado')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao gerar PDF do certificado')
+    } finally {
+      setIsDownloading(null)
     }
   }
 
@@ -336,6 +357,21 @@ export default function CertificateManagement() {
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <PenTool className="w-4 h-4" />
+                            )}
+                          </button>
+                        )}
+
+                        {cert.Status === 'Assinado' && (
+                          <button
+                            onClick={() => handleDownloadPdf(cert.Codigo)}
+                            disabled={isDownloading === cert.Codigo}
+                            className="text-amber-600 hover:text-amber-800 flex items-center gap-1 disabled:opacity-50"
+                            title="Descarregar PDF"
+                          >
+                            {isDownloading === cert.Codigo ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Download className="w-4 h-4" />
                             )}
                           </button>
                         )}
@@ -613,6 +649,23 @@ export default function CertificateManagement() {
                   className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                 >
                   {isSigning ? 'Assinando...' : 'Assinar Certificado'}
+                </button>
+              )}
+              {selectedCertificate.Status === 'Assinado' && (
+                <button
+                  onClick={() => {
+                    handleDownloadPdf(selectedCertificate.Codigo)
+                    setShowDetailModal(false)
+                  }}
+                  disabled={isDownloading === selectedCertificate.Codigo}
+                  className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isDownloading === selectedCertificate.Codigo ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  Descarregar PDF
                 </button>
               )}
             </div>

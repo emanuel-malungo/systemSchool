@@ -34,8 +34,32 @@
 
 import { Router } from 'express';
 import { CertificatesController } from '../controller/certificates.controller.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
 
 const router = Router();
+
+/**
+ * @swagger
+ * /api/certificates/verificar/{numeroCertificado}:
+ *   get:
+ *     summary: Verificar validade de um certificado publicamente
+ *     tags: [Gestão de Certificados]
+ *     parameters:
+ *       - in: path
+ *         name: numeroCertificado
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Certificado verificado com sucesso
+ *       404:
+ *         description: Certificado não encontrado
+ */
+router.get('/verificar/:numeroCertificado', CertificatesController.verifyCertificate);
+
+// Exigir autenticação para todas as demais rotas administrativas
+router.use(authenticateToken);
 
 /**
  * @swagger

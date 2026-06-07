@@ -104,20 +104,20 @@ export class CertificatesController {
   static async signCertificate(req, res) {
     try {
       const { id } = req.params;
-      const { codigoUtilizador } = req.body;
-
+      const codigoUtilizador = req.user?.id;
+ 
       if (!codigoUtilizador) {
-        return res.status(400).json({
+        return res.status(401).json({
           success: false,
-          message: 'Campo obrigatório: codigoUtilizador'
+          message: 'Usuário não autenticado'
         });
       }
-
+ 
       const certificado = await CertificatesService.signCertificate(
         parseInt(id),
         parseInt(codigoUtilizador)
       );
-
+ 
       return res.status(200).json({
         success: true,
         message: 'Certificado assinado com sucesso',
@@ -202,6 +202,25 @@ export class CertificatesController {
       });
     } catch (error) {
       return handleControllerError(res, error, 'Erro ao obter estatísticas', 400);
+    }
+  }
+
+  /**
+   * Verificar certificado publicamente
+   */
+  static async verifyCertificate(req, res) {
+    try {
+      const { numeroCertificado } = req.params;
+      
+      const resultado = await CertificatesService.verifyCertificate(numeroCertificado);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Certificado verificado com sucesso',
+        data: resultado
+      });
+    } catch (error) {
+      return handleControllerError(res, error, 'Erro ao verificar certificado', 400);
     }
   }
 }
