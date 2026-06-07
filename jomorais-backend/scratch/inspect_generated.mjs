@@ -1,14 +1,13 @@
 import ExcelJS from 'exceljs';
-import path from 'path';
 import fs from 'fs';
 
-const templatePath = 'c:\\Users\\User\\Videos\\project\\backend\\systemSchool\\PROJECT PEDAGOGICO\\MODELOS DE PAUTAS DO 1ª E 2ª TRIMESTRE\\1ª e 2ª trimestre  curso de analises clinicas\\11CL - AC-A-VESP.xlsx';
+const generatedPath = 'scratch/generated_pauta.xlsx';
 
 async function run() {
   try {
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(templatePath);
-    console.log('Worksheets:', workbook.worksheets.map(w => w.name));
+    await workbook.xlsx.readFile(generatedPath);
+    console.log('Generated Worksheets:', workbook.worksheets.map(w => w.name));
     
     const sheet = workbook.worksheets[0];
     if (!sheet) {
@@ -21,7 +20,7 @@ async function run() {
     outputText += `Max Row: ${sheet.actualRowCount}\n`;
     outputText += `Max Col: ${sheet.actualColumnCount}\n`;
 
-    for (let r = 1; r <= 18; r++) {
+    for (let r = 1; r <= 35; r++) {
       const row = sheet.getRow(r);
       const values = [];
       for (let c = 1; c <= 60; c++) {
@@ -42,8 +41,8 @@ async function run() {
       }
     }
 
-    fs.writeFileSync('scratch/inspect_output.txt', outputText);
-    console.log('Saved inspection output to scratch/inspect_output.txt');
+    fs.writeFileSync('scratch/generated_inspect_output.txt', outputText);
+    console.log('Saved generated inspection output to scratch/generated_inspect_output.txt');
   } catch (error) {
     console.error('Error:', error);
   }

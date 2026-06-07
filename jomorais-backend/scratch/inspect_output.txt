@@ -2,181 +2,608 @@ Sheet Name: 1ºT-11ª-A-PAUTA
 Max Row: 62
 Max Col: 54
 
-Row 55:
-  Col 2 (B55): 39 
-  Col 3 (C55): 3364 
-  Col 4 (D55): "Natália Casimiro Muanda" 
-  Col 8 (H55): {"formula":"SUM('11CL-AC-A-L PORT'!J47)","result":12.666666666666666} 
-  Col 11 (K55): {"formula":"SUM('11CL-AC-A-MAT'!J47)","result":10} 
-  Col 14 (N55): {"formula":"SUM('11CL-AC-A-BIOL'!J47)","result":13.666666666666666} 
-  Col 17 (Q55): {"formula":"SUM('11CL-AC-A-INGLES'!J47)","result":13.666666666666666} 
-  Col 20 (T55): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J47)","result":8.333333333333334} 
-  Col 23 (W55): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J47)","result":13.833333333333334} 
-  Col 26 (Z55): {"formula":"SUM('11CL-AC-A-HEMAT I'!J47)","result":12.5} 
-  Col 29 (AC55): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J47)","result":13.583333333333334} 
-  Col 32 (AF55): {"formula":"SUM('11CL-AC-A-URINOL.'!J47)","result":7} 
-  Col 35 (AI55): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J47)","result":7.5} 
-  Col 38 (AL55): {"formula":"SUM('11CL-AC-A-ED. FIS'!J47)","result":14} 
-  Col 41 (AO55): {"formula":"SUM('11CL-AC-A-AFH'!J47)","result":8.333333333333334} 
-  Col 42 (AP55): "N/TRANSITA" 
-  Col 43 (AQ55): {"result":11.256944444444443,"sharedFormula":"AQ17"} 
-  Col 44 (AR55): 17 
-  Col 45 (AS55): "F" 
+Row 1:
+  Col 1 (A1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} 
+  Col 2 (B1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 3 (C1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 4 (D1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 5 (E1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 6 (F1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 7 (G1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 8 (H1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 9 (I1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 10 (J1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 11 (K1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 12 (L1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 13 (M1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 14 (N1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 15 (O1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 16 (P1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 17 (Q1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 18 (R1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 19 (S1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 20 (T1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 21 (U1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 22 (V1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 23 (W1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 24 (X1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 25 (Y1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 26 (Z1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 27 (AA1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 28 (AB1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 29 (AC1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 30 (AD1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 31 (AE1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 32 (AF1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 33 (AG1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 34 (AH1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 35 (AI1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 36 (AJ1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 37 (AK1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 38 (AL1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 39 (AM1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 40 (AN1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 41 (AO1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 42 (AP1): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
 
-Row 56:
-  Col 2 (B56): 40 
-  Col 3 (C56): 2867 
-  Col 4 (D56): "Natália Divina Luemba Chincócolo" 
-  Col 8 (H56): {"formula":"SUM('11CL-AC-A-L PORT'!J48)","result":11.666666666666666} 
-  Col 11 (K56): {"formula":"SUM('11CL-AC-A-MAT'!J48)","result":12.666666666666666} 
-  Col 14 (N56): {"formula":"SUM('11CL-AC-A-BIOL'!J48)","result":12} 
-  Col 17 (Q56): {"formula":"SUM('11CL-AC-A-INGLES'!J48)","result":17.666666666666668} 
-  Col 20 (T56): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J48)","result":14} 
-  Col 23 (W56): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J48)","result":13.166666666666666} 
-  Col 26 (Z56): {"formula":"SUM('11CL-AC-A-HEMAT I'!J48)","result":14.166666666666666} 
-  Col 29 (AC56): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J48)","result":15.666666666666666} 
-  Col 32 (AF56): {"formula":"SUM('11CL-AC-A-URINOL.'!J48)","result":12} 
-  Col 35 (AI56): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J48)","result":12} 
-  Col 38 (AL56): {"formula":"SUM('11CL-AC-A-ED. FIS'!J48)","result":14} 
-  Col 41 (AO56): {"formula":"SUM('11CL-AC-A-AFH'!J48)","result":11} 
-  Col 42 (AP56): "N/TRANSITA" 
-  Col 43 (AQ56): {"result":13.333333333333334,"sharedFormula":"AQ17"} 
-  Col 44 (AR56): 17 
-  Col 45 (AS56): "F" 
+Row 2:
+  Col 1 (A2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 2 (B2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 3 (C2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 4 (D2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 5 (E2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 6 (F2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 7 (G2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 8 (H2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 9 (I2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 10 (J2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 11 (K2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 12 (L2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 13 (M2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 14 (N2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 15 (O2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 16 (P2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 17 (Q2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 18 (R2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 19 (S2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 20 (T2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 21 (U2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 22 (V2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 23 (W2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 24 (X2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 25 (Y2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 26 (Z2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 27 (AA2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 28 (AB2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 29 (AC2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 30 (AD2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 31 (AE2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 32 (AF2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 33 (AG2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 34 (AH2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 35 (AI2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 36 (AJ2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 37 (AK2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 38 (AL2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 39 (AM2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 40 (AN2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 41 (AO2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 42 (AP2): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
 
-Row 57:
-  Col 2 (B57): 41 
-  Col 3 (C57): 3408 
-  Col 4 (D57): "Pascoalina Betchi Tati" 
-  Col 8 (H57): {"formula":"SUM('11CL-AC-A-L PORT'!J49)","result":12.566666666666668} 
-  Col 11 (K57): {"formula":"SUM('11CL-AC-A-MAT'!J49)","result":11} 
-  Col 14 (N57): {"formula":"SUM('11CL-AC-A-BIOL'!J49)","result":10.666666666666666} 
-  Col 17 (Q57): {"formula":"SUM('11CL-AC-A-INGLES'!J49)","result":8} 
-  Col 20 (T57): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J49)","result":3.5} 
-  Col 23 (W57): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J49)","result":12.166666666666666} 
-  Col 26 (Z57): {"formula":"SUM('11CL-AC-A-HEMAT I'!J49)","result":8.833333333333334} 
-  Col 29 (AC57): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J49)","result":15.083333333333334} 
-  Col 32 (AF57): {"formula":"SUM('11CL-AC-A-URINOL.'!J49)","result":14.75} 
-  Col 35 (AI57): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J49)","result":11.833333333333334} 
-  Col 38 (AL57): {"formula":"SUM('11CL-AC-A-ED. FIS'!J49)","result":14} 
-  Col 41 (AO57): {"formula":"SUM('11CL-AC-A-AFH'!J49)","result":11.666666666666666} 
-  Col 42 (AP57): "N/TRANSITA" 
-  Col 43 (AQ57): {"formula":"AVERAGE(H57:AO57)","result":11.172222222222222,"ref":"AQ57:AQ59","shareType":"shared"} 
-  Col 44 (AR57): 16 
-  Col 45 (AS57): "F" 
+Row 3:
+  Col 1 (A3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 2 (B3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 3 (C3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 4 (D3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 5 (E3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 6 (F3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 7 (G3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 8 (H3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 9 (I3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 10 (J3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 11 (K3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 12 (L3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 13 (M3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 14 (N3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 15 (O3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 16 (P3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 17 (Q3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 18 (R3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 19 (S3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 20 (T3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 21 (U3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 22 (V3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 23 (W3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 24 (X3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 25 (Y3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 26 (Z3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 27 (AA3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 28 (AB3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 29 (AC3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 30 (AD3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 31 (AE3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 32 (AF3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 33 (AG3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 34 (AH3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 35 (AI3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 36 (AJ3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 37 (AK3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 38 (AL3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 39 (AM3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 40 (AN3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 41 (AO3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 42 (AP3): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
 
-Row 58:
-  Col 2 (B58): 42 
-  Col 3 (C58): 2816 
-  Col 4 (D58): "Pelágia Nsunda Poba Sassa" 
-  Col 8 (H58): {"formula":"SUM('11CL-AC-A-L PORT'!J50)","result":15} 
-  Col 11 (K58): {"formula":"SUM('11CL-AC-A-MAT'!J50)","result":16.333333333333332} 
-  Col 14 (N58): {"formula":"SUM('11CL-AC-A-BIOL'!J50)","result":16} 
-  Col 17 (Q58): {"formula":"SUM('11CL-AC-A-INGLES'!J50)","result":18.333333333333332} 
-  Col 20 (T58): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J50)","result":15.833333333333334} 
-  Col 23 (W58): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J50)","result":14.333333333333334} 
-  Col 26 (Z58): {"formula":"SUM('11CL-AC-A-HEMAT I'!J50)","result":16.166666666666668} 
-  Col 29 (AC58): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J50)","result":16.583333333333332} 
-  Col 32 (AF58): {"formula":"SUM('11CL-AC-A-URINOL.'!J50)","result":15.5} 
-  Col 35 (AI58): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J50)","result":13.5} 
-  Col 38 (AL58): {"formula":"SUM('11CL-AC-A-ED. FIS'!J50)","result":15} 
-  Col 41 (AO58): {"formula":"SUM('11CL-AC-A-AFH'!J50)","result":12.833333333333334} 
-  Col 42 (AP58): "TRANSITA" 
-  Col 43 (AQ58): {"result":15.451388888888888,"sharedFormula":"AQ57"} 
-  Col 44 (AR58): 16 
-  Col 45 (AS58): "M" 
+Row 4:
+  Col 1 (A4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 2 (B4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 3 (C4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 4 (D4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 5 (E4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 6 (F4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 7 (G4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 8 (H4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 9 (I4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 10 (J4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 11 (K4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 12 (L4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 13 (M4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 14 (N4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 15 (O4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 16 (P4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 17 (Q4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 18 (R4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 19 (S4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 20 (T4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 21 (U4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 22 (V4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 23 (W4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 24 (X4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 25 (Y4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 26 (Z4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 27 (AA4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 28 (AB4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 29 (AC4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 30 (AD4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 31 (AE4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 32 (AF4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 33 (AG4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 34 (AH4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 35 (AI4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 36 (AJ4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 37 (AK4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 38 (AL4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 39 (AM4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 40 (AN4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 41 (AO4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
+  Col 42 (AP4): {"richText":[{"text":"                      INSTITUTO TÉCNICO PRIVADO DE SA"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÚDE"},{"font":{"bold":true,"size":20,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" JOMORAIS"}]} (Merged into A1)
 
-Row 59:
-  Col 2 (B59): 43 
-  Col 3 (C59): 3152 
-  Col 4 (D59): "Rachel Celina André Mingas" 
-  Col 8 (H59): {"formula":"SUM('11CL-AC-A-L PORT'!J51)","result":9.166666666666666} 
-  Col 11 (K59): {"formula":"SUM('11CL-AC-A-MAT'!J51)","result":6.333333333333333} 
-  Col 14 (N59): {"formula":"SUM('11CL-AC-A-BIOL'!J51)","result":7} 
-  Col 17 (Q59): {"formula":"SUM('11CL-AC-A-INGLES'!J51)","result":7.666666666666667} 
-  Col 20 (T59): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J51)","result":2.3333333333333335} 
-  Col 23 (W59): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J51)","result":12.166666666666666} 
-  Col 26 (Z59): {"formula":"SUM('11CL-AC-A-HEMAT I'!J51)","result":8.333333333333334} 
-  Col 29 (AC59): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J51)","result":11.833333333333334} 
-  Col 32 (AF59): {"formula":"SUM('11CL-AC-A-URINOL.'!J51)","result":8.5} 
-  Col 35 (AI59): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J51)","result":7} 
-  Col 38 (AL59): {"formula":"SUM('11CL-AC-A-ED. FIS'!J51)","result":4} 
-  Col 41 (AO59): {"formula":"SUM('11CL-AC-A-AFH'!J51)","result":9.833333333333334} 
-  Col 42 (AP59): "N/TRANSITA" 
-  Col 43 (AQ59): {"result":7.847222222222221,"sharedFormula":"AQ57"} 
-  Col 44 (AR59): 17 
-  Col 45 (AS59): "F" 
+Row 7:
+  Col 2 (B7): "PAUTA DE APROVEITAMENTO ESCOLAR" 
+  Col 3 (C7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 4 (D7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 5 (E7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 6 (F7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 7 (G7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 8 (H7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 9 (I7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 10 (J7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 11 (K7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 12 (L7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 13 (M7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 14 (N7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 15 (O7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 16 (P7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 17 (Q7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 18 (R7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 19 (S7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 20 (T7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 21 (U7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 22 (V7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 23 (W7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 24 (X7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 25 (Y7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 26 (Z7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 27 (AA7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 28 (AB7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 29 (AC7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 30 (AD7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 31 (AE7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 32 (AF7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 33 (AG7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 34 (AH7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 35 (AI7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 36 (AJ7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 37 (AK7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 38 (AL7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 39 (AM7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 40 (AN7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 41 (AO7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
+  Col 42 (AP7): "PAUTA DE APROVEITAMENTO ESCOLAR" (Merged into B7)
 
-Row 60:
-  Col 2 (B60): 44 
-  Col 3 (C60): 3628 
-  Col 4 (D60): "Teresa Gertrudes Luzia Tati" 
-  Col 8 (H60): {"formula":"SUM('11CL-AC-A-L PORT'!J52)","result":11.566666666666668} 
-  Col 11 (K60): {"formula":"SUM('11CL-AC-A-MAT'!J52)","result":6.333333333333333} 
-  Col 14 (N60): {"formula":"SUM('11CL-AC-A-BIOL'!J52)","result":10} 
-  Col 17 (Q60): {"formula":"SUM('11CL-AC-A-INGLES'!J52)","result":13} 
-  Col 20 (T60): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J52)","result":14} 
-  Col 23 (W60): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J52)","result":12.833333333333334} 
-  Col 26 (Z60): {"formula":"SUM('11CL-AC-A-HEMAT I'!J52)","result":9.833333333333334} 
-  Col 29 (AC60): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J52)","result":15.333333333333334} 
-  Col 32 (AF60): {"formula":"SUM('11CL-AC-A-URINOL.'!J52)","result":10.333333333333334} 
-  Col 35 (AI60): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J52)","result":8.5} 
-  Col 38 (AL60): {"formula":"SUM('11CL-AC-A-ED. FIS'!J52)","result":11} 
-  Col 41 (AO60): {"formula":"SUM('11CL-AC-A-AFH'!J52)","result":10} 
-  Col 42 (AP60): "N/TRANSITA" 
-  Col 43 (AQ60): {"formula":"AVERAGE(H60:AO60)","result":11.06111111111111,"ref":"AQ60","shareType":"shared"} 
-  Col 44 (AR60): 16 
-  Col 45 (AS60): "F" 
+Row 8:
+  Col 3 (C8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} 
+  Col 4 (D8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 5 (E8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 6 (F8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 7 (G8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 8 (H8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 9 (I8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 10 (J8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 11 (K8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 12 (L8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 13 (M8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 14 (N8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 15 (O8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 16 (P8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 17 (Q8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 18 (R8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 19 (S8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 20 (T8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 21 (U8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 22 (V8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 23 (W8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 24 (X8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 25 (Y8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 26 (Z8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 27 (AA8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 28 (AB8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 29 (AC8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 30 (AD8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 31 (AE8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 32 (AF8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 33 (AG8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 34 (AH8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 35 (AI8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 36 (AJ8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 37 (AK8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 38 (AL8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 39 (AM8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 40 (AN8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 41 (AO8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
+  Col 42 (AP8): {"richText":[{"text":"ÁREA DE FORMAÇÃO: "},{"font":{"bold":true,"size":18,"color":{"argb":"FF0070C0"},"name":"Algerian","family":5},"text":"SAÚDE"}]} (Merged into C8)
 
-Row 61:
-  Col 2 (B61): "DATA DO CONSELHO DE TURMA______/______/2025" 
-  Col 3 (C61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
-  Col 4 (D61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
-  Col 5 (E61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
+Row 9:
+  Col 8 (H9): "11ª CLASSE" 
+  Col 9 (I9): "11ª CLASSE" (Merged into H9)
+  Col 10 (J9): "11ª CLASSE" (Merged into H9)
+  Col 11 (K9): "11ª CLASSE" (Merged into H9)
+  Col 13 (M9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} 
+  Col 14 (N9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 15 (O9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 16 (P9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 17 (Q9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 18 (R9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 19 (S9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 20 (T9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 21 (U9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 22 (V9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 23 (W9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 24 (X9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 25 (Y9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 26 (Z9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 27 (AA9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 28 (AB9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 29 (AC9): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 31 (AE9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} 
+  Col 32 (AF9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} (Merged into AE9)
+  Col 33 (AG9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} (Merged into AE9)
+  Col 34 (AH9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} (Merged into AE9)
+  Col 35 (AI9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} (Merged into AE9)
+  Col 36 (AJ9): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"PERÍODO"},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":": VESPERTINO"}]} (Merged into AE9)
 
-Row 64:
-  Col 2 (B64): "A Directora de Turma" 
-  Col 3 (C64): "A Directora de Turma" (Merged into B64)
-  Col 4 (D64): "A Directora de Turma" (Merged into B64)
-  Col 27 (AA64): "O Sibdirector Pedagógico" 
-  Col 28 (AB64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 29 (AC64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 30 (AD64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 31 (AE64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 32 (AF64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 33 (AG64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 34 (AH64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 35 (AI64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 36 (AJ64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 37 (AK64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 38 (AL64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 39 (AM64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 40 (AN64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 41 (AO64): "O Sibdirector Pedagógico" (Merged into AA64)
-  Col 42 (AP64): "O Sibdirector Pedagógico" (Merged into AA64)
+Row 10:
+  Col 2 (B10): "O Director do Instituto" 
+  Col 3 (C10): "O Director do Instituto" (Merged into B10)
+  Col 4 (D10): "O Director do Instituto" (Merged into B10)
+  Col 8 (H10): "11ª CLASSE" (Merged into H9)
+  Col 9 (I10): "11ª CLASSE" (Merged into H9)
+  Col 10 (J10): "11ª CLASSE" (Merged into H9)
+  Col 11 (K10): "11ª CLASSE" (Merged into H9)
+  Col 13 (M10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 14 (N10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 15 (O10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 16 (P10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 17 (Q10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 18 (R10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 19 (S10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 20 (T10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 21 (U10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 22 (V10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 23 (W10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 24 (X10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 25 (Y10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 26 (Z10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 27 (AA10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 28 (AB10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 29 (AC10): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 31 (AE10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} 
+  Col 32 (AF10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 33 (AG10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 34 (AH10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 35 (AI10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 36 (AJ10): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 38 (AL10): "MF:" 
+  Col 39 (AM10): {"formula":"SUM(AM12,AM11)","result":44} 
+  Col 40 (AN10): {"formula":"SUM(AM12,AM11)","result":44} (Merged into AM10)
 
-Row 65:
-  Col 2 (B65): "_____________________________________" 
-  Col 3 (C65): "_____________________________________" (Merged into B65)
-  Col 4 (D65): "_____________________________________" (Merged into B65)
+Row 11:
+  Col 2 (B11): "________________________________________" 
+  Col 3 (C11): "________________________________________" (Merged into B11)
+  Col 4 (D11): "________________________________________" (Merged into B11)
+  Col 8 (H11): "TURMA:" 
+  Col 9 (I11): "TURMA:" (Merged into H11)
+  Col 10 (J11): "A" 
+  Col 11 (K11): "A" (Merged into J11)
+  Col 13 (M11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 14 (N11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 15 (O11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 16 (P11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 17 (Q11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 18 (R11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 19 (S11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 20 (T11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 21 (U11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 22 (V11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 23 (W11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 24 (X11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 25 (Y11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 26 (Z11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 27 (AA11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 28 (AB11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 29 (AC11): {"richText":[{"text":"CURSO: "},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"AN"},{"font":{"bold":true,"size":26,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2},"text":"ÁLISES CLÍNICAS"}]} (Merged into M9)
+  Col 31 (AE11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 32 (AF11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 33 (AG11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 34 (AH11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 35 (AI11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 36 (AJ11): {"richText":[{"font":{"bold":true,"size":14,"color":{"theme":4},"name":"Calibri","family":2,"scheme":"minor"},"text":"1º "},{"font":{"bold":true,"size":14,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"TRIMESTRE "}]} (Merged into AE10)
+  Col 38 (AL11): "M" 
+  Col 39 (AM11): {"formula":"COUNTIF(AS17:AS60,\"M\")","result":11} 
+  Col 40 (AN11): {"formula":"COUNTIF(AS17:AS60,\"M\")","result":11} (Merged into AM11)
+  Col 42 (AP11): "2025-12-12T00:00:00.000Z" 
 
-Row 66:
-  Col 2 (B66): "RUTH DEMBI QUIFOCO ZEMBO" 
-  Col 3 (C66): "RUTH DEMBI QUIFOCO ZEMBO" (Merged into B66)
-  Col 4 (D66): "RUTH DEMBI QUIFOCO ZEMBO" (Merged into B66)
-  Col 27 (AA66): "ALBERTO SASSA TATI" 
-  Col 28 (AB66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 29 (AC66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 30 (AD66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 31 (AE66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 32 (AF66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 33 (AG66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 34 (AH66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 35 (AI66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 36 (AJ66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 37 (AK66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 38 (AL66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 39 (AM66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 40 (AN66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 41 (AO66): "ALBERTO SASSA TATI" (Merged into AA66)
-  Col 42 (AP66): "ALBERTO SASSA TATI" (Merged into AA66)
+Row 12:
+  Col 2 (B12): {"richText":[{"text":"GABRIEL PR"},{"font":{"bold":true,"size":14,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÓSPERO MABIALA"}]} 
+  Col 3 (C12): {"richText":[{"text":"GABRIEL PR"},{"font":{"bold":true,"size":14,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÓSPERO MABIALA"}]} (Merged into B12)
+  Col 4 (D12): {"richText":[{"text":"GABRIEL PR"},{"font":{"bold":true,"size":14,"color":{"theme":1},"name":"Calibri","family":2},"text":"ÓSPERO MABIALA"}]} (Merged into B12)
+  Col 8 (H12): "TURMA:" (Merged into H11)
+  Col 9 (I12): "TURMA:" (Merged into H11)
+  Col 10 (J12): "A" (Merged into J11)
+  Col 11 (K12): "A" (Merged into J11)
+  Col 30 (AD12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} 
+  Col 31 (AE12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 32 (AF12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 33 (AG12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 34 (AH12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 35 (AI12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 36 (AJ12): {"richText":[{"font":{"bold":true,"size":12,"color":{"argb":"FF0070C0"},"name":"Calibri","family":2,"scheme":"minor"},"text":"ANO LECTIVO:"},{"font":{"bold":true,"size":12,"color":{"theme":1},"name":"Calibri","family":2,"scheme":"minor"},"text":" "},{"font":{"bold":true,"size":12,"color":{"argb":"FFFF0000"},"name":"Calibri","family":2,"scheme":"minor"},"text":"2025/2026"}]} (Merged into AD12)
+  Col 38 (AL12): "F" 
+  Col 39 (AM12): {"formula":"COUNTIF(AS17:AS60,\"F\")","result":33} 
+  Col 40 (AN12): {"formula":"COUNTIF(AS17:AS60,\"F\")","result":33} (Merged into AM12)
+  Col 42 (AP12): "2025-12-12T00:00:00.000Z" (Merged into AP11)
+
+Row 13:
+  Col 2 (B13): "DATA______/______/2025" 
+  Col 3 (C13): "DATA______/______/2025" (Merged into B13)
+  Col 4 (D13): "DATA______/______/2025" (Merged into B13)
+
+Row 14:
+  Col 2 (B14): "Nº" 
+  Col 3 (C14): "Nº PROC" 
+  Col 4 (D14): "NOME" 
+  Col 5 (E14): "DISCIPLINA A REPETIR" 
+  Col 6 (F14): "L. Port." 
+  Col 7 (G14): "L. Port." (Merged into F14)
+  Col 8 (H14): "L. Port." (Merged into F14)
+  Col 9 (I14): "Mat." 
+  Col 10 (J14): "Mat." (Merged into I14)
+  Col 11 (K14): "Mat." (Merged into I14)
+  Col 12 (L14): "Biol." 
+  Col 13 (M14): "Biol." (Merged into L14)
+  Col 14 (N14): "Biol." (Merged into L14)
+  Col 15 (O14): "Inglês" 
+  Col 16 (P14): "Inglês" (Merged into O14)
+  Col 17 (Q14): "Inglês" (Merged into O14)
+  Col 18 (R14): "Qca Org." 
+  Col 19 (S14): "Qca Org." (Merged into R14)
+  Col 20 (T14): "Qca Org." (Merged into R14)
+  Col 21 (U14): "Microbiol." 
+  Col 22 (V14): "Microbiol." (Merged into U14)
+  Col 23 (W14): "Microbiol." (Merged into U14)
+  Col 24 (X14): "Hemat." 
+  Col 25 (Y14): "Hemat." (Merged into X14)
+  Col 26 (Z14): "Hemat." (Merged into X14)
+  Col 27 (AA14): "Imunol." 
+  Col 28 (AB14): "Imunol." (Merged into AA14)
+  Col 29 (AC14): "Imunol." (Merged into AA14)
+  Col 30 (AD14): "Urinol." 
+  Col 31 (AE14): "Urinol." (Merged into AD14)
+  Col 32 (AF14): "Urinol." (Merged into AD14)
+  Col 33 (AG14): "Parasitol." 
+  Col 34 (AH14): "Parasitol." (Merged into AG14)
+  Col 35 (AI14): "Parasitol." (Merged into AG14)
+  Col 36 (AJ14): "Ed. Física" 
+  Col 37 (AK14): "Ed. Física" (Merged into AJ14)
+  Col 38 (AL14): "Ed. Física" (Merged into AJ14)
+  Col 39 (AM14): "A.F.H" 
+  Col 40 (AN14): "A.F.H" (Merged into AM14)
+  Col 41 (AO14): "A.F.H" (Merged into AM14)
+  Col 42 (AP14): "OBS" 
+  Col 43 (AQ14): "MÉDIA" 
+  Col 44 (AR14): "Idade" 
+  Col 45 (AS14): "Género" 
+  Col 46 (AT14): "DADOS ESTATÍSTICOS" 
+  Col 47 (AU14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 48 (AV14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 49 (AW14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 50 (AX14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 51 (AY14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 52 (AZ14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+  Col 53 (BA14): "DADOS ESTATÍSTICOS" (Merged into AT14)
+
+Row 15:
+  Col 2 (B15): "Nº" (Merged into B14)
+  Col 3 (C15): "Nº PROC" (Merged into C14)
+  Col 4 (D15): "NOME" (Merged into D14)
+  Col 5 (E15): "DISCIPLINA A REPETIR" (Merged into E14)
+  Col 6 (F15): "FALTAS" 
+  Col 7 (G15): "FALTAS" (Merged into F15)
+  Col 8 (H15): "MT1º" 
+  Col 9 (I15): "FALTAS" 
+  Col 10 (J15): "FALTAS" (Merged into I15)
+  Col 11 (K15): "MT1º" 
+  Col 12 (L15): "FALTAS" 
+  Col 13 (M15): "FALTAS" (Merged into L15)
+  Col 14 (N15): "MT1º" 
+  Col 15 (O15): "FALTAS" 
+  Col 16 (P15): "FALTAS" (Merged into O15)
+  Col 17 (Q15): "MT1º" 
+  Col 18 (R15): "FALTAS" 
+  Col 19 (S15): "FALTAS" (Merged into R15)
+  Col 20 (T15): "MT1º" 
+  Col 21 (U15): "FALTAS" 
+  Col 22 (V15): "FALTAS" (Merged into U15)
+  Col 23 (W15): "MT1º" 
+  Col 24 (X15): "FALTAS" 
+  Col 25 (Y15): "FALTAS" (Merged into X15)
+  Col 26 (Z15): "MT1º" 
+  Col 27 (AA15): "FALTAS" 
+  Col 28 (AB15): "FALTAS" (Merged into AA15)
+  Col 29 (AC15): "MT1º" 
+  Col 30 (AD15): "FALTAS" 
+  Col 31 (AE15): "FALTAS" (Merged into AD15)
+  Col 32 (AF15): "MT1º" 
+  Col 33 (AG15): "FALTAS" 
+  Col 34 (AH15): "FALTAS" (Merged into AG15)
+  Col 35 (AI15): "MT1º" 
+  Col 36 (AJ15): "FALTAS" 
+  Col 37 (AK15): "FALTAS" (Merged into AJ15)
+  Col 38 (AL15): "MT1º" 
+  Col 39 (AM15): "FALTAS" 
+  Col 40 (AN15): "FALTAS" (Merged into AM15)
+  Col 41 (AO15): "MT1º" 
+  Col 42 (AP15): "OBS" (Merged into AP14)
+  Col 43 (AQ15): "MÉDIA" (Merged into AQ14)
+  Col 44 (AR15): "Idade" (Merged into AR14)
+  Col 45 (AS15): "Género" (Merged into AS14)
+  Col 46 (AT15): "MATRICULADOS" 
+  Col 47 (AU15): "MATRICULADOS" (Merged into AT15)
+  Col 48 (AV15): "TRANSITA" 
+  Col 49 (AW15): "TRANSITA" (Merged into AV15)
+  Col 50 (AX15): "N/TRANSITA" 
+  Col 51 (AY15): "N/TRANSITA" (Merged into AX15)
+  Col 52 (AZ15): "Desistido/a" 
+  Col 53 (BA15): "Desistido/a" (Merged into AZ15)
+
+Row 16:
+  Col 2 (B16): "Nº" (Merged into B14)
+  Col 3 (C16): "Nº PROC" (Merged into C14)
+  Col 4 (D16): "NOME" (Merged into D14)
+  Col 5 (E16): "DISCIPLINA A REPETIR" (Merged into E14)
+  Col 6 (F16): "J" 
+  Col 7 (G16): "I" 
+  Col 8 (H16): "MT1º" (Merged into H15)
+  Col 9 (I16): "J" 
+  Col 10 (J16): "I" 
+  Col 11 (K16): "MT1º" (Merged into K15)
+  Col 12 (L16): "J" 
+  Col 13 (M16): "I" 
+  Col 14 (N16): "MT1º" (Merged into N15)
+  Col 15 (O16): "J" 
+  Col 16 (P16): "I" 
+  Col 17 (Q16): "MT1º" (Merged into Q15)
+  Col 18 (R16): "J" 
+  Col 19 (S16): "I" 
+  Col 20 (T16): "MT1º" (Merged into T15)
+  Col 21 (U16): "J" 
+  Col 22 (V16): "I" 
+  Col 23 (W16): "MT1º" (Merged into W15)
+  Col 24 (X16): "J" 
+  Col 25 (Y16): "I" 
+  Col 26 (Z16): "MT1º" (Merged into Z15)
+  Col 27 (AA16): "J" 
+  Col 28 (AB16): "I" 
+  Col 29 (AC16): "MT1º" (Merged into AC15)
+  Col 30 (AD16): "J" 
+  Col 31 (AE16): "I" 
+  Col 32 (AF16): "MT1º" (Merged into AF15)
+  Col 33 (AG16): "J" 
+  Col 34 (AH16): "I" 
+  Col 35 (AI16): "MT1º" (Merged into AI15)
+  Col 36 (AJ16): "J" 
+  Col 37 (AK16): "I" 
+  Col 38 (AL16): "MT1º" (Merged into AL15)
+  Col 39 (AM16): "J" 
+  Col 40 (AN16): "I" 
+  Col 41 (AO16): "MT1º" (Merged into AO15)
+  Col 42 (AP16): "OBS" (Merged into AP14)
+  Col 43 (AQ16): "MÉDIA" (Merged into AQ14)
+  Col 44 (AR16): "Idade" (Merged into AR14)
+  Col 45 (AS16): "Género" (Merged into AS14)
+  Col 46 (AT16): "M" 
+  Col 47 (AU16): "F" 
+  Col 48 (AV16): "M" 
+  Col 49 (AW16): "F" 
+  Col 50 (AX16): "M" 
+  Col 51 (AY16): "F" 
+  Col 52 (AZ16): "M" 
+  Col 53 (BA16): "F" 
+
+Row 17:
+  Col 2 (B17): 1 
+  Col 3 (C17): 4121 
+  Col 4 (D17): "Abrão Gomes" 
+  Col 8 (H17): {"formula":"SUM('11CL-AC-A-L PORT'!J9)","result":13.333333333333334} 
+  Col 11 (K17): {"formula":"SUM('11CL-AC-A-MAT'!J9)","result":10.333333333333334} 
+  Col 14 (N17): {"formula":"SUM('11CL-AC-A-BIOL'!J9)","result":12.666666666666666} 
+  Col 17 (Q17): {"formula":"SUM('11CL-AC-A-INGLES'!J9)","result":13.333333333333334} 
+  Col 20 (T17): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J9)","result":11.333333333333334} 
+  Col 23 (W17): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J9)","result":12.166666666666666} 
+  Col 26 (Z17): {"formula":"SUM('11CL-AC-A-HEMAT I'!J9)","result":11.333333333333334} 
+  Col 29 (AC17): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J9)","result":16.166666666666668} 
+  Col 32 (AF17): {"formula":"SUM('11CL-AC-A-URINOL.'!J9)","result":12.166666666666666} 
+  Col 35 (AI17): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J9)","result":10.666666666666666} 
+  Col 38 (AL17): {"formula":"SUM('11CL-AC-A-ED. FIS'!J9)","result":14} 
+  Col 41 (AO17): {"formula":"SUM('11CL-AC-A-AFH'!J9)","result":13.666666666666666} 
+  Col 42 (AP17): "N/TRANSITA" 
+  Col 43 (AQ17): {"formula":"AVERAGE(H17:AO17)","result":12.597222222222221,"ref":"AQ17:AQ56","shareType":"shared"} 
+  Col 44 (AR17): 17 
+  Col 45 (AS17): "M" 
+  Col 46 (AT17): {"formula":"COUNTIF(AS17:AS60,\"M\")","result":11} 
+  Col 47 (AU17): {"formula":"COUNTIF(AS17:AS60,\"F\")","result":33} 
+  Col 48 (AV17): {"formula":"COUNTIFS(AP17:AP60,\"Transita\",AS17:AS60,\"M\")","result":4} 
+  Col 49 (AW17): {"formula":"COUNTIFS(AP17:AP60,\"Transita\",AS17:AS60,\"F\")","result":5} 
+  Col 50 (AX17): {"formula":"COUNTIFS(AP17:AP60,\"N/Transita\",AS17:AS60,\"M\")","result":7} 
+  Col 51 (AY17): {"formula":"COUNTIFS(AP17:AP60,\"N/Transita\",AS17:AS60,\"F\")","result":27} 
+  Col 52 (AZ17): {"formula":"COUNTIFS(AP17:AP60,\"DESISTIDO\",AS17:AS60,\"M\")"} 
+  Col 53 (BA17): {"formula":"COUNTIFS(AP17:AP60,\"DESISTIDA\",AS17:AS60,\"F\")","result":1} 
+
+Row 18:
+  Col 2 (B18): 2 
+  Col 3 (C18): 2862 
+  Col 4 (D18): "Agostinho Mbaki Baza" 
+  Col 8 (H18): {"formula":"SUM('11CL-AC-A-L PORT'!J10)","result":15.166666666666666} 
+  Col 11 (K18): {"formula":"SUM('11CL-AC-A-MAT'!J10)","result":19.333333333333332} 
+  Col 14 (N18): {"formula":"SUM('11CL-AC-A-BIOL'!J10)","result":16.333333333333332} 
+  Col 17 (Q18): {"formula":"SUM('11CL-AC-A-INGLES'!J10)","result":19} 
+  Col 20 (T18): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J10)","result":17.333333333333332} 
+  Col 23 (W18): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J10)","result":14} 
+  Col 26 (Z18): {"formula":"SUM('11CL-AC-A-HEMAT I'!J10)","result":16.5} 
+  Col 29 (AC18): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J10)","result":18.333333333333332} 
+  Col 32 (AF18): {"formula":"SUM('11CL-AC-A-URINOL.'!J10)","result":16.5} 
+  Col 35 (AI18): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J10)","result":17.333333333333332} 
+  Col 38 (AL18): {"formula":"SUM('11CL-AC-A-ED. FIS'!J10)","result":13} 
+  Col 41 (AO18): {"formula":"SUM('11CL-AC-A-AFH'!J10)","result":15.666666666666666} 
+  Col 42 (AP18): "TRANSITA" 
+  Col 43 (AQ18): {"result":16.541666666666668,"sharedFormula":"AQ17"} 
+  Col 44 (AR18): 16 
+  Col 45 (AS18): "M" 
+  Col 46 (AT18): {"formula":"SUM(AT17:AU17)","result":44} 
+  Col 47 (AU18): {"formula":"SUM(AT17:AU17)","result":44} (Merged into AT18)
+  Col 48 (AV18): {"formula":"SUM(AV16:AW17)","result":9,"ref":"AV18","shareType":"shared"} 
+  Col 49 (AW18): {"formula":"SUM(AV16:AW17)","result":9,"ref":"AV18","shareType":"shared"} (Merged into AV18)
+  Col 50 (AX18): {"formula":"SUM(AX16:AY17)","result":34,"ref":"AX18:AZ18","shareType":"shared"} 
+  Col 51 (AY18): {"formula":"SUM(AX16:AY17)","result":34,"ref":"AX18:AZ18","shareType":"shared"} (Merged into AX18)
+  Col 52 (AZ18): {"result":1,"sharedFormula":"AX18"} 
+  Col 53 (BA18): {"result":1,"sharedFormula":"AX18"} (Merged into AZ18)

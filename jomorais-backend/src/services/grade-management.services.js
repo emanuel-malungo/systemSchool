@@ -1,5 +1,7 @@
 // services/grade-management.services.js
 import prisma from '../config/database.js';
+import path from 'path';
+import fs from 'fs';
 import { AppError } from '../utils/validation.utils.js';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
@@ -724,7 +726,6 @@ export class GradeManagementService {
           if (alignment) cell.alignment = alignment;
         }
       }
-      
       if (val !== undefined && val !== null) {
         start.value = val;
       }
@@ -739,136 +740,237 @@ export class GradeManagementService {
     }
     const disciplines = Array.from(allDisciplinesSet).sort();
 
-    // Max column calculation: 5 (B-E) + 3 * disciplines + 4 (OBS-GEN) + 8 (STATS) = 53 (BA) if 12 disciplines
+    // Calculate dynamic column indices and variables in advance
+    let colIndex = 6;
+    const disciplineColsMap = {};
+    disciplines.forEach(dName => {
+      disciplineColsMap[dName] = { 
+        justColIdx: colIndex, 
+        injustColIdx: colIndex + 1, 
+        gradeColIdx: colIndex + 2 
+      };
+      colIndex += 3;
+    });
+
+    let obsColLetter = columnToLetter(colIndex);
+    let mediaColLetter = columnToLetter(colIndex + 1);
+    let idadeColLetter = columnToLetter(colIndex + 2);
+    let generoColLetter = columnToLetter(colIndex + 3);
+    let statsStartColIndex = colIndex + 4;
+
     const maxColIndex = 5 + (3 * disciplines.length) + 4 + 8;
     const maxColLetter = columnToLetter(maxColIndex);
+    const endRow = 17 + pautaData.totalAlunos - 1;
 
-    // Row 4: Logo text
-    sheet.mergeCells('B4:P4');
-    const titleCell = sheet.getCell('B4');
-    titleCell.value = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
-    titleCell.font = { name: 'Calibri', size: 14, bold: true };
-    titleCell.alignment = { horizontal: 'left', vertical: 'middle' };
+    // Set heights for the logo/title rows (Rows 1-5: 18pt, Row 6: 12pt, Row 7: 25pt, Row 8: 18pt, Row 9: 10pt, Rows 10-13: 20pt)
+    sheet.getRow(1).height = 10;
+    sheet.getRow(2).height = 18;
+    sheet.getRow(3).height = 18;
+    sheet.getRow(4).height = 18;
+    sheet.getRow(5).height = 18;
+    sheet.getRow(6).height = 12; // Spacer/Separator row
+    sheet.getRow(7).height = 25; // Title row
+    sheet.getRow(8).height = 18; // Subtitle row
+    sheet.getRow(9).height = 10; // Spacing before cards
+    sheet.getRow(10).height = 20;
+    sheet.getRow(11).height = 20;
+    sheet.getRow(12).height = 20;
+    sheet.getRow(13).height = 20;
 
-    // Row 5: Green thick line
-    sheet.mergeCells(`A5:${maxColLetter}5`);
-    const greenLine = sheet.getCell('A5');
-    greenLine.border = { top: { style: 'medium', color: { argb: 'FF548235' } } }; // Green
+    // Row 1-4: Institution Name - Merged from D2 to R4 to keep it compact and not stretched
+    const titleVal = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
+    styleAndMergeRange('D2:R4', titleVal,
+      { name: 'Segoe UI', size: 16, bold: true, color: { argb: 'FF1F497D' } },
+      null, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    // Row 6: Subtitle
-    sheet.mergeCells(`A6:${maxColLetter}6`);
-    const subtitleCell = sheet.getCell('A6');
-    subtitleCell.value = 'PAUTA DE APROVEITAMENTO ESCOLAR';
-    subtitleCell.font = { name: 'Calibri', size: 14, bold: true };
-    subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    // Add Logo (icon.png) starting in Column B, Row 2 (B2:C5)
+    const logoPath = path.join(process.cwd(), 'src/assets/icon.png');
+    if (fs.existsSync(logoPath)) {
+      const logoId = workbook.addImage({
+        filename: logoPath,
+        extension: 'png'
+      });
+      sheet.addImage(logoId, {
+        tl: { col: 1.1, row: 1.1 },
+        ext: { width: 55, height: 55 }
+      });
+    }
 
-    // Row 7: Area de formacao
-    sheet.mergeCells(`A7:${maxColLetter}7`);
-    const areaCell = sheet.getCell('A7');
-    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE';
-    areaCell.font = { name: 'Calibri', size: 11, bold: true };
-    areaCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    // Row 5: Separator line (thin dark gray bottom border on Row 5 across B5:maxColLetter)
+    styleAndMergeRange(`B5:${maxColLetter}5`, '', 
+      null, null, 
+      { bottom: { style: 'medium', color: { argb: 'FF1F497D' } } }, 
+      null
+    );
 
-    // Director Block (Left Side)
-    sheet.mergeCells('B9:E9');
-    const dirTitle = sheet.getCell('B9');
-    dirTitle.value = 'O Director do Instituto';
-    dirTitle.font = { name: 'Calibri', size: 9, bold: true };
-    dirTitle.alignment = { horizontal: 'center', vertical: 'middle' };
+    // Row 7: Subtitle (Segoe UI Bold, size 14, navy, left-aligned)
+    styleAndMergeRange('B7:R7', 'PAUTA DE APROVEITAMENTO ESCOLAR',
+      { name: 'Segoe UI', size: 14, bold: true, color: { argb: 'FF1F497D' } },
+      null, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    sheet.mergeCells('B11:E11');
-    const dirLine = sheet.getCell('B11');
-    dirLine.value = '________________________________________';
-    dirLine.alignment = { horizontal: 'center', vertical: 'bottom' };
+    // Row 8: Area de formacao (Segoe UI, size 10)
+    styleAndMergeRange('B8:R8', {
+      richText: [
+        { text: 'ÁREA DE FORMAÇÃO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF555555' } } },
+        { text: 'SAÚDE', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } }
+      ]
+    },
+      null, null, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    sheet.mergeCells('B12:E12');
-    const dirName = sheet.getCell('B12');
-    dirName.value = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MADIALA').toUpperCase();
-    dirName.font = { name: 'Calibri', size: 9, bold: true };
-    dirName.alignment = { horizontal: 'center', vertical: 'middle' };
+    // --- LEFT CARD: O Director do Instituto (Columns B to D, Rows 10-13) ---
+    styleAndMergeRange('B10:D10', 'O Director do Instituto',
+      { name: 'Segoe UI', size: 10, bold: true, italic: true, color: { argb: 'FF555555' } },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
 
-    sheet.mergeCells('B13:E13');
-    const dirDate = sheet.getCell('B13');
-    dirDate.value = `DATA ___ / ___ / ${new Date().getFullYear()}`;
-    dirDate.font = { name: 'Calibri', size: 9, bold: true };
-    dirDate.alignment = { horizontal: 'center', vertical: 'middle' };
+    styleAndMergeRange('B11:D11', '________________________________________',
+      { name: 'Segoe UI', size: 10, color: { argb: 'FF888888' } },
+      null, null, { horizontal: 'center', vertical: 'bottom' }
+    );
 
-    // Center Block (Classe, Turma, Curso, Periodo, Trimestre, Ano)
-    // Alignment
-    sheet.mergeCells('I9:K9');
-    const clsCell = sheet.getCell('I9');
-    clsCell.value = descClasse;
-    clsCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
-    clsCell.alignment = { horizontal: 'right', vertical: 'middle' };
+    const dirNameVal = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MADIALA').toUpperCase();
+    styleAndMergeRange('B12:D12', dirNameVal,
+      { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF333333' } },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
 
-    // Turma
-    sheet.mergeCells('I11:K11');
-    const trmCell = sheet.getCell('I11');
-    trmCell.value = `TURMA: ${descTurma}`;
-    trmCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFC00000' } };
-    trmCell.alignment = { horizontal: 'right', vertical: 'middle' };
+    styleAndMergeRange('B13:D13', `DATA ______ / ______ / ${new Date().getFullYear()}`,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
 
-    // Curso (Center Large)
-    sheet.mergeCells('M10:U10');
-    const cursoCell = sheet.getCell('M10');
-    cursoCell.value = `CURSO: ${descCurso}`;
-    cursoCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } };
-    cursoCell.alignment = { horizontal: 'center', vertical: 'middle' };
-    
-    // Underline for Curso
-    sheet.mergeCells('M11:U11');
-    sheet.getCell('M11').border = { top: { style: 'thin', color: { argb: 'FF000000' } } };
+    // --- MIDDLE CARD: Academic Metadata (Columns F to L, Rows 10-12) ---
+    const cardFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F7FA' } };
+    const cardBorderColor = 'FFD0D5DD';
 
-    // Período
-    sheet.mergeCells('W8:AA8');
-    const perCell = sheet.getCell('W8');
-    perCell.value = `PERÍODO: ${descPeriodo}`;
-    perCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
-    perCell.alignment = { horizontal: 'left', vertical: 'middle' };
+    for (let r = 10; r <= 12; r++) {
+      for (let c = 6; c <= 12; c++) {
+        const cell = sheet.getCell(r, c);
+        cell.fill = cardFill;
+        const cellBorder = {};
+        if (r === 10) cellBorder.top = { style: 'thin', color: { argb: cardBorderColor } };
+        if (r === 12) cellBorder.bottom = { style: 'thin', color: { argb: cardBorderColor } };
+        if (c === 6) cellBorder.left = { style: 'thin', color: { argb: cardBorderColor } };
+        if (c === 12) cellBorder.right = { style: 'thin', color: { argb: cardBorderColor } };
+        cell.border = cellBorder;
+      }
+    }
 
-    // Trimestre
-    sheet.mergeCells('W10:AA10');
-    const trimCell = sheet.getCell('W10');
-    trimCell.value = descTrimestre;
-    trimCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
-    trimCell.alignment = { horizontal: 'left', vertical: 'middle' };
+    // F10: CURSO Label
+    const cellF10 = sheet.getCell('F10');
+    cellF10.value = 'CURSO:';
+    cellF10.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellF10.alignment = { horizontal: 'right', vertical: 'middle' };
 
-    // Ano Lectivo
-    sheet.mergeCells('W11:AA11');
-    const anoCell = sheet.getCell('W11');
-    anoCell.value = `ANO LECTIVO: ${descAno}`;
-    anoCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFC00000' } };
-    anoCell.alignment = { horizontal: 'left', vertical: 'middle' };
+    // G10:L10: CURSO Value
+    styleAndMergeRange('G10:L10', descCurso,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF1F497D' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    // MF Block (Right Side)
-    sheet.getCell('AD9').value = `MF:`;
-    sheet.getCell('AD9').font = { name: 'Calibri', size: 10, bold: true };
-    sheet.getCell('AE9').value = confirmacoesList.length;
-    sheet.getCell('AE9').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+    // F11: CLASSE Label
+    const cellF11 = sheet.getCell('F11');
+    cellF11.value = 'CLASSE:';
+    cellF11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellF11.alignment = { horizontal: 'right', vertical: 'middle' };
 
-    sheet.getCell('AD10').value = `M:`;
-    sheet.getCell('AD10').font = { name: 'Calibri', size: 10, bold: true };
-    sheet.getCell('AE10').value = totalM;
-    sheet.getCell('AE10').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+    // G11:H11: CLASSE Value
+    styleAndMergeRange('G11:H11', descClasse,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    sheet.getCell('AD11').value = `F:`;
-    sheet.getCell('AD11').font = { name: 'Calibri', size: 10, bold: true };
-    sheet.getCell('AE11').value = totalF;
-    sheet.getCell('AE11').font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFC00000' } };
+    // I11: TURMA Label
+    const cellI11 = sheet.getCell('I11');
+    cellI11.value = 'TURMA:';
+    cellI11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellI11.alignment = { horizontal: 'right', vertical: 'middle' };
 
-    // Date Box
-    sheet.mergeCells('AG10:AH11');
-    const dBox = sheet.getCell('AG10');
+    // J11:L11: TURMA Value
+    styleAndMergeRange('J11:L11', descTurma,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FFFF0000' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
+
+    // F12: PERÍODO Label
+    const cellF12 = sheet.getCell('F12');
+    cellF12.value = 'PERÍODO:';
+    cellF12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellF12.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // G12:H12: PERÍODO Value
+    styleAndMergeRange('G12:H12', descPeriodo,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
+
+    // I12: ANO LECTIVO Label
+    const cellI12 = sheet.getCell('I12');
+    cellI12.value = 'ANO LECTIVO:';
+    cellI12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellI12.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // J12:L12: ANO LECTIVO Value
+    styleAndMergeRange('J12:L12', descAno,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
+
+    // --- RIGHT CARD: Semester & Stats & Date (Columns N to R, Rows 10-12) ---
+    for (let r = 10; r <= 12; r++) {
+      for (let c = 14; c <= 18; c++) {
+        const cell = sheet.getCell(r, c);
+        cell.fill = cardFill;
+        const cellBorder = {};
+        if (r === 10) cellBorder.top = { style: 'thin', color: { argb: cardBorderColor } };
+        if (r === 12) cellBorder.bottom = { style: 'thin', color: { argb: cardBorderColor } };
+        if (c === 14) cellBorder.left = { style: 'thin', color: { argb: cardBorderColor } };
+        if (c === 18) cellBorder.right = { style: 'thin', color: { argb: cardBorderColor } };
+        cell.border = cellBorder;
+      }
+    }
+
+    // N10: TRIMESTRE Label
+    const cellN10 = sheet.getCell('N10');
+    cellN10.value = 'TRIMESTRE:';
+    cellN10.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellN10.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // O10:R10: TRIMESTRE Value
+    styleAndMergeRange('O10:R10', descTrimestre,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FFFF0000' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
+
+    // N11: ALUNOS Label
+    const cellN11 = sheet.getCell('N11');
+    cellN11.value = 'ALUNOS:';
+    cellN11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellN11.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // O11:R11: ALUNOS Value
+    const countFormula = `CONCATENATE("Total: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")+COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F"), " (M: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M"), ", F: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F"), ")")`;
+    styleAndMergeRange('O11:R11', { formula: countFormula },
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF1F497D' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
+
+    // N12: EMISSÃO Label
+    const cellN12 = sheet.getCell('N12');
+    cellN12.value = 'EMISSÃO:';
+    cellN12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
+    cellN12.alignment = { horizontal: 'right', vertical: 'middle' };
+
+    // O12:R12: EMISSÃO Value
     const today = new Date();
-    dBox.value = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear().toString().substring(2)}`;
-    dBox.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0070C0' } };
-    dBox.alignment = { horizontal: 'center', vertical: 'middle' };
-    dBox.border = {
-      top: { style: 'medium', color: { argb: 'FF000000' } },
-      left: { style: 'medium', color: { argb: 'FF000000' } },
-      bottom: { style: 'medium', color: { argb: 'FF000000' } },
-      right: { style: 'medium', color: { argb: 'FF000000' } }
-    };
+    const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear().toString().substring(2)}`;
+    styleAndMergeRange('O12:R12', formattedDate,
+      { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
+      cardFill, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
     // Setup base student table headers (B14 to E16)
     const headerPositions = [
@@ -885,9 +987,8 @@ export class GradeManagementService {
       );
     });
 
-    // We start adding disciplines at column 6 (F)
-    let colIndex = 6;
-    const disciplineColsMap = {};
+    // Reset colIndex for layout drawing (variables already calculated)
+    colIndex = 6;
 
     disciplines.forEach(dName => {
       const colLetter1 = columnToLetter(colIndex);
@@ -934,10 +1035,10 @@ export class GradeManagementService {
     });
 
     // OBS, MÉDIA, Idade, Género columns right after the disciplines
-    const obsColLetter = columnToLetter(colIndex);
-    const mediaColLetter = columnToLetter(colIndex + 1);
-    const idadeColLetter = columnToLetter(colIndex + 2);
-    const generoColLetter = columnToLetter(colIndex + 3);
+    obsColLetter = columnToLetter(colIndex);
+    mediaColLetter = columnToLetter(colIndex + 1);
+    idadeColLetter = columnToLetter(colIndex + 2);
+    generoColLetter = columnToLetter(colIndex + 3);
 
     const extraCols = [
       { letter: obsColLetter, val: 'OBS' },
@@ -954,8 +1055,7 @@ export class GradeManagementService {
       );
     });
 
-    // DADOS ESTATÍSTICOS Block (starts after Género)
-    const statsStartColIndex = colIndex + 4;
+    statsStartColIndex = colIndex + 4;
     const statsStartCol = columnToLetter(statsStartColIndex);
     const statsEndCol = columnToLetter(statsStartColIndex + 7);
 
@@ -1129,11 +1229,17 @@ export class GradeManagementService {
       cellGenero.value = genero;
       cellGenero.font = { name: 'Calibri', size: 9 };
 
-      const media = info.mediaGeral || 0;
       const hasGrades = info.disciplinas?.some(d => d.nota !== null);
+      const media = info.mediaGeral || 0;
 
       if (hasGrades) {
-        cellMedia.value = media;
+        // Obter as células das notas para construir a fórmula AVERAGE dinâmica
+        const gradeCells = disciplines.map(dName => {
+          const { gradeColIdx } = disciplineColsMap[dName];
+          return `${columnToLetter(gradeColIdx)}${rowNum}`;
+        });
+        
+        cellMedia.value = { formula: `AVERAGE(${gradeCells.join(',')})` };
         cellMedia.numFmt = '0.0';
         cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF0070C0' } }; // Blue/Red
 
@@ -1149,18 +1255,13 @@ export class GradeManagementService {
             if (isM) stats.nTransita.m++;
             if (isF) stats.nTransita.f++;
           }
-
-          if (media > maxMedia) {
-            maxMedia = media;
-            melhorAluno = { nome: info.aluno?.nome || '', idade: idade };
-          }
         }
       } else {
         cellMedia.value = '-';
       }
 
       if (isDesistente) {
-        cellObs.value = 'DESISTIDA';
+        cellObs.value = isM ? 'DESISTIDO' : 'DESISTIDA';
         cellObs.font = { name: 'Calibri', size: 9, bold: true, italic: true, color: { argb: 'FF7F7F7F' } };
         cellMedia.value = '-';
       } else if (!hasGrades) {
@@ -1177,9 +1278,7 @@ export class GradeManagementService {
       rowNum++;
     }
 
-    // Write dynamic excel formulas for the stats panel and merge them vertically
     const startRow = 17;
-    const endRow = 17 + pautaData.totalAlunos - 1;
     const genderColLetter = columnToLetter(colIndex + 3);
     const obsColLetterReal = columnToLetter(colIndex);
 
@@ -1193,7 +1292,7 @@ export class GradeManagementService {
       { offset: 4, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
       { offset: 5, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` },
       
-      { offset: 6, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
+      { offset: 6, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDO",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
       { offset: 7, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` }
     ];
 
@@ -1229,87 +1328,55 @@ export class GradeManagementService {
       sheet.getColumn(statsStartColIndex + i).width = 6;
     }
 
-    // MÁXIMA ALUNO BLOCK (starts below stats grid)
-    let sr = rowNum + 1;
-    const maxBoxStartCol = columnToLetter(statsStartColIndex + 1);
-    const maxBoxEndCol = columnToLetter(statsStartColIndex + 4);
-
-    sheet.mergeCells(`${maxBoxStartCol}${sr}:${columnToLetter(statsStartColIndex + 2)}${sr}`);
-    const lblMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
-    lblMax.value = 'MÁXIMA';
-    lblMax.font = { name: 'Calibri', size: 10, bold: true };
-    lblMax.border = borderStyle;
-
-    sheet.mergeCells(`${columnToLetter(statsStartColIndex + 3)}${sr}:${maxBoxEndCol}${sr}`);
-    const valMax = sheet.getCell(`${columnToLetter(statsStartColIndex + 3)}${sr}`);
-    valMax.value = maxMedia.toFixed(1);
-    valMax.font = { name: 'Calibri', size: 10, bold: true };
-    valMax.border = borderStyle;
-    valMax.alignment = { horizontal: 'center', vertical: 'middle' };
-    sr++;
-
-    sheet.mergeCells(`${maxBoxStartCol}${sr}:${maxBoxEndCol}${sr}`);
-    const nomeMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
-    nomeMax.value = `NOME DO/A ALUNO/A: ${melhorAluno.nome}`;
-    nomeMax.font = { name: 'Calibri', size: 9 };
-    nomeMax.border = borderStyle;
-    sr++;
-
-    sheet.mergeCells(`${maxBoxStartCol}${sr}:${maxBoxEndCol}${sr}`);
-    const idadeMax = sheet.getCell(`${maxBoxStartCol}${sr}`);
-    idadeMax.value = `IDADE: ${melhorAluno.idade}`;
-    idadeMax.font = { name: 'Calibri', size: 9 };
-    idadeMax.border = borderStyle;
-
     // ASSINATURAS E DATA
-    let footRow = Math.max(rowNum + 4, sr + 2);
-    sheet.mergeCells(`B${footRow}:F${footRow}`);
-    const dataCell = sheet.getCell(`B${footRow}`);
-    dataCell.value = `DATA DO CONSELHO DE TURMA ___ / ___ / ${new Date().getFullYear()}`;
-    dataCell.font = { name: 'Calibri', size: 11, bold: true };
+    let footRow = endRow + 2;
+    styleAndMergeRange(`B${footRow}:F${footRow}`, `DATA DO CONSELHO DE TURMA ______ / ______ / ${new Date().getFullYear()}`,
+      { name: 'Calibri', size: 11, bold: true },
+      null, null, { horizontal: 'left', vertical: 'middle' }
+    );
 
-    footRow += 4;
-    sheet.mergeCells(`C${footRow}:I${footRow}`);
-    const dirTurmaCell = sheet.getCell(`C${footRow}`);
-    dirTurmaCell.value = 'A Directora da Turma';
-    dirTurmaCell.font = { name: 'Calibri', size: 11, bold: true };
-    dirTurmaCell.alignment = { horizontal: 'center' };
-
-    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
-    const subDirCell = sheet.getCell(`${statsStartCol}${footRow}`);
-    subDirCell.value = 'O Subdirector Pedagógico';
-    subDirCell.font = { name: 'Calibri', size: 11, bold: true };
-    subDirCell.alignment = { horizontal: 'center' };
-
-    footRow++;
-    sheet.mergeCells(`C${footRow}:I${footRow}`);
-    const dirTurmaLine = sheet.getCell(`C${footRow}`);
-    dirTurmaLine.value = '__________________________________________';
-    dirTurmaLine.alignment = { horizontal: 'center' };
-
-    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
-    const subDirLine = sheet.getCell(`${statsStartCol}${footRow}`);
-    subDirLine.value = '__________________________________________';
-    subDirLine.alignment = { horizontal: 'center' };
-
-    footRow++;
+    footRow += 3;
+    const obsColReal = columnToLetter(colIndex);
+    const startSubDirColIdx = Math.max(12, colIndex - 15);
+    const startSubDirCol = columnToLetter(startSubDirColIdx);
     const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || '';
-    sheet.mergeCells(`C${footRow}:I${footRow}`);
-    const dirTurmaNameCell = sheet.getCell(`C${footRow}`);
-    dirTurmaNameCell.value = nomeDirTurma;
-    dirTurmaNameCell.font = { name: 'Calibri', size: 10 };
-    dirTurmaNameCell.alignment = { horizontal: 'center' };
-
     const nomeSubdir = pautaData.instituicao?.subDirector || '';
-    sheet.mergeCells(`${statsStartCol}${footRow}:${statsEndCol}${footRow}`);
-    const subDirNameCell = sheet.getCell(`${statsStartCol}${footRow}`);
-    subDirNameCell.value = nomeSubdir;
-    subDirNameCell.font = { name: 'Calibri', size: 10 };
-    subDirNameCell.alignment = { horizontal: 'center' };
 
-    // Apply borders to all empty headers of merged title rows
+    styleAndMergeRange(`B${footRow}:F${footRow}`, 'A Directora de Turma',
+      { name: 'Calibri', size: 11, bold: true },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, 'O Subdirector Pedagógico',
+      { name: 'Calibri', size: 11, bold: true },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    footRow++;
+    styleAndMergeRange(`B${footRow}:F${footRow}`, '_____________________________________',
+      { name: 'Calibri', size: 11 },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, '_____________________________________',
+      { name: 'Calibri', size: 11 },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    footRow++;
+    styleAndMergeRange(`B${footRow}:F${footRow}`, nomeDirTurma,
+      { name: 'Calibri', size: 10, bold: true },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, nomeSubdir,
+      { name: 'Calibri', size: 10, bold: true },
+      null, null, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    // Apply borders to all empty headers of merged title rows, including stats
     for (let r = 14; r <= 16; r++) {
-      for (let c = 2; c <= colIndex + 3; c++) {
+      for (let c = 2; c <= statsStartColIndex + 7; c++) {
         const cell = sheet.getRow(r).getCell(c);
         if (!cell.border) cell.border = borderStyle;
       }
