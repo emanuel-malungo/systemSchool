@@ -686,7 +686,7 @@ export class GradeManagementService {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('PAUTA');
 
-    // Make grid lines visible!
+    // Make grid lines visible
     sheet.views = [{ showGridLines: true }];
 
     // Base Styles
@@ -703,6 +703,46 @@ export class GradeManagementService {
       fgColor: { argb: 'FFF2F2F2' }
     };
 
+    // Helper for merging and styling range
+    function styleAndMergeRange(rangeStr, val, font, fill, border, alignment) {
+      sheet.mergeCells(rangeStr);
+      const [startCell, endCell] = rangeStr.split(':');
+      const start = sheet.getCell(startCell);
+      const end = sheet.getCell(endCell || startCell);
+      
+      const startCol = start.col;
+      const startRow = start.row;
+      const endCol = end.col;
+      const endRow = end.row;
+      
+      for (let r = startRow; r <= endRow; r++) {
+        for (let c = startCol; c <= endCol; c++) {
+          const cell = sheet.getCell(r, c);
+          if (border) cell.border = border;
+          if (fill) cell.fill = fill;
+          if (font) cell.font = font;
+          if (alignment) cell.alignment = alignment;
+        }
+      }
+      
+      if (val !== undefined && val !== null) {
+        start.value = val;
+      }
+    }
+
+    // Get unique disciplines
+    const allDisciplinesSet = new Set();
+    for (const info of Object.values(pautaData.pauta)) {
+      if (info.disciplinas) {
+        info.disciplinas.forEach(d => allDisciplinesSet.add(d.disciplina));
+      }
+    }
+    const disciplines = Array.from(allDisciplinesSet).sort();
+
+    // Max column calculation: 5 (B-E) + 3 * disciplines + 4 (OBS-GEN) + 8 (STATS) = 53 (BA) if 12 disciplines
+    const maxColIndex = 5 + (3 * disciplines.length) + 4 + 8;
+    const maxColLetter = columnToLetter(maxColIndex);
+
     // Row 4: Logo text
     sheet.mergeCells('B4:P4');
     const titleCell = sheet.getCell('B4');
@@ -711,21 +751,21 @@ export class GradeManagementService {
     titleCell.alignment = { horizontal: 'left', vertical: 'middle' };
 
     // Row 5: Green thick line
-    sheet.mergeCells('A5:AT5');
+    sheet.mergeCells(`A5:${maxColLetter}5`);
     const greenLine = sheet.getCell('A5');
     greenLine.border = { top: { style: 'medium', color: { argb: 'FF548235' } } }; // Green
 
     // Row 6: Subtitle
-    sheet.mergeCells('A6:AT6');
+    sheet.mergeCells(`A6:${maxColLetter}6`);
     const subtitleCell = sheet.getCell('A6');
     subtitleCell.value = 'PAUTA DE APROVEITAMENTO ESCOLAR';
     subtitleCell.font = { name: 'Calibri', size: 14, bold: true };
     subtitleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
     // Row 7: Area de formacao
-    sheet.mergeCells('A7:AT7');
+    sheet.mergeCells(`A7:${maxColLetter}7`);
     const areaCell = sheet.getCell('A7');
-    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE'; // To make SAÚDE blue, rich text is needed, but simple value is OK for now
+    areaCell.value = 'ÁREA DE FORMAÇÃO: SAÚDE';
     areaCell.font = { name: 'Calibri', size: 11, bold: true };
     areaCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -754,7 +794,7 @@ export class GradeManagementService {
     dirDate.alignment = { horizontal: 'center', vertical: 'middle' };
 
     // Center Block (Classe, Turma, Curso, Periodo, Trimestre, Ano)
-    // Classe
+    // Alignment
     sheet.mergeCells('I9:K9');
     const clsCell = sheet.getCell('I9');
     clsCell.value = descClasse;
@@ -830,90 +870,74 @@ export class GradeManagementService {
       right: { style: 'medium', color: { argb: 'FF000000' } }
     };
 
-    // Get unique disciplines
-    const allDisciplinesSet = new Set();
-    for (const info of Object.values(pautaData.pauta)) {
-      if (info.disciplinas) {
-        info.disciplinas.forEach(d => allDisciplinesSet.add(d.disciplina));
-      }
-    }
-    const disciplines = Array.from(allDisciplinesSet).sort();
-
-    // Setup columns & table headers
-    // Merge cells for A14:A16 (Nº), B14:B16 (Nº PROC), C14:C16 (NOME), D14:D16 (DISCIPLINA A REPETIR)
+    // Setup base student table headers (B14 to E16)
     const headerPositions = [
-      { cell: 'A14', val: 'Nº', merge: 'A14:A16' },
-      { cell: 'B14', val: 'Nº PROC', merge: 'B14:B16' },
-      { cell: 'C14', val: 'NOME', merge: 'C14:C16' },
-      { cell: 'D14', val: 'DISCIPLINA A REPETIR', merge: 'D14:D16' }
+      { cell: 'B14', val: 'Nº', merge: 'B14:B16' },
+      { cell: 'C14', val: 'Nº PROC', merge: 'C14:C16' },
+      { cell: 'D14', val: 'NOME', merge: 'D14:D16' },
+      { cell: 'E14', val: 'DISCIPLINA A REPETIR', merge: 'E14:E16' }
     ];
 
     headerPositions.forEach(hp => {
-      sheet.mergeCells(hp.merge);
-      const c = sheet.getCell(hp.cell);
-      c.value = hp.val;
-      c.font = { name: 'Calibri', size: 10, bold: true };
-      c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      c.fill = headerFill;
-      c.border = borderStyle;
+      styleAndMergeRange(hp.merge, hp.val,
+        { name: 'Calibri', size: 10, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
+      );
     });
 
-    // We start adding disciplines at column 5 (E)
-    let colIndex = 5;
+    // We start adding disciplines at column 6 (F)
+    let colIndex = 6;
     const disciplineColsMap = {};
 
     disciplines.forEach(dName => {
       const colLetter1 = columnToLetter(colIndex);
       const colLetter2 = columnToLetter(colIndex + 1);
+      const colLetter3 = columnToLetter(colIndex + 2);
 
-      // Merge horizontally for Discipline name
-      sheet.mergeCells(`${colLetter1}14:${colLetter2}14`);
-      const discCell = sheet.getCell(`${colLetter1}14`);
-      discCell.value = dName.toUpperCase();
-      discCell.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF005080' } };
-      discCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-      discCell.fill = headerFill;
-      discCell.border = borderStyle;
+      // Merge horizontally for Discipline name: Row 14, Cols 1, 2, 3
+      styleAndMergeRange(`${colLetter1}14:${colLetter3}14`, dName.toUpperCase(), 
+        { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF005080' } },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
+      );
 
-      // Row 15: Column 1 = FALTAS, Column 2 = MT[Trimester]
-      const fCell = sheet.getCell(`${colLetter1}15`);
-      fCell.value = 'FALTAS';
-      fCell.font = { name: 'Calibri', size: 7, bold: true };
-      fCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      fCell.fill = headerFill;
-      fCell.border = borderStyle;
+      // Row 15: "FALTAS" merged across Col 1 and Col 2
+      styleAndMergeRange(`${colLetter1}15:${colLetter2}15`, 'FALTAS',
+        { name: 'Calibri', size: 8, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
 
-      const gCell = sheet.getCell(`${colLetter2}15`);
-      gCell.value = `MT${codigoTrimestre}º`;
-      gCell.font = { name: 'Calibri', size: 8, bold: true, color: { argb: 'FFC00000' } };
-      gCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      gCell.fill = headerFill;
-      gCell.border = borderStyle;
+      // Row 15-16: "MT[Trimestre]º" merged vertically on Col 3
+      styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, `MT${codigoTrimestre}º`,
+        { name: 'Calibri', size: 8, bold: true, color: { argb: 'FFC00000' } },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
 
-      // Row 16: Column 1 = / / /, Column 2 = empty
-      const slCell = sheet.getCell(`${colLetter1}16`);
-      slCell.value = '/  /  /';
-      slCell.font = { name: 'Calibri', size: 7, italic: true };
-      slCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      slCell.fill = headerFill;
-      slCell.border = borderStyle;
+      // Row 16: "J" on Col 1, "I" on Col 2
+      styleAndMergeRange(`${colLetter1}16:${colLetter1}16`, 'J',
+        { name: 'Calibri', size: 7, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
 
-      const emCell = sheet.getCell(`${colLetter2}16`);
-      emCell.fill = headerFill;
-      emCell.border = borderStyle;
+      styleAndMergeRange(`${colLetter2}16:${colLetter2}16`, 'I',
+        { name: 'Calibri', size: 7, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
 
       // Save columns mapping
-      disciplineColsMap[dName] = { faltasCol: colLetter1, gradeCol: colLetter2 };
+      disciplineColsMap[dName] = { 
+        justColIdx: colIndex, 
+        injustColIdx: colIndex + 1, 
+        gradeColIdx: colIndex + 2 
+      };
 
-      colIndex += 2;
+      colIndex += 3;
     });
 
-    // Add OBS column after disciplines
+    // OBS, MÉDIA, Idade, Género columns right after the disciplines
     const obsColLetter = columnToLetter(colIndex);
     const mediaColLetter = columnToLetter(colIndex + 1);
     const idadeColLetter = columnToLetter(colIndex + 2);
     const generoColLetter = columnToLetter(colIndex + 3);
-    colIndex += 3; // Update colIndex for the new columns
 
     const extraCols = [
       { letter: obsColLetter, val: 'OBS' },
@@ -923,21 +947,56 @@ export class GradeManagementService {
     ];
 
     extraCols.forEach(col => {
-      sheet.mergeCells(`${col.letter}14:${col.letter}16`);
-      const cell = sheet.getCell(`${col.letter}14`);
-      cell.value = col.val;
-      cell.font = { name: 'Calibri', size: 10, bold: true };
-      cell.alignment = { horizontal: 'center', vertical: 'middle', textRotation: col.val === 'Idade' || col.val === 'Género' ? 90 : 0 };
-      cell.fill = headerFill;
-      cell.border = borderStyle;
+      styleAndMergeRange(`${col.letter}14:${col.letter}16`, col.val,
+        { name: 'Calibri', size: 10, bold: true },
+        headerFill, borderStyle, 
+        { horizontal: 'center', vertical: 'middle', textRotation: col.val === 'Idade' || col.val === 'Género' ? 90 : 0 }
+      );
     });
 
-    // Set row heights
+    // DADOS ESTATÍSTICOS Block (starts after Género)
+    const statsStartColIndex = colIndex + 4;
+    const statsStartCol = columnToLetter(statsStartColIndex);
+    const statsEndCol = columnToLetter(statsStartColIndex + 7);
+
+    // Linha 14: Title
+    styleAndMergeRange(`${statsStartCol}14:${statsEndCol}14`, 'DADOS ESTATÍSTICOS',
+      { name: 'Calibri', size: 11, bold: true },
+      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    // Linha 15: MATRICULADOS, TRANSITA, N/TRANSITA, Desistido/a
+    const statCategories = [
+      { label: 'MATRICULADOS', offset: 0 },
+      { label: 'TRANSITA', offset: 2 },
+      { label: 'N/TRANSITA', offset: 4 },
+      { label: 'Desistido/a', offset: 6 }
+    ];
+
+    statCategories.forEach(cat => {
+      const colL1 = columnToLetter(statsStartColIndex + cat.offset);
+      const colL2 = columnToLetter(statsStartColIndex + cat.offset + 1);
+      styleAndMergeRange(`${colL1}15:${colL2}15`, cat.label,
+        { name: 'Calibri', size: 8, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
+    });
+
+    // Linha 16: M, F under each of the 4 headers
+    for (let i = 0; i < 8; i++) {
+      const colL = columnToLetter(statsStartColIndex + i);
+      styleAndMergeRange(`${colL}16:${colL}16`, i % 2 === 0 ? 'M' : 'F',
+        { name: 'Calibri', size: 8, bold: true },
+        headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+      );
+    }
+
+    // Set row heights for headers
     sheet.getRow(14).height = 25;
     sheet.getRow(15).height = 18;
     sheet.getRow(16).height = 15;
 
-    // Track statistics
+    // Track statistics for bottom box
     let stats = {
       matriculados: { m: 0, f: 0 },
       transita: { m: 0, f: 0 },
@@ -955,43 +1014,56 @@ export class GradeManagementService {
       const row = sheet.getRow(rowNum);
       row.height = 20;
 
-      const cellA = row.getCell(1);
-      cellA.value = index;
-      cellA.alignment = { horizontal: 'center', vertical: 'middle' };
-      cellA.border = borderStyle;
-
+      // Col B: Nº
       const cellB = row.getCell(2);
-      cellB.value = parseInt(info.aluno?.codigo) || index;
+      cellB.value = index;
       cellB.alignment = { horizontal: 'center', vertical: 'middle' };
       cellB.border = borderStyle;
+      cellB.font = { name: 'Calibri', size: 9 };
 
+      // Col C: Nº PROC
       const cellC = row.getCell(3);
-      cellC.value = (info.aluno?.nome || 'N/A').toUpperCase();
-      cellC.alignment = { horizontal: 'left', vertical: 'middle' };
+      cellC.value = parseInt(info.aluno?.codigo) || index;
+      cellC.alignment = { horizontal: 'center', vertical: 'middle' };
       cellC.border = borderStyle;
+      cellC.font = { name: 'Calibri', size: 9 };
 
-      // Col D: Disciplina a repetir (leave empty or compute if they have < 10)
+      // Col D: NOME
+      const cellD = row.getCell(4);
+      cellD.value = (info.aluno?.nome || 'N/A').toUpperCase();
+      cellD.alignment = { horizontal: 'left', vertical: 'middle' };
+      cellD.border = borderStyle;
+      cellD.font = { name: 'Calibri', size: 9, bold: true };
+
+      // Col E: DISCIPLINA A REPETIR
       const repeatDiscs = [];
-      
+
       // Populate grades
       disciplines.forEach(dName => {
         const dObj = info.disciplinas?.find(d => d.disciplina === dName);
-        const { faltasCol, gradeCol } = disciplineColsMap[dName];
+        const { justColIdx, injustColIdx, gradeColIdx } = disciplineColsMap[dName];
 
-        // Faltas column
-        const cellF = row.getCell(faltasCol);
-        cellF.border = borderStyle;
-        cellF.alignment = { horizontal: 'center', vertical: 'middle' };
+        // Faltas Justificadas column (always '-')
+        const cellJust = row.getCell(justColIdx);
+        cellJust.value = '-';
+        cellJust.border = borderStyle;
+        cellJust.alignment = { horizontal: 'center', vertical: 'middle' };
+        cellJust.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+
+        // Faltas Injustificadas column (total absences)
+        const cellInjust = row.getCell(injustColIdx);
+        cellInjust.border = borderStyle;
+        cellInjust.alignment = { horizontal: 'center', vertical: 'middle' };
         if (dObj && dObj.faltas !== undefined && dObj.faltas > 0) {
-          cellF.value = dObj.faltas;
-          cellF.font = { name: 'Calibri', size: 9 };
+          cellInjust.value = dObj.faltas;
+          cellInjust.font = { name: 'Calibri', size: 9 };
         } else {
-          cellF.value = '-';
-          cellF.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+          cellInjust.value = '-';
+          cellInjust.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
         }
 
         // Grade column
-        const cellG = row.getCell(gradeCol);
+        const cellG = row.getCell(gradeColIdx);
         cellG.border = borderStyle;
         cellG.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -1003,21 +1075,20 @@ export class GradeManagementService {
             cellG.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } }; // Red
             repeatDiscs.push(dName.substring(0, 5));
           } else {
-            cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF000000' } };
+            cellG.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } }; // Blue
           }
         } else {
           cellG.value = '-';
           cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
-          cellG.alignment = { horizontal: 'center', vertical: 'middle' };
         }
       });
 
       // Repeat list
-      const cellD = row.getCell(4);
-      cellD.value = repeatDiscs.join(', ');
-      cellD.font = { name: 'Calibri', size: 8, italic: true };
-      cellD.alignment = { horizontal: 'center', vertical: 'middle' };
-      cellD.border = borderStyle;
+      const cellE = row.getCell(5);
+      cellE.value = repeatDiscs.join(', ');
+      cellE.font = { name: 'Calibri', size: 8, italic: true };
+      cellE.alignment = { horizontal: 'center', vertical: 'middle' };
+      cellE.border = borderStyle;
 
       // Calculate Idade and Genero
       const birthYear = info.aluno?.dataNascimento ? new Date(info.aluno.dataNascimento).getFullYear() : 0;
@@ -1038,23 +1109,25 @@ export class GradeManagementService {
       }
 
       // OBS Column and MÉDIA Column
-      const cellObs = row.getCell(obsColLetter);
+      const cellObs = row.getCell(colIndex);
       cellObs.border = borderStyle;
       cellObs.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      const cellMedia = row.getCell(mediaColLetter);
+      const cellMedia = row.getCell(colIndex + 1);
       cellMedia.border = borderStyle;
       cellMedia.alignment = { horizontal: 'center', vertical: 'middle' };
 
-      const cellIdade = row.getCell(idadeColLetter);
+      const cellIdade = row.getCell(colIndex + 2);
       cellIdade.border = borderStyle;
       cellIdade.alignment = { horizontal: 'center', vertical: 'middle' };
       cellIdade.value = idade;
+      cellIdade.font = { name: 'Calibri', size: 9 };
 
-      const cellGenero = row.getCell(generoColLetter);
+      const cellGenero = row.getCell(colIndex + 3);
       cellGenero.border = borderStyle;
       cellGenero.alignment = { horizontal: 'center', vertical: 'middle' };
       cellGenero.value = genero;
+      cellGenero.font = { name: 'Calibri', size: 9 };
 
       const media = info.mediaGeral || 0;
       const hasGrades = info.disciplinas?.some(d => d.nota !== null);
@@ -1062,7 +1135,7 @@ export class GradeManagementService {
       if (hasGrades) {
         cellMedia.value = media;
         cellMedia.numFmt = '0.0';
-        cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF000000' } };
+        cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF0070C0' } }; // Blue/Red
 
         if (!isDesistente) {
           if (info.situacao === 'TRANS') {
@@ -1094,92 +1167,70 @@ export class GradeManagementService {
         cellObs.value = '-';
       }
 
+      // Draw empty cells with borders for the Stats Columns
+      for (let i = 0; i < 8; i++) {
+        const cellStat = row.getCell(statsStartColIndex + i);
+        cellStat.border = borderStyle;
+      }
+
       index++;
       rowNum++;
     }
 
-    // Adjust column widths
-    sheet.getColumn('A').width = 4;
-    sheet.getColumn('B').width = 10;
-    sheet.getColumn('C').width = 30;
-    sheet.getColumn('D').width = 16;
+    // Write dynamic excel formulas for the stats panel and merge them vertically
+    const startRow = 17;
+    const endRow = 17 + pautaData.totalAlunos - 1;
+    const genderColLetter = columnToLetter(colIndex + 3);
+    const obsColLetterReal = columnToLetter(colIndex);
+
+    const formulas = [
+      { offset: 0, formula: `COUNTIF(${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
+      { offset: 1, formula: `COUNTIF(${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` },
+      
+      { offset: 2, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
+      { offset: 3, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` },
+      
+      { offset: 4, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
+      { offset: 5, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` },
+      
+      { offset: 6, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"M")` },
+      { offset: 7, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDA",${genderColLetter}${startRow}:${genderColLetter}${endRow},"F")` }
+    ];
+
+    formulas.forEach(f => {
+      const colLetter = columnToLetter(statsStartColIndex + f.offset);
+      sheet.mergeCells(`${colLetter}${startRow}:${colLetter}${endRow}`);
+      const cell = sheet.getCell(`${colLetter}${startRow}`);
+      cell.value = { formula: f.formula };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: (f.offset % 2 === 0) ? 'FF0070C0' : 'FFC00000' } };
+    });
+
+    // Set column widths
+    sheet.getColumn('A').width = 2; // Margem
+    sheet.getColumn('B').width = 4; // Nº
+    sheet.getColumn('C').width = 10; // Nº PROC
+    sheet.getColumn('D').width = 30; // NOME
+    sheet.getColumn('E').width = 16; // DISCIPLINA A REPETIR
     
     disciplines.forEach(dName => {
-      const { faltasCol, gradeCol } = disciplineColsMap[dName];
-      sheet.getColumn(faltasCol).width = 7;
-      sheet.getColumn(gradeCol).width = 7;
+      const { justColIdx, injustColIdx, gradeColIdx } = disciplineColsMap[dName];
+      sheet.getColumn(justColIdx).width = 4;
+      sheet.getColumn(injustColIdx).width = 4;
+      sheet.getColumn(gradeColIdx).width = 7;
     });
     
-    sheet.getColumn(obsColLetter).width = 10;
+    sheet.getColumn(obsColLetter).width = 12;
     sheet.getColumn(mediaColLetter).width = 9;
     sheet.getColumn(idadeColLetter).width = 7;
     sheet.getColumn(generoColLetter).width = 8;
 
-    // DADOS ESTATÍSTICOS BLOCK
-    const statsStartColIndex = colIndex + 2;
-    const statsStartCol = columnToLetter(statsStartColIndex);
-    const statsEndCol = columnToLetter(statsStartColIndex + 5);
+    for (let i = 0; i < 8; i++) {
+      sheet.getColumn(statsStartColIndex + i).width = 6;
+    }
 
-    // Title
-    sheet.mergeCells(`${statsStartCol}17:${statsEndCol}17`);
-    const statTitle = sheet.getCell(`${statsStartCol}17`);
-    statTitle.value = 'DADOS ESTATÍSTICOS';
-    statTitle.font = { name: 'Calibri', size: 11, bold: true };
-    statTitle.alignment = { horizontal: 'center', vertical: 'middle' };
-    statTitle.fill = headerFill;
-    statTitle.border = borderStyle;
-
-    // Headers
-    const labels = ['', 'M', 'F', 'SOMA'];
-    labels.forEach((val, i) => {
-      const cLetter = columnToLetter(statsStartColIndex + (i === 0 ? 0 : i + 1));
-      if (i === 0) {
-        sheet.mergeCells(`${cLetter}18:${columnToLetter(statsStartColIndex + 1)}18`);
-      }
-      const targetCol = i === 0 ? cLetter : columnToLetter(statsStartColIndex + i + 1);
-      const c = sheet.getCell(`${targetCol}18`);
-      c.value = val;
-      c.font = { name: 'Calibri', size: 10, bold: true };
-      c.alignment = { horizontal: 'center', vertical: 'middle' };
-      c.border = borderStyle;
-      if (i > 0) c.fill = headerFill;
-    });
-
-    const statRowsData = [
-      { label: 'MATRICULADOS', m: stats.matriculados.m, f: stats.matriculados.f },
-      { label: 'TRANSITA', m: stats.transita.m, f: stats.transita.f },
-      { label: 'N/TRANSITA', m: stats.nTransita.m, f: stats.nTransita.f },
-      { label: 'DESISTIDO/A', m: stats.desistidos.m, f: stats.desistidos.f }
-    ];
-
-    let sr = 19;
-    statRowsData.forEach(sData => {
-      sheet.mergeCells(`${statsStartCol}${sr}:${columnToLetter(statsStartColIndex + 1)}${sr}`);
-      const lCell = sheet.getCell(`${statsStartCol}${sr}`);
-      lCell.value = sData.label;
-      lCell.font = { name: 'Calibri', size: 10, bold: true };
-      lCell.border = borderStyle;
-
-      const mCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 2)}${sr}`);
-      mCell.value = sData.m;
-      mCell.border = borderStyle;
-      mCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-      const fCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 3)}${sr}`);
-      fCell.value = sData.f;
-      fCell.border = borderStyle;
-      fCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-      const somaCell = sheet.getCell(`${columnToLetter(statsStartColIndex + 4)}${sr}`);
-      somaCell.value = sData.m + sData.f;
-      somaCell.border = borderStyle;
-      somaCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      somaCell.fill = headerFill;
-      sr++;
-    });
-
-    // MÁXIMA ALUNO BLOCK
-    sr++;
+    // MÁXIMA ALUNO BLOCK (starts below stats grid)
+    let sr = rowNum + 1;
     const maxBoxStartCol = columnToLetter(statsStartColIndex + 1);
     const maxBoxEndCol = columnToLetter(statsStartColIndex + 4);
 
@@ -1258,7 +1309,7 @@ export class GradeManagementService {
 
     // Apply borders to all empty headers of merged title rows
     for (let r = 14; r <= 16; r++) {
-      for (let c = 1; c <= colIndex; c++) {
+      for (let c = 2; c <= colIndex + 3; c++) {
         const cell = sheet.getRow(r).getCell(c);
         if (!cell.border) cell.border = borderStyle;
       }

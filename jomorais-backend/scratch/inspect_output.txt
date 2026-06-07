@@ -1,0 +1,182 @@
+Sheet Name: 1ºT-11ª-A-PAUTA
+Max Row: 62
+Max Col: 54
+
+Row 55:
+  Col 2 (B55): 39 
+  Col 3 (C55): 3364 
+  Col 4 (D55): "Natália Casimiro Muanda" 
+  Col 8 (H55): {"formula":"SUM('11CL-AC-A-L PORT'!J47)","result":12.666666666666666} 
+  Col 11 (K55): {"formula":"SUM('11CL-AC-A-MAT'!J47)","result":10} 
+  Col 14 (N55): {"formula":"SUM('11CL-AC-A-BIOL'!J47)","result":13.666666666666666} 
+  Col 17 (Q55): {"formula":"SUM('11CL-AC-A-INGLES'!J47)","result":13.666666666666666} 
+  Col 20 (T55): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J47)","result":8.333333333333334} 
+  Col 23 (W55): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J47)","result":13.833333333333334} 
+  Col 26 (Z55): {"formula":"SUM('11CL-AC-A-HEMAT I'!J47)","result":12.5} 
+  Col 29 (AC55): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J47)","result":13.583333333333334} 
+  Col 32 (AF55): {"formula":"SUM('11CL-AC-A-URINOL.'!J47)","result":7} 
+  Col 35 (AI55): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J47)","result":7.5} 
+  Col 38 (AL55): {"formula":"SUM('11CL-AC-A-ED. FIS'!J47)","result":14} 
+  Col 41 (AO55): {"formula":"SUM('11CL-AC-A-AFH'!J47)","result":8.333333333333334} 
+  Col 42 (AP55): "N/TRANSITA" 
+  Col 43 (AQ55): {"result":11.256944444444443,"sharedFormula":"AQ17"} 
+  Col 44 (AR55): 17 
+  Col 45 (AS55): "F" 
+
+Row 56:
+  Col 2 (B56): 40 
+  Col 3 (C56): 2867 
+  Col 4 (D56): "Natália Divina Luemba Chincócolo" 
+  Col 8 (H56): {"formula":"SUM('11CL-AC-A-L PORT'!J48)","result":11.666666666666666} 
+  Col 11 (K56): {"formula":"SUM('11CL-AC-A-MAT'!J48)","result":12.666666666666666} 
+  Col 14 (N56): {"formula":"SUM('11CL-AC-A-BIOL'!J48)","result":12} 
+  Col 17 (Q56): {"formula":"SUM('11CL-AC-A-INGLES'!J48)","result":17.666666666666668} 
+  Col 20 (T56): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J48)","result":14} 
+  Col 23 (W56): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J48)","result":13.166666666666666} 
+  Col 26 (Z56): {"formula":"SUM('11CL-AC-A-HEMAT I'!J48)","result":14.166666666666666} 
+  Col 29 (AC56): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J48)","result":15.666666666666666} 
+  Col 32 (AF56): {"formula":"SUM('11CL-AC-A-URINOL.'!J48)","result":12} 
+  Col 35 (AI56): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J48)","result":12} 
+  Col 38 (AL56): {"formula":"SUM('11CL-AC-A-ED. FIS'!J48)","result":14} 
+  Col 41 (AO56): {"formula":"SUM('11CL-AC-A-AFH'!J48)","result":11} 
+  Col 42 (AP56): "N/TRANSITA" 
+  Col 43 (AQ56): {"result":13.333333333333334,"sharedFormula":"AQ17"} 
+  Col 44 (AR56): 17 
+  Col 45 (AS56): "F" 
+
+Row 57:
+  Col 2 (B57): 41 
+  Col 3 (C57): 3408 
+  Col 4 (D57): "Pascoalina Betchi Tati" 
+  Col 8 (H57): {"formula":"SUM('11CL-AC-A-L PORT'!J49)","result":12.566666666666668} 
+  Col 11 (K57): {"formula":"SUM('11CL-AC-A-MAT'!J49)","result":11} 
+  Col 14 (N57): {"formula":"SUM('11CL-AC-A-BIOL'!J49)","result":10.666666666666666} 
+  Col 17 (Q57): {"formula":"SUM('11CL-AC-A-INGLES'!J49)","result":8} 
+  Col 20 (T57): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J49)","result":3.5} 
+  Col 23 (W57): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J49)","result":12.166666666666666} 
+  Col 26 (Z57): {"formula":"SUM('11CL-AC-A-HEMAT I'!J49)","result":8.833333333333334} 
+  Col 29 (AC57): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J49)","result":15.083333333333334} 
+  Col 32 (AF57): {"formula":"SUM('11CL-AC-A-URINOL.'!J49)","result":14.75} 
+  Col 35 (AI57): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J49)","result":11.833333333333334} 
+  Col 38 (AL57): {"formula":"SUM('11CL-AC-A-ED. FIS'!J49)","result":14} 
+  Col 41 (AO57): {"formula":"SUM('11CL-AC-A-AFH'!J49)","result":11.666666666666666} 
+  Col 42 (AP57): "N/TRANSITA" 
+  Col 43 (AQ57): {"formula":"AVERAGE(H57:AO57)","result":11.172222222222222,"ref":"AQ57:AQ59","shareType":"shared"} 
+  Col 44 (AR57): 16 
+  Col 45 (AS57): "F" 
+
+Row 58:
+  Col 2 (B58): 42 
+  Col 3 (C58): 2816 
+  Col 4 (D58): "Pelágia Nsunda Poba Sassa" 
+  Col 8 (H58): {"formula":"SUM('11CL-AC-A-L PORT'!J50)","result":15} 
+  Col 11 (K58): {"formula":"SUM('11CL-AC-A-MAT'!J50)","result":16.333333333333332} 
+  Col 14 (N58): {"formula":"SUM('11CL-AC-A-BIOL'!J50)","result":16} 
+  Col 17 (Q58): {"formula":"SUM('11CL-AC-A-INGLES'!J50)","result":18.333333333333332} 
+  Col 20 (T58): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J50)","result":15.833333333333334} 
+  Col 23 (W58): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J50)","result":14.333333333333334} 
+  Col 26 (Z58): {"formula":"SUM('11CL-AC-A-HEMAT I'!J50)","result":16.166666666666668} 
+  Col 29 (AC58): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J50)","result":16.583333333333332} 
+  Col 32 (AF58): {"formula":"SUM('11CL-AC-A-URINOL.'!J50)","result":15.5} 
+  Col 35 (AI58): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J50)","result":13.5} 
+  Col 38 (AL58): {"formula":"SUM('11CL-AC-A-ED. FIS'!J50)","result":15} 
+  Col 41 (AO58): {"formula":"SUM('11CL-AC-A-AFH'!J50)","result":12.833333333333334} 
+  Col 42 (AP58): "TRANSITA" 
+  Col 43 (AQ58): {"result":15.451388888888888,"sharedFormula":"AQ57"} 
+  Col 44 (AR58): 16 
+  Col 45 (AS58): "M" 
+
+Row 59:
+  Col 2 (B59): 43 
+  Col 3 (C59): 3152 
+  Col 4 (D59): "Rachel Celina André Mingas" 
+  Col 8 (H59): {"formula":"SUM('11CL-AC-A-L PORT'!J51)","result":9.166666666666666} 
+  Col 11 (K59): {"formula":"SUM('11CL-AC-A-MAT'!J51)","result":6.333333333333333} 
+  Col 14 (N59): {"formula":"SUM('11CL-AC-A-BIOL'!J51)","result":7} 
+  Col 17 (Q59): {"formula":"SUM('11CL-AC-A-INGLES'!J51)","result":7.666666666666667} 
+  Col 20 (T59): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J51)","result":2.3333333333333335} 
+  Col 23 (W59): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J51)","result":12.166666666666666} 
+  Col 26 (Z59): {"formula":"SUM('11CL-AC-A-HEMAT I'!J51)","result":8.333333333333334} 
+  Col 29 (AC59): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J51)","result":11.833333333333334} 
+  Col 32 (AF59): {"formula":"SUM('11CL-AC-A-URINOL.'!J51)","result":8.5} 
+  Col 35 (AI59): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J51)","result":7} 
+  Col 38 (AL59): {"formula":"SUM('11CL-AC-A-ED. FIS'!J51)","result":4} 
+  Col 41 (AO59): {"formula":"SUM('11CL-AC-A-AFH'!J51)","result":9.833333333333334} 
+  Col 42 (AP59): "N/TRANSITA" 
+  Col 43 (AQ59): {"result":7.847222222222221,"sharedFormula":"AQ57"} 
+  Col 44 (AR59): 17 
+  Col 45 (AS59): "F" 
+
+Row 60:
+  Col 2 (B60): 44 
+  Col 3 (C60): 3628 
+  Col 4 (D60): "Teresa Gertrudes Luzia Tati" 
+  Col 8 (H60): {"formula":"SUM('11CL-AC-A-L PORT'!J52)","result":11.566666666666668} 
+  Col 11 (K60): {"formula":"SUM('11CL-AC-A-MAT'!J52)","result":6.333333333333333} 
+  Col 14 (N60): {"formula":"SUM('11CL-AC-A-BIOL'!J52)","result":10} 
+  Col 17 (Q60): {"formula":"SUM('11CL-AC-A-INGLES'!J52)","result":13} 
+  Col 20 (T60): {"formula":"SUM('11CL-AC-A-QCA ORG.'!J52)","result":14} 
+  Col 23 (W60): {"formula":"SUM('11CL-AC-A-MICROBIOL'!J52)","result":12.833333333333334} 
+  Col 26 (Z60): {"formula":"SUM('11CL-AC-A-HEMAT I'!J52)","result":9.833333333333334} 
+  Col 29 (AC60): {"formula":"SUM('11CL-AC-A-IMUNOL.'!J52)","result":15.333333333333334} 
+  Col 32 (AF60): {"formula":"SUM('11CL-AC-A-URINOL.'!J52)","result":10.333333333333334} 
+  Col 35 (AI60): {"formula":"SUM('11CL-AC-A-PRASITOL.'!J52)","result":8.5} 
+  Col 38 (AL60): {"formula":"SUM('11CL-AC-A-ED. FIS'!J52)","result":11} 
+  Col 41 (AO60): {"formula":"SUM('11CL-AC-A-AFH'!J52)","result":10} 
+  Col 42 (AP60): "N/TRANSITA" 
+  Col 43 (AQ60): {"formula":"AVERAGE(H60:AO60)","result":11.06111111111111,"ref":"AQ60","shareType":"shared"} 
+  Col 44 (AR60): 16 
+  Col 45 (AS60): "F" 
+
+Row 61:
+  Col 2 (B61): "DATA DO CONSELHO DE TURMA______/______/2025" 
+  Col 3 (C61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
+  Col 4 (D61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
+  Col 5 (E61): "DATA DO CONSELHO DE TURMA______/______/2025" (Merged into B61)
+
+Row 64:
+  Col 2 (B64): "A Directora de Turma" 
+  Col 3 (C64): "A Directora de Turma" (Merged into B64)
+  Col 4 (D64): "A Directora de Turma" (Merged into B64)
+  Col 27 (AA64): "O Sibdirector Pedagógico" 
+  Col 28 (AB64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 29 (AC64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 30 (AD64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 31 (AE64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 32 (AF64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 33 (AG64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 34 (AH64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 35 (AI64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 36 (AJ64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 37 (AK64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 38 (AL64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 39 (AM64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 40 (AN64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 41 (AO64): "O Sibdirector Pedagógico" (Merged into AA64)
+  Col 42 (AP64): "O Sibdirector Pedagógico" (Merged into AA64)
+
+Row 65:
+  Col 2 (B65): "_____________________________________" 
+  Col 3 (C65): "_____________________________________" (Merged into B65)
+  Col 4 (D65): "_____________________________________" (Merged into B65)
+
+Row 66:
+  Col 2 (B66): "RUTH DEMBI QUIFOCO ZEMBO" 
+  Col 3 (C66): "RUTH DEMBI QUIFOCO ZEMBO" (Merged into B66)
+  Col 4 (D66): "RUTH DEMBI QUIFOCO ZEMBO" (Merged into B66)
+  Col 27 (AA66): "ALBERTO SASSA TATI" 
+  Col 28 (AB66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 29 (AC66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 30 (AD66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 31 (AE66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 32 (AF66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 33 (AG66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 34 (AH66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 35 (AI66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 36 (AJ66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 37 (AK66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 38 (AL66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 39 (AM66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 40 (AN66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 41 (AO66): "ALBERTO SASSA TATI" (Merged into AA66)
+  Col 42 (AP66): "ALBERTO SASSA TATI" (Merged into AA66)
