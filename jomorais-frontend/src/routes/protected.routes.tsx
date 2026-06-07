@@ -18,7 +18,7 @@ export function ProtectedRoute({
   // Verificar validade do token periodicamente
   useEffect(() => {
     const checkTokenValidity = () => {
-      if (!authService.hasValidToken()) {
+      if (isAuthenticated && !authService.hasValidToken()) {
         // console.warn('🔐 Token inválido detectado - fazendo logout automático');
         logout();
       }
@@ -31,7 +31,7 @@ export function ProtectedRoute({
     const interval = setInterval(checkTokenValidity, 30000);
 
     return () => clearInterval(interval);
-  }, [logout]);
+  }, [isAuthenticated, logout]);
 
   // Redirecionar para login se não estiver autenticado
   if (!isAuthenticated) {

@@ -12,25 +12,15 @@ import {
   XCircle,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
-import { useGrades } from '../../../hooks/useGrade'
+import { useConsolidatedDisciplineStatistics } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import type { ITurma } from '../../../types/turma.types'
 
-interface DisciplineStats {
-  codigoDisciplina: number
-  nomeDisciplina: string
-  totalAlunos: number
-  media: number
-  aprovados: number
-  reprovados: number
-  percentualAprovacao: number
-  notas: any[]
-}
-
 interface FilterState {
   codigoTurma: string
   codigoAnoLectivo: string
+  codigoTrimestre: string
 }
 
 export default function NotesByDiscipline() {
@@ -38,6 +28,7 @@ export default function NotesByDiscipline() {
   const [filters, setFilters] = useState<FilterState>({
     codigoTurma: '',
     codigoAnoLectivo: '',
+    codigoTrimestre: '1',
   })
 
   // Estados de expansão de disciplinas
@@ -57,93 +48,25 @@ export default function NotesByDiscipline() {
   }, [turmas, filters.codigoAnoLectivo])
 
   const isContextSelected = useMemo(() => {
-    return !!filters.codigoTurma && !!filters.codigoAnoLectivo
-  }, [filters.codigoTurma, filters.codigoAnoLectivo])
+    return !!filters.codigoTurma && !!filters.codigoAnoLectivo && !!filters.codigoTrimestre
+  }, [filters.codigoTurma, filters.codigoAnoLectivo, filters.codigoTrimestre])
 
   // Hooks de dados
-  const { data: gradesData, isLoading: isLoadingGrades } = useGrades(
-    1,
-    1000, // Buscar muitos para agrupar
-    {
-      codigoTurma: filters.codigoTurma ? parseInt(filters.codigoTurma) : undefined,
-      codigoAnoLectivo: filters.codigoAnoLectivo ? parseInt(filters.codigoAnoLectivo) : undefined,
-    },
+  const { data: statsData, isLoading: isLoadingStats } = useConsolidatedDisciplineStatistics(
+    filters.codigoTurma ? parseInt(filters.codigoTurma) : 0,
+    filters.codigoTrimestre ? parseInt(filters.codigoTrimestre) : 0,
+    filters.codigoAnoLectivo ? parseInt(filters.codigoAnoLectivo) : 0,
     isContextSelected
   )
 
-  // Dados extraídos
-  const grades = gradesData?.data || []
-
-  // Agrupar notas por disciplina
-  const disciplineStats = useMemo(() => {
-    const stats = new Map<number, DisciplineStats>()
-
-    grades.forEach(grade => {
-      const disciplinaId = grade.CodigoDisciplina
-      const disciplinaName = grade.tb_disciplinas?.designacao || `Disciplina ${disciplinaId}`
-
-      if (!stats.has(disciplinaId)) {
-        stats.set(disciplinaId, {
-          codigoDisciplina: disciplinaId,
-          nomeDisciplina: disciplinaName,
-          totalAlunos: 0,
-          media: 0,
-          aprovados: 0,
-          reprovados: 0,
-          percentualAprovacao: 0,
-          notas: [],
-        })
-      }
-
-      const disciplinaStat = stats.get(disciplinaId)!
-      disciplinaStat.notas.push(grade)
-      disciplinaStat.totalAlunos++
-
-      if (grade.Nota >= 10) {
-        disciplinaStat.aprovados++
-      } else {
-        disciplinaStat.reprovados++
-      }
-    })
-
-    // Calcular média e percentual
-    stats.forEach((stat) => {
-      if (stat.notas.length > 0) {
-        stat.media = stat.notas.reduce((sum, g) => sum + g.Nota, 0) / stat.notas.length
-        stat.percentualAprovacao = (stat.aprovados / stat.totalAlunos) * 100
-      }
-    })
-
-    return Array.from(stats.values()).sort((a, b) => b.media - a.media)
-  }, [grades])
-
-  // Estatísticas gerais
-  const generalStats = useMemo(() => {
-    if (disciplineStats.length === 0) {
-      return {
-        totalDisciplinas: 0,
-        mediaGeral: 0,
-        totalAprovados: 0,
-        totalReprovados: 0,
-        percentualAprovacaoGeral: 0,
-      }
-    }
-
-    const totalAprovados = disciplineStats.reduce((sum, d) => sum + d.aprovados, 0)
-    const totalReprovados = disciplineStats.reduce((sum, d) => sum + d.reprovados, 0)
-    const mediaGeral =
-      disciplineStats.reduce((sum, d) => sum + d.media * d.totalAlunos, 0) /
-      (totalAprovados + totalReprovados)
-
-    return {
-      totalDisciplinas: disciplineStats.length,
-      mediaGeral: mediaGeral || 0,
-      totalAprovados,
-      totalReprovados,
-      percentualAprovacaoGeral:
-        ((totalAprovados / (totalAprovados + totalReprovados)) * 100) || 0,
-    }
-  }, [disciplineStats])
+  const disciplineStats = statsData?.data?.disciplinas || statsData?.disciplinas || []
+  const generalStats = statsData?.data?.geral || statsData?.geral || {
+    totalDisciplinas: 0,
+    mediaGeral: 0,
+    totalAprovados: 0,
+    totalReprovados: 0,
+    percentualAprovacaoGeral: 0,
+  }
 
   // Handlers
   const toggleDisciplineExpanded = (disciplinaId: number) => {
@@ -222,7 +145,7 @@ export default function NotesByDiscipline() {
           <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Ano Letivo */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -260,6 +183,22 @@ export default function NotesByDiscipline() {
                   {turma.designacao}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Trimestre */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Trimestre *
+            </label>
+            <select
+              value={filters.codigoTrimestre}
+              onChange={e => setFilters(f => ({ ...f, codigoTrimestre: e.target.value }))}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+            >
+              <option value="1">1º Trimestre</option>
+              <option value="2">2º Trimestre</option>
+              <option value="3">3º Trimestre</option>
             </select>
           </div>
 
@@ -346,10 +285,10 @@ export default function NotesByDiscipline() {
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
             <p className="text-gray-600 font-medium">Filtros não selecionados</p>
             <p className="text-sm text-gray-500">
-              Selecione o Ano Letivo e a Turma acima para visualizar as notas agrupadas por disciplina.
+              Selecione o Ano Letivo, a Turma e o Trimestre acima para visualizar as notas agrupadas por disciplina.
             </p>
           </div>
-        ) : isLoadingGrades ? (
+        ) : isLoadingStats ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
             <p className="text-gray-600">Carregando notas...</p>
@@ -359,11 +298,11 @@ export default function NotesByDiscipline() {
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
             <p className="text-gray-600 font-medium">Nenhuma nota encontrada</p>
             <p className="text-sm text-gray-500">
-              Não existem notas lançadas para a turma e ano letivo selecionados.
+              Não existem notas lançadas para a turma, ano letivo e trimestre selecionados.
             </p>
           </div>
         ) : (
-          disciplineStats.map(discipline => (
+          disciplineStats.map((discipline: any) => (
             <div
               key={discipline.codigoDisciplina}
               className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow"
@@ -450,48 +389,53 @@ export default function NotesByDiscipline() {
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
                             Código
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                            Trimestre
+                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                            MAC
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                            Nota
+                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                            PP
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                            PT
+                          </th>
+                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                            Nota Final
+                          </th>
+                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
                             Status
-                          </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                            Tipo Avaliação
                           </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100 bg-white">
-                        {discipline.notas.map((nota, idx) => (
+                        {discipline.alunos?.map((aluno: any, idx: number) => (
                           <tr
                             key={idx}
                             className="hover:bg-gray-50/50 transition-colors"
                           >
                             <td className="px-6 py-3">
                               <p className="font-semibold text-gray-900">
-                                {nota.tb_alunos?.nome || `Aluno ${nota.CodigoAluno}`}
+                                {aluno.nomeAluno}
                               </p>
                             </td>
                             <td className="px-6 py-3 text-gray-600 text-sm">
-                              {nota.CodigoAluno}
+                              {aluno.codigoAluno}
                             </td>
-                            <td className="px-6 py-3 text-gray-600 text-sm">
-                              {nota.tb_trimestres?.designacao || `Trimestre ${nota.CodigoTrimestre}`}
+                            <td className="px-6 py-3 text-center text-gray-600 text-sm font-medium">
+                              {aluno.MAC !== null && aluno.MAC !== undefined ? aluno.MAC.toFixed(1) : '-'}
                             </td>
-                            <td className="px-6 py-3">
-                              <span className="font-bold text-gray-900">
-                                {nota.Nota.toFixed(2)}
+                            <td className="px-6 py-3 text-center text-gray-600 text-sm font-medium">
+                              {aluno.PP !== null && aluno.PP !== undefined ? aluno.PP.toFixed(1) : '-'}
+                            </td>
+                            <td className="px-6 py-3 text-center text-gray-600 text-sm font-medium">
+                              {aluno.PT !== null && aluno.PT !== undefined ? aluno.PT.toFixed(1) : '-'}
+                            </td>
+                            <td className="px-6 py-3 text-center">
+                              <span className={`font-bold text-sm ${aluno.notaFinal >= 10 ? 'text-[#007C00]' : 'text-red-600'}`}>
+                                {aluno.notaFinal.toFixed(2)}
                               </span>
                             </td>
-                            <td className="px-6 py-3">
-                              {getStatusBadge(nota.Nota)}
-                            </td>
-                            <td className="px-6 py-3 text-gray-600 text-sm font-medium">
-                              {nota.tb_tipo_avaliacao?.designacao ||
-                                `Avaliação ${nota.CodigoTipoAvaliacao}`}
+                            <td className="px-6 py-3 text-center">
+                              {getStatusBadge(aluno.notaFinal)}
                             </td>
                           </tr>
                         ))}
@@ -517,7 +461,7 @@ export default function NotesByDiscipline() {
                   • Total de disciplinas: <strong>{generalStats.totalDisciplinas}</strong>
                 </li>
                 <li>
-                  • Total de notas registradas:{' '}
+                  • Total de médias calculadas:{' '}
                   <strong>
                     {generalStats.totalAprovados + generalStats.totalReprovados}
                   </strong>

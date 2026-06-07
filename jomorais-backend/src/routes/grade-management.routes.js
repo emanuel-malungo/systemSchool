@@ -331,6 +331,7 @@ router.get('/historico/:codigoNota', GradeManagementController.getGradeHistory);
  *         description: Estatísticas calculadas
  */
 router.get('/estatisticas/turma', GradeManagementController.getGradeStatistics);
+router.get('/estatisticas/consolidado', GradeManagementController.getConsolidatedDisciplineStatistics);
 
 /**
  * @swagger

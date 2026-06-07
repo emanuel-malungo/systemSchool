@@ -1709,6 +1709,162 @@ export class GradeManagementService {
     }
   }
 
+  static async getConsolidatedDisciplineStatistics(codigoTurma, codigoTrimestre, codigoAnoLectivo) {
+    try {
+      if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
+        throw new AppError('Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo', 400);
+      }
+
+      const notas = await prisma.tb_notas_alunos.findMany({
+        where: {
+          CodigoTurma: parseInt(codigoTurma),
+          CodigoTrimestre: parseInt(codigoTrimestre),
+          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+        },
+        include: {
+          tb_alunos: { select: { codigo: true, nome: true } },
+          tb_disciplinas: { select: { codigo: true, designacao: true } }
+        }
+      });
+
+      if (notas.length === 0) {
+        return {
+          disciplinas: [],
+          geral: {
+            totalDisciplinas: 0,
+            mediaGeral: 0,
+            totalAprovados: 0,
+            totalReprovados: 0,
+            percentualAprovacaoGeral: 0
+          }
+        };
+      }
+
+      // Agrupar por disciplina e depois por aluno
+      const agrupado = {};
+
+      notas.forEach(n => {
+        const discId = n.CodigoDisciplina;
+        const discNome = n.tb_disciplinas?.designacao || `Disciplina ${discId}`;
+        const alunoId = n.CodigoAluno;
+        const alunoNome = n.tb_alunos?.nome || `Aluno ${alunoId}`;
+        
+        if (!agrupado[discId]) {
+          agrupado[discId] = {
+            codigoDisciplina: discId,
+            nomeDisciplina: discNome,
+            alunosMap: {}
+          };
+        }
+
+        if (!agrupado[discId].alunosMap[alunoId]) {
+          agrupado[discId].alunosMap[alunoId] = {
+            codigoAluno: alunoId,
+            nomeAluno: alunoNome,
+            notas: []
+          };
+        }
+
+        agrupado[discId].alunosMap[alunoId].notas.push({
+          tipo: n.CodigoTipoAvaliacao, // 1=MAC, 2=PP, 3=PT
+          nota: n.Nota
+        });
+      });
+
+      let totalDisciplinas = 0;
+      let somaMediasConsolidadasTotal = 0;
+      let contagemAlunosConsolidadosTotal = 0;
+      let totalAprovadosGeral = 0;
+      let totalReprovadosGeral = 0;
+
+      const disciplinasStats = Object.values(agrupado).map(d => {
+        const alunosList = Object.values(d.alunosMap).map(aluno => {
+          let sum = 0;
+          let count = 0;
+          let mac = null;
+          let pp = null;
+          let pt = null;
+
+          aluno.notas.forEach(n => {
+            sum += n.nota;
+            count++;
+            if (n.tipo === 1) mac = n.nota;
+            else if (n.tipo === 2 || n.tipo === 9) pp = n.nota;
+            else if (n.tipo === 3 || n.tipo === 10) pt = n.nota;
+          });
+
+          const notaFinal = count > 0 ? parseFloat((sum / count).toFixed(2)) : 0;
+          const status = notaFinal >= 10 ? 'Aprovado' : 'Reprovado';
+
+          return {
+            codigoAluno: aluno.codigoAluno,
+            nomeAluno: aluno.nomeAluno,
+            MAC: mac,
+            PP: pp,
+            PT: pt,
+            notaFinal,
+            status
+          };
+        });
+
+        // Ordenar alunos por nome
+        alunosList.sort((a, b) => a.nomeAluno.localeCompare(b.nomeAluno));
+
+        // Calcular estatísticas da disciplina
+        const totalAlunos = alunosList.length;
+        const aprovados = alunosList.filter(a => a.notaFinal >= 10).length;
+        const reprovados = totalAlunos - aprovados;
+        const media = totalAlunos > 0 
+          ? parseFloat((alunosList.reduce((acc, curr) => acc + curr.notaFinal, 0) / totalAlunos).toFixed(2))
+          : 0;
+        const percentualAprovacao = totalAlunos > 0 ? parseFloat(((aprovados / totalAlunos) * 100).toFixed(2)) : 0;
+
+        // Somar para as métricas globais
+        somaMediasConsolidadasTotal += alunosList.reduce((acc, curr) => acc + curr.notaFinal, 0);
+        contagemAlunosConsolidadosTotal += totalAlunos;
+        totalAprovadosGeral += aprovados;
+        totalReprovadosGeral += reprovados;
+        totalDisciplinas++;
+
+        return {
+          codigoDisciplina: d.codigoDisciplina,
+          nomeDisciplina: d.nomeDisciplina,
+          totalAlunos,
+          media,
+          aprovados,
+          reprovados,
+          percentualAprovacao,
+          alunos: alunosList
+        };
+      });
+
+      // Ordenar disciplinas alfabeticamente
+      disciplinasStats.sort((a, b) => a.nomeDisciplina.localeCompare(b.nomeDisciplina));
+
+      const mediaGeral = contagemAlunosConsolidadosTotal > 0
+        ? parseFloat((somaMediasConsolidadasTotal / contagemAlunosConsolidadosTotal).toFixed(2))
+        : 0;
+
+      const percentualAprovacaoGeral = (totalAprovadosGeral + totalReprovadosGeral) > 0
+        ? parseFloat(((totalAprovadosGeral / (totalAprovadosGeral + totalReprovadosGeral)) * 100).toFixed(2))
+        : 0;
+
+      return {
+        disciplinas: disciplinasStats,
+        geral: {
+          totalDisciplinas,
+          mediaGeral,
+          totalAprovados: totalAprovadosGeral,
+          totalReprovados: totalReprovadosGeral,
+          percentualAprovacaoGeral
+        }
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(`Erro ao consolidar estatísticas das disciplinas: ${error.message}`, 500);
+    }
+  }
+
   static async getTeacherGradeReport(codigoProfessor, codigoTrimestre, codigoAnoLectivo) {
     try {
       // Buscar todas as notas lançadas por este professor

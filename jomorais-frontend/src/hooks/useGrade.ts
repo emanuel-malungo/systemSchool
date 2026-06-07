@@ -36,6 +36,11 @@ export const gradeKeys = {
   pauta: () => [...gradeKeys.all, 'pauta'] as const,
   pautaList: (turmaId: number, trimesterId: number, anoId: number) =>
     [...gradeKeys.pauta(), turmaId, trimesterId, anoId] as const,
+
+  // Estatísticas Consolidadas
+  consolidatedStats: () => [...gradeKeys.all, 'consolidated-stats'] as const,
+  consolidatedStatsList: (turmaId: number, trimesterId: number, anoId: number) =>
+    [...gradeKeys.consolidatedStats(), turmaId, trimesterId, anoId] as const,
 }
 
 /**
@@ -368,5 +373,31 @@ export function usePublishPauta() {
         error?.response?.data?.message || error?.message || 'Erro ao publicar pauta'
       toast.error(message)
     },
+  })
+}
+
+/**
+ * Hook para buscar estatísticas consolidadas por disciplina
+ * @param codigoTurma - Código da turma
+ * @param codigoTrimestre - Código do trimestre
+ * @param codigoAnoLectivo - Código do ano letivo
+ * @param enabled - Se a query deve ser executada
+ * @returns Query com estatísticas consolidadas
+ */
+export function useConsolidatedDisciplineStatistics(
+  codigoTurma: number,
+  codigoTrimestre: number,
+  codigoAnoLectivo: number,
+  enabled = true
+) {
+  return useQuery({
+    queryKey: gradeKeys.consolidatedStatsList(codigoTurma, codigoTrimestre, codigoAnoLectivo),
+    queryFn: () =>
+      gradeService.getConsolidatedDisciplineStatistics(codigoTurma, codigoTrimestre, codigoAnoLectivo),
+    enabled: enabled && !!codigoTurma && !!codigoTrimestre && !!codigoAnoLectivo,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 2,
+    refetchOnWindowFocus: false,
   })
 }

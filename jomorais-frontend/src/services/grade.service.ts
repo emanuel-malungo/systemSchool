@@ -368,6 +368,34 @@ class GradeService {
       throw error
     }
   }
+
+  /**
+   * Busca estatísticas consolidadas por disciplina
+   * @param codigoTurma - Código da turma
+   * @param codigoTrimestre - Código do trimestre
+   * @param codigoAnoLectivo - Código do ano letivo
+   * @returns Promise com estatísticas consolidadas
+   */
+  async getConsolidatedDisciplineStatistics(
+    codigoTurma: number,
+    codigoTrimestre: number,
+    codigoAnoLectivo: number
+  ): Promise<any> {
+    try {
+      const queryParams = new URLSearchParams()
+      queryParams.append('codigoTurma', codigoTurma.toString())
+      queryParams.append('codigoTrimestre', codigoTrimestre.toString())
+      queryParams.append('codigoAnoLectivo', codigoAnoLectivo.toString())
+
+      const response = await api.get<any>(
+        `${this.baseURL}/estatisticas/consolidado?${queryParams.toString()}`
+      )
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas consolidadas:', error)
+      throw error
+    }
+  }
 }
 
 export default new GradeService()

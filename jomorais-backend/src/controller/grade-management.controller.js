@@ -287,6 +287,33 @@ export class GradeManagementController {
     }
   }
 
+  static async getConsolidatedDisciplineStatistics(req, res) {
+    try {
+      const { codigoTurma, codigoTrimestre, codigoAnoLectivo } = req.query;
+
+      if (!codigoTurma || !codigoTrimestre || !codigoAnoLectivo) {
+        return res.status(400).json({
+          success: false,
+          message: "Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo"
+        });
+      }
+
+      const result = await GradeManagementService.getConsolidatedDisciplineStatistics(
+        codigoTurma,
+        codigoTrimestre,
+        codigoAnoLectivo
+      );
+
+      res.json({
+        success: true,
+        message: "Estatísticas consolidadas calculadas com sucesso",
+        data: result
+      });
+    } catch (error) {
+      handleControllerError(res, error, "Erro ao calcular estatísticas consolidadas", 400);
+    }
+  }
+
   static async getDisciplineStatistics(req, res) {
     try {
       const { codigoDisciplina, codigoTrimestre, codigoAnoLectivo } = req.query;
