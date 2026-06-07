@@ -19,7 +19,6 @@ import {
   usePauta,
   useExportPautaPDF,
   useExportPautaExcel,
-  usePublishPauta,
 } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
@@ -158,7 +157,6 @@ export default function PautaManagement() {
   // Hooks de mutação
   const { mutate: exportPDF, isPending: isExportingPDF } = useExportPautaPDF()
   const { mutate: exportExcel, isPending: isExportingExcel } = useExportPautaExcel()
-  const { mutate: publishPauta, isPending: isPublishing } = usePublishPauta()
 
   // Handlers
   const handleGeneratePauta = async () => {
@@ -199,15 +197,6 @@ export default function PautaManagement() {
     })
   }
 
-  const handlePublishPauta = () => {
-    if (!pauta) return
-    if (confirm('Tem certeza que deseja publicar esta pauta? As notas ficarão visíveis para os alunos.')) {
-      publishPauta({
-        codigoTurma: parseInt(filters.codigoTurma),
-        codigoTrimestre: parseInt(filters.codigoTrimestre),
-      })
-    }
-  }
 
   const handleAnoLectivoChange = (value: string) => {
     setFilters(f => ({ ...f, codigoAnoLectivo: value, codigoTurma: '', page: 1 }))
@@ -391,14 +380,14 @@ export default function PautaManagement() {
       {/* Ações da Pauta */}
       {consolidatedPauta && (
         <div className="flex flex-wrap gap-3 mb-6">
-          <button
+          {/* <button
             onClick={handleExportPDF}
             disabled={isExportingPDF}
             className="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50 font-semibold shadow-xs"
           >
             {isExportingPDF ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Exportar PDF
-          </button>
+          </button> */}
 
           <button
             onClick={handleExportExcel}
@@ -409,14 +398,7 @@ export default function PautaManagement() {
             Exportar Excel
           </button>
 
-          <button
-            onClick={handlePublishPauta}
-            disabled={isPublishing}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors disabled:opacity-50 font-semibold shadow-xs"
-          >
-            {isPublishing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-            Publicar Pauta
-          </button>
+
 
           <button
             onClick={() => refetchPauta()}
