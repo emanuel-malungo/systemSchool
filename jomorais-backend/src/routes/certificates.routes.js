@@ -10,15 +10,11 @@
  *       type: object
  *       required:
  *         - codigoAluno
- *         - codigoDisciplina
  *         - codigoAnoLectivo
  *       properties:
  *         codigoAluno:
  *           type: integer
  *           description: Código do aluno
- *         codigoDisciplina:
- *           type: integer
- *           description: Código da disciplina
  *         codigoAnoLectivo:
  *           type: integer
  *           description: Código do ano letivo
@@ -27,7 +23,6 @@
  *           description: Observações adicionais
  *       example:
  *         codigoAluno: 1
- *         codigoDisciplina: 5
  *         codigoAnoLectivo: 1
  *         observacoes: "Aluno com excelente desempenho"
  */
@@ -104,10 +99,7 @@ router.post('/', CertificatesController.createCertificate);
  *         name: codigoAluno
  *         schema:
  *           type: integer
- *       - in: query
- *         name: codigoDisciplina
- *         schema:
- *           type: integer
+
  *       - in: query
  *         name: status
  *         schema:

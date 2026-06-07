@@ -18,7 +18,6 @@ import {
   useDeleteCertificate,
 } from '../../../hooks/useCertificate'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
-import { useDisciplinas } from '../../../hooks/useDisciplina'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useAuth } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
@@ -32,7 +31,6 @@ export default function CertificateManagement() {
   // Estados
   const [filterAnoLectivo, setFilterAnoLectivo] = useState('')
   const [filterAluno, setFilterAluno] = useState('')
-  const [filterDisciplina, setFilterDisciplina] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [page, setPage] = useState(1)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -44,7 +42,6 @@ export default function CertificateManagement() {
   const [createForm, setCreateForm] = useState({
     codigoTurma: '',
     codigoAluno: '',
-    codigoDisciplina: '',
     codigoAnoLectivo: '',
     observacoes: '',
   })
@@ -55,11 +52,9 @@ export default function CertificateManagement() {
     limit: 100,
   })
   const { data: turmasData } = useTurmasComplete('')
-  const { data: disciplinasData } = useDisciplinas()
 
   const anosLetivos = anosLetivosData?.data || []
   const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
-  const disciplines = Array.isArray(disciplinasData) ? disciplinasData : []
 
   // Filtro de alunos por turma selecionada
   const selectedTurma = useMemo(() => {
@@ -79,7 +74,6 @@ export default function CertificateManagement() {
     10,
     {
       codigoAluno: filterAluno ? parseInt(filterAluno) : undefined,
-      codigoDisciplina: filterDisciplina ? parseInt(filterDisciplina) : undefined,
       status: (filterStatus || undefined) as "Pendente" | "Assinado" | undefined,
       codigoAnoLectivo: filterAnoLectivo ? parseInt(filterAnoLectivo) : undefined,
     }
@@ -95,7 +89,7 @@ export default function CertificateManagement() {
 
   // Handlers
   const handleCreateCertificate = async () => {
-    if (!createForm.codigoAluno || !createForm.codigoDisciplina || !createForm.codigoAnoLectivo) {
+    if (!createForm.codigoAluno || !createForm.codigoAnoLectivo) {
       toast.error('Preencha todos os campos obrigatórios')
       return
     }
@@ -103,16 +97,14 @@ export default function CertificateManagement() {
     try {
       await createCertificate({
         codigoAluno: parseInt(createForm.codigoAluno),
-        codigoDisciplina: parseInt(createForm.codigoDisciplina),
         codigoAnoLectivo: parseInt(createForm.codigoAnoLectivo),
         observacoes: createForm.observacoes,
-      })
+      } as any)
       toast.success('Certificado criado com sucesso')
       setShowCreateModal(false)
       setCreateForm({
         codigoTurma: '',
         codigoAluno: '',
-        codigoDisciplina: '',
         codigoAnoLectivo: '',
         observacoes: '',
       })
@@ -206,7 +198,7 @@ export default function CertificateManagement() {
             <Filter className="w-5 h-5 text-gray-600" />
             <span className="font-semibold text-gray-700">Filtros</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Ano Letivo</label>
               <select
@@ -221,25 +213,6 @@ export default function CertificateManagement() {
                 {anosLetivos.map((ano) => (
                   <option key={`ano-${ano.codigo}`} value={ano.codigo || ''}>
                     {ano.designacao}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Disciplina</label>
-              <select
-                value={filterDisciplina}
-                onChange={(e) => {
-                  setFilterDisciplina(e.target.value)
-                  setPage(1)
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-              >
-                <option value="">Todas</option>
-                {disciplines.map((disc: any) => (
-                  <option key={`filter-disc-${disc.codigo}`} value={disc.codigo || ''}>
-                    {disc.designacao}
                   </option>
                 ))}
               </select>
@@ -268,7 +241,6 @@ export default function CertificateManagement() {
                 onClick={() => {
                   setFilterAnoLectivo('')
                   setFilterAluno('')
-                  setFilterDisciplina('')
                   setFilterStatus('')
                   setPage(1)
                 }}
@@ -303,7 +275,7 @@ export default function CertificateManagement() {
                       Aluno
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Disciplina
+                      Turma / Curso
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
                       Ano Letivo
@@ -326,7 +298,15 @@ export default function CertificateManagement() {
                         {cert.tb_alunos?.Nome || '-'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
-                        {cert.tb_disciplinas?.designacao || '-'}
+                        {(() => {
+                          const confirmacao = cert.tb_alunos?.tb_matriculas?.tb_confirmacoes?.[0]
+                          const classe = confirmacao?.tb_turmas?.tb_classes?.designacao
+                          const curso = cert.tb_alunos?.tb_matriculas?.tb_cursos?.designacao
+                          if (classe && curso) return `${classe} - ${curso}`
+                          if (classe) return classe
+                          if (curso) return curso
+                          return '-'
+                        })()}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {cert.tb_ano_lectivo?.designacao || '-'}
@@ -497,25 +477,7 @@ export default function CertificateManagement() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Disciplina *
-                </label>
-                <select
-                  value={createForm.codigoDisciplina}
-                  onChange={(e) =>
-                    setCreateForm({ ...createForm, codigoDisciplina: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="">Selecione...</option>
-                  {disciplines.map((disc: any) => (
-                    <option key={`disc-${disc.codigo}`} value={disc.codigo || ''}>
-                      {disc.designacao}
-                    </option>
-                  ))}
-                </select>
-              </div>
+
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -584,9 +546,19 @@ export default function CertificateManagement() {
               </div>
 
               <div>
-                <p className="text-sm text-gray-600">Disciplina</p>
+                <p className="text-sm text-gray-600">Turma / Curso / Classe</p>
                 <p className="text-lg font-semibold">
-                  {selectedCertificate.tb_disciplinas?.designacao}
+                  {(() => {
+                    const confirmacao = selectedCertificate.tb_alunos?.tb_matriculas?.tb_confirmacoes?.[0]
+                    const classe = confirmacao?.tb_turmas?.tb_classes?.designacao
+                    const curso = selectedCertificate.tb_alunos?.tb_matriculas?.tb_cursos?.designacao
+                    const turma = confirmacao?.tb_turmas?.designacao
+                    const parts = []
+                    if (classe) parts.push(classe)
+                    if (turma) parts.push(`Turma ${turma}`)
+                    if (curso) parts.push(curso)
+                    return parts.length > 0 ? parts.join(' - ') : '-'
+                  })()}
                 </p>
               </div>
 

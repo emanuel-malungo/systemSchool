@@ -25,7 +25,6 @@ export interface User {
 export interface Certificate {
   Codigo: number
   Codigo_Aluno: number
-  Codigo_Disciplina: number
   Codigo_AnoLectivo: number
   NumeroCertificado: string
   DataEmissao: string
@@ -34,14 +33,12 @@ export interface Certificate {
   Observacoes?: string
   AssinadoPor?: number
   tb_alunos?: Student
-  tb_disciplinas?: Subject
   tb_ano_lectivo?: AcademicYear
   tb_utilizadores?: User
 }
 
 export interface CreateCertificatePayload {
   codigoAluno: number
-  codigoDisciplina: number
   codigoAnoLectivo: number
   observacoes?: string
 }
@@ -76,7 +73,6 @@ export interface CertificatesListResponse {
 
 export interface CertificateFilters {
   codigoAluno?: number
-  codigoDisciplina?: number
   status?: 'Pendente' | 'Assinado'
   codigoAnoLectivo?: number
 }

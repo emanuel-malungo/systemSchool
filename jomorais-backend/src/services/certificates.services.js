@@ -57,30 +57,25 @@ export class CertificatesService {
     try {
       const {
         codigoAluno,
-        codigoDisciplina,
         codigoAnoLectivo,
         observacoes
       } = data;
 
       // Validar campos obrigatórios
-      if (!codigoAluno || !codigoDisciplina || !codigoAnoLectivo) {
-        throw new AppError('Campos obrigatórios: codigoAluno, codigoDisciplina, codigoAnoLectivo', 400, 'MISSING_FIELDS');
+      if (!codigoAluno || !codigoAnoLectivo) {
+        throw new AppError('Campos obrigatórios: codigoAluno, codigoAnoLectivo', 400, 'MISSING_FIELDS');
       }
 
       // Executar toda a lógica de validação acadêmica e criação dentro de uma transação
       const certificado = await prisma.$transaction(async (tx) => {
         // Validar existência de entidades
-        const [aluno, disciplina, anoLectivo] = await Promise.all([
+        const [aluno, anoLectivo] = await Promise.all([
           tx.tb_alunos.findUnique({ where: { codigo: codigoAluno } }),
-          tx.tb_disciplinas.findUnique({ where: { codigo: codigoDisciplina } }),
           tx.tb_ano_lectivo.findUnique({ where: { codigo: codigoAnoLectivo } })
         ]);
 
         if (!aluno) {
           throw new AppError('Aluno não encontrado', 404, 'STUDENT_NOT_FOUND');
-        }
-        if (!disciplina) {
-          throw new AppError('Disciplina não encontrada', 404, 'SUBJECT_NOT_FOUND');
         }
         if (!anoLectivo) {
           throw new AppError('Ano letivo não encontrado', 404, 'YEAR_NOT_FOUND');
@@ -99,39 +94,57 @@ export class CertificatesService {
           throw new AppError('O aluno não possui confirmação de matrícula ativa para o ano letivo selecionado', 400, 'NO_ENROLLMENT');
         }
 
-        // 2. Validar se o aluno foi aprovado na disciplina (média das notas >= 10)
+        // 2. Validar se o aluno foi aprovado globalmente (média das notas de cada disciplina >= 10)
         const grades = await tx.tb_notas_alunos.findMany({
           where: {
             CodigoAluno: codigoAluno,
-            CodigoDisciplina: codigoDisciplina,
             CodigoAnoLectivo: codigoAnoLectivo
+          },
+          include: {
+            tb_disciplinas: { select: { designacao: true } }
           }
         });
 
         if (grades.length === 0) {
-          throw new AppError('Não foram encontradas notas lançadas para este aluno nesta disciplina', 400, 'NO_GRADES');
+          throw new AppError('Não foram encontradas notas lançadas para este aluno no ano letivo selecionado', 400, 'NO_GRADES');
         }
 
-        const totalNotas = grades.reduce((acc, curr) => acc + curr.Nota, 0);
-        const media = totalNotas / grades.length;
+        // Agrupar por disciplina e calcular média
+        const disciplinasNotas = {};
+        grades.forEach(nota => {
+          const discId = nota.CodigoDisciplina;
+          const discNome = nota.tb_disciplinas?.designacao || 'Desconhecida';
+          if (!disciplinasNotas[discId]) {
+            disciplinasNotas[discId] = {
+              designacao: discNome,
+              soma: 0,
+              count: 0
+            };
+          }
+          disciplinasNotas[discId].soma += nota.Nota;
+          disciplinasNotas[discId].count += 1;
+        });
 
-        if (media < 10) {
-          throw new AppError(`Aluno não foi aprovado nesta disciplina. Média final obtida: ${media.toFixed(1)} (mínimo de 10.0 necessário)`, 400, 'NOT_APPROVED');
+        // Validar aprovação em todas
+        for (const [discId, info] of Object.entries(disciplinasNotas)) {
+          const media = info.soma / info.count;
+          if (media < 10) {
+            throw new AppError(`Aluno reprovado na disciplina "${info.designacao}". Média final obtida: ${media.toFixed(1)} (mínimo de 10.0 necessário)`, 400, 'NOT_APPROVED');
+          }
         }
 
         // 3. Verificar se já existe certificado cadastrado
         const existente = await tx.tb_certificados.findUnique({
           where: {
-            Codigo_Aluno_Codigo_Disciplina_Codigo_AnoLectivo: {
+            Codigo_Aluno_Codigo_AnoLectivo: {
               Codigo_Aluno: codigoAluno,
-              Codigo_Disciplina: codigoDisciplina,
               Codigo_AnoLectivo: codigoAnoLectivo
             }
           }
         });
 
         if (existente) {
-          throw new AppError('Certificado já existe para este aluno nesta disciplina', 409, 'DUPLICATE_CERTIFICATE');
+          throw new AppError('Certificado já existe para este aluno neste ano letivo', 409, 'DUPLICATE_CERTIFICATE');
         }
 
         // Gerar número de certificado único dentro da transação
@@ -141,7 +154,6 @@ export class CertificatesService {
         return await tx.tb_certificados.create({
           data: {
             Codigo_Aluno: codigoAluno,
-            Codigo_Disciplina: codigoDisciplina,
             Codigo_AnoLectivo: codigoAnoLectivo,
             NumeroCertificado: numeroCertificado,
             DataEmissao: new Date(),
@@ -151,9 +163,6 @@ export class CertificatesService {
           include: {
             tb_alunos: {
               select: { codigo: true, nome: true }
-            },
-            tb_disciplinas: {
-              select: { codigo: true, designacao: true }
             },
             tb_ano_lectivo: {
               select: { codigo: true, designacao: true }
@@ -174,13 +183,12 @@ export class CertificatesService {
    */
   static async getCertificates(page = 1, limit = 10, filters = {}) {
     try {
-      const { codigoAluno, codigoDisciplina, status, codigoAnoLectivo } = filters;
+      const { codigoAluno, status, codigoAnoLectivo } = filters;
       
       const skip = (page - 1) * limit;
       
       const where = {};
       if (codigoAluno) where.Codigo_Aluno = codigoAluno;
-      if (codigoDisciplina) where.Codigo_Disciplina = codigoDisciplina;
       if (status) where.Status = status;
       if (codigoAnoLectivo) where.Codigo_AnoLectivo = codigoAnoLectivo;
 
@@ -191,10 +199,26 @@ export class CertificatesService {
           take: limit,
           include: {
             tb_alunos: {
-              select: { codigo: true, nome: true, email: true }
-            },
-            tb_disciplinas: {
-              select: { codigo: true, designacao: true }
+              include: {
+                tb_matriculas: {
+                  include: {
+                    tb_cursos: {
+                      select: { designacao: true }
+                    },
+                    tb_confirmacoes: {
+                      include: {
+                        tb_turmas: {
+                          include: {
+                            tb_classes: {
+                              select: { designacao: true }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             tb_ano_lectivo: {
               select: { codigo: true, designacao: true }
@@ -253,9 +277,6 @@ export class CertificatesService {
                 }
               }
             }
-          },
-          tb_disciplinas: {
-            select: { codigo: true, designacao: true }
           },
           tb_ano_lectivo: {
             select: { codigo: true, designacao: true }
@@ -330,17 +351,16 @@ export class CertificatesService {
         };
       });
 
-      // Buscar e calcular média final das notas na disciplina selecionada para compatibilidade retroativa
+      // Buscar e calcular média final das notas do aluno para este ano letivo para o certificado
       const grades = await prisma.tb_notas_alunos.findMany({
         where: {
           CodigoAluno: certificado.Codigo_Aluno,
-          CodigoDisciplina: certificado.Codigo_Disciplina,
           CodigoAnoLectivo: certificado.Codigo_AnoLectivo
         }
       });
 
       const totalNotas = grades.reduce((acc, curr) => acc + curr.Nota, 0);
-      const media = grades.length > 0 ? (totalNotas / grades.length) : 0;
+      const media = grades.length > 0 ? (totalNotas / grades.length) : 14;
 
       return {
         ...certificado,
@@ -378,7 +398,6 @@ export class CertificatesService {
         },
         include: {
           tb_alunos: { select: { codigo: true, nome: true } },
-          tb_disciplinas: { select: { codigo: true, designacao: true } },
           tb_ano_lectivo: { select: { codigo: true, designacao: true } }
         }
       });
@@ -423,7 +442,6 @@ export class CertificatesService {
         },
         include: {
           tb_alunos: { select: { codigo: true, nome: true } },
-          tb_disciplinas: { select: { codigo: true, designacao: true } },
           tb_utilizadores: { select: { codigo: true, nome: true } }
         }
       });
@@ -474,9 +492,6 @@ export class CertificatesService {
       const certificados = await prisma.tb_certificados.findMany({
         where,
         include: {
-          tb_disciplinas: {
-            select: { codigo: true, designacao: true }
-          },
           tb_ano_lectivo: {
             select: { codigo: true, designacao: true }
           }
@@ -518,33 +533,13 @@ export class CertificatesService {
         totalCertificados,
         assinados,
         pendentes,
-        cancelados,
-        porDisciplina
+        cancelados
       ] = await Promise.all([
         prisma.tb_certificados.count({ where }),
         prisma.tb_certificados.count({ where: { ...where, Status: 'Assinado' } }),
         prisma.tb_certificados.count({ where: { ...where, Status: 'Pendente' } }),
-        prisma.tb_certificados.count({ where: { ...where, Status: 'Cancelado' } }),
-        prisma.tb_certificados.groupBy({
-          by: ['Codigo_Disciplina'],
-          where,
-          _count: true
-        })
+        prisma.tb_certificados.count({ where: { ...where, Status: 'Cancelado' } })
       ]);
-
-      // Agrupar por disciplina
-      const disciplinaDetails = await Promise.all(
-        porDisciplina.map(async (item) => {
-          const disciplina = await prisma.tb_disciplinas.findUnique({
-            where: { codigo: item.Codigo_Disciplina },
-            select: { designacao: true }
-          });
-          return {
-            disciplina: disciplina?.designacao || 'Desconhecida',
-            total: item._count
-          };
-        })
-      );
 
       return {
         anoLectivo: anoLectivo.designacao,
@@ -553,7 +548,7 @@ export class CertificatesService {
         pendentes,
         cancelados,
         taxaAssinatura: totalCertificados > 0 ? ((assinados / totalCertificados) * 100).toFixed(2) + '%' : '0%',
-        porDisciplina: disciplinaDetails.sort((a, b) => b.total - a.total)
+        porDisciplina: []
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
@@ -576,9 +571,6 @@ export class CertificatesService {
           tb_alunos: {
             select: { codigo: true, nome: true }
           },
-          tb_disciplinas: {
-            select: { codigo: true, designacao: true }
-          },
           tb_ano_lectivo: {
             select: { codigo: true, designacao: true }
           },
@@ -597,7 +589,6 @@ export class CertificatesService {
         status: certificado.Status,
         numero: certificado.NumeroCertificado,
         aluno: certificado.tb_alunos.nome,
-        disciplina: certificado.tb_disciplinas.designacao,
         anoLectivo: certificado.tb_ano_lectivo.designacao,
         dataEmissao: certificado.DataEmissao,
         dataAssinatura: certificado.DataAssinatura,

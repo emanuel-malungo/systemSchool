@@ -38,9 +38,6 @@ class CertificateService {
       if (filters?.codigoAluno) {
         queryParams.append('codigoAluno', filters.codigoAluno.toString())
       }
-      if (filters?.codigoDisciplina) {
-        queryParams.append('codigoDisciplina', filters.codigoDisciplina.toString())
-      }
       if (filters?.status) {
         queryParams.append('status', filters.status)
       }

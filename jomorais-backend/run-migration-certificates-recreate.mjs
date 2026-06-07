@@ -20,7 +20,6 @@ async function recreateCertificatesTable() {
     const createTableSQL = `CREATE TABLE IF NOT EXISTS \`tb_certificados\` (
       \`Codigo\` INT UNSIGNED NOT NULL AUTO_INCREMENT,
       \`Codigo_Aluno\` INT UNSIGNED NOT NULL,
-      \`Codigo_Disciplina\` INT UNSIGNED NOT NULL,
       \`Codigo_AnoLectivo\` INT UNSIGNED NOT NULL,
       \`NumeroCertificado\` VARCHAR(50),
       \`DataEmissao\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -30,13 +29,11 @@ async function recreateCertificatesTable() {
       \`Observacoes\` TEXT,
       \`DataCadastro\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (\`Codigo\`),
-      UNIQUE KEY \`UK_tb_certificados\` (\`Codigo_Aluno\`, \`Codigo_Disciplina\`, \`Codigo_AnoLectivo\`),
+      UNIQUE KEY \`UK_tb_certificados\` (\`Codigo_Aluno\`, \`Codigo_AnoLectivo\`),
       INDEX \`FK_tb_certificados_aluno_idx\` (\`Codigo_Aluno\`),
-      INDEX \`FK_tb_certificados_disciplina_idx\` (\`Codigo_Disciplina\`),
       INDEX \`FK_tb_certificados_ano_lectivo_idx\` (\`Codigo_AnoLectivo\`),
       INDEX \`FK_tb_certificados_assinador_idx\` (\`AssinadoPor\`),
       CONSTRAINT \`FK_tb_certificados_aluno\` FOREIGN KEY (\`Codigo_Aluno\`) REFERENCES \`tb_alunos\` (\`codigo\`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-      CONSTRAINT \`FK_tb_certificados_disciplina\` FOREIGN KEY (\`Codigo_Disciplina\`) REFERENCES \`tb_disciplinas\` (\`codigo\`) ON DELETE NO ACTION ON UPDATE NO ACTION,
       CONSTRAINT \`FK_tb_certificados_ano_lectivo\` FOREIGN KEY (\`Codigo_AnoLectivo\`) REFERENCES \`tb_ano_lectivo\` (\`codigo\`) ON DELETE NO ACTION ON UPDATE NO ACTION,
       CONSTRAINT \`FK_tb_certificados_assinador\` FOREIGN KEY (\`AssinadoPor\`) REFERENCES \`tb_utilizadores\` (\`codigo\`) ON DELETE NO ACTION ON UPDATE NO ACTION
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`;
@@ -53,7 +50,7 @@ async function recreateCertificatesTable() {
     console.table(schema);
     
     // Verificar se as colunas esperadas existem
-    const expectedColumns = ['Codigo', 'Codigo_Aluno', 'Codigo_Disciplina', 'Codigo_AnoLectivo', 'NumeroCertificado', 'DataEmissao', 'Status'];
+    const expectedColumns = ['Codigo', 'Codigo_Aluno', 'Codigo_AnoLectivo', 'NumeroCertificado', 'DataEmissao', 'Status'];
     const actualColumns = schema.map(col => col.Field);
     
     const missingColumns = expectedColumns.filter(col => !actualColumns.includes(col));

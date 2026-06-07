@@ -87,21 +87,7 @@ export function useCertificatesByStudent(studentId: number, enabled = true) {
   })
 }
 
-/**
- * Hook para buscar certificados por disciplina
- * @param subjectId - Código da disciplina
- * @returns Query com certificados da disciplina
- */
-export function useCertificatesBySubject(subjectId: number, enabled = true) {
-  return useQuery({
-    queryKey: certificateKeys.bySubject(subjectId),
-    queryFn: () =>
-      certificateService.getCertificates(1, 100, { codigoDisciplina: subjectId }),
-    enabled: enabled && !!subjectId,
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 5,
-  })
-}
+
 
 /**
  * Hook para buscar certificados pendentes

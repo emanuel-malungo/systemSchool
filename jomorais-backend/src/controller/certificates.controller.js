@@ -11,11 +11,10 @@ export class CertificatesController {
    */
   static async createCertificate(req, res) {
     try {
-      const { codigoAluno, codigoDisciplina, codigoAnoLectivo, observacoes } = req.body;
+      const { codigoAluno, codigoAnoLectivo, observacoes } = req.body;
       
       const certificado = await CertificatesService.createCertificate({
         codigoAluno,
-        codigoDisciplina,
         codigoAnoLectivo,
         observacoes
       });
@@ -39,7 +38,6 @@ export class CertificatesController {
       const limit = parseInt(req.query.limit) || 10;
       const filters = {
         codigoAluno: req.query.codigoAluno ? parseInt(req.query.codigoAluno) : undefined,
-        codigoDisciplina: req.query.codigoDisciplina ? parseInt(req.query.codigoDisciplina) : undefined,
         status: req.query.status,
         codigoAnoLectivo: req.query.codigoAnoLectivo ? parseInt(req.query.codigoAnoLectivo) : undefined
       };

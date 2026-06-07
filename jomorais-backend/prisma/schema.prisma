@@ -305,7 +305,6 @@ model tb_disciplinas {
   tb_resultados_finais           tb_resultados_finais[]
   tb_professor_disciplina        tb_professor_disciplina[]
   tb_professor_turma             tb_professor_turma[]
-  tb_certificados                tb_certificados[]
 
   @@index([codigo_Curso], map: "FK_tb_disciplinas_1")
   @@index([status], map: "FK_tb_disciplinas_2")
@@ -2489,7 +2488,6 @@ model tb_historico_notas {
 model tb_certificados {
   Codigo              Int       @id @default(autoincrement()) @map("Codigo") @db.UnsignedInt
   Codigo_Aluno        Int       @map("Codigo_Aluno") @db.UnsignedInt
-  Codigo_Disciplina   Int       @map("Codigo_Disciplina") @db.UnsignedInt
   Codigo_AnoLectivo   Int       @map("Codigo_AnoLectivo") @db.UnsignedInt
   NumeroCertificado   String    @map("NumeroCertificado") @db.VarChar(50)
   DataEmissao         DateTime  @map("DataEmissao")
@@ -2500,13 +2498,11 @@ model tb_certificados {
   DataCadastro        DateTime  @default(now()) @map("DataCadastro")
 
   tb_alunos           tb_alunos           @relation(fields: [Codigo_Aluno], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_aluno")
-  tb_disciplinas      tb_disciplinas      @relation(fields: [Codigo_Disciplina], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_disciplina")
   tb_ano_lectivo      tb_ano_lectivo      @relation(fields: [Codigo_AnoLectivo], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_ano_lectivo")
   tb_utilizadores     tb_utilizadores?    @relation("CertificadoAssinador", fields: [AssinadoPor], references: [codigo], onDelete: NoAction, onUpdate: NoAction, map: "FK_tb_certificados_assinador")
 
-  @@unique([Codigo_Aluno, Codigo_Disciplina, Codigo_AnoLectivo], map: "UK_tb_certificados")
+  @@unique([Codigo_Aluno, Codigo_AnoLectivo], map: "UK_tb_certificados")
   @@index([Codigo_Aluno], map: "FK_tb_certificados_aluno_idx")
-  @@index([Codigo_Disciplina], map: "FK_tb_certificados_disciplina_idx")
   @@index([Codigo_AnoLectivo], map: "FK_tb_certificados_ano_lectivo_idx")
   @@index([AssinadoPor], map: "FK_tb_certificados_assinador_idx")
   @@map("tb_certificados")
