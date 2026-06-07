@@ -1715,17 +1715,45 @@ export class GradeManagementService {
         throw new AppError('Parâmetros obrigatórios: codigoTurma, codigoTrimestre, codigoAnoLectivo', 400);
       }
 
-      const notas = await prisma.tb_notas_alunos.findMany({
+      // Step 1: Get all students confirmed in this turma and academic year
+      // (same approach as generatePauta - turma membership comes from tb_confirmacoes)
+      const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
-          CodigoTurma: parseInt(codigoTurma),
-          CodigoTrimestre: parseInt(codigoTrimestre),
-          CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+          codigo_Turma: parseInt(codigoTurma),
+          codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
         },
         include: {
-          tb_alunos: { select: { codigo: true, nome: true } },
-          tb_disciplinas: { select: { codigo: true, designacao: true } }
+          tb_matriculas: {
+            include: {
+              tb_alunos: { select: { codigo: true, nome: true } }
+            }
+          }
         }
       });
+
+      // Build set of valid student codes for this turma
+      const alunosDaTurma = confirmacoes
+        .map(c => c.tb_matriculas?.tb_alunos)
+        .filter(a => !!a);
+
+      const codigosAlunos = alunosDaTurma.map(a => a.codigo);
+
+      // Step 2: Fetch grades for all students in this turma for the given trimestre/anoLetivo
+      // Filter by CodigoAluno (students in turma) + CodigoTrimestre + CodigoAnoLectivo
+      // This works regardless of whether CodigoTurma was set on the note record
+      const notas = codigosAlunos.length > 0
+        ? await prisma.tb_notas_alunos.findMany({
+            where: {
+              CodigoAluno: { in: codigosAlunos },
+              CodigoTrimestre: parseInt(codigoTrimestre),
+              CodigoAnoLectivo: parseInt(codigoAnoLectivo)
+            },
+            include: {
+              tb_alunos: { select: { codigo: true, nome: true } },
+              tb_disciplinas: { select: { codigo: true, designacao: true } }
+            }
+          })
+        : [];
 
       if (notas.length === 0) {
         return {
