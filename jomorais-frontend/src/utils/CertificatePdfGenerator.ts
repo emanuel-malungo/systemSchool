@@ -110,7 +110,7 @@ export class CertificatePdfGenerator {
 
   private static writeJustifiedMixed(
     doc: jsPDF,
-    segments: Array<{ text: string; bold: boolean; underline?: boolean }>,
+    segments: Array<{ text: string; bold: boolean; underline?: boolean; color?: number[] }>,
     x: number,
     y: number,
     maxWidth: number,
@@ -123,13 +123,14 @@ export class CertificatePdfGenerator {
       word: string
       bold: boolean
       underline: boolean
+      color?: number[]
     }
     const words: Word[] = []
     for (const seg of segments) {
       const parts = seg.text.split(/(\s+)/)
       for (const part of parts) {
         if (part.trim().length > 0) {
-          words.push({ word: part.trim(), bold: seg.bold, underline: seg.underline ?? false })
+          words.push({ word: part.trim(), bold: seg.bold, underline: seg.underline ?? false, color: seg.color })
         }
       }
     }
@@ -179,6 +180,11 @@ export class CertificatePdfGenerator {
       for (let wi = 0; wi < line.length; wi++) {
         const w = line[wi]
         doc.setFont('Helvetica', w.bold ? 'bold' : 'normal')
+        if (w.color) {
+          doc.setTextColor(w.color[0], w.color[1], w.color[2])
+        } else {
+          doc.setTextColor(0, 0, 0)
+        }
         doc.text(w.word, curX, y)
 
         if (w.underline) {
@@ -193,6 +199,7 @@ export class CertificatePdfGenerator {
       y += lineHeight
     }
 
+    doc.setTextColor(0, 0, 0)
     return y
   }
 
@@ -455,34 +462,41 @@ export class CertificatePdfGenerator {
     doc.setLineWidth(0.15)
     doc.rect(9.2, 9.2, pageWidth - 18.4, pageHeight - 18.4)
 
-    // Brasão
-    const logoSize = 14
-    const logoX = marginL
+    // Brasão Centrado
+    const logoSize = 12
+    const logoX = (pageWidth - logoSize) / 2
     try {
       doc.addImage(icon, 'PNG', logoX, y, logoSize, logoSize)
     } catch {}
 
-    // Cabeçalho Oficial
+    // Cabeçalho Oficial Centrado
     doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(9.5)
-    doc.text('REPÚBLICA DE ANGOLA', logoX + logoSize + 5, y + 3)
-    doc.text('MINISTÉRIO DA EDUCAÇÃO', logoX + logoSize + 5, y + 7)
+    doc.setFontSize(9)
+    doc.text('REPÚBLICA DE ANGOLA', pageWidth / 2, y + logoSize + 4, { align: 'center' })
+    doc.text('MINISTÉRIO DA EDUCAÇÃO', pageWidth / 2, y + logoSize + 8, { align: 'center' })
     doc.setFont('Helvetica', 'bold')
-    doc.text('INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', logoX + logoSize + 5, y + 11)
-    y += logoSize + 2
+    doc.text('INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', pageWidth / 2, y + logoSize + 12, { align: 'center' })
+
+    // Número do certificado no canto superior direito
+    doc.setFont('Helvetica', 'bold')
+    doc.setFontSize(6.5)
+    doc.text(data.NumeroCertificado || '', pageWidth - marginR - 2, y + logoSize + 12, { align: 'right' })
+
+    y += logoSize + 16
 
     // Título do Certificado
-    doc.setFontSize(13.5)
-    doc.text('Certificado de Habilitações', pageWidth / 2, y + 4, { align: 'center' })
-    y += 10
+    doc.setFont('times', 'italic')
+    doc.setFontSize(18)
+    doc.text('Certificado de Habilitações', pageWidth / 2, y, { align: 'center' })
+    y += 6
     
     // Subtítulo destacado em Vermelho
     doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(11)
+    doc.setFontSize(10.5)
     doc.setTextColor(200, 0, 0)
     doc.text('(Instituto Técnico Privado de Saúde Jomorais)', pageWidth / 2, y, { align: 'center' })
     doc.setTextColor(0, 0, 0)
-    y += 10
+    y += 8
 
     // ── DADOS DO ESTUDANTE ──
     const aluno = data.tb_alunos
@@ -498,17 +512,18 @@ export class CertificatePdfGenerator {
 
     const nomeDirectora = 'Madalena de Fátima Muila Ngimbi'
 
-    let cursoTexto = curso
-    if (!cursoTexto.toLowerCase().startsWith('técnico de')) {
-      cursoTexto = `Técnico de ${curso}`
+    let cursoNome = curso
+    if (!cursoNome.toLowerCase().startsWith('técnico de')) {
+      cursoNome = `Técnico de ${curso}`
     }
     // Capitalize first letter of each word
-    cursoTexto = cursoTexto.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
+    cursoNome = cursoNome.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
     
+    let areaFormacao = ''
     if (curso.toLowerCase().includes('análises clínicas') || curso.toLowerCase().includes('enfermagem') || curso.toLowerCase().includes('saúde')) {
-      cursoTexto = `${cursoTexto}, da Área de Formação de Saúde`
+      areaFormacao = `, da Área de Formação de Saúde`
     } else if (curso.toLowerCase().includes('informática') || curso.toLowerCase().includes('tecnologia')) {
-      cursoTexto = `${cursoTexto}, da Área de Formação de Tecnologias`
+      areaFormacao = `, da Área de Formação de Tecnologias`
     }
 
     const isFeminino = aluno.sexo?.toLowerCase() === 'f' || aluno.sexo?.toLowerCase() === 'feminino'
@@ -520,19 +535,33 @@ export class CertificatePdfGenerator {
       { text: `A Directora do Instituto, `, bold: false },
       { text: nomeDirectora, bold: true },
       { text: `, certifica de acordo com o art.º 25 e 27 dos estatutos de Subsistema do Ensino Técnico Profissional, aprovado pelo Decreto nº 90/04, de 3 de Dezembro de 2004, que `, bold: false },
-      { text: nomeAluno, bold: true },
-      { text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos ${dataNasc}, ${portadorPortadora} do bilhete de identidade n.º `, bold: false },
-      { text: biNum, bold: true },
-      { text: `, passado pelo Arquivo de Identificação de Cabinda, concluiu, em regime diurno, no ano lectivo `, bold: false },
-      { text: anoConclusao, bold: true },
-      { text: `, o curso `, bold: false },
-      { text: cursoTexto, bold: true },
-      { text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, n.º ${aluno.codigo}:`, bold: false }
+      { text: nomeAluno, bold: true, color: [200, 0, 0] },
+      { text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos `, bold: false },
+      { text: dataNasc, bold: true },
+      { text: `, ${portadorPortadora} do bilhete de identidade n.º ${biNum}, passado pelo Arquivo de Identificação de Cabinda, concluiu, em regime diurno, no ano lectivo ${anoConclusao}, o curso `, bold: false },
+      { text: cursoNome, bold: true },
+      { text: areaFormacao, bold: false },
+      { text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, n.º `, bold: false },
+      { text: `${aluno.codigo}:`, bold: true }
     ]
 
     doc.setFontSize(9.5)
-    y = this.writeJustifiedMixed(doc, pBody, marginL, y, maxWidth, 5.2)
-    y += 4
+    y = this.writeJustifiedMixed(doc, pBody, marginL, y, maxWidth, 5)
+    y += 2
+
+    // Helper to pad strings with dots to fill 117mm
+    const padWithDots = (name: string, isBold: boolean = false): string => {
+      doc.setFont('Helvetica', isBold ? 'bold' : 'normal');
+      doc.setFontSize(6.8);
+      const targetWidth = 117; // mm
+      const currentWidth = doc.getTextWidth(name);
+      if (currentWidth < targetWidth) {
+        const dotWidth = doc.getTextWidth('.');
+        const numDots = Math.floor((targetWidth - currentWidth) / dotWidth);
+        return name + ' ' + '.'.repeat(Math.max(0, numDots));
+      }
+      return name;
+    }
 
     // ── MAPEAR DISCIPLINAS POR COMPONENTE ──
     const sociocultural = [
@@ -586,7 +615,8 @@ export class CertificatePdfGenerator {
                         nameLower.includes('prova de aptidão') || 
                         nameLower.includes('projeto') || 
                         nameLower.includes('projecto') || 
-                        nameLower.includes('pap')
+                        nameLower.includes('pap') ||
+                        nameLower.includes('gestão de saúde')
       
       if (!isSociocult && !isCient && !isSpecial) {
         const grade = Object.values(d.notas)[0]
@@ -600,16 +630,21 @@ export class CertificatePdfGenerator {
     // Caso a lista técnica esteja vazia, colocar disciplinas técnicas padrão de saúde
     if (listTecnica.length === 0) {
       const defaultTec = [
-        'Anatomia e Fisiologia Humana',
+        'Psicologia',
+        'Ética e Deontologia Profissional',
         'Introdução ao Laboratório de Análises Clínicas',
+        'Anatomia e Fisiologia Humana',
         'Microbiologia',
         'Hematologia',
         'Imunologia',
         'Bioquímica Clínica',
         'Patologia Geral',
+        'Imunohematologia',
+        'Microbiologia de Águas e Alimentos',
+        'Tecnologia Laboratorial',
         'Parasitologia',
         'Urinologia',
-        'Epidemologia',
+        'Epidemiologia',
         'Práticas de Análises Clínicas'
       ]
       defaultTec.forEach(t => {
@@ -617,62 +652,83 @@ export class CertificatePdfGenerator {
       })
     }
 
-    // Estágio, PAP e médias
+    // Estágio, PAP, Projeto e Gestão de Saúde
+    const projGrade = getGradeForMid('Projecto Tecnológico') || getGradeForMid('Projeto Tecnológico') || 14
+    const gestaoSaudeGrade = getGradeForMid('Gestão de Saúde') || 15
     const estagioGrade = getGradeForMid('Estágio Curricular') || getGradeForMid('Estágio') || 14
-    const papGrade = getGradeForMid('Prova de Aptidão Profissional') || getGradeForMid('PAP') || getGradeForMid('Projeto Tecnológico') || 15
+    const papGrade = getGradeForMid('Prova de Aptidão Profissional') || getGradeForMid('PAP') || 15
 
     // Tabela rows
     const tableData: any[] = []
 
-    tableData.push([{ content: 'Componente Sociocultural', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }])
+    // Primeira linha: Componente Sociocultural e Nota alinhadas
+    tableData.push([
+      { content: 'Componente Sociocultural', styles: { fontStyle: 'bold' } },
+      { content: 'Nota', styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: '', styles: { fontStyle: 'bold' } }
+    ])
     listSociocultural.forEach(item => {
-      tableData.push([item.name, item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
+      tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    tableData.push([{ content: 'Componente Científica', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }])
+    tableData.push([{ content: 'Componente Científica', colSpan: 3, styles: { fontStyle: 'bold' } }])
     listCientifica.forEach(item => {
-      tableData.push([item.name, item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
+      tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    tableData.push([{ content: 'Componente Técnica, Tecnológica e Prática', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }])
+    tableData.push([{ content: 'Componente Técnica, Tecnológica e Prática', colSpan: 3, styles: { fontStyle: 'bold' } }])
     listTecnica.forEach(item => {
-      tableData.push([item.name, item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
+      tableData.push([padWithDots(item.name), item.grade.toString().padStart(2, '0'), `(${this.numberToWords(item.grade)})`])
     })
 
-    // Projeto Tecnológico (se houver, e usando grafia do original com C)
-    const projGrade = getGradeForMid('Projecto Tecnológico') || getGradeForMid('Projeto Tecnológico') || 0
-    tableData.push(['Projecto Tecnológico', projGrade.toString().padStart(2, '0'), `(${this.numberToWords(projGrade)})`])
-    
+    // Projeto Tecnológico, Gestão de Saúde, Estágio
+    tableData.push([padWithDots('Projecto Tecnológico'), projGrade.toString().padStart(2, '0'), `(${this.numberToWords(projGrade)})`])
+    tableData.push([padWithDots('Gestão de Saúde'), gestaoSaudeGrade.toString().padStart(2, '0'), `(${this.numberToWords(gestaoSaudeGrade)})`])
+
     // Estágio Curricular (E C)
-    tableData.push(['Estágio Curricular (E C) ..………………………………………………………..………………………', estagioGrade.toString().padStart(2, '0'), `(${this.numberToWords(estagioGrade)})`])
+    tableData.push([
+      { content: padWithDots('Estágio Curricular (E C)', true), styles: { fontStyle: 'bold' } },
+      { content: estagioGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: `(${this.numberToWords(estagioGrade)})`, styles: { fontStyle: 'bold' } }
+    ])
 
     // Calcular PC (Média do Plano Curricular)
     const allAcademicGrades = [...listSociocultural, ...listCientifica, ...listTecnica].map(i => i.grade).filter(g => g > 0)
-    const pcVal = Math.round(allAcademicGrades.reduce((a, b) => a + b, 0) / allAcademicGrades.length) || 0
-    tableData.push([{ content: 'Classificação Final do Plano Curricular (PC) ………………………..………………………….', fontStyle: 'bold' }, pcVal.toString().padStart(2, '0'), `(${this.numberToWords(pcVal)})`])
+    const pcVal = Math.round(allAcademicGrades.reduce((a, b) => a + b, 0) / allAcademicGrades.length) || 14
+    tableData.push([
+      { content: padWithDots('Classificação Final do Plano Curricular (PC)', true), styles: { fontStyle: 'bold' } },
+      { content: pcVal.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: `(${this.numberToWords(pcVal)})`, styles: { fontStyle: 'bold' } }
+    ])
 
     // PAP
-    tableData.push(['Classificação Da Prova de Aptidão Profissional (PAP) ………….…………………………', papGrade.toString().padStart(2, '0'), `(${this.numberToWords(papGrade)})`])
+    tableData.push([
+      { content: padWithDots('Classificação Da Prova de Aptidão Profissional (PAP)', true), styles: { fontStyle: 'bold' } },
+      { content: papGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: `(${this.numberToWords(papGrade)})`, styles: { fontStyle: 'bold' } }
+    ])
 
     // Classificação Final Curso (4*PC + EC + PAP) / 6
     const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + papGrade) / 6)
-    tableData.push([{ content: 'Classificação Final do Curso = (4xPC+EC+PAP) /6 ……………………………...............', fontStyle: 'bold', fillColor: [230, 230, 230] }, { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }, { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }])
+    tableData.push([
+      { content: padWithDots('Classificação Final do Curso = (4xPC+EC+PAP) /6', true), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } },
+      { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center', fillColor: [230, 230, 230] } },
+      { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }
+    ])
 
     let finalTableY = y
     autoTable(doc, {
       startY: y,
-      head: [['Componentes / Disciplinas', 'Nota', 'Nota por extenso']],
       body: tableData,
       theme: 'plain',
-      styles: { fontSize: 6.8, cellPadding: 0.7, fontStyle: 'normal' },
+      styles: { fontSize: 6.8, cellPadding: 0.55, fontStyle: 'normal' },
       columnStyles: { 0: { cellWidth: 120 }, 1: { halign: 'center', cellWidth: 15 }, 2: { cellWidth: 40 } },
-      headStyles: { fontStyle: 'bold', fontSize: 7 },
       didDrawPage: (data: any) => {
         finalTableY = data.cursor.y
       }
     })
 
-    y = finalTableY + 6
+    y = finalTableY + 4
 
     // ── TEXTO DE VALIDAÇÃO ──
     const pEnd = [
@@ -681,27 +737,40 @@ export class CertificatePdfGenerator {
       { text: ', que vai por nós assinado e autenticado pelo selo branco em uso neste Instituto.', bold: false }
     ]
     y = this.writeJustifiedMixed(doc, pEnd, marginL, y, maxWidth, 4.5)
-    y += 6
+    y += 4
 
     const dataDoc = this.formatDateLong(data.DataEmissao)
+    doc.setFont('Helvetica', 'normal')
     doc.setFontSize(9)
-    doc.text(`Instituto Técnico de Saúde de Cabinda, em Cabinda, ${dataDoc}.`, marginL, y)
-    y += 14
+    const placeText = 'Instituto Técnico de Saúde de Cabinda, em Cabinda, '
+    const dateText = `${dataDoc}. -`
+    const placeW = doc.getTextWidth(placeText)
+    const dateW = doc.getTextWidth(dateText)
+    const totalW = placeW + dateW
+    const startX = (pageWidth - totalW) / 2
+    
+    doc.text(placeText, startX, y)
+    doc.setFont('Helvetica', 'bold')
+    doc.text(dateText, startX + placeW, y)
+    y += 12
 
     // ── ASSINATURAS ──
     const sigW = maxWidth / 2
-    doc.text('Conferido por', marginL + 10, y)
-    doc.text('A Directora do Instituto', marginL + sigW + 20, y)
-    y += 12
+    doc.setFont('Helvetica', 'normal')
+    doc.setFontSize(8.5)
+    doc.text('Conferido por', marginL + 27.5, y, { align: 'center' })
+    doc.text('A Directora do Instituto', marginL + sigW + 35, y, { align: 'center' })
+    y += 10
 
     doc.setLineWidth(0.3)
-    doc.line(marginL, y, marginL + 50, y)
-    doc.line(marginL + sigW + 10, y, marginL + sigW + 70, y)
+    doc.line(marginL + 2.5, y, marginL + 52.5, y)
+    doc.line(marginL + sigW + 5, y, marginL + sigW + 65, y)
     y += 4
 
-    doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(8.5)
-    doc.text(nomeDirectora, marginL + sigW + 40, y, { align: 'center' })
+    // Nome da Directora em Times Italic (estilo assinatura/script)
+    doc.setFont('times', 'italic')
+    doc.setFontSize(11)
+    doc.text(nomeDirectora, marginL + sigW + 35, y, { align: 'center' })
 
     // Verificação pública de autenticidade (Rodapé discreto)
     const host = window.location.origin
