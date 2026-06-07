@@ -1,6 +1,6 @@
 Sheet Name: PAUTA
-Max Row: 23
-Max Col: 19
+Max Row: 78
+Max Col: 46
 
 Row 2:
   Col 4 (D2): "INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS" 
@@ -73,6 +73,33 @@ Row 5:
   Col 18 (R5): "" (Merged into B5)
   Col 19 (S5): "" (Merged into B5)
   Col 20 (T5): "" (Merged into B5)
+  Col 21 (U5): "" (Merged into B5)
+  Col 22 (V5): "" (Merged into B5)
+  Col 23 (W5): "" (Merged into B5)
+  Col 24 (X5): "" (Merged into B5)
+  Col 25 (Y5): "" (Merged into B5)
+  Col 26 (Z5): "" (Merged into B5)
+  Col 27 (AA5): "" (Merged into B5)
+  Col 28 (AB5): "" (Merged into B5)
+  Col 29 (AC5): "" (Merged into B5)
+  Col 30 (AD5): "" (Merged into B5)
+  Col 31 (AE5): "" (Merged into B5)
+  Col 32 (AF5): "" (Merged into B5)
+  Col 33 (AG5): "" (Merged into B5)
+  Col 34 (AH5): "" (Merged into B5)
+  Col 35 (AI5): "" (Merged into B5)
+  Col 36 (AJ5): "" (Merged into B5)
+  Col 37 (AK5): "" (Merged into B5)
+  Col 38 (AL5): "" (Merged into B5)
+  Col 39 (AM5): "" (Merged into B5)
+  Col 40 (AN5): "" (Merged into B5)
+  Col 41 (AO5): "" (Merged into B5)
+  Col 42 (AP5): "" (Merged into B5)
+  Col 43 (AQ5): "" (Merged into B5)
+  Col 44 (AR5): "" (Merged into B5)
+  Col 45 (AS5): "" (Merged into B5)
+  Col 46 (AT5): "" (Merged into B5)
+  Col 47 (AU5): "" (Merged into B5)
 
 Row 7:
   Col 2 (B7): "PAUTA DE APROVEITAMENTO ESCOLAR" 
@@ -117,12 +144,12 @@ Row 10:
   Col 3 (C10): "O Director do Instituto" (Merged into B10)
   Col 4 (D10): "O Director do Instituto" (Merged into B10)
   Col 6 (F10): "CURSO:" 
-  Col 7 (G10): "INFORMÁTICA" 
-  Col 8 (H10): "INFORMÁTICA" (Merged into G10)
-  Col 9 (I10): "INFORMÁTICA" (Merged into G10)
-  Col 10 (J10): "INFORMÁTICA" (Merged into G10)
-  Col 11 (K10): "INFORMÁTICA" (Merged into G10)
-  Col 12 (L10): "INFORMÁTICA" (Merged into G10)
+  Col 7 (G10): "" 
+  Col 8 (H10): "" (Merged into G10)
+  Col 9 (I10): "" (Merged into G10)
+  Col 10 (J10): "" (Merged into G10)
+  Col 11 (K10): "" (Merged into G10)
+  Col 12 (L10): "" (Merged into G10)
   Col 14 (N10): "TRIMESTRE:" 
   Col 15 (O10): "I TRIMESTRE" 
   Col 16 (P10): "I TRIMESTRE" (Merged into O10)
@@ -134,25 +161,25 @@ Row 11:
   Col 3 (C11): "________________________________________" (Merged into B11)
   Col 4 (D11): "________________________________________" (Merged into B11)
   Col 6 (F11): "CLASSE:" 
-  Col 7 (G11): "13ªCLASSE" 
-  Col 8 (H11): "13ªCLASSE" (Merged into G11)
+  Col 7 (G11): "10ª CLASSE" 
+  Col 8 (H11): "10ª CLASSE" (Merged into G11)
   Col 9 (I11): "TURMA:" 
-  Col 10 (J11): "13ª INFORMÁTICA" 
-  Col 11 (K11): "13ª INFORMÁTICA" (Merged into J11)
-  Col 12 (L11): "13ª INFORMÁTICA" (Merged into J11)
+  Col 10 (J11): "10ª ÚNICA-ANÁLISES CLÌNICAS-MATINAL" 
+  Col 11 (K11): "10ª ÚNICA-ANÁLISES CLÌNICAS-MATINAL" (Merged into J11)
+  Col 12 (L11): "10ª ÚNICA-ANÁLISES CLÌNICAS-MATINAL" (Merged into J11)
   Col 14 (N11): "ALUNOS:" 
-  Col 15 (O11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(L17:L22,\"M\")+COUNTIF(L17:L22,\"F\"), \" (M: \", COUNTIF(L17:L22,\"M\"), \", F: \", COUNTIF(L17:L22,\"F\"), \")\")"} 
-  Col 16 (P11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(L17:L22,\"M\")+COUNTIF(L17:L22,\"F\"), \" (M: \", COUNTIF(L17:L22,\"M\"), \", F: \", COUNTIF(L17:L22,\"F\"), \")\")"} (Merged into O11)
-  Col 17 (Q11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(L17:L22,\"M\")+COUNTIF(L17:L22,\"F\"), \" (M: \", COUNTIF(L17:L22,\"M\"), \", F: \", COUNTIF(L17:L22,\"F\"), \")\")"} (Merged into O11)
-  Col 18 (R11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(L17:L22,\"M\")+COUNTIF(L17:L22,\"F\"), \" (M: \", COUNTIF(L17:L22,\"M\"), \", F: \", COUNTIF(L17:L22,\"F\"), \")\")"} (Merged into O11)
+  Col 15 (O11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(AM17:AM77,\"M\")+COUNTIF(AM17:AM77,\"F\"), \" (M: \", COUNTIF(AM17:AM77,\"M\"), \", F: \", COUNTIF(AM17:AM77,\"F\"), \")\")"} 
+  Col 16 (P11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(AM17:AM77,\"M\")+COUNTIF(AM17:AM77,\"F\"), \" (M: \", COUNTIF(AM17:AM77,\"M\"), \", F: \", COUNTIF(AM17:AM77,\"F\"), \")\")"} (Merged into O11)
+  Col 17 (Q11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(AM17:AM77,\"M\")+COUNTIF(AM17:AM77,\"F\"), \" (M: \", COUNTIF(AM17:AM77,\"M\"), \", F: \", COUNTIF(AM17:AM77,\"F\"), \")\")"} (Merged into O11)
+  Col 18 (R11): {"formula":"CONCATENATE(\"Total: \", COUNTIF(AM17:AM77,\"M\")+COUNTIF(AM17:AM77,\"F\"), \" (M: \", COUNTIF(AM17:AM77,\"M\"), \", F: \", COUNTIF(AM17:AM77,\"F\"), \")\")"} (Merged into O11)
 
 Row 12:
   Col 2 (B12): "GABRIEL PRÓSPERO MABIALA" 
   Col 3 (C12): "GABRIEL PRÓSPERO MABIALA" (Merged into B12)
   Col 4 (D12): "GABRIEL PRÓSPERO MABIALA" (Merged into B12)
   Col 6 (F12): "PERÍODO:" 
-  Col 7 (G12): "TODO DIA" 
-  Col 8 (H12): "TODO DIA" (Merged into G12)
+  Col 7 (G12): "MANHA" 
+  Col 8 (H12): "MANHA" (Merged into G12)
   Col 9 (I12): "ANO LECTIVO:" 
   Col 10 (J12): "2022/2023" 
   Col 11 (K12): "2022/2023" (Merged into J12)
@@ -173,21 +200,48 @@ Row 14:
   Col 3 (C14): "Nº PROC" 
   Col 4 (D14): "NOME" 
   Col 5 (E14): "DISCIPLINA A REPETIR" 
-  Col 6 (F14): "PROJECTO TECNOLÓGICO" 
-  Col 7 (G14): "PROJECTO TECNOLÓGICO" (Merged into F14)
-  Col 8 (H14): "PROJECTO TECNOLÓGICO" (Merged into F14)
-  Col 9 (I14): "OBS" 
-  Col 10 (J14): "MÉDIA" 
-  Col 11 (K14): "Idade" 
-  Col 12 (L14): "Género" 
-  Col 13 (M14): "DADOS ESTATÍSTICOS" 
-  Col 14 (N14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 15 (O14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 16 (P14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 17 (Q14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 18 (R14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 19 (S14): "DADOS ESTATÍSTICOS" (Merged into M14)
-  Col 20 (T14): "DADOS ESTATÍSTICOS" (Merged into M14)
+  Col 6 (F14): "ANATOMIA FISIOLOGIA HUMANA" 
+  Col 7 (G14): "ANATOMIA FISIOLOGIA HUMANA" (Merged into F14)
+  Col 8 (H14): "ANATOMIA FISIOLOGIA HUMANA" (Merged into F14)
+  Col 9 (I14): "BIOLOGIA" 
+  Col 10 (J14): "BIOLOGIA" (Merged into I14)
+  Col 11 (K14): "BIOLOGIA" (Merged into I14)
+  Col 12 (L14): "F.A.I" 
+  Col 13 (M14): "F.A.I" (Merged into L14)
+  Col 14 (N14): "F.A.I" (Merged into L14)
+  Col 15 (O14): "FÍSICA" 
+  Col 16 (P14): "FÍSICA" (Merged into O14)
+  Col 17 (Q14): "FÍSICA" (Merged into O14)
+  Col 18 (R14): "INFORMÁTICA" 
+  Col 19 (S14): "INFORMÁTICA" (Merged into R14)
+  Col 20 (T14): "INFORMÁTICA" (Merged into R14)
+  Col 21 (U14): "INTRODUÇÃO AO LABORATÓRIO" 
+  Col 22 (V14): "INTRODUÇÃO AO LABORATÓRIO" (Merged into U14)
+  Col 23 (W14): "INTRODUÇÃO AO LABORATÓRIO" (Merged into U14)
+  Col 24 (X14): "LÍNGUA INGLESA" 
+  Col 25 (Y14): "LÍNGUA INGLESA" (Merged into X14)
+  Col 26 (Z14): "LÍNGUA INGLESA" (Merged into X14)
+  Col 27 (AA14): "LÍNGUA PORTUGUESA" 
+  Col 28 (AB14): "LÍNGUA PORTUGUESA" (Merged into AA14)
+  Col 29 (AC14): "LÍNGUA PORTUGUESA" (Merged into AA14)
+  Col 30 (AD14): "MATEMÁTICA" 
+  Col 31 (AE14): "MATEMÁTICA" (Merged into AD14)
+  Col 32 (AF14): "MATEMÁTICA" (Merged into AD14)
+  Col 33 (AG14): "QUÍMICA" 
+  Col 34 (AH14): "QUÍMICA" (Merged into AG14)
+  Col 35 (AI14): "QUÍMICA" (Merged into AG14)
+  Col 36 (AJ14): "OBS" 
+  Col 37 (AK14): "MÉDIA" 
+  Col 38 (AL14): "Idade" 
+  Col 39 (AM14): "Género" 
+  Col 40 (AN14): "DADOS ESTATÍSTICOS" 
+  Col 41 (AO14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 42 (AP14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 43 (AQ14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 44 (AR14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 45 (AS14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 46 (AT14): "DADOS ESTATÍSTICOS" (Merged into AN14)
+  Col 47 (AU14): "DADOS ESTATÍSTICOS" (Merged into AN14)
 
 Row 15:
   Col 2 (B15): "Nº" (Merged into B14)
@@ -197,18 +251,45 @@ Row 15:
   Col 6 (F15): "FALTAS" 
   Col 7 (G15): "FALTAS" (Merged into F15)
   Col 8 (H15): "MT1º" 
-  Col 9 (I15): "OBS" (Merged into I14)
-  Col 10 (J15): "MÉDIA" (Merged into J14)
-  Col 11 (K15): "Idade" (Merged into K14)
-  Col 12 (L15): "Género" (Merged into L14)
-  Col 13 (M15): "MATRICULADOS" 
-  Col 14 (N15): "MATRICULADOS" (Merged into M15)
-  Col 15 (O15): "TRANSITA" 
-  Col 16 (P15): "TRANSITA" (Merged into O15)
-  Col 17 (Q15): "N/TRANSITA" 
-  Col 18 (R15): "N/TRANSITA" (Merged into Q15)
-  Col 19 (S15): "Desistido/a" 
-  Col 20 (T15): "Desistido/a" (Merged into S15)
+  Col 9 (I15): "FALTAS" 
+  Col 10 (J15): "FALTAS" (Merged into I15)
+  Col 11 (K15): "MT1º" 
+  Col 12 (L15): "FALTAS" 
+  Col 13 (M15): "FALTAS" (Merged into L15)
+  Col 14 (N15): "MT1º" 
+  Col 15 (O15): "FALTAS" 
+  Col 16 (P15): "FALTAS" (Merged into O15)
+  Col 17 (Q15): "MT1º" 
+  Col 18 (R15): "FALTAS" 
+  Col 19 (S15): "FALTAS" (Merged into R15)
+  Col 20 (T15): "MT1º" 
+  Col 21 (U15): "FALTAS" 
+  Col 22 (V15): "FALTAS" (Merged into U15)
+  Col 23 (W15): "MT1º" 
+  Col 24 (X15): "FALTAS" 
+  Col 25 (Y15): "FALTAS" (Merged into X15)
+  Col 26 (Z15): "MT1º" 
+  Col 27 (AA15): "FALTAS" 
+  Col 28 (AB15): "FALTAS" (Merged into AA15)
+  Col 29 (AC15): "MT1º" 
+  Col 30 (AD15): "FALTAS" 
+  Col 31 (AE15): "FALTAS" (Merged into AD15)
+  Col 32 (AF15): "MT1º" 
+  Col 33 (AG15): "FALTAS" 
+  Col 34 (AH15): "FALTAS" (Merged into AG15)
+  Col 35 (AI15): "MT1º" 
+  Col 36 (AJ15): "OBS" (Merged into AJ14)
+  Col 37 (AK15): "MÉDIA" (Merged into AK14)
+  Col 38 (AL15): "Idade" (Merged into AL14)
+  Col 39 (AM15): "Género" (Merged into AM14)
+  Col 40 (AN15): "MATRICULADOS" 
+  Col 41 (AO15): "MATRICULADOS" (Merged into AN15)
+  Col 42 (AP15): "TRANSITA" 
+  Col 43 (AQ15): "TRANSITA" (Merged into AP15)
+  Col 44 (AR15): "N/TRANSITA" 
+  Col 45 (AS15): "N/TRANSITA" (Merged into AR15)
+  Col 46 (AT15): "Desistido/a" 
+  Col 47 (AU15): "Desistido/a" (Merged into AT15)
 
 Row 16:
   Col 2 (B16): "Nº" (Merged into B14)
@@ -218,181 +299,954 @@ Row 16:
   Col 6 (F16): "J" 
   Col 7 (G16): "I" 
   Col 8 (H16): "MT1º" (Merged into H15)
-  Col 9 (I16): "OBS" (Merged into I14)
-  Col 10 (J16): "MÉDIA" (Merged into J14)
-  Col 11 (K16): "Idade" (Merged into K14)
-  Col 12 (L16): "Género" (Merged into L14)
-  Col 13 (M16): "M" 
-  Col 14 (N16): "F" 
-  Col 15 (O16): "M" 
-  Col 16 (P16): "F" 
-  Col 17 (Q16): "M" 
-  Col 18 (R16): "F" 
-  Col 19 (S16): "M" 
-  Col 20 (T16): "F" 
+  Col 9 (I16): "J" 
+  Col 10 (J16): "I" 
+  Col 11 (K16): "MT1º" (Merged into K15)
+  Col 12 (L16): "J" 
+  Col 13 (M16): "I" 
+  Col 14 (N16): "MT1º" (Merged into N15)
+  Col 15 (O16): "J" 
+  Col 16 (P16): "I" 
+  Col 17 (Q16): "MT1º" (Merged into Q15)
+  Col 18 (R16): "J" 
+  Col 19 (S16): "I" 
+  Col 20 (T16): "MT1º" (Merged into T15)
+  Col 21 (U16): "J" 
+  Col 22 (V16): "I" 
+  Col 23 (W16): "MT1º" (Merged into W15)
+  Col 24 (X16): "J" 
+  Col 25 (Y16): "I" 
+  Col 26 (Z16): "MT1º" (Merged into Z15)
+  Col 27 (AA16): "J" 
+  Col 28 (AB16): "I" 
+  Col 29 (AC16): "MT1º" (Merged into AC15)
+  Col 30 (AD16): "J" 
+  Col 31 (AE16): "I" 
+  Col 32 (AF16): "MT1º" (Merged into AF15)
+  Col 33 (AG16): "J" 
+  Col 34 (AH16): "I" 
+  Col 35 (AI16): "MT1º" (Merged into AI15)
+  Col 36 (AJ16): "OBS" (Merged into AJ14)
+  Col 37 (AK16): "MÉDIA" (Merged into AK14)
+  Col 38 (AL16): "Idade" (Merged into AL14)
+  Col 39 (AM16): "Género" (Merged into AM14)
+  Col 40 (AN16): "M" 
+  Col 41 (AO16): "F" 
+  Col 42 (AP16): "M" 
+  Col 43 (AQ16): "F" 
+  Col 44 (AR16): "M" 
+  Col 45 (AS16): "F" 
+  Col 46 (AT16): "M" 
+  Col 47 (AU16): "F" 
 
 Row 17:
   Col 2 (B17): 1 
-  Col 3 (C17): 5 
-  Col 4 (D17): "OSVALDO SÉRGIO DUMBI SILVA" 
-  Col 5 (E17): "PROJE" 
+  Col 3 (C17): 714 
+  Col 4 (D17): "SERGINA NVUMBI SIMBA" 
+  Col 5 (E17): "" 
   Col 6 (F17): "-" 
   Col 7 (G17): "-" 
-  Col 8 (H17): 9.8 
-  Col 9 (I17): "N/TRANSITA" 
-  Col 10 (J17): {"formula":"AVERAGE(H17)"} 
-  Col 11 (K17): 23 
-  Col 12 (L17): "M" 
-  Col 13 (M17): {"formula":"COUNTIF(L17:L22,\"M\")"} 
-  Col 14 (N17): {"formula":"COUNTIF(L17:L22,\"F\")"} 
-  Col 15 (O17): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} 
-  Col 16 (P17): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} 
-  Col 17 (Q17): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} 
-  Col 18 (R17): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} 
-  Col 19 (S17): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} 
-  Col 20 (T17): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} 
+  Col 8 (H17): 13.6 
+  Col 9 (I17): "-" 
+  Col 10 (J17): "-" 
+  Col 11 (K17): 10.7 
+  Col 12 (L17): "-" 
+  Col 13 (M17): 3 
+  Col 14 (N17): 12.1 
+  Col 15 (O17): "-" 
+  Col 16 (P17): "-" 
+  Col 17 (Q17): 12.8 
+  Col 18 (R17): "-" 
+  Col 19 (S17): "-" 
+  Col 20 (T17): 12.3 
+  Col 21 (U17): "-" 
+  Col 22 (V17): "-" 
+  Col 23 (W17): 14.2 
+  Col 24 (X17): "-" 
+  Col 25 (Y17): "-" 
+  Col 26 (Z17): 13 
+  Col 27 (AA17): "-" 
+  Col 28 (AB17): 4 
+  Col 29 (AC17): 12.8 
+  Col 30 (AD17): "-" 
+  Col 31 (AE17): "-" 
+  Col 32 (AF17): 15.6 
+  Col 33 (AG17): "-" 
+  Col 34 (AH17): 5 
+  Col 35 (AI17): 14.6 
+  Col 36 (AJ17): "TRANSITA" 
+  Col 37 (AK17): {"formula":"AVERAGE(H17,K17,N17,Q17,T17,W17,Z17,AC17,AF17,AI17)"} 
+  Col 38 (AL17): 22 
+  Col 39 (AM17): "F" 
+  Col 40 (AN17): {"formula":"COUNTIF(AM17:AM77,\"M\")"} 
+  Col 41 (AO17): {"formula":"COUNTIF(AM17:AM77,\"F\")"} 
+  Col 42 (AP17): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} 
+  Col 43 (AQ17): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} 
+  Col 44 (AR17): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} 
+  Col 45 (AS17): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} 
+  Col 46 (AT17): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} 
+  Col 47 (AU17): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} 
 
 Row 18:
   Col 2 (B18): 2 
-  Col 3 (C18): 7 
-  Col 4 (D18): "JOÃO KINHUMBA BAMENI" 
-  Col 5 (E18): "" 
+  Col 3 (C18): 1623 
+  Col 4 (D18): "SANDRA MIRANDA BUNGO" 
+  Col 5 (E18): "LÍNGU" 
   Col 6 (F18): "-" 
   Col 7 (G18): "-" 
-  Col 8 (H18): "-" 
+  Col 8 (H18): 13.9 
   Col 9 (I18): "-" 
   Col 10 (J18): "-" 
-  Col 11 (K18): 28 
-  Col 12 (L18): "M" 
-  Col 13 (M18): {"formula":"COUNTIF(L17:L22,\"M\")"} (Merged into M17)
-  Col 14 (N18): {"formula":"COUNTIF(L17:L22,\"F\")"} (Merged into N17)
-  Col 15 (O18): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} (Merged into O17)
-  Col 16 (P18): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} (Merged into P17)
-  Col 17 (Q18): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} (Merged into Q17)
-  Col 18 (R18): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} (Merged into R17)
-  Col 19 (S18): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} (Merged into S17)
-  Col 20 (T18): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} (Merged into T17)
+  Col 11 (K18): 11.8 
+  Col 12 (L18): "-" 
+  Col 13 (M18): "-" 
+  Col 14 (N18): 14.1 
+  Col 15 (O18): "-" 
+  Col 16 (P18): "-" 
+  Col 17 (Q18): 10.7 
+  Col 18 (R18): "-" 
+  Col 19 (S18): "-" 
+  Col 20 (T18): 13.6 
+  Col 21 (U18): "-" 
+  Col 22 (V18): 4 
+  Col 23 (W18): 13.8 
+  Col 24 (X18): "-" 
+  Col 25 (Y18): "-" 
+  Col 26 (Z18): 9.6 
+  Col 27 (AA18): "-" 
+  Col 28 (AB18): 2 
+  Col 29 (AC18): 10.8 
+  Col 30 (AD18): "-" 
+  Col 31 (AE18): "-" 
+  Col 32 (AF18): 12.7 
+  Col 33 (AG18): "-" 
+  Col 34 (AH18): "-" 
+  Col 35 (AI18): 16.5 
+  Col 36 (AJ18): "TRANSITA" 
+  Col 37 (AK18): {"formula":"AVERAGE(H18,K18,N18,Q18,T18,W18,Z18,AC18,AF18,AI18)"} 
+  Col 38 (AL18): 22 
+  Col 39 (AM18): "F" 
+  Col 40 (AN18): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO18): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP18): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ18): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR18): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS18): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT18): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU18): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 19:
   Col 2 (B19): 3 
-  Col 3 (C19): 9 
-  Col 4 (D19): "JOÃO SIMBA MBEUA MATIABA" 
+  Col 3 (C19): 1625 
+  Col 4 (D19): "MARIA ISABEL BUANGA TATI" 
   Col 5 (E19): "" 
   Col 6 (F19): "-" 
   Col 7 (G19): "-" 
-  Col 8 (H19): 14.2 
-  Col 9 (I19): "TRANSITA" 
-  Col 10 (J19): {"formula":"AVERAGE(H19)"} 
-  Col 11 (K19): 23 
-  Col 12 (L19): "M" 
-  Col 13 (M19): {"formula":"COUNTIF(L17:L22,\"M\")"} (Merged into M17)
-  Col 14 (N19): {"formula":"COUNTIF(L17:L22,\"F\")"} (Merged into N17)
-  Col 15 (O19): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} (Merged into O17)
-  Col 16 (P19): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} (Merged into P17)
-  Col 17 (Q19): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} (Merged into Q17)
-  Col 18 (R19): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} (Merged into R17)
-  Col 19 (S19): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} (Merged into S17)
-  Col 20 (T19): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} (Merged into T17)
+  Col 8 (H19): 14.5 
+  Col 9 (I19): "-" 
+  Col 10 (J19): "-" 
+  Col 11 (K19): 14 
+  Col 12 (L19): "-" 
+  Col 13 (M19): 6 
+  Col 14 (N19): 15.6 
+  Col 15 (O19): "-" 
+  Col 16 (P19): 5 
+  Col 17 (Q19): 14.2 
+  Col 18 (R19): "-" 
+  Col 19 (S19): "-" 
+  Col 20 (T19): 12.8 
+  Col 21 (U19): "-" 
+  Col 22 (V19): "-" 
+  Col 23 (W19): 12.1 
+  Col 24 (X19): "-" 
+  Col 25 (Y19): "-" 
+  Col 26 (Z19): 15.4 
+  Col 27 (AA19): "-" 
+  Col 28 (AB19): "-" 
+  Col 29 (AC19): 15.4 
+  Col 30 (AD19): "-" 
+  Col 31 (AE19): "-" 
+  Col 32 (AF19): 11.3 
+  Col 33 (AG19): "-" 
+  Col 34 (AH19): "-" 
+  Col 35 (AI19): 14.5 
+  Col 36 (AJ19): "TRANSITA" 
+  Col 37 (AK19): {"formula":"AVERAGE(H19,K19,N19,Q19,T19,W19,Z19,AC19,AF19,AI19)"} 
+  Col 38 (AL19): 19 
+  Col 39 (AM19): "F" 
+  Col 40 (AN19): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO19): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP19): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ19): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR19): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS19): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT19): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU19): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 20:
   Col 2 (B20): 4 
-  Col 3 (C20): 10 
-  Col 4 (D20): "SIMÃO PRECIL ZOLA" 
-  Col 5 (E20): "" 
+  Col 3 (C20): 1644 
+  Col 4 (D20): "METELAS  ISSUNGO MACOSSO" 
+  Col 5 (E20): "F.A.I, FÍSIC" 
   Col 6 (F20): "-" 
-  Col 7 (G20): "-" 
-  Col 8 (H20): "-" 
+  Col 7 (G20): 4 
+  Col 8 (H20): 12.3 
   Col 9 (I20): "-" 
   Col 10 (J20): "-" 
-  Col 11 (K20): 24 
-  Col 12 (L20): "M" 
-  Col 13 (M20): {"formula":"COUNTIF(L17:L22,\"M\")"} (Merged into M17)
-  Col 14 (N20): {"formula":"COUNTIF(L17:L22,\"F\")"} (Merged into N17)
-  Col 15 (O20): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} (Merged into O17)
-  Col 16 (P20): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} (Merged into P17)
-  Col 17 (Q20): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} (Merged into Q17)
-  Col 18 (R20): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} (Merged into R17)
-  Col 19 (S20): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} (Merged into S17)
-  Col 20 (T20): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} (Merged into T17)
+  Col 11 (K20): 11.4 
+  Col 12 (L20): "-" 
+  Col 13 (M20): 6 
+  Col 14 (N20): 9.1 
+  Col 15 (O20): "-" 
+  Col 16 (P20): 2 
+  Col 17 (Q20): 9.6 
+  Col 18 (R20): "-" 
+  Col 19 (S20): "-" 
+  Col 20 (T20): 12 
+  Col 21 (U20): "-" 
+  Col 22 (V20): "-" 
+  Col 23 (W20): 14.7 
+  Col 24 (X20): "-" 
+  Col 25 (Y20): "-" 
+  Col 26 (Z20): 11.2 
+  Col 27 (AA20): "-" 
+  Col 28 (AB20): "-" 
+  Col 29 (AC20): 13.7 
+  Col 30 (AD20): "-" 
+  Col 31 (AE20): "-" 
+  Col 32 (AF20): 16.5 
+  Col 33 (AG20): "-" 
+  Col 34 (AH20): "-" 
+  Col 35 (AI20): 14.5 
+  Col 36 (AJ20): "TRANSITA" 
+  Col 37 (AK20): {"formula":"AVERAGE(H20,K20,N20,Q20,T20,W20,Z20,AC20,AF20,AI20)"} 
+  Col 38 (AL20): 21 
+  Col 39 (AM20): "F" 
+  Col 40 (AN20): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO20): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP20): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ20): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR20): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS20): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT20): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU20): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 21:
   Col 2 (B21): 5 
-  Col 3 (C21): 1758 
-  Col 4 (D21): "SILVÉRIO ERNESTO PRESO" 
+  Col 3 (C21): 1645 
+  Col 4 (D21): "MARIA IMACULADA BANZA" 
   Col 5 (E21): "" 
   Col 6 (F21): "-" 
-  Col 7 (G21): "-" 
-  Col 8 (H21): 11 
-  Col 9 (I21): "TRANSITA" 
-  Col 10 (J21): {"formula":"AVERAGE(H21)"} 
-  Col 11 (K21): 26 
-  Col 12 (L21): "M" 
-  Col 13 (M21): {"formula":"COUNTIF(L17:L22,\"M\")"} (Merged into M17)
-  Col 14 (N21): {"formula":"COUNTIF(L17:L22,\"F\")"} (Merged into N17)
-  Col 15 (O21): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} (Merged into O17)
-  Col 16 (P21): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} (Merged into P17)
-  Col 17 (Q21): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} (Merged into Q17)
-  Col 18 (R21): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} (Merged into R17)
-  Col 19 (S21): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} (Merged into S17)
-  Col 20 (T21): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} (Merged into T17)
+  Col 7 (G21): 5 
+  Col 8 (H21): 14.2 
+  Col 9 (I21): "-" 
+  Col 10 (J21): "-" 
+  Col 11 (K21): 12.8 
+  Col 12 (L21): "-" 
+  Col 13 (M21): "-" 
+  Col 14 (N21): 12.7 
+  Col 15 (O21): "-" 
+  Col 16 (P21): "-" 
+  Col 17 (Q21): 15.3 
+  Col 18 (R21): "-" 
+  Col 19 (S21): 2 
+  Col 20 (T21): 12.6 
+  Col 21 (U21): "-" 
+  Col 22 (V21): "-" 
+  Col 23 (W21): 14.3 
+  Col 24 (X21): "-" 
+  Col 25 (Y21): "-" 
+  Col 26 (Z21): 12.5 
+  Col 27 (AA21): "-" 
+  Col 28 (AB21): "-" 
+  Col 29 (AC21): 11.9 
+  Col 30 (AD21): "-" 
+  Col 31 (AE21): "-" 
+  Col 32 (AF21): 12.9 
+  Col 33 (AG21): "-" 
+  Col 34 (AH21): "-" 
+  Col 35 (AI21): 17.2 
+  Col 36 (AJ21): "TRANSITA" 
+  Col 37 (AK21): {"formula":"AVERAGE(H21,K21,N21,Q21,T21,W21,Z21,AC21,AF21,AI21)"} 
+  Col 38 (AL21): 26 
+  Col 39 (AM21): "F" 
+  Col 40 (AN21): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO21): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP21): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ21): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR21): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS21): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT21): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU21): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 22:
   Col 2 (B22): 6 
-  Col 3 (C22): 1771 
-  Col 4 (D22): "SERAFIM CASSI MANANGA" 
-  Col 5 (E22): "" 
+  Col 3 (C22): 1646 
+  Col 4 (D22): "MARIA MBENZA PACA GIMI" 
+  Col 5 (E22): "LÍNGU, QUÍMI" 
   Col 6 (F22): "-" 
-  Col 7 (G22): "-" 
-  Col 8 (H22): 13.2 
-  Col 9 (I22): "TRANSITA" 
-  Col 10 (J22): {"formula":"AVERAGE(H22)"} 
-  Col 11 (K22): 23 
-  Col 12 (L22): "M" 
-  Col 13 (M22): {"formula":"COUNTIF(L17:L22,\"M\")"} (Merged into M17)
-  Col 14 (N22): {"formula":"COUNTIF(L17:L22,\"F\")"} (Merged into N17)
-  Col 15 (O22): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"M\")"} (Merged into O17)
-  Col 16 (P22): {"formula":"COUNTIFS(I17:I22,\"TRANSITA\",L17:L22,\"F\")"} (Merged into P17)
-  Col 17 (Q22): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"M\")"} (Merged into Q17)
-  Col 18 (R22): {"formula":"COUNTIFS(I17:I22,\"N/TRANSITA\",L17:L22,\"F\")"} (Merged into R17)
-  Col 19 (S22): {"formula":"COUNTIFS(I17:I22,\"DESISTIDO\",L17:L22,\"M\")"} (Merged into S17)
-  Col 20 (T22): {"formula":"COUNTIFS(I17:I22,\"DESISTIDA\",L17:L22,\"F\")"} (Merged into T17)
+  Col 7 (G22): 4 
+  Col 8 (H22): 13.4 
+  Col 9 (I22): "-" 
+  Col 10 (J22): "-" 
+  Col 11 (K22): 12.8 
+  Col 12 (L22): "-" 
+  Col 13 (M22): "-" 
+  Col 14 (N22): 16.4 
+  Col 15 (O22): "-" 
+  Col 16 (P22): "-" 
+  Col 17 (Q22): 10.8 
+  Col 18 (R22): "-" 
+  Col 19 (S22): "-" 
+  Col 20 (T22): 10 
+  Col 21 (U22): "-" 
+  Col 22 (V22): 4 
+  Col 23 (W22): 14.1 
+  Col 24 (X22): "-" 
+  Col 25 (Y22): "-" 
+  Col 26 (Z22): 10.9 
+  Col 27 (AA22): "-" 
+  Col 28 (AB22): "-" 
+  Col 29 (AC22): 9.1 
+  Col 30 (AD22): "-" 
+  Col 31 (AE22): "-" 
+  Col 32 (AF22): 11.3 
+  Col 33 (AG22): "-" 
+  Col 34 (AH22): 2 
+  Col 35 (AI22): 8.9 
+  Col 36 (AJ22): "TRANSITA" 
+  Col 37 (AK22): {"formula":"AVERAGE(H22,K22,N22,Q22,T22,W22,Z22,AC22,AF22,AI22)"} 
+  Col 38 (AL22): 20 
+  Col 39 (AM22): "F" 
+  Col 40 (AN22): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO22): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP22): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ22): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR22): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS22): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT22): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU22): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 23:
+  Col 2 (B23): 7 
+  Col 3 (C23): 1647 
+  Col 4 (D23): "NASCIMENTO BARROS NSIMBA" 
+  Col 5 (E23): "MATEM" 
+  Col 6 (F23): "-" 
+  Col 7 (G23): "-" 
+  Col 8 (H23): 16.7 
+  Col 9 (I23): "-" 
+  Col 10 (J23): "-" 
+  Col 11 (K23): 11.2 
+  Col 12 (L23): "-" 
+  Col 13 (M23): "-" 
+  Col 14 (N23): 13.6 
+  Col 15 (O23): "-" 
+  Col 16 (P23): 4 
+  Col 17 (Q23): 16.2 
+  Col 18 (R23): "-" 
+  Col 19 (S23): "-" 
+  Col 20 (T23): 13.4 
+  Col 21 (U23): "-" 
+  Col 22 (V23): "-" 
+  Col 23 (W23): 12.4 
+  Col 24 (X23): "-" 
+  Col 25 (Y23): "-" 
+  Col 26 (Z23): 12.1 
+  Col 27 (AA23): "-" 
+  Col 28 (AB23): "-" 
+  Col 29 (AC23): 11.8 
+  Col 30 (AD23): "-" 
+  Col 31 (AE23): 5 
+  Col 32 (AF23): 9.1 
+  Col 33 (AG23): "-" 
+  Col 34 (AH23): "-" 
+  Col 35 (AI23): 14.4 
+  Col 36 (AJ23): "TRANSITA" 
+  Col 37 (AK23): {"formula":"AVERAGE(H23,K23,N23,Q23,T23,W23,Z23,AC23,AF23,AI23)"} 
+  Col 38 (AL23): 19 
+  Col 39 (AM23): "M" 
+  Col 40 (AN23): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO23): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP23): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ23): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR23): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS23): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT23): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU23): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 24:
-  Col 2 (B24): "DATA DO CONSELHO DE TURMA ______ / ______ / 2026" 
-  Col 3 (C24): "DATA DO CONSELHO DE TURMA ______ / ______ / 2026" (Merged into B24)
-  Col 4 (D24): "DATA DO CONSELHO DE TURMA ______ / ______ / 2026" (Merged into B24)
-  Col 5 (E24): "DATA DO CONSELHO DE TURMA ______ / ______ / 2026" (Merged into B24)
-  Col 6 (F24): "DATA DO CONSELHO DE TURMA ______ / ______ / 2026" (Merged into B24)
+  Col 2 (B24): 8 
+  Col 3 (C24): 1648 
+  Col 4 (D24): "JOSÉ SILVESTRE DA CONCEIÇÃO DOMINGOS" 
+  Col 5 (E24): "" 
+  Col 6 (F24): "-" 
+  Col 7 (G24): 5 
+  Col 8 (H24): 11.5 
+  Col 9 (I24): "-" 
+  Col 10 (J24): "-" 
+  Col 11 (K24): 11 
+  Col 12 (L24): "-" 
+  Col 13 (M24): 6 
+  Col 14 (N24): 12.5 
+  Col 15 (O24): "-" 
+  Col 16 (P24): 1 
+  Col 17 (Q24): 10.6 
+  Col 18 (R24): "-" 
+  Col 19 (S24): 5 
+  Col 20 (T24): 13.6 
+  Col 21 (U24): "-" 
+  Col 22 (V24): "-" 
+  Col 23 (W24): 11 
+  Col 24 (X24): "-" 
+  Col 25 (Y24): "-" 
+  Col 26 (Z24): 16 
+  Col 27 (AA24): "-" 
+  Col 28 (AB24): "-" 
+  Col 29 (AC24): 15.6 
+  Col 30 (AD24): "-" 
+  Col 31 (AE24): 3 
+  Col 32 (AF24): 11 
+  Col 33 (AG24): "-" 
+  Col 34 (AH24): "-" 
+  Col 35 (AI24): 13 
+  Col 36 (AJ24): "TRANSITA" 
+  Col 37 (AK24): {"formula":"AVERAGE(H24,K24,N24,Q24,T24,W24,Z24,AC24,AF24,AI24)"} 
+  Col 38 (AL24): 27 
+  Col 39 (AM24): "M" 
+  Col 40 (AN24): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO24): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP24): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ24): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR24): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS24): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT24): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU24): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 25:
+  Col 2 (B25): 9 
+  Col 3 (C25): 1649 
+  Col 4 (D25): "MARIA DA RESSUREIÇÃO WINI MAVUNGO" 
+  Col 5 (E25): "ANATO" 
+  Col 6 (F25): "-" 
+  Col 7 (G25): "-" 
+  Col 8 (H25): 9.1 
+  Col 9 (I25): "-" 
+  Col 10 (J25): "-" 
+  Col 11 (K25): 15.8 
+  Col 12 (L25): "-" 
+  Col 13 (M25): 6 
+  Col 14 (N25): 14.2 
+  Col 15 (O25): "-" 
+  Col 16 (P25): "-" 
+  Col 17 (Q25): 12.7 
+  Col 18 (R25): "-" 
+  Col 19 (S25): 6 
+  Col 20 (T25): 12.1 
+  Col 21 (U25): "-" 
+  Col 22 (V25): "-" 
+  Col 23 (W25): 13 
+  Col 24 (X25): "-" 
+  Col 25 (Y25): 3 
+  Col 26 (Z25): 17.3 
+  Col 27 (AA25): "-" 
+  Col 28 (AB25): "-" 
+  Col 29 (AC25): 11.7 
+  Col 30 (AD25): "-" 
+  Col 31 (AE25): "-" 
+  Col 32 (AF25): 11 
+  Col 33 (AG25): "-" 
+  Col 34 (AH25): "-" 
+  Col 35 (AI25): 11.1 
+  Col 36 (AJ25): "TRANSITA" 
+  Col 37 (AK25): {"formula":"AVERAGE(H25,K25,N25,Q25,T25,W25,Z25,AC25,AF25,AI25)"} 
+  Col 38 (AL25): 4 
+  Col 39 (AM25): "F" 
+  Col 40 (AN25): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO25): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP25): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ25): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR25): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS25): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT25): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU25): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 26:
+  Col 2 (B26): 10 
+  Col 3 (C26): 1650 
+  Col 4 (D26): "KELSON VICENTE BETE FRANCISCO" 
+  Col 5 (E26): "LÍNGU" 
+  Col 6 (F26): "-" 
+  Col 7 (G26): "-" 
+  Col 8 (H26): 14.2 
+  Col 9 (I26): "-" 
+  Col 10 (J26): 3 
+  Col 11 (K26): 11.6 
+  Col 12 (L26): "-" 
+  Col 13 (M26): 2 
+  Col 14 (N26): 15.1 
+  Col 15 (O26): "-" 
+  Col 16 (P26): "-" 
+  Col 17 (Q26): 11.3 
+  Col 18 (R26): "-" 
+  Col 19 (S26): "-" 
+  Col 20 (T26): 13.1 
+  Col 21 (U26): "-" 
+  Col 22 (V26): "-" 
+  Col 23 (W26): 12.2 
+  Col 24 (X26): "-" 
+  Col 25 (Y26): "-" 
+  Col 26 (Z26): 15.4 
+  Col 27 (AA26): "-" 
+  Col 28 (AB26): "-" 
+  Col 29 (AC26): 9.1 
+  Col 30 (AD26): "-" 
+  Col 31 (AE26): "-" 
+  Col 32 (AF26): 10.6 
+  Col 33 (AG26): "-" 
+  Col 34 (AH26): "-" 
+  Col 35 (AI26): 10 
+  Col 36 (AJ26): "TRANSITA" 
+  Col 37 (AK26): {"formula":"AVERAGE(H26,K26,N26,Q26,T26,W26,Z26,AC26,AF26,AI26)"} 
+  Col 38 (AL26): 23 
+  Col 39 (AM26): "M" 
+  Col 40 (AN26): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO26): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP26): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ26): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR26): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS26): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT26): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU26): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 27:
-  Col 2 (B27): "A Directora de Turma" 
-  Col 3 (C27): "A Directora de Turma" (Merged into B27)
-  Col 4 (D27): "A Directora de Turma" (Merged into B27)
-  Col 5 (E27): "A Directora de Turma" (Merged into B27)
-  Col 6 (F27): "A Directora de Turma" (Merged into B27)
-  Col 9 (I27): "O Subdirector Pedagógico" 
-  Col 10 (J27): "O Subdirector Pedagógico" (Merged into I27)
-  Col 11 (K27): "O Subdirector Pedagógico" (Merged into I27)
-  Col 12 (L27): "O Subdirector Pedagógico" (Merged into I27)
+  Col 2 (B27): 11 
+  Col 3 (C27): 1651 
+  Col 4 (D27): "MARTA SUAMI LUEMBA MATOCO" 
+  Col 5 (E27): "" 
+  Col 6 (F27): "-" 
+  Col 7 (G27): "-" 
+  Col 8 (H27): 14.8 
+  Col 9 (I27): "-" 
+  Col 10 (J27): "-" 
+  Col 11 (K27): 10.5 
+  Col 12 (L27): "-" 
+  Col 13 (M27): 4 
+  Col 14 (N27): 13.4 
+  Col 15 (O27): "-" 
+  Col 16 (P27): 2 
+  Col 17 (Q27): 11.3 
+  Col 18 (R27): "-" 
+  Col 19 (S27): 1 
+  Col 20 (T27): 15.7 
+  Col 21 (U27): "-" 
+  Col 22 (V27): 4 
+  Col 23 (W27): 13 
+  Col 24 (X27): "-" 
+  Col 25 (Y27): "-" 
+  Col 26 (Z27): 13.9 
+  Col 27 (AA27): "-" 
+  Col 28 (AB27): "-" 
+  Col 29 (AC27): 12.5 
+  Col 30 (AD27): "-" 
+  Col 31 (AE27): "-" 
+  Col 32 (AF27): 12.7 
+  Col 33 (AG27): "-" 
+  Col 34 (AH27): "-" 
+  Col 35 (AI27): 10.7 
+  Col 36 (AJ27): "TRANSITA" 
+  Col 37 (AK27): {"formula":"AVERAGE(H27,K27,N27,Q27,T27,W27,Z27,AC27,AF27,AI27)"} 
+  Col 38 (AL27): 21 
+  Col 39 (AM27): "F" 
+  Col 40 (AN27): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO27): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP27): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ27): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR27): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS27): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT27): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU27): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 28:
-  Col 2 (B28): "_____________________________________" 
-  Col 3 (C28): "_____________________________________" (Merged into B28)
-  Col 4 (D28): "_____________________________________" (Merged into B28)
-  Col 5 (E28): "_____________________________________" (Merged into B28)
-  Col 6 (F28): "_____________________________________" (Merged into B28)
-  Col 9 (I28): "_____________________________________" 
-  Col 10 (J28): "_____________________________________" (Merged into I28)
-  Col 11 (K28): "_____________________________________" (Merged into I28)
-  Col 12 (L28): "_____________________________________" (Merged into I28)
+  Col 2 (B28): 12 
+  Col 3 (C28): 1652 
+  Col 4 (D28): "LUÍSA BENEDITA PEMBA MBUMBA" 
+  Col 5 (E28): "BIOLO, INFOR" 
+  Col 6 (F28): "-" 
+  Col 7 (G28): 3 
+  Col 8 (H28): 12.3 
+  Col 9 (I28): "-" 
+  Col 10 (J28): "-" 
+  Col 11 (K28): 9.9 
+  Col 12 (L28): "-" 
+  Col 13 (M28): "-" 
+  Col 14 (N28): 10.4 
+  Col 15 (O28): "-" 
+  Col 16 (P28): "-" 
+  Col 17 (Q28): 11.4 
+  Col 18 (R28): "-" 
+  Col 19 (S28): "-" 
+  Col 20 (T28): 9.9 
+  Col 21 (U28): "-" 
+  Col 22 (V28): "-" 
+  Col 23 (W28): 12.4 
+  Col 24 (X28): "-" 
+  Col 25 (Y28): "-" 
+  Col 26 (Z28): 13.4 
+  Col 27 (AA28): "-" 
+  Col 28 (AB28): "-" 
+  Col 29 (AC28): 15.4 
+  Col 30 (AD28): "-" 
+  Col 31 (AE28): 4 
+  Col 32 (AF28): 13.7 
+  Col 33 (AG28): "-" 
+  Col 34 (AH28): 2 
+  Col 35 (AI28): 10.2 
+  Col 36 (AJ28): "TRANSITA" 
+  Col 37 (AK28): {"formula":"AVERAGE(H28,K28,N28,Q28,T28,W28,Z28,AC28,AF28,AI28)"} 
+  Col 38 (AL28): 20 
+  Col 39 (AM28): "F" 
+  Col 40 (AN28): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO28): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP28): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ28): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR28): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS28): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT28): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU28): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
 
 Row 29:
-  Col 2 (B29): "" 
-  Col 3 (C29): "" (Merged into B29)
-  Col 4 (D29): "" (Merged into B29)
-  Col 5 (E29): "" (Merged into B29)
-  Col 6 (F29): "" (Merged into B29)
-  Col 9 (I29): "Alberto Sassa Tati" 
-  Col 10 (J29): "Alberto Sassa Tati" (Merged into I29)
-  Col 11 (K29): "Alberto Sassa Tati" (Merged into I29)
-  Col 12 (L29): "Alberto Sassa Tati" (Merged into I29)
+  Col 2 (B29): 13 
+  Col 3 (C29): 1653 
+  Col 4 (D29): "LUCIANO PALANGA MIGUEL" 
+  Col 5 (E29): "BIOLO" 
+  Col 6 (F29): "-" 
+  Col 7 (G29): "-" 
+  Col 8 (H29): 16 
+  Col 9 (I29): "-" 
+  Col 10 (J29): "-" 
+  Col 11 (K29): 9.3 
+  Col 12 (L29): "-" 
+  Col 13 (M29): "-" 
+  Col 14 (N29): 10.7 
+  Col 15 (O29): "-" 
+  Col 16 (P29): 1 
+  Col 17 (Q29): 13.8 
+  Col 18 (R29): "-" 
+  Col 19 (S29): "-" 
+  Col 20 (T29): 13.8 
+  Col 21 (U29): "-" 
+  Col 22 (V29): "-" 
+  Col 23 (W29): 17.4 
+  Col 24 (X29): "-" 
+  Col 25 (Y29): "-" 
+  Col 26 (Z29): 12.8 
+  Col 27 (AA29): "-" 
+  Col 28 (AB29): "-" 
+  Col 29 (AC29): 13.5 
+  Col 30 (AD29): "-" 
+  Col 31 (AE29): 4 
+  Col 32 (AF29): 11.5 
+  Col 33 (AG29): "-" 
+  Col 34 (AH29): "-" 
+  Col 35 (AI29): 11.5 
+  Col 36 (AJ29): "TRANSITA" 
+  Col 37 (AK29): {"formula":"AVERAGE(H29,K29,N29,Q29,T29,W29,Z29,AC29,AF29,AI29)"} 
+  Col 38 (AL29): 21 
+  Col 39 (AM29): "M" 
+  Col 40 (AN29): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO29): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP29): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ29): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR29): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS29): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT29): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU29): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 30:
+  Col 2 (B30): 14 
+  Col 3 (C30): 1654 
+  Col 4 (D30): "LÚCIA SUNGO CHIMKUMBO NDOKI" 
+  Col 5 (E30): "ANATO" 
+  Col 6 (F30): "-" 
+  Col 7 (G30): 5 
+  Col 8 (H30): 9.5 
+  Col 9 (I30): "-" 
+  Col 10 (J30): 1 
+  Col 11 (K30): 13.1 
+  Col 12 (L30): "-" 
+  Col 13 (M30): "-" 
+  Col 14 (N30): 15.8 
+  Col 15 (O30): "-" 
+  Col 16 (P30): 5 
+  Col 17 (Q30): 15.4 
+  Col 18 (R30): "-" 
+  Col 19 (S30): "-" 
+  Col 20 (T30): 13.9 
+  Col 21 (U30): "-" 
+  Col 22 (V30): "-" 
+  Col 23 (W30): 15.9 
+  Col 24 (X30): "-" 
+  Col 25 (Y30): "-" 
+  Col 26 (Z30): 15.7 
+  Col 27 (AA30): "-" 
+  Col 28 (AB30): "-" 
+  Col 29 (AC30): 16.4 
+  Col 30 (AD30): "-" 
+  Col 31 (AE30): "-" 
+  Col 32 (AF30): 11.6 
+  Col 33 (AG30): "-" 
+  Col 34 (AH30): 5 
+  Col 35 (AI30): 12.6 
+  Col 36 (AJ30): "TRANSITA" 
+  Col 37 (AK30): {"formula":"AVERAGE(H30,K30,N30,Q30,T30,W30,Z30,AC30,AF30,AI30)"} 
+  Col 38 (AL30): 20 
+  Col 39 (AM30): "F" 
+  Col 40 (AN30): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO30): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP30): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ30): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR30): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS30): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT30): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU30): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 31:
+  Col 2 (B31): 15 
+  Col 3 (C31): 1655 
+  Col 4 (D31): "MARIA PRINCIPE CAPATA" 
+  Col 5 (E31): "" 
+  Col 6 (F31): "-" 
+  Col 7 (G31): "-" 
+  Col 8 (H31): 14.8 
+  Col 9 (I31): "-" 
+  Col 10 (J31): "-" 
+  Col 11 (K31): 11.6 
+  Col 12 (L31): "-" 
+  Col 13 (M31): 4 
+  Col 14 (N31): 11.2 
+  Col 15 (O31): "-" 
+  Col 16 (P31): 1 
+  Col 17 (Q31): 12.5 
+  Col 18 (R31): "-" 
+  Col 19 (S31): "-" 
+  Col 20 (T31): 14.7 
+  Col 21 (U31): "-" 
+  Col 22 (V31): "-" 
+  Col 23 (W31): 13.3 
+  Col 24 (X31): "-" 
+  Col 25 (Y31): "-" 
+  Col 26 (Z31): 13.9 
+  Col 27 (AA31): "-" 
+  Col 28 (AB31): "-" 
+  Col 29 (AC31): 14.6 
+  Col 30 (AD31): "-" 
+  Col 31 (AE31): 5 
+  Col 32 (AF31): 13.8 
+  Col 33 (AG31): "-" 
+  Col 34 (AH31): "-" 
+  Col 35 (AI31): 13.6 
+  Col 36 (AJ31): "TRANSITA" 
+  Col 37 (AK31): {"formula":"AVERAGE(H31,K31,N31,Q31,T31,W31,Z31,AC31,AF31,AI31)"} 
+  Col 38 (AL31): 20 
+  Col 39 (AM31): "F" 
+  Col 40 (AN31): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO31): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP31): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ31): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR31): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS31): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT31): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU31): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 32:
+  Col 2 (B32): 16 
+  Col 3 (C32): 1656 
+  Col 4 (D32): "MARGARIDA JOVANIA MACOSSO ZAU" 
+  Col 5 (E32): "" 
+  Col 6 (F32): "-" 
+  Col 7 (G32): "-" 
+  Col 8 (H32): 15.4 
+  Col 9 (I32): "-" 
+  Col 10 (J32): 2 
+  Col 11 (K32): 13.1 
+  Col 12 (L32): "-" 
+  Col 13 (M32): "-" 
+  Col 14 (N32): 14.8 
+  Col 15 (O32): "-" 
+  Col 16 (P32): "-" 
+  Col 17 (Q32): 11.6 
+  Col 18 (R32): "-" 
+  Col 19 (S32): 6 
+  Col 20 (T32): 13.4 
+  Col 21 (U32): "-" 
+  Col 22 (V32): 5 
+  Col 23 (W32): 15.8 
+  Col 24 (X32): "-" 
+  Col 25 (Y32): "-" 
+  Col 26 (Z32): 12.2 
+  Col 27 (AA32): "-" 
+  Col 28 (AB32): "-" 
+  Col 29 (AC32): 14.4 
+  Col 30 (AD32): "-" 
+  Col 31 (AE32): "-" 
+  Col 32 (AF32): 13.8 
+  Col 33 (AG32): "-" 
+  Col 34 (AH32): "-" 
+  Col 35 (AI32): 17.9 
+  Col 36 (AJ32): "TRANSITA" 
+  Col 37 (AK32): {"formula":"AVERAGE(H32,K32,N32,Q32,T32,W32,Z32,AC32,AF32,AI32)"} 
+  Col 38 (AL32): 21 
+  Col 39 (AM32): "F" 
+  Col 40 (AN32): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO32): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP32): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ32): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR32): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS32): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT32): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU32): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 33:
+  Col 2 (B33): 17 
+  Col 3 (C33): 1657 
+  Col 4 (D33): "MARIA CUMBA MALONDA NTÓTO" 
+  Col 5 (E33): "" 
+  Col 6 (F33): "-" 
+  Col 7 (G33): "-" 
+  Col 8 (H33): 12.2 
+  Col 9 (I33): "-" 
+  Col 10 (J33): "-" 
+  Col 11 (K33): 14.2 
+  Col 12 (L33): "-" 
+  Col 13 (M33): "-" 
+  Col 14 (N33): 10.3 
+  Col 15 (O33): "-" 
+  Col 16 (P33): "-" 
+  Col 17 (Q33): 13.3 
+  Col 18 (R33): "-" 
+  Col 19 (S33): "-" 
+  Col 20 (T33): 13.3 
+  Col 21 (U33): "-" 
+  Col 22 (V33): 4 
+  Col 23 (W33): 14.8 
+  Col 24 (X33): "-" 
+  Col 25 (Y33): "-" 
+  Col 26 (Z33): 15.1 
+  Col 27 (AA33): "-" 
+  Col 28 (AB33): "-" 
+  Col 29 (AC33): 13.9 
+  Col 30 (AD33): "-" 
+  Col 31 (AE33): "-" 
+  Col 32 (AF33): 11.8 
+  Col 33 (AG33): "-" 
+  Col 34 (AH33): "-" 
+  Col 35 (AI33): 13.6 
+  Col 36 (AJ33): "TRANSITA" 
+  Col 37 (AK33): {"formula":"AVERAGE(H33,K33,N33,Q33,T33,W33,Z33,AC33,AF33,AI33)"} 
+  Col 38 (AL33): 20 
+  Col 39 (AM33): "F" 
+  Col 40 (AN33): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO33): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP33): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ33): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR33): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS33): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT33): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU33): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 34:
+  Col 2 (B34): 18 
+  Col 3 (C34): 1658 
+  Col 4 (D34): "PERPÉTUA FERNANDA ZAU" 
+  Col 5 (E34): "BIOLO" 
+  Col 6 (F34): "-" 
+  Col 7 (G34): "-" 
+  Col 8 (H34): 13.1 
+  Col 9 (I34): "-" 
+  Col 10 (J34): "-" 
+  Col 11 (K34): 9.8 
+  Col 12 (L34): "-" 
+  Col 13 (M34): "-" 
+  Col 14 (N34): 13.9 
+  Col 15 (O34): "-" 
+  Col 16 (P34): "-" 
+  Col 17 (Q34): 13.2 
+  Col 18 (R34): "-" 
+  Col 19 (S34): 2 
+  Col 20 (T34): 13.5 
+  Col 21 (U34): "-" 
+  Col 22 (V34): 2 
+  Col 23 (W34): 13.3 
+  Col 24 (X34): "-" 
+  Col 25 (Y34): "-" 
+  Col 26 (Z34): 12 
+  Col 27 (AA34): "-" 
+  Col 28 (AB34): "-" 
+  Col 29 (AC34): 16.4 
+  Col 30 (AD34): "-" 
+  Col 31 (AE34): "-" 
+  Col 32 (AF34): 11.5 
+  Col 33 (AG34): "-" 
+  Col 34 (AH34): 4 
+  Col 35 (AI34): 11.9 
+  Col 36 (AJ34): "TRANSITA" 
+  Col 37 (AK34): {"formula":"AVERAGE(H34,K34,N34,Q34,T34,W34,Z34,AC34,AF34,AI34)"} 
+  Col 38 (AL34): 21 
+  Col 39 (AM34): "F" 
+  Col 40 (AN34): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO34): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP34): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ34): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR34): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS34): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT34): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU34): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
+
+Row 35:
+  Col 2 (B35): 19 
+  Col 3 (C35): 1659 
+  Col 4 (D35): "MADALENA  BENVIDA CHINGOMBE LUEMBA" 
+  Col 5 (E35): "" 
+  Col 6 (F35): "-" 
+  Col 7 (G35): "-" 
+  Col 8 (H35): 16.4 
+  Col 9 (I35): "-" 
+  Col 10 (J35): "-" 
+  Col 11 (K35): 10.8 
+  Col 12 (L35): "-" 
+  Col 13 (M35): 3 
+  Col 14 (N35): 14.5 
+  Col 15 (O35): "-" 
+  Col 16 (P35): "-" 
+  Col 17 (Q35): 14.1 
+  Col 18 (R35): "-" 
+  Col 19 (S35): 6 
+  Col 20 (T35): 14.1 
+  Col 21 (U35): "-" 
+  Col 22 (V35): "-" 
+  Col 23 (W35): 15.3 
+  Col 24 (X35): "-" 
+  Col 25 (Y35): 2 
+  Col 26 (Z35): 15.7 
+  Col 27 (AA35): "-" 
+  Col 28 (AB35): "-" 
+  Col 29 (AC35): 14.2 
+  Col 30 (AD35): "-" 
+  Col 31 (AE35): "-" 
+  Col 32 (AF35): 16.1 
+  Col 33 (AG35): "-" 
+  Col 34 (AH35): "-" 
+  Col 35 (AI35): 11 
+  Col 36 (AJ35): "TRANSITA" 
+  Col 37 (AK35): {"formula":"AVERAGE(H35,K35,N35,Q35,T35,W35,Z35,AC35,AF35,AI35)"} 
+  Col 38 (AL35): 30 
+  Col 39 (AM35): "F" 
+  Col 40 (AN35): {"formula":"COUNTIF(AM17:AM77,\"M\")"} (Merged into AN17)
+  Col 41 (AO35): {"formula":"COUNTIF(AM17:AM77,\"F\")"} (Merged into AO17)
+  Col 42 (AP35): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"M\")"} (Merged into AP17)
+  Col 43 (AQ35): {"formula":"COUNTIFS(AJ17:AJ77,\"TRANSITA\",AM17:AM77,\"F\")"} (Merged into AQ17)
+  Col 44 (AR35): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"M\")"} (Merged into AR17)
+  Col 45 (AS35): {"formula":"COUNTIFS(AJ17:AJ77,\"N/TRANSITA\",AM17:AM77,\"F\")"} (Merged into AS17)
+  Col 46 (AT35): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDO\",AM17:AM77,\"M\")"} (Merged into AT17)
+  Col 47 (AU35): {"formula":"COUNTIFS(AJ17:AJ77,\"DESISTIDA\",AM17:AM77,\"F\")"} (Merged into AU17)
