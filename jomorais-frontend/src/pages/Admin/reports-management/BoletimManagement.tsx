@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { FileText, Printer, BookOpen, Users, ChevronDown, AlertCircle, Loader2 } from 'lucide-react'
+import { FileText, Printer, BookOpen, Users, AlertCircle} from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useTurmas } from '../../../hooks/useTurma'
 import { BoletimPdfGenerator } from '../../../utils/BoletimPdfGenerator'
 import type { IBoletimTurmaData } from '../../../utils/BoletimPdfGenerator'
 import api from '../../../utils/api.utils'
+import { BoletimFiltersModal } from '../../../components/reports-management'
 
 // Trimestres fixos
 const TRIMESTRES = [
@@ -21,6 +22,7 @@ export default function BoletimManagement() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [previewData, setPreviewData] = useState<IBoletimTurmaData | null>(null)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
 
   const { data: anosData } = useAnosLectivos({ page: 1, limit: 100 })
   const { data: turmasData } = useTurmas({ page: 1, limit: 500 })
@@ -82,6 +84,13 @@ export default function BoletimManagement() {
           </div>
           
           <div className="flex gap-3">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm shadow-sm"
+            >
+              <FileText className="h-4 w-4" />
+              Selecionar Turma
+            </button>
             {previewData && (
               <button
                 id="btn-imprimir-boletins"
@@ -95,101 +104,22 @@ export default function BoletimManagement() {
           </div>
         </div>
 
-        {/* ── Filtros ── */}
-        <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
-          <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#007C00]" />
-            Selecionar Turma e Período
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Ano Lectivo */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Ano Lectivo <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  id="select-ano-letivo"
-                  value={selectedAnoLetivo}
-                  onChange={e => { setSelectedAnoLetivo(e.target.value); setSelectedTurma(''); }}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
-                >
-                  <option value="">Selecione o ano lectivo...</option>
-                  {anos.map((ano: any) => (
-                    <option key={ano.codigo} value={ano.codigo}>
-                      {ano.designacao}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Turma */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Turma <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  id="select-turma"
-                  value={selectedTurma}
-                  onChange={e => setSelectedTurma(e.target.value)}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
-                >
-                  <option value="">Selecione a turma...</option>
-                  {turmasFiltradas.map((turma: any) => (
-                    <option key={turma.codigo} value={turma.codigo}>
-                      {turma.designacao}
-                      {turma.tb_classes?.designacao ? ` – ${turma.tb_classes.designacao}ª Cl.` : ''}
-                      {turma.tb_cursos?.designacao ? ` | ${turma.tb_cursos.designacao}` : ''}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Trimestre */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Trimestre <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  id="select-trimestre"
-                  value={selectedTrimestre}
-                  onChange={e => setSelectedTrimestre(e.target.value)}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
-                >
-                  <option value="">Selecione o trimestre...</option>
-                  {TRIMESTRES.map(t => (
-                    <option key={t.codigo} value={t.codigo}>
-                      {t.designacao}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <button
-              id="btn-carregar-boletim"
-              onClick={handlePreview}
-              disabled={!canGenerate || isLoading}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm text-white shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${canGenerate ? 'bg-[#007C00] hover:bg-[#005a00]' : 'bg-gray-400'}`}
-            >
-              {isLoading ? (
-                <><Loader2 className="h-5 w-5 animate-spin" /> A carregar...</>
-              ) : (
-                <><FileText className="h-5 w-5" /> Carregar Boletim</>
-              )}
-            </button>
-          </div>
-        </div>
+        {/* ── Modal de Filtros ── */}
+        <BoletimFiltersModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+          anos={anos}
+          turmasFiltradas={turmasFiltradas}
+          trimestres={TRIMESTRES}
+          selectedAnoLetivo={selectedAnoLetivo}
+          selectedTurma={selectedTurma}
+          selectedTrimestre={selectedTrimestre}
+          onAnoLetivoChange={(val) => { setSelectedAnoLetivo(val); setSelectedTurma(''); }}
+          onTurmaChange={setSelectedTurma}
+          onTrimestreChange={setSelectedTrimestre}
+          onApply={handlePreview}
+          isLoading={isLoading}
+        />
 
         {/* ── Erro ── */}
         {error && (
@@ -206,10 +136,9 @@ export default function BoletimManagement() {
         {previewData && (
           <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
             {/* Cabeçalho do preview */}
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between"
-              style={{ background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)' }}>
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-green-50">
               <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-green-600" />
+                <Users className="h-5 w-5 text-[#007C00]" />
                 <div>
                   <p className="font-bold text-gray-800">
                     Turma {previewData.turma.designacao} — {trimestreLabel}
@@ -222,8 +151,7 @@ export default function BoletimManagement() {
                 </div>
               </div>
               <span
-                className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                style={{ background: '#059669' }}
+                className="px-3 py-1 rounded-full text-xs font-bold text-white bg-[#007C00]"
               >
                 {previewData.boletins.filter(b => b.situacao === 'TRANSITA').length} transitam
               </span>
@@ -233,7 +161,7 @@ export default function BoletimManagement() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ background: '#f8fafc' }}>
+                  <tr className="bg-gray-50">
                     <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Nº</th>
                     <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">Nome do Aluno</th>
                     {previewData.disciplinas.map(disc => (
@@ -261,16 +189,14 @@ export default function BoletimManagement() {
                           </td>
                         )
                       })}
-                      <td className="px-4 py-3 text-center font-bold" style={{ color: boletim.mediaGeral >= 10 ? '#059669' : '#dc2626' }}>
+                      <td className={`px-4 py-3 text-center font-bold ${boletim.mediaGeral >= 10 ? 'text-[#007C00]' : 'text-red-600'}`}>
                         {boletim.mediaGeral}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span
-                          className="px-2 py-1 rounded-full text-xs font-bold"
-                          style={{
-                            background: boletim.situacao === 'TRANSITA' ? '#dcfce7' : '#fee2e2',
-                            color: boletim.situacao === 'TRANSITA' ? '#059669' : '#dc2626',
-                          }}
+                          className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            boletim.situacao === 'TRANSITA' ? 'bg-green-100 text-[#007C00]' : 'bg-red-100 text-red-600'
+                          }`}
                         >
                           {boletim.situacao}
                         </span>
@@ -283,8 +209,7 @@ export default function BoletimManagement() {
             </div>
 
             {/* Rodapé da tabela */}
-            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500"
-              style={{ background: '#f8fafc' }}>
+            <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500 bg-gray-50">
               <div>
                 Directora de turma: <span className="font-semibold text-gray-700">{previewData.directorTurma}</span>
                 {' '}| Contacto: <span className="font-semibold text-gray-700">{previewData.contactoDirector}</span>
@@ -304,9 +229,8 @@ export default function BoletimManagement() {
         {/* ── Estado vazio ── */}
         {!previewData && !isLoading && !error && (
           <div className="bg-white rounded-2xl shadow-md border border-dashed border-gray-200 p-16 text-center">
-            <div className="w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)' }}>
-              <BookOpen className="h-10 w-10 text-green-400" />
+            <div className="w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-green-50">
+              <BookOpen className="h-10 w-10 text-[#007C00]" />
             </div>
             <h3 className="text-lg font-bold text-gray-700">Nenhum boletim carregado</h3>
             <p className="text-gray-400 mt-2 max-w-sm mx-auto">
