@@ -91,18 +91,18 @@ export default function TransferViewModal({
           <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
             {/* Cabeçalho da Transferência */}
-            <div className="flex items-center gap-4 p-4 bg-red-50 rounded-lg">
-              <div className="h-16 w-16 rounded-full bg-red-600 flex items-center justify-center text-white text-2xl font-bold">
+            <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl border border-green-100 shadow-sm">
+              <div className="h-16 w-16 rounded-full bg-[#007C00] flex items-center justify-center text-white text-2xl font-bold shadow-sm">
                 {fullTransfer.tb_alunos?.nome?.charAt(0).toUpperCase() || 'A'}
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-900">
                   {fullTransfer.tb_alunos?.nome || 'Aluno não disponível'}
                 </h3>
-                <p className="text-gray-600">Transferência #{fullTransfer.codigo}</p>
+                <p className="text-[#007C00] font-medium">Transferência #{fullTransfer.codigo}</p>
               </div>
               <div className="text-right">
-                <span className="px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+                <span className="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-[#007C00] border border-green-200">
                   Transferido
                 </span>
               </div>
@@ -111,8 +111,8 @@ export default function TransferViewModal({
             {/* Informações da Transferência */}
             <div className="grid grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
-                  <Calendar className="h-5 w-5 text-red-600" />
+                <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+                  <Calendar className="h-5 w-5 text-[#007C00]" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Data da Transferência</p>
@@ -123,8 +123,8 @@ export default function TransferViewModal({
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                  <Building className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+                  <Building className="h-5 w-5 text-[#007C00]" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Escola Destino</p>
@@ -135,8 +135,8 @@ export default function TransferViewModal({
               </div>
 
               <div className="flex items-start gap-3 col-span-2">
-                <div className="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center shrink-0">
-                  <AlertCircle className="h-5 w-5 text-yellow-600" />
+                <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center shrink-0 border border-green-100">
+                  <AlertCircle className="h-5 w-5 text-[#007C00]" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Motivo da Transferência</p>
@@ -170,8 +170,8 @@ export default function TransferViewModal({
               </h4>
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                    <User className="h-5 w-5 text-gray-600" />
+                  <div className="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
+                    <User className="h-5 w-5 text-[#007C00]" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Nome Completo</p>
@@ -182,8 +182,8 @@ export default function TransferViewModal({
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                    <User className="h-5 w-5 text-blue-600" />
+                  <div className="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
+                    <User className="h-5 w-5 text-[#007C00]" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Sexo</p>
@@ -194,7 +194,7 @@ export default function TransferViewModal({
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                  <div className="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
                     <Calendar className="h-5 w-5 text-[#007C00]" />
                   </div>
                   <div>
@@ -207,8 +207,8 @@ export default function TransferViewModal({
 
                 {fullTransfer.tb_alunos?.telefone && (
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
-                      <FileText className="h-5 w-5 text-purple-600" />
+                    <div className="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
+                      <FileText className="h-5 w-5 text-[#007C00]" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Telefone</p>

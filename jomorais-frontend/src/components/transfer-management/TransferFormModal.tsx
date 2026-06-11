@@ -1,4 +1,4 @@
-import { X, Search } from 'lucide-react'
+import { X, Search, AlertCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ITransfer, ITransferInput } from '../../types/transfer.types'
@@ -357,11 +357,12 @@ export default function TransferFormModal({
               </div>
 
               {/* Informações Importantes */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 className="text-sm font-semibold text-yellow-800 mb-2">
-                  ⚠️ Informações Importantes
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-[#007C00] mb-2 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  Informações Importantes
                 </h4>
-                <ul className="text-sm text-yellow-700 space-y-1 ml-4 list-disc">
+                <ul className="text-sm text-green-800 space-y-1 ml-6 list-disc">
                   <li>A transferência será registrada no sistema</li>
                   <li>O aluno será marcado como transferido</li>
                   <li>Certifique-se de que todos os dados estão corretos</li>

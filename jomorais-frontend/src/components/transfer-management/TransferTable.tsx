@@ -94,12 +94,7 @@ export default function TransferTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Data Transferência
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Motivo
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Responsável
-              </th>
+
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Ações
               </th>
@@ -137,19 +132,7 @@ export default function TransferTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(transfer.dataTransferencia)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getMotivoColor(transfer.codigoMotivo)}`}>
-                    {getMotivoText(transfer.codigoMotivo)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {transfer.tb_utilizadores?.nome || 'N/A'}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {transfer.tb_utilizadores?.user || ''}
-                  </div>
-                </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
                     {/* Imprimir Guia */}
