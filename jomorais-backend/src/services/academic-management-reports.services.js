@@ -208,21 +208,23 @@ export class AcademicReportsService {
       }
     }
 
+    const baseWhere = { AND: [] }
+
     if (curso) {
-      where.AND.push({ tb_matriculas: { codigo_Curso: parseInt(curso) } })
+      baseWhere.AND.push({ tb_matriculas: { codigo_Curso: parseInt(curso) } })
     }
 
     if (turma) {
-      where.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Turma: parseInt(turma) } } } })
+      baseWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Turma: parseInt(turma) } } } })
     } else if (classe) {
-      where.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { tb_turmas: { codigo_Classe: parseInt(classe) } } } } })
+      baseWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { tb_turmas: { codigo_Classe: parseInt(classe) } } } } })
     }
 
     if (anoAcademico) {
-      where.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: parseInt(anoAcademico) } } } })
+      baseWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: parseInt(anoAcademico) } } } })
     }
 
-    const finalWhere = where.AND.length > 0 ? where : {}
+    const statsWhere = baseWhere.AND.length > 0 ? baseWhere : {}
 
     const [
       totalAlunos,
@@ -231,28 +233,28 @@ export class AcademicReportsService {
       alunosDesistentes,
       alunosFinalizados,
     ] = await Promise.all([
-      prisma.tb_alunos.count({ where: finalWhere }),
+      prisma.tb_alunos.count({ where: statsWhere }),
       prisma.tb_alunos.count({
         where: {
-          ...finalWhere,
+          ...statsWhere,
           codigo_Status: 1,
         },
       }),
       prisma.tb_alunos.count({
         where: {
-          ...finalWhere,
+          ...statsWhere,
           codigo_Status: 2,
         },
       }),
       prisma.tb_alunos.count({
         where: {
-          ...finalWhere,
+          ...statsWhere,
           codigo_Status: 3,
         },
       }),
       prisma.tb_alunos.count({
         where: {
-          ...finalWhere,
+          ...statsWhere,
           codigo_Status: 4,
         },
       }),

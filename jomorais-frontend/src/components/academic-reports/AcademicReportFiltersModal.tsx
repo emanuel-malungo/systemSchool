@@ -129,82 +129,6 @@ export default function AcademicReportFiltersModal({
           </select>
         </div>
 
-        {/* Disciplina */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Disciplina
-          </label>
-          <select
-            value={filters.disciplina || ''}
-            onChange={(e) => onFilterChange('disciplina', e.target.value || undefined)}
-            disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
-          >
-            <option value="">Todas as Disciplinas</option>
-            {filterOptions.disciplinas?.map((disciplina) => (
-              <option key={disciplina.codigo} value={disciplina.designacao}>
-                {disciplina.designacao}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Professor */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Professor
-          </label>
-          <select
-            value={filters.professor || ''}
-            onChange={(e) => onFilterChange('professor', e.target.value || undefined)}
-            disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
-          >
-            <option value="">Todos os Professores</option>
-            {filterOptions.professores?.map((professor) => (
-              <option key={professor.codigo} value={professor.nome}>
-                {professor.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Período */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Período
-          </label>
-          <select
-            value={filters.periodo || ''}
-            onChange={(e) => onFilterChange('periodo', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
-          >
-            <option value="">Todos os Períodos</option>
-            {filterOptions.periodos?.map((periodo) => (
-              <option key={periodo.value} value={periodo.value}>
-                {periodo.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Trimestre */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Trimestre
-          </label>
-          <select
-            value={filters.trimestre || 'todos'}
-            onChange={(e) => onFilterChange('trimestre', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
-          >
-            <option value="todos">Todos os Trimestres</option>
-            <option value="1">1º Trimestre</option>
-            <option value="2">2º Trimestre</option>
-            <option value="3">3º Trimestre</option>
-          </select>
-        </div>
-
         {/* Status do Aluno */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -223,48 +147,6 @@ export default function AcademicReportFiltersModal({
           </select>
         </div>
 
-        {/* Tipo de Relatório */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tipo de Relatório
-          </label>
-          <select
-            value={filters.tipoRelatorio || 'todos'}
-            onChange={(e) => onFilterChange('tipoRelatorio', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
-          >
-            <option value="todos">Todos os Tipos</option>
-            <option value="notas">Notas</option>
-            <option value="frequencia">Frequência</option>
-            <option value="aproveitamento">Aproveitamento</option>
-          </select>
-        </div>
-
-        {/* Data Início */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Data Início
-          </label>
-          <input
-            type="date"
-            value={filters.dataInicio || ''}
-            onChange={(e) => onFilterChange('dataInicio', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
-          />
-        </div>
-
-        {/* Data Fim */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Data Fim
-          </label>
-          <input
-            type="date"
-            value={filters.dataFim || ''}
-            onChange={(e) => onFilterChange('dataFim', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
-          />
-        </div>
       </div>
         </div>
 

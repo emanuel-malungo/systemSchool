@@ -23,14 +23,7 @@ export default function AcademicReports() {
     classe: undefined,
     curso: undefined,
     turma: undefined,
-    disciplina: undefined,
-    professor: undefined,
-    periodo: undefined,
-    trimestre: 'todos',
-    statusAluno: 'todos',
-    tipoRelatorio: 'todos',
-    dataInicio: undefined,
-    dataFim: undefined
+    statusAluno: 'todos'
   })
 
   const [showReportModal, setShowReportModal] = useState(false)
@@ -118,14 +111,7 @@ export default function AcademicReports() {
       classe: undefined,
       curso: undefined,
       turma: undefined,
-      disciplina: undefined,
-      professor: undefined,
-      periodo: undefined,
-      trimestre: 'todos',
-      statusAluno: 'todos',
-      tipoRelatorio: 'todos',
-      dataInicio: undefined,
-      dataFim: undefined
+      statusAluno: 'todos'
     })
     setCurrentPage(1)
   }
@@ -185,10 +171,10 @@ export default function AcademicReports() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Relatórios Acadêmicos
+                Gestão de Matrículas e Ocupação
               </h1>
               <p className="text-sm text-gray-500 mt-0.5">
-                Acompanhe o desempenho acadêmico, notas e frequência dos alunos
+                Acompanhe o quantitativo de alunos matriculados, retenção e alocação por turmas
               </p>
             </div>
           </div>
