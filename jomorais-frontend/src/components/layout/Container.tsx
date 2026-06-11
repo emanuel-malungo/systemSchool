@@ -17,7 +17,7 @@ export default function Container({ children }: ContainerProps) {
       
       {/* Conteúdo Principal */}
       <main className="ml-64 pt-16 min-h-screen">
-        <div className="p-6">
+        <div className="p-8">
           {children}
         </div>
       </main>

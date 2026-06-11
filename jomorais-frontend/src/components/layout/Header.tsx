@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Settings } from 'lucide-react'
+import { User, Settings, Search, Bell } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function Header() {
@@ -37,25 +37,45 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 shadow-sm z-40">
-      <div className="h-full px-6 flex items-center justify-end">
+      <div className="h-full px-6 flex items-center justify-between gap-6">
+        {/* Barra de Pesquisa */}
+        <div className="flex-1 max-w-2xl">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Search products, customers, or orders..."
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] transition-all"
+            />
+          </div>
+        </div>
+
         {/* Ações do Header */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Notificações */}
+          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">
+            <Bell size={20} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+          </button>
+          
+          <div className="h-6 w-[1px] bg-gray-200 mx-2"></div>
+
           {/* Menu do Usuário */}
           <div className="relative">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 p-1 hover:bg-gray-50 rounded-full transition-colors border border-transparent hover:border-gray-200"
             >
-              <div className="w-10 h-10 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-full flex items-center justify-center shadow-md">
-                <span className="text-white font-bold text-sm">
+              <div className="w-8 h-8 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-full flex items-center justify-center shadow-xs">
+                <span className="text-white font-bold text-xs">
                   {getUserInitials()}
                 </span>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-semibold text-gray-800">
+              <div className="text-left hidden md:block px-1">
+                <p className="text-sm font-semibold text-gray-700 leading-tight">
                   {getUserName()}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-[10px] text-gray-500 uppercase font-medium">
                   {getUserRole()}
                 </p>
               </div>

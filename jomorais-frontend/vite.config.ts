@@ -7,8 +7,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true, // Permite acesso de outros dispositivos na rede
-    port: 5173,
-    strictPort: true,
+    port: 5174,
+    strictPort: false,
   },
   preview: {
     host: true,

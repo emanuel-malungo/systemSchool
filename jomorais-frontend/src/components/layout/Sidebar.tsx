@@ -275,13 +275,13 @@ export default function Sidebar() {
             onClick={() => toggleMenu(item.title)}
             className={`
               w-full flex items-center justify-between px-4 py-3 rounded-lg
-              text-gray-300 hover:bg-white/10 hover:text-white
+              text-gray-600 hover:bg-gray-100 hover:text-gray-900
               transition-all duration-200
-              ${isOpen ? 'bg-white/10 text-white border-l-4 border-white' : ''}
+              ${isOpen ? 'bg-gray-50 text-gray-900 font-medium' : ''}
             `}
           >
             <div className="flex items-center gap-3">
-              <Icon size={20} className={isOpen ? 'text-white' : ''} />
+              <Icon size={20} className={isOpen ? 'text-gray-900' : ''} />
               <span className="font-medium text-sm">{item.title}</span>
             </div>
             <ChevronDown 
@@ -296,7 +296,7 @@ export default function Sidebar() {
               ${isOpen ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}
             `}
           >
-            <div className="ml-4 pl-4 border-l-2 border-white/10 space-y-1">
+            <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1">
               {item.children?.map(child => renderMenuItem(child, true))}
             </div>
           </div>
@@ -313,8 +313,8 @@ export default function Sidebar() {
           font-medium text-sm
           transition-all duration-200
           ${active 
-            ? 'bg-white text-[#007C00] shadow-lg' 
-            : 'text-gray-300 hover:bg-white/10 hover:text-white'
+            ? 'bg-green-50 text-green-700 font-semibold' 
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
           }
           ${isChild ? 'py-2 text-xs' : ''}
         `}
@@ -326,16 +326,16 @@ export default function Sidebar() {
   }
 
   return (
-    <aside ref={sidebarRef} className="fixed left-0 top-0 h-screen w-64 bg-linear-to-b from-[#007C00] to-[#005a00] shadow-2xl z-50 flex flex-col">
+    <aside ref={sidebarRef} className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
       {/* Logo/Branding - Fixo no topo */}
-      <div className="p-6 border-b border-white/10 h-16 flex items-center shrink-0">
+      <div className="p-6 h-16 flex items-center shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
             <img src="/icon.png" alt="Logo Jomorais" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h2 className="text-white font-bold text-sm">Jomorais</h2>
-            <p className="text-green-200 text-xs">Sistema Escolar</p>
+            <h2 className="text-gray-900 font-bold text-lg leading-tight">Jomorais</h2>
+            <p className="text-gray-500 text-[10px] uppercase font-semibold">Sistema Escolar</p>
           </div>
         </div>
       </div>
@@ -346,20 +346,20 @@ export default function Sidebar() {
       </nav>
 
       {/* Botão de Logout + Footer - Fixo no rodapé */}
-      <div className="shrink-0 bg-[#005a00]">
-        <div className="p-4 border-t border-white/10">
+      <div className="shrink-0 bg-white">
+        <div className="p-4 border-t border-gray-100">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg
-                     bg-white/10 hover:bg-white/20 text-white font-medium text-sm
-                     transition-all duration-200 hover:shadow-lg"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg
+                     bg-gray-50 hover:bg-red-50 text-gray-700 hover:text-red-600 font-medium text-sm
+                     transition-all duration-200"
           >
-            <LogOut size={20} />
+            <LogOut size={18} />
             <span>Sair do Sistema</span>
           </button>
         </div>
         <div className="px-4 pb-4">
-          <p className="text-green-200 text-xs text-center">
+          <p className="text-gray-400 text-xs text-center">
             © 2025 Sistema Escolar
           </p>
         </div>

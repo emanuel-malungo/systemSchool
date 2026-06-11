@@ -20,6 +20,7 @@ import {
   BarChart3,
   PieChart,
   Activity as ActivityIcon,
+  Rocket
 } from 'lucide-react'
 
 // Componente de Loading Skeleton
@@ -96,39 +97,21 @@ export default function Dashboard() {
 
   return (
     <Container>
-      {/* Header */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 mb-8">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-3 bg-linear-to-br from-[#182F59] to-[#1a3260] rounded-xl shadow-md">
-                <BarChart3 className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Dashboard Administrativo
-                </h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm text-green-600 font-medium">Sistema ativo</span>
-                </div>
-              </div>
-            </div>
-            <p className="text-gray-600 text-base max-w-2xl">
-              Visão geral completa do sistema educacional com métricas de desempenho em tempo real
-            </p>
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className={`flex items-center gap-2 px-5 py-3 bg-white text-[#182F59] rounded-xl hover:bg-gray-50 transition-all duration-200 border-2 border-[#182F59] shadow-md hover:shadow-lg ${
-              isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            <RefreshCw size={20} className={isRefreshing ? 'animate-spin' : ''} />
-            <span className="font-medium">{isRefreshing ? 'Atualizando...' : 'Atualizar'}</span>
-          </button>
+      {/* Header removido em favor do novo banner superior, mas mantido o botão de refresh */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         </div>
+        <button
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className={`flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm ${
+            isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+          <span className="text-sm font-medium">{isRefreshing ? 'Atualizando...' : 'Atualizar'}</span>
+        </button>
       </div>
 
       {/* Error State */}
@@ -140,165 +123,164 @@ export default function Dashboard() {
       {/* Dashboard Content */}
       {!isLoading && !isError && data && (
         <div className="space-y-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard
-              title="Total de Alunos"
-              value={stats?.totalStudents || 0}
-              valueType="number"
-              icon={Users}
-              trend={stats?.studentGrowth || '0%'}
-              trendDirection={
-                stats?.studentGrowth?.startsWith('+') ? 'up' : 
-                stats?.studentGrowth?.startsWith('-') ? 'down' : 'neutral'
-              }
-              subtitle="vs. mês anterior"
-              iconBgColor="bg-linear-to-br from-blue-500 to-blue-600"
-              iconColor="text-white"
-              bgGradient="from-blue-50 via-white to-blue-50/50"
-            />
-
-            <StatCard
-              title="Alunos Ativos"
-              value={stats?.activeStudents || 0}
-              valueType="number"
-              icon={GraduationCap}
-              trend={`${stats?.activityRate || 0}%`}
-              trendDirection="up"
-              subtitle="taxa de atividade"
-              iconBgColor="bg-linear-to-br from-green-500 to-green-600"
-              iconColor="text-white"
-              bgGradient="from-green-50 via-white to-green-50/50"
-            />
-
-            <StatCard
-              title="Total de Professores"
-              value={stats?.totalTeachers || 0}
-              valueType="number"
-              icon={Users}
-              trend={stats?.teacherGrowth || '0%'}
-              trendDirection={
-                stats?.teacherGrowth?.startsWith('+') ? 'up' : 
-                stats?.teacherGrowth?.startsWith('-') ? 'down' : 'neutral'
-              }
-              subtitle="vs. mês anterior"
-              iconBgColor="bg-linear-to-br from-purple-500 to-purple-600"
-              iconColor="text-white"
-              bgGradient="from-purple-50 via-white to-purple-50/50"
-            />
-
-            <StatCard
-              title="Receita Total"
-              value={stats?.totalRevenue || 0}
-              valueType="currency"
-              currency="AOA"
-              icon={DollarSign}
-              trend={stats?.revenueGrowth || '0%'}
-              trendDirection={
-                stats?.revenueGrowth?.startsWith('+') ? 'up' : 
-                stats?.revenueGrowth?.startsWith('-') ? 'down' : 'neutral'
-              }
-              subtitle="vs. mês anterior"
-              iconBgColor="bg-linear-to-br from-orange-500 to-orange-600"
-              iconColor="text-white"
-              bgGradient="from-orange-50 via-white to-orange-50/50"
-            />
+          {/* Banner Topo */}
+          <div className="bg-[#1a4a2b] rounded-xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between shadow-md relative overflow-hidden">
+            <div className="relative z-10 flex items-center gap-4 mb-4 md:mb-0">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                <Rocket className="text-white" size={24} />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-lg md:text-xl">Potencialize sua gestão com Ferramentas Pro</h3>
+                <p className="text-green-100 text-sm">Tenha acesso a relatórios avançados e análises preditivas.</p>
+              </div>
+            </div>
+            <button className="relative z-10 bg-white text-[#1a4a2b] px-6 py-2.5 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-sm whitespace-nowrap">
+              Fazer Upgrade
+            </button>
+            {/* Elemento Decorativo */}
+            <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
           </div>
 
-          {/* Charts Row 1 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ChartCard
-              title="Evolução de Matrículas"
-              subtitle="Alunos e professores por mês"
-              icon={TrendingUp}
-            >
-              {enrollmentEvolution && enrollmentEvolution.length > 0 ? (
-                <EnrollmentChart data={enrollmentEvolution} />
-              ) : (
-                <div className="h-[300px] flex items-center justify-center text-gray-500">
-                  Sem dados disponíveis
-                </div>
-              )}
-            </ChartCard>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Coluna Esquerda - Gráfico Principal e Atividades */}
+            <div className="xl:col-span-2 space-y-6">
+              <ChartCard
+                title="Evolução de Matrículas"
+                subtitle="Alunos e professores por mês"
+                icon={TrendingUp}
+              >
+                {enrollmentEvolution && enrollmentEvolution.length > 0 ? (
+                  <EnrollmentChart data={enrollmentEvolution} />
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-gray-500">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </ChartCard>
 
-            <ChartCard
-              title="Receita Mensal"
-              subtitle="Propinas, serviços e total"
-              icon={DollarSign}
-            >
-              {monthlyRevenue && monthlyRevenue.length > 0 ? (
-                <RevenueChart data={monthlyRevenue} />
-              ) : (
-                <div className="h-[300px] flex items-center justify-center text-gray-500">
-                  Sem dados disponíveis
-                </div>
-              )}
-            </ChartCard>
-          </div>
+              <ChartCard
+                title="Atividades Recentes"
+                subtitle="Últimas ações no sistema"
+                icon={ActivityIcon}
+              >
+                {recentActivity && recentActivity.length > 0 ? (
+                  <ActivityFeed activities={recentActivity} />
+                ) : (
+                  <div className="py-8 text-center text-gray-500">
+                    Nenhuma atividade recente
+                  </div>
+                )}
+              </ChartCard>
+              
+              <ChartCard
+                title="Receita Mensal"
+                subtitle="Propinas, serviços e total"
+                icon={DollarSign}
+              >
+                {monthlyRevenue && monthlyRevenue.length > 0 ? (
+                  <RevenueChart data={monthlyRevenue} />
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-gray-500">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </ChartCard>
+            </div>
 
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ChartCard
-              title="Distribuição de Notas"
-              subtitle="Performance acadêmica dos alunos"
-              icon={PieChart}
-            >
-              {gradeDistribution && gradeDistribution.length > 0 ? (
-                <GradesChart data={gradeDistribution} />
-              ) : (
-                <div className="h-[300px] flex items-center justify-center text-gray-500">
-                  Sem dados disponíveis
-                </div>
-              )}
-            </ChartCard>
+            {/* Coluna Direita - Stats Cards e Gráficos Menores */}
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4">
+                <StatCard
+                  title="Total de Alunos"
+                  value={stats?.totalStudents || 0}
+                  valueType="number"
+                  icon={Users}
+                  trend={stats?.studentGrowth || '0%'}
+                  trendDirection={
+                    stats?.studentGrowth?.startsWith('+') ? 'up' : 
+                    stats?.studentGrowth?.startsWith('-') ? 'down' : 'neutral'
+                  }
+                  subtitle="vs. mês anterior"
+                  iconBgColor="bg-green-50"
+                  iconColor="text-green-600"
+                  bgGradient="bg-white"
+                />
 
-            <ChartCard
-              title="Presença Semanal"
-              subtitle="Taxa de presença dos alunos"
-              icon={BarChart3}
-            >
-              {weeklyAttendance && weeklyAttendance.length > 0 ? (
-                <AttendanceChart data={weeklyAttendance} />
-              ) : (
-                <div className="h-[300px] flex items-center justify-center text-gray-500">
-                  Sem dados disponíveis
-                </div>
-              )}
-            </ChartCard>
-          </div>
+                <StatCard
+                  title="Alunos Ativos"
+                  value={stats?.activeStudents || 0}
+                  valueType="number"
+                  icon={GraduationCap}
+                  trend={`${stats?.activityRate || 0}%`}
+                  trendDirection="up"
+                  subtitle="taxa de atividade"
+                  iconBgColor="bg-green-50"
+                  iconColor="text-green-600"
+                  bgGradient="bg-white"
+                />
 
-          {/* Activity & System Status Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            {/* Recent Activity - 2 columns */}
-            <ChartCard
-              title="Atividades Recentes"
-              subtitle="Últimas ações no sistema"
-              icon={ActivityIcon}
-              className="lg:col-span-2"
-            >
-              {recentActivity && recentActivity.length > 0 ? (
-                <ActivityFeed activities={recentActivity} />
-              ) : (
-                <div className="py-8 text-center text-gray-500">
-                  Nenhuma atividade recente
-                </div>
-              )}
-            </ChartCard>
+                <StatCard
+                  title="Total de Professores"
+                  value={stats?.totalTeachers || 0}
+                  valueType="number"
+                  icon={Users}
+                  trend={stats?.teacherGrowth || '0%'}
+                  trendDirection={
+                    stats?.teacherGrowth?.startsWith('+') ? 'up' : 
+                    stats?.teacherGrowth?.startsWith('-') ? 'down' : 'neutral'
+                  }
+                  subtitle="vs. mês anterior"
+                  iconBgColor="bg-green-50"
+                  iconColor="text-green-600"
+                  bgGradient="bg-white"
+                />
 
-            {/* System Status - 1 column */}
-            {/* <ChartCard
-              title="Status do Sistema"
-              subtitle="Monitoramento em tempo real"
-              icon={Server}
-            >
-              {systemStatus ? (
-                <SystemStatusCard status={systemStatus} />
-              ) : (
-                <div className="py-8 text-center text-gray-500">
-                  Status não disponível
-                </div>
-              )}
-            </ChartCard> */}
+                <StatCard
+                  title="Receita Total"
+                  value={stats?.totalRevenue || 0}
+                  valueType="currency"
+                  currency="AOA"
+                  icon={DollarSign}
+                  trend={stats?.revenueGrowth || '0%'}
+                  trendDirection={
+                    stats?.revenueGrowth?.startsWith('+') ? 'up' : 
+                    stats?.revenueGrowth?.startsWith('-') ? 'down' : 'neutral'
+                  }
+                  subtitle="vs. mês anterior"
+                  iconBgColor="bg-green-50"
+                  iconColor="text-green-600"
+                  bgGradient="bg-white"
+                />
+              </div>
+
+              <ChartCard
+                title="Distribuição de Notas"
+                subtitle="Performance acadêmica"
+                icon={PieChart}
+              >
+                {gradeDistribution && gradeDistribution.length > 0 ? (
+                  <GradesChart data={gradeDistribution} />
+                ) : (
+                  <div className="h-[250px] flex items-center justify-center text-gray-500">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </ChartCard>
+
+              <ChartCard
+                title="Presença Semanal"
+                subtitle="Taxa de presença"
+                icon={BarChart3}
+              >
+                {weeklyAttendance && weeklyAttendance.length > 0 ? (
+                  <AttendanceChart data={weeklyAttendance} />
+                ) : (
+                  <div className="h-[250px] flex items-center justify-center text-gray-500">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </ChartCard>
+            </div>
           </div>
         </div>
       )}
