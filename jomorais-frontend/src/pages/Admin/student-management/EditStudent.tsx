@@ -13,7 +13,9 @@ import {
   FileText,
   Users,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  MapPin,
+  Info
 } from 'lucide-react'
 import { useStudent, useUpdateStudent } from '../../../hooks/useStudent'
 import type { Student } from '../../../types/student.types'
@@ -60,6 +62,26 @@ const editStudentSchema = yup.object().shape({
 })
 
 type EditStudentFormData = yup.InferType<typeof editStudentSchema>
+
+// Estilo padrão dos selects (consistente com Input)
+const selectClass = (disabled?: boolean, hasError?: boolean) => `
+  w-full px-4 py-2.5 rounded-lg text-sm
+  bg-gray-50 hover:bg-gray-100/75
+  border border-transparent
+  text-gray-700
+  focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100
+  transition-all duration-200
+  appearance-none cursor-pointer
+  ${disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}
+  ${hasError ? 'ring-2 ring-red-400/50 bg-red-50/30' : ''}
+`.replace(/\s+/g, ' ').trim()
+
+// Tabs data
+const tabs = [
+  { id: 'personal' as const, label: 'Dados Pessoais', icon: User },
+  { id: 'document' as const, label: 'Documentação', icon: FileText },
+  { id: 'guardian' as const, label: 'Encarregado', icon: Users },
+]
 
 export default function EditStudent() {
   const navigate = useNavigate()
@@ -269,8 +291,8 @@ export default function EditStudent() {
       <Container>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Carregando dados do aluno...</p>
+            <Loader2 className="h-10 w-10 animate-spin text-[#007C00] mx-auto mb-4" />
+            <p className="text-sm text-gray-500">Carregando dados do aluno...</p>
           </div>
         </div>
       </Container>
@@ -282,10 +304,12 @@ export default function EditStudent() {
       <Container>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
-            <p className="text-gray-600 mb-4">Não foi possível carregar os dados do aluno.</p>
-            <Button onClick={() => navigate('/admin/student-management')}>Voltar para lista</Button>
+            <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="h-7 w-7 text-red-500" />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">Erro ao carregar dados</h2>
+            <p className="text-sm text-gray-500 mb-5">Não foi possível carregar os dados do aluno.</p>
+            <Button size="md" onClick={() => navigate('/admin/student-management')}>Voltar para lista</Button>
           </div>
         </div>
       </Container>
@@ -295,263 +319,285 @@ export default function EditStudent() {
   return (
     <Container>
       <div className="space-y-6">
-        <div className="flex items-center justify-between bg-white shadow-sm p-6 rounded-lg">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-lg" type="button">
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            type="button"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <UserCog className="h-5 w-5 text-[#007C00]" />
+            </div>
             <div>
-              <h1 className="text-2xl lg:text-3xl font-bold flex items-center gap-2">
-                <UserCog className="h-8 w-8 text-blue-600" />
-                Editar Aluno
-              </h1>
-              <p className="text-gray-600">Atualize os dados do aluno e do encarregado</p>
+              <h1 className="text-xl font-bold text-gray-900">Editar Aluno</h1>
+              <p className="text-sm text-gray-500">Atualize os dados do aluno e do encarregado</p>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleFormSubmit} className="space-y-6">
-          <div className="border-b border-gray-200">
-            <div className="flex space-x-1">
-              <button type="button" onClick={() => setActiveTab('personal')} className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'personal' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-800'}`}>
-                <User className="h-4 w-4" />Dados Pessoais
-              </button>
-              <button type="button" onClick={() => setActiveTab('document')} className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'document' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-800'}`}>
-                <FileText className="h-4 w-4" />Documentação
-              </button>
-              <button type="button" onClick={() => setActiveTab('guardian')} className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'guardian' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-800'}`}>
-                <Users className="h-4 w-4" />Encarregado
-              </button>
+          {/* Tabs */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="flex border-b border-gray-100">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+                      flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-all duration-200 relative
+                      ${isActive
+                        ? 'text-[#007C00]'
+                        : 'text-gray-500 hover:text-gray-700'
+                      }
+                    `}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#007C00] rounded-t-full" />
+                    )}
+                  </button>
+                )
+              })}
             </div>
-          </div>
 
-          {activeTab === 'personal' && (
-            <div className="bg-white rounded-lg shadow p-6 space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-1">Informações Pessoais do Aluno</h2>
-                <p className="text-sm text-gray-600">Dados básicos e de contato do estudante</p>
-              </div>
+            {/* Tab Content: Dados Pessoais */}
+            {activeTab === 'personal' && (
+              <div className="p-6 space-y-6">
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 mb-0.5">Informações Pessoais do Aluno</h2>
+                  <p className="text-sm text-gray-500">Dados básicos e de contato do estudante</p>
+                </div>
 
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nome Completo <span className="text-red-500">*</span></label>
-                  <Controller name="nome" control={control} render={({ field }) => <Input {...field} placeholder="Digite o nome completo do aluno" error={errors.nome?.message} />} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nome do Pai</label>
-                  <Controller name="pai" control={control} render={({ field }) => <Input {...field} placeholder="Nome do pai" />} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nome da Mãe</label>
-                  <Controller name="mae" control={control} render={({ field }) => <Input {...field} placeholder="Nome da mãe" />} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Sexo <span className="text-red-500">*</span></label>
-                  <Controller name="sexo" control={control} render={({ field }) => (
-                    <select {...field} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                      <option value="">Selecione o sexo</option>
-                      <option value="M">Masculino</option>
-                      <option value="F">Feminino</option>
-                    </select>
-                  )} />
-                  {errors.sexo && <p className="text-sm text-red-500 mt-1">{errors.sexo.message}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Data de Nascimento</label>
-                  <Controller name="dataNascimento" control={control} render={({ field }) => (
-                    <input type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                  )} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
-                  <Controller name="email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="exemplo@email.com" value={field.value || ''} />} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Telefone</label>
-                  <Controller name="telefone" control={control} render={({ field }) => <Input {...field} placeholder="923456789" />} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nacionalidade <span className="text-red-500">*</span></label>
-                  <Controller name="codigo_Nacionalidade" control={control} render={({ field }) => (
-                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingGeographic} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                      <option value="">{loadingGeographic ? 'Carregando...' : 'Selecione a nacionalidade'}</option>
-                      {nacionalidades.map((n) => <option key={n.codigo} value={n.codigo}>{n.designacao}</option>)}
-                    </select>
-                  )} />
-                  {errors.codigo_Nacionalidade && <p className="text-sm text-red-500 mt-1">{errors.codigo_Nacionalidade.message}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Estado Civil <span className="text-red-500">*</span></label>
-                  <Controller name="codigo_Estado_Civil" control={control} render={({ field }) => (
-                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingGeographic} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                      <option value="">{loadingGeographic ? 'Carregando...' : 'Selecione o estado civil'}</option>
-                      {estadoCivil.map((e) => <option key={e.codigo} value={e.codigo}>{e.designacao}</option>)}
-                    </select>
-                  )} />
-                  {errors.codigo_Estado_Civil && <p className="text-sm text-red-500 mt-1">{errors.codigo_Estado_Civil.message}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-base font-semibold text-gray-900">Endereço</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Província</label>
-                    <Controller name="provincia" control={control} render={({ field }) => (
-                      <select {...field} disabled={isLoadingProvincias} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                        <option value="">{isLoadingProvincias ? 'Carregando...' : 'Selecione a província'}</option>
-                        {provincias.map((p) => <option key={p.codigo} value={p.codigo}>{p.designacao}</option>)}
-                      </select>
-                    )} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Município</label>
-                    <Controller name="municipio" control={control} render={({ field }) => (
-                      <select {...field} disabled={!watchProvincia || isLoadingMunicipios} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                        <option value="">{isLoadingMunicipios ? 'Carregando...' : !watchProvincia ? 'Selecione primeiro a província' : 'Selecione o município'}</option>
-                        {municipios.map((m) => <option key={m.codigo} value={m.codigo}>{m.designacao}</option>)}
-                      </select>
-                    )} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Comuna <span className="text-red-500">*</span></label>
-                    <Controller name="codigo_Comuna" control={control} render={({ field }) => (
-                      <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={!watchMunicipio || isLoadingComunas} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                        <option value="">{isLoadingComunas ? 'Carregando...' : !watchMunicipio ? 'Selecione primeiro o município' : 'Selecione a comuna'}</option>
-                        {comunas.map((c) => <option key={c.codigo} value={c.codigo}>{c.designacao}</option>)}
-                      </select>
-                    )} />
-                    {errors.codigo_Comuna && <p className="text-sm text-red-500 mt-1">{errors.codigo_Comuna.message}</p>}
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome Completo <span className="text-red-500">*</span></label>
+                    <Controller name="nome" control={control} render={({ field }) => <Input {...field} placeholder="Digite o nome completo do aluno" error={errors.nome?.message} />} />
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Morada Completa</label>
-                <Controller name="morada" control={control} render={({ field }) => <Input {...field} placeholder="Rua, número, bairro..." />} />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'document' && (
-            <div className="bg-white rounded-lg shadow p-6 space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-1">Documentação</h2>
-                <p className="text-sm text-gray-600">Informações sobre documentos de identificação</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Tipo de Documento <span className="text-red-500">*</span></label>
-                  <Controller name="codigoTipoDocumento" control={control} render={({ field }) => (
-                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingDocTypes} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                      <option value="">{loadingDocTypes ? 'Carregando...' : 'Selecione o tipo'}</option>
-                      {documentTypes.map((d) => <option key={d.codigo} value={d.codigo}>{d.designacao}</option>)}
-                    </select>
-                  )} />
-                  {errors.codigoTipoDocumento && <p className="text-sm text-red-500 mt-1">{errors.codigoTipoDocumento.message}</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome do Pai</label>
+                    <Controller name="pai" control={control} render={({ field }) => <Input {...field} placeholder="Nome do pai" />} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome da Mãe</label>
+                    <Controller name="mae" control={control} render={({ field }) => <Input {...field} placeholder="Nome da mãe" />} />
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Sexo <span className="text-red-500">*</span></label>
+                    <Controller name="sexo" control={control} render={({ field }) => (
+                      <select {...field} className={selectClass(false, !!errors.sexo)}>
+                        <option value="">Selecione o sexo</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                      </select>
+                    )} />
+                    {errors.sexo && <p className="text-red-500 text-xs mt-1">{errors.sexo.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Data de Nascimento</label>
+                    <Controller name="dataNascimento" control={control} render={({ field }) => (
+                      <input type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className={selectClass()} />
+                    )} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                    <Controller name="email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="exemplo@email.com" value={field.value || ''} />} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Telefone</label>
+                    <Controller name="telefone" control={control} render={({ field }) => <Input {...field} placeholder="923456789" />} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nacionalidade <span className="text-red-500">*</span></label>
+                    <Controller name="codigo_Nacionalidade" control={control} render={({ field }) => (
+                      <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingGeographic} className={selectClass(loadingGeographic, !!errors.codigo_Nacionalidade)}>
+                        <option value="">{loadingGeographic ? 'Carregando...' : 'Selecione a nacionalidade'}</option>
+                        {nacionalidades.map((n) => <option key={n.codigo} value={n.codigo}>{n.designacao}</option>)}
+                      </select>
+                    )} />
+                    {errors.codigo_Nacionalidade && <p className="text-red-500 text-xs mt-1">{errors.codigo_Nacionalidade.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Estado Civil <span className="text-red-500">*</span></label>
+                    <Controller name="codigo_Estado_Civil" control={control} render={({ field }) => (
+                      <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingGeographic} className={selectClass(loadingGeographic, !!errors.codigo_Estado_Civil)}>
+                        <option value="">{loadingGeographic ? 'Carregando...' : 'Selecione o estado civil'}</option>
+                        {estadoCivil.map((e) => <option key={e.codigo} value={e.codigo}>{e.designacao}</option>)}
+                      </select>
+                    )} />
+                    {errors.codigo_Estado_Civil && <p className="text-red-500 text-xs mt-1">{errors.codigo_Estado_Civil.message}</p>}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <h3 className="text-sm font-semibold text-gray-900">Endereço</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Província</label>
+                      <Controller name="provincia" control={control} render={({ field }) => (
+                        <select {...field} disabled={isLoadingProvincias} className={selectClass(isLoadingProvincias)}>
+                          <option value="">{isLoadingProvincias ? 'Carregando...' : 'Selecione a província'}</option>
+                          {provincias.map((p) => <option key={p.codigo} value={p.codigo}>{p.designacao}</option>)}
+                        </select>
+                      )} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Município</label>
+                      <Controller name="municipio" control={control} render={({ field }) => (
+                        <select {...field} disabled={!watchProvincia || isLoadingMunicipios} className={selectClass(!watchProvincia || isLoadingMunicipios)}>
+                          <option value="">{isLoadingMunicipios ? 'Carregando...' : !watchProvincia ? 'Selecione primeiro a província' : 'Selecione o município'}</option>
+                          {municipios.map((m) => <option key={m.codigo} value={m.codigo}>{m.designacao}</option>)}
+                        </select>
+                      )} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Comuna <span className="text-red-500">*</span></label>
+                      <Controller name="codigo_Comuna" control={control} render={({ field }) => (
+                        <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={!watchMunicipio || isLoadingComunas} className={selectClass(!watchMunicipio || isLoadingComunas, !!errors.codigo_Comuna)}>
+                          <option value="">{isLoadingComunas ? 'Carregando...' : !watchMunicipio ? 'Selecione primeiro o município' : 'Selecione a comuna'}</option>
+                          {comunas.map((c) => <option key={c.codigo} value={c.codigo}>{c.designacao}</option>)}
+                        </select>
+                      )} />
+                      {errors.codigo_Comuna && <p className="text-red-500 text-xs mt-1">{errors.codigo_Comuna.message}</p>}
+                    </div>
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-medium mb-2">Número do Documento <span className="text-red-500">*</span></label>
-                  <Controller name="n_documento_identificacao" control={control} render={({ field }) => <Input {...field} placeholder="Ex: 007537847LA041" error={errors.n_documento_identificacao?.message} />} />
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Morada Completa</label>
+                  <Controller name="morada" control={control} render={({ field }) => <Input {...field} placeholder="Rua, número, bairro..." />} />
                 </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                {/* <div>
-                  <label className="block text-sm font-medium mb-2">Saldo Atual</label>
-                  <Controller name="saldo" control={control} render={({ field }) => <Input {...field} type="number" step="0.01" min="0" placeholder="0.00" onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} />} />
-                  <p className="text-xs text-gray-500 mt-1">Saldo atual do aluno</p>
-                </div> */}
+            {/* Tab Content: Documentação */}
+            {activeTab === 'document' && (
+              <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Status do Aluno</label>
+                  <h2 className="text-base font-semibold text-gray-900 mb-0.5">Documentação</h2>
+                  <p className="text-sm text-gray-500">Informações sobre documentos de identificação</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Documento <span className="text-red-500">*</span></label>
+                    <Controller name="codigoTipoDocumento" control={control} render={({ field }) => (
+                      <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingDocTypes} className={selectClass(loadingDocTypes, !!errors.codigoTipoDocumento)}>
+                        <option value="">{loadingDocTypes ? 'Carregando...' : 'Selecione o tipo'}</option>
+                        {documentTypes.map((d) => <option key={d.codigo} value={d.codigo}>{d.designacao}</option>)}
+                      </select>
+                    )} />
+                    {errors.codigoTipoDocumento && <p className="text-red-500 text-xs mt-1">{errors.codigoTipoDocumento.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Número do Documento <span className="text-red-500">*</span></label>
+                    <Controller name="n_documento_identificacao" control={control} render={({ field }) => <Input {...field} placeholder="Ex: 007537847LA041" error={errors.n_documento_identificacao?.message} />} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Status do Aluno</label>
                   <Controller name="codigo_Status" control={control} render={({ field }) => (
-                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} className={selectClass()}>
                       <option value="">Selecione o status</option>
                       {mockStatus.map((s) => <option key={s.codigo} value={s.codigo}>{s.designacao}</option>)}
                     </select>
                   )} />
                 </div>
-              </div>
 
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-900"><strong>Importante:</strong> O documento de identificação será usado para validação e histórico do aluno.</p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'guardian' && (
-            <div className="bg-white rounded-lg shadow p-6 space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-1">Dados do Encarregado</h2>
-                <p className="text-sm text-gray-600">Informações do responsável pelo aluno</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nome Completo <span className="text-red-500">*</span></label>
-                  <Controller name="encarregado.nome" control={control} render={({ field }) => <Input {...field} placeholder="Nome completo" error={errors.encarregado?.nome?.message} />} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Telefone <span className="text-red-500">*</span></label>
-                  <Controller name="encarregado.telefone" control={control} render={({ field }) => <Input {...field} placeholder="923456789" error={errors.encarregado?.telefone?.message} />} />
+                <div className="flex items-start gap-3 p-4 bg-green-50/60 rounded-lg">
+                  <Info className="h-4 w-4 text-[#007C00] mt-0.5 shrink-0" />
+                  <p className="text-sm text-gray-700"><span className="font-medium text-gray-900">Importante:</span> O documento de identificação será usado para validação e histórico do aluno.</p>
                 </div>
               </div>
+            )}
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
-                <Controller name="encarregado.email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="email@exemplo.com" value={field.value || ''} />} />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Tab Content: Encarregado */}
+            {activeTab === 'guardian' && (
+              <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Profissão <span className="text-red-500">*</span></label>
-                  <Controller name="encarregado.codigo_Profissao" control={control} render={({ field }) => (
-                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingProfessions} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
-                      <option value="">{loadingProfessions ? 'Carregando...' : 'Selecione a profissão'}</option>
-                      {professions.map((p) => <option key={p.codigo} value={p.codigo}>{p.designacao}</option>)}
+                  <h2 className="text-base font-semibold text-gray-900 mb-0.5">Dados do Encarregado</h2>
+                  <p className="text-sm text-gray-500">Informações do responsável pelo aluno</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome Completo <span className="text-red-500">*</span></label>
+                    <Controller name="encarregado.nome" control={control} render={({ field }) => <Input {...field} placeholder="Nome completo" error={errors.encarregado?.nome?.message} />} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Telefone <span className="text-red-500">*</span></label>
+                    <Controller name="encarregado.telefone" control={control} render={({ field }) => <Input {...field} placeholder="923456789" error={errors.encarregado?.telefone?.message} />} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                  <Controller name="encarregado.email" control={control} render={({ field }) => <Input {...field} type="email" placeholder="email@exemplo.com" value={field.value || ''} />} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Profissão <span className="text-red-500">*</span></label>
+                    <Controller name="encarregado.codigo_Profissao" control={control} render={({ field }) => (
+                      <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={loadingProfessions} className={selectClass(loadingProfessions, !!errors.encarregado?.codigo_Profissao)}>
+                        <option value="">{loadingProfessions ? 'Carregando...' : 'Selecione a profissão'}</option>
+                        {professions.map((p) => <option key={p.codigo} value={p.codigo}>{p.designacao}</option>)}
+                      </select>
+                    )} />
+                    {errors.encarregado?.codigo_Profissao && <p className="text-red-500 text-xs mt-1">{errors.encarregado.codigo_Profissao.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Local de Trabalho <span className="text-red-500">*</span></label>
+                    <Controller name="encarregado.local_Trabalho" control={control} render={({ field }) => <Input {...field} placeholder="Ex: Hospital Central" error={errors.encarregado?.local_Trabalho?.message} />} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+                  <Controller name="encarregado.status" control={control} render={({ field }) => (
+                    <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} className={selectClass()}>
+                      <option value="">Selecione o status</option>
+                      {mockStatus.map((s) => <option key={s.codigo} value={s.codigo}>{s.designacao}</option>)}
                     </select>
                   )} />
-                  {errors.encarregado?.codigo_Profissao && <p className="text-sm text-red-500 mt-1">{errors.encarregado.codigo_Profissao.message}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Local de Trabalho <span className="text-red-500">*</span></label>
-                  <Controller name="encarregado.local_Trabalho" control={control} render={({ field }) => <Input {...field} placeholder="Ex: Hospital Central" error={errors.encarregado?.local_Trabalho?.message} />} />
+                  <p className="text-xs text-gray-400 mt-1.5">Status do encarregado (padrão: NORMAL)</p>
                 </div>
               </div>
+            )}
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Status</label>
-                <Controller name="encarregado.status" control={control} render={({ field }) => (
-                  <select {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Selecione o status</option>
-                    {mockStatus.map((s) => <option key={s.codigo} value={s.codigo}>{s.designacao}</option>)}
-                  </select>
-                )} />
-                <p className="text-xs text-gray-500 mt-1">Status do encarregado (padrão: NORMAL)</p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="secondary" onClick={() => navigate(-1)} disabled={isSubmitting}>Cancelar</Button>
-            <Button type="submit" disabled={isSubmitting || updateStudent.isPending}>
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="secondary" size="md" onClick={() => navigate(-1)} disabled={isSubmitting}>Cancelar</Button>
+            <Button type="submit" size="md" disabled={isSubmitting || updateStudent.isPending}>
               {isSubmitting || updateStudent.isPending ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Salvando...</>
+                <><Loader2 className="mr-1.5 h-4 w-4 animate-spin" />Salvando...</>
               ) : (
-                <><Save className="mr-2 h-4 w-4" />Salvar Alterações</>
+                <><Save className="mr-1.5 h-4 w-4" />Salvar Alterações</>
               )}
             </Button>
           </div>
