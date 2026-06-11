@@ -1,5 +1,5 @@
-import { AuthProvider } from "./contexts/AuthContext"
 import IndexRoutes from "./routes/index.routes.tsx"
+import { AuthProvider } from "./contexts/AuthContext"
 import { TokenExpirationMonitor } from "./components/common/TokenExpirationMonitor"
 
 export default function App() {
