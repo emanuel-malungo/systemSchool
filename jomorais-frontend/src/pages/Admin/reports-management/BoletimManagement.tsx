@@ -66,45 +66,29 @@ export default function BoletimManagement() {
     <Container>
       <div className="space-y-6">
         {/* ── Header ── */}
-        <div
-          className="rounded-2xl shadow-lg overflow-hidden relative"
-          style={{ background: 'linear-gradient(135deg, #1a3a2a 0%, #0d5c35 50%, #1e7a4a 100%)' }}
-        >
-          <div className="absolute inset-0 opacity-10">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute rounded-full border border-white"
-                style={{
-                  width: `${80 + i * 40}px`,
-                  height: `${80 + i * 40}px`,
-                  top: `${-20 + i * 5}px`,
-                  right: `${-10 + i * 15}px`,
-                }}
-              />
-            ))}
-          </div>
-          <div className="relative z-10 p-8 flex items-center justify-between">
-            <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                <BookOpen className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">Boletim de Notas</h1>
-                <p className="text-green-200 mt-1">
-                  Gere e imprima os boletins individuais por turma e trimestre
-                </p>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <BookOpen className="h-6 w-6 text-[#007C00]" />
             </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Boletim de Notas
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Gere e imprima os boletins individuais por turma e trimestre
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
             {previewData && (
               <button
                 id="btn-imprimir-boletins"
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
               >
-                <Printer className="h-5 w-5" />
+                <Printer className="h-4 w-4" />
                 Imprimir PDF
               </button>
             )}
@@ -114,7 +98,7 @@ export default function BoletimManagement() {
         {/* ── Filtros ── */}
         <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
           <h2 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-green-600" />
+            <FileText className="h-5 w-5 text-[#007C00]" />
             Selecionar Turma e Período
           </h2>
 
@@ -129,7 +113,7 @@ export default function BoletimManagement() {
                   id="select-ano-letivo"
                   value={selectedAnoLetivo}
                   onChange={e => { setSelectedAnoLetivo(e.target.value); setSelectedTurma(''); }}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 transition"
+                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
                 >
                   <option value="">Selecione o ano lectivo...</option>
                   {anos.map((ano: any) => (
@@ -152,7 +136,7 @@ export default function BoletimManagement() {
                   id="select-turma"
                   value={selectedTurma}
                   onChange={e => setSelectedTurma(e.target.value)}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 transition"
+                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
                 >
                   <option value="">Selecione a turma...</option>
                   {turmasFiltradas.map((turma: any) => (
@@ -177,7 +161,7 @@ export default function BoletimManagement() {
                   id="select-trimestre"
                   value={selectedTrimestre}
                   onChange={e => setSelectedTrimestre(e.target.value)}
-                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 transition"
+                  className="w-full appearance-none border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] bg-gray-50 transition"
                 >
                   <option value="">Selecione o trimestre...</option>
                   {TRIMESTRES.map(t => (
@@ -196,8 +180,7 @@ export default function BoletimManagement() {
               id="btn-carregar-boletim"
               onClick={handlePreview}
               disabled={!canGenerate || isLoading}
-              className="flex items-center gap-2 px-7 py-3 rounded-xl font-semibold text-white shadow-md transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              style={{ background: canGenerate ? 'linear-gradient(135deg, #059669, #047857)' : '#9ca3af' }}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm text-white shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${canGenerate ? 'bg-[#007C00] hover:bg-[#005a00]' : 'bg-gray-400'}`}
             >
               {isLoading ? (
                 <><Loader2 className="h-5 w-5 animate-spin" /> A carregar...</>
@@ -309,8 +292,7 @@ export default function BoletimManagement() {
               <button
                 id="btn-imprimir-boletins-bottom"
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl text-white font-semibold shadow transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#007C00] hover:bg-[#005a00] text-white font-medium text-sm shadow transition-all duration-200 active:scale-[0.98]"
               >
                 <Printer className="h-4 w-4" />
                 Gerar PDF
