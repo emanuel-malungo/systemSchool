@@ -34,22 +34,47 @@ export class ReportsManagementService {
         AND: []
       };
 
-      // Filtro por ano académico - Simplificado por enquanto
+      // Filtro por ano académico
       if (anoAcademico) {
-        // Relacionamentos complexos serão implementados futuramente
-        // Por enquanto, não aplicar este filtro
+        const ano = typeof anoAcademico === 'string' ? parseInt(anoAcademico) : anoAcademico;
+        // Precisamos verificar se anoAcademico é um designacao (ex: "2023/2024") ou código
+        // Como o frontend manda designacao (ex: "2023/2024"), precisamos buscar o ID primeiro
+        if (isNaN(ano)) {
+          const anoLetivo = await prisma.tb_ano_lectivo.findFirst({
+            where: { designacao: anoAcademico }
+          });
+          if (anoLetivo) {
+            whereConditions.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: anoLetivo.codigo } } } });
+          }
+        } else {
+          whereConditions.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: ano } } } });
+        }
       }
 
-      // Filtro por classe - Simplificado por enquanto
+      // Filtro por classe
       if (classe) {
-        // Relacionamentos complexos serão implementados futuramente
-        // Por enquanto, não aplicar este filtro
+        // Se a classe for enviada como texto (ex: "10ª Classe"), buscar o id
+        let classeId = parseInt(classe);
+        if (isNaN(classeId)) {
+           const classeDb = await prisma.tb_classes.findFirst({ where: { designacao: classe } });
+           if (classeDb) classeId = classeDb.codigo;
+        }
+        if (!isNaN(classeId)) {
+          whereConditions.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { tb_turmas: { codigo_Classe: classeId } } } } });
+        }
       }
 
-      // Filtro por curso - Simplificado por enquanto
+      // Filtro por curso
       if (curso) {
-        // Relacionamentos complexos serão implementados futuramente
-        // Por enquanto, não aplicar este filtro
+        // Se curso for enviada como texto, buscar o id
+        let cursoId = parseInt(curso);
+        if (isNaN(cursoId)) {
+           const cursoDb = await prisma.tb_cursos.findFirst({ where: { designacao: curso } });
+           if (cursoDb) cursoId = cursoDb.codigo;
+        }
+        if (!isNaN(cursoId)) {
+          whereConditions.AND.push({ tb_matriculas: { codigo_Curso: cursoId } });
+        }
       }
 
       // Filtro por estado do aluno
@@ -86,17 +111,7 @@ export class ReportsManagementService {
         });
       }
 
-      // Filtro por período - Simplificado por enquanto
-      if (periodo) {
-        // Relacionamentos complexos serão implementados futuramente
-        // Por enquanto, não aplicar este filtro
-      }
 
-      // Filtro por data de matrícula - Simplificado por enquanto
-      if (dataMatriculaFrom || dataMatriculaTo) {
-        // Relacionamentos complexos serão implementados futuramente
-        // Por enquanto, não aplicar este filtro
-      }
 
       // Filtro de pesquisa por nome
       if (search) {
@@ -120,7 +135,23 @@ export class ReportsManagementService {
         prisma.tb_alunos.findMany({
           where: finalWhere,
           include: {
-            tb_matriculas: true,
+            tb_matriculas: {
+              include: {
+                tb_cursos: true,
+                tb_confirmacoes: {
+                  orderBy: { data_Confirmacao: 'desc' },
+                  take: 1,
+                  include: {
+                    tb_turmas: {
+                      include: {
+                        tb_classes: true,
+                        tb_cursos: true
+                      }
+                    }
+                  }
+                }
+              }
+            },
             tb_encarregados: {
               select: {
                 nome: true,
@@ -152,11 +183,11 @@ export class ReportsManagementService {
           telefone: student.telefone || 'N/A',
           sexo: student.sexo || 'N/A',
           dataNascimento: student.dataNascimento,
-          classe: 'N/A', // Será preenchido quando tivermos os relacionamentos corretos
-          curso: 'N/A', // Será preenchido quando tivermos os relacionamentos corretos
-          turma: 'N/A', // Será preenchido quando tivermos os relacionamentos corretos
-          periodo: 'N/A', // Será preenchido quando tivermos os relacionamentos corretos
-          anoAcademico: 'N/A', // Será preenchido quando tivermos os relacionamentos corretos
+          classe: matricula?.tb_confirmacoes?.[0]?.tb_turmas?.tb_classes?.designacao || 'N/A',
+          curso: matricula?.tb_cursos?.designacao || matricula?.tb_confirmacoes?.[0]?.tb_turmas?.tb_cursos?.designacao || 'N/A',
+          turma: matricula?.tb_confirmacoes?.[0]?.tb_turmas?.designacao || 'N/A',
+          periodo: 'N/A',
+          anoAcademico: 'N/A',
           dataMatricula: matricula?.dataMatricula || null,
           estado: this.getStatusLabel(student.codigo_Status || 1),
           encarregado: student.tb_encarregados ? {
@@ -203,22 +234,48 @@ export class ReportsManagementService {
         periodo
       } = filters;
 
-      // Construir condições WHERE (mesmo padrão do método anterior)
-      const whereConditions = {
-        AND: []
-      };
+      const statsWhere = { AND: [] };
 
-      // Aplicar filtros simples por enquanto
-      if (genero) {
-        whereConditions.AND.push({
-          sexo: genero
-        });
+      // Filtro por ano académico
+      if (anoAcademico) {
+        const ano = typeof anoAcademico === 'string' ? parseInt(anoAcademico) : anoAcademico;
+        if (isNaN(ano)) {
+          const anoLetivo = await prisma.tb_ano_lectivo.findFirst({
+            where: { designacao: anoAcademico }
+          });
+          if (anoLetivo) {
+            statsWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: anoLetivo.codigo } } } });
+          }
+        } else {
+          statsWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { codigo_Ano_lectivo: ano } } } });
+        }
       }
 
-      // Filtros complexos serão implementados futuramente
-      // Por enquanto, usar apenas filtros básicos
+      // Filtro por classe
+      if (classe) {
+        let classeId = parseInt(classe);
+        if (isNaN(classeId)) {
+           const classeDb = await prisma.tb_classes.findFirst({ where: { designacao: classe } });
+           if (classeDb) classeId = classeDb.codigo;
+        }
+        if (!isNaN(classeId)) {
+          statsWhere.AND.push({ tb_matriculas: { tb_confirmacoes: { some: { tb_turmas: { codigo_Classe: classeId } } } } });
+        }
+      }
 
-      const finalWhere = whereConditions.AND.length > 0 ? whereConditions : {};
+      // Filtro por curso
+      if (curso) {
+        let cursoId = parseInt(curso);
+        if (isNaN(cursoId)) {
+           const cursoDb = await prisma.tb_cursos.findFirst({ where: { designacao: curso } });
+           if (cursoDb) cursoId = cursoDb.codigo;
+        }
+        if (!isNaN(cursoId)) {
+          statsWhere.AND.push({ tb_matriculas: { codigo_Curso: cursoId } });
+        }
+      }
+
+      const finalWhere = statsWhere.AND.length > 0 ? statsWhere : {};
 
       // Buscar estatísticas
       const [

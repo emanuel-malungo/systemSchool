@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { FileText, BarChart3 } from 'lucide-react'
+import { FileText, BarChart3, Filter } from 'lucide-react'
 import Container from '../../../components/layout/Container'
-import { 
-  ReportFilters, 
+import {
+  StudentReportFiltersModal, 
   StudentsPreviewTable, 
   ReportGenerationModal 
 } from '../../../components/reports-management'
@@ -25,13 +25,11 @@ export default function StudentReports() {
     classe: undefined,
     curso: undefined,
     estado: undefined,
-    genero: undefined,
-    periodo: undefined,
-    dataMatriculaFrom: undefined,
-    dataMatriculaTo: undefined
+    genero: undefined
   })
 
   const [showReportModal, setShowReportModal] = useState(false)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
@@ -88,10 +86,7 @@ export default function StudentReports() {
       classe: undefined,
       curso: undefined,
       estado: undefined,
-      genero: undefined,
-      periodo: undefined,
-      dataMatriculaFrom: undefined,
-      dataMatriculaTo: undefined
+      genero: undefined
     })
     setCurrentPage(1)
   }
@@ -225,14 +220,14 @@ export default function StudentReports() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-linear-to-br from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-linear-to-br from-green-50 via-white to-green-50 rounded-2xl shadow-lg overflow-hidden">
           <div className="relative p-8">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-100/30 rounded-full -ml-12 -mb-12"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-100/30 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-100/30 rounded-full -ml-12 -mb-12"></div>
             
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                <div className="w-16 h-16 bg-[#007C00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
                   <BarChart3 className="h-8 w-8 text-white" />
                 </div>
                 
@@ -241,34 +236,41 @@ export default function StudentReports() {
                     Relatórios de Alunos
                   </h1>
                   <p className="text-gray-600 text-lg">
-                    Gere relatórios completos e personalizados sobre os alunos do sistema.
+                    Gere relatórios de alunos e analise estatísticas demográficas.
                   </p>
                 </div>
               </div>
               
-              <button
-                onClick={handleGenerateReport}
-                disabled={isGeneratingWordReport || isGeneratingPDFReport}
-                className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <FileText className="h-5 w-5" />
-                {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsFilterModalOpen(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm font-medium"
+                >
+                  <Filter className="h-5 w-5" />
+                  Filtros Avançados
+                </button>
+                <button
+                  onClick={handleGenerateReport}
+                  disabled={isGeneratingWordReport || isGeneratingPDFReport}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                >
+                  <FileText className="h-5 w-5" />
+                  {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Filters Section */}
-        <ReportFilters
+        <StudentReportFiltersModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
           filters={{
             anoAcademico: filters.anoAcademico || '',
             classe: filters.classe || '',
             curso: filters.curso || '',
             estado: filters.estado || '',
-            genero: filters.genero || '',
-            periodo: filters.periodo || '',
-            dataMatriculaFrom: filters.dataMatriculaFrom || '',
-            dataMatriculaTo: filters.dataMatriculaTo || ''
+            genero: filters.genero || ''
           }}
           filterOptions={filterOptions}
           isLoadingOptions={isLoadingOptions}
