@@ -45,13 +45,13 @@ export default function ReportGenerationModal({
               disabled={isGenerating || isGeneratingWord}
               className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
-              <FileText className="h-6 w-6 text-blue-600" />
+              <FileText className="h-6 w-6 text-[#007C00]" />
               <div className="text-left flex-1">
                 <div className="font-medium text-gray-900">Documento Word (.docx)</div>
                 <div className="text-sm text-gray-600">Relatório completo em formato Word</div>
               </div>
               {isGeneratingWord && (
-                <div className="text-sm text-blue-600">Gerando...</div>
+                <div className="text-sm text-[#007C00]">Gerando...</div>
               )}
             </button>
 
@@ -82,7 +82,7 @@ export default function ReportGenerationModal({
           <button
             onClick={onGenerateWordReport}
             disabled={isGenerating}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-colors disabled:opacity-50 font-medium"
           >
             {isGenerating ? 'Gerando...' : 'Gerar'}
           </button>

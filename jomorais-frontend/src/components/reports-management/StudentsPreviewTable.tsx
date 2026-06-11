@@ -84,14 +84,14 @@ export default function StudentsPreviewTable({
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => onViewDetails(student.id)}
-                      className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                      className="text-gray-600 hover:text-gray-900 flex items-center gap-1 font-medium"
                     >
                       <Eye className="h-4 w-4" />
                       Ver Detalhes
                     </button>
                     <button
                       onClick={() => onGenerateIndividualReport(student.id)}
-                      className="text-green-600 hover:text-green-900 flex items-center gap-1"
+                      className="text-[#007C00] hover:text-[#005a00] flex items-center gap-1 font-medium"
                     >
                       <Download className="h-4 w-4" />
                       Gerar Relatório

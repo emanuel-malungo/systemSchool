@@ -220,45 +220,37 @@ export default function StudentReports() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-linear-to-br from-green-50 via-white to-green-50 rounded-2xl shadow-lg overflow-hidden">
-          <div className="relative p-8">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-100/30 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-100/30 rounded-full -ml-12 -mb-12"></div>
-            
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-[#007C00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                  <BarChart3 className="h-8 w-8 text-white" />
-                </div>
-                
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                    Relatórios de Alunos
-                  </h1>
-                  <p className="text-gray-600 text-lg">
-                    Gere relatórios de alunos e analise estatísticas demográficas.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setIsFilterModalOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all shadow-sm font-medium"
-                >
-                  <Filter className="h-5 w-5" />
-                  Filtros Avançados
-                </button>
-                <button
-                  onClick={handleGenerateReport}
-                  disabled={isGeneratingWordReport || isGeneratingPDFReport}
-                  className="flex items-center gap-2 px-6 py-3 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                >
-                  <FileText className="h-5 w-5" />
-                  {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
-                </button>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <BarChart3 className="h-6 w-6 text-[#007C00]" />
             </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Relatórios de Alunos
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Gere relatórios de alunos e analise estatísticas demográficas.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm shadow-sm"
+            >
+              <Filter className="h-4 w-4" />
+              Filtros Avançados
+            </button>
+            <button
+              onClick={handleGenerateReport}
+              disabled={isGeneratingWordReport || isGeneratingPDFReport}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FileText className="h-4 w-4" />
+              {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
+            </button>
           </div>
         </div>
 
