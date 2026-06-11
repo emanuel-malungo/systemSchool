@@ -167,9 +167,9 @@ export default function TransferManagement() {
           <Filter className="h-4 w-4 text-gray-400" />
           <span className="text-sm font-medium text-gray-700">Filtros de pesquisa</span>
         </div>
-        <div className="flex flex-col md:flex-row gap-3">
+        <div className="flex flex-col lg:flex-row flex-wrap gap-3">
           {/* Barra de Pesquisa */}
-          <div className="flex-1 relative">
+          <div className="flex-1 min-w-[250px] relative">
             <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
@@ -184,7 +184,7 @@ export default function TransferManagement() {
           </div>
 
           {/* Filtro de Motivo */}
-          <div className="flex items-center gap-3 bg-gray-50 px-3 py-0.5 rounded-lg border border-transparent hover:bg-gray-100/75 transition-all">
+          <div className="flex items-center gap-3 bg-gray-50 px-3 py-0.5 rounded-lg border border-transparent hover:bg-gray-100/75 transition-all w-full lg:w-auto">
             <Filter className="h-4 w-4 text-gray-400" />
             <select
               value={motivoFilter}
@@ -203,7 +203,7 @@ export default function TransferManagement() {
           </div>
 
           {/* Itens por Página */}
-          <div className="flex items-center gap-3 bg-gray-50 px-3 py-0.5 rounded-lg border border-transparent hover:bg-gray-100/75 transition-all">
+          <div className="flex items-center gap-3 bg-gray-50 px-3 py-0.5 rounded-lg border border-transparent hover:bg-gray-100/75 transition-all w-full lg:w-auto">
             <span className="text-sm text-gray-500 font-medium">Exibir:</span>
             <select
               value={pageSize}

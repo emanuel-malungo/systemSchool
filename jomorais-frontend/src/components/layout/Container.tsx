@@ -13,7 +13,7 @@ export default function Container({ children }: ContainerProps) {
       <Sidebar />
       
       {/* Conteúdo à direita */}
-      <div className="flex-1 flex flex-col min-h-screen pl-64">
+      <div className="flex-1 flex flex-col min-h-screen pl-64 min-w-0">
         {/* Header Fixo - No topo à direita */}
         <Header />
         
