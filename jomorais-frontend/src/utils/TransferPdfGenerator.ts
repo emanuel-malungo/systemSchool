@@ -224,7 +224,7 @@ export class TransferPdfGenerator {
     // Nome da instituição alinhado verticalmente ao centro do logo
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
     doc.setFont('Agency FB', 'bold')
-    doc.setFontSize(13)
+    doc.setFontSize(16)
     const textX = logoX + logoSize + 5
     doc.text(instNome, textX, logoY + logoSize / 2 + 2)
 
