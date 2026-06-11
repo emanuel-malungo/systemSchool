@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { BookOpen, TrendingUp } from 'lucide-react'
+import { BookOpen, TrendingUp, Search, Filter } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { 
-  AcademicReportFilters, 
   AcademicStudentsTable, 
   AcademicReportGenerationModal,
   AcademicStatisticsCards,
-  AcademicStudentDetailsModal
+  AcademicStudentDetailsModal,
+  AcademicReportFiltersModal
 } from '../../../components/academic-reports'
 import { 
   useAcademicReportsManager
@@ -34,7 +34,9 @@ export default function AcademicReports() {
   })
 
   const [showReportModal, setShowReportModal] = useState(false)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [showStudentDetailsModal, setShowStudentDetailsModal] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const [selectedStudent, setSelectedStudent] = useState<StudentAcademicData | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
@@ -176,37 +178,29 @@ export default function AcademicReports() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-gradient-to-br from-purple-50 via-white to-purple-50 rounded-2xl shadow-lg overflow-hidden">
-          <div className="relative p-8">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/30 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-100/30 rounded-full -ml-12 -mb-12"></div>
-            
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                  <BookOpen className="h-8 w-8 text-white" />
-                </div>
-                
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                    Relatórios Acadêmicos
-                  </h1>
-                  <p className="text-gray-600 text-lg">
-                    Acompanhe o desempenho acadêmico, notas e frequência dos alunos.
-                  </p>
-                </div>
-              </div>
-              
-              <button
-                onClick={handleGenerateReport}
-                disabled={isGeneratingWordReport || isGeneratingPDFReport}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <TrendingUp className="h-5 w-5" />
-                {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
-              </button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <BookOpen className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Relatórios Acadêmicos
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Acompanhe o desempenho acadêmico, notas e frequência dos alunos
+              </p>
             </div>
           </div>
+          
+          <button
+            onClick={handleGenerateReport}
+            disabled={isGeneratingWordReport || isGeneratingPDFReport}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <TrendingUp className="h-4 w-4" />
+            {(isGeneratingWordReport || isGeneratingPDFReport) ? 'Gerando...' : 'Gerar Relatório'}
+          </button>
         </div>
 
         {/* Statistics Cards */}
@@ -214,8 +208,40 @@ export default function AcademicReports() {
           <AcademicStatisticsCards statistics={statistics} />
         )}
 
-        {/* Filters Section */}
-        <AcademicReportFilters
+        {/* Filtros e Pesquisa */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <span className="text-sm font-medium text-gray-700">Filtros de pesquisa</span>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-3 items-center">
+            {/* Barra de Pesquisa Geral */}
+            <div className="flex-1 relative w-full">
+              <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Pesquisar relatórios..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
+              />
+            </div>
+            
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-all duration-200 font-medium text-sm"
+            >
+              <Filter className="h-4 w-4" />
+              Filtros Avançados
+            </button>
+          </div>
+        </div>
+
+        {/* Filters Modal */}
+        <AcademicReportFiltersModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
           filters={filters}
           filterOptions={filterOptions}
           isLoadingOptions={isLoadingOptions}

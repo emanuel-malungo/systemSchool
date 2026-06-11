@@ -31,6 +31,21 @@ export default function AcademicStudentsTable({
     return turma
   }
 
+  const getStatusStyle = (status: string | undefined) => {
+    switch (status?.toLowerCase()) {
+      case 'ativo':
+        return 'bg-emerald-100 text-emerald-800'
+      case 'transferido':
+        return 'bg-amber-100 text-amber-800'
+      case 'desistente':
+        return 'bg-red-100 text-red-800'
+      case 'finalizado':
+        return 'bg-[#007C00]/10 text-[#007C00]'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
   if (students.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
@@ -101,14 +116,14 @@ export default function AcademicStudentsTable({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusStyle(student.status)}`}>
                     {student.status || 'Indefinido'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onViewDetails(student.codigo)}
-                    className="text-purple-600 hover:text-purple-900 flex items-center gap-1"
+                    className="text-[#007C00] hover:text-[#005a00] flex items-center gap-1 transition-colors"
                   >
                     <Eye className="h-4 w-4" />
                     Ver Detalhes
@@ -156,7 +171,7 @@ export default function AcademicStudentsTable({
                     onClick={() => onPageChange(pageNum)}
                     className={`px-3 py-2 text-sm rounded-lg ${
                       currentPage === pageNum
-                        ? 'bg-purple-600 text-white'
+                        ? 'bg-[#007C00] text-white'
                         : 'border border-gray-300 hover:bg-gray-50'
                     }`}
                   >

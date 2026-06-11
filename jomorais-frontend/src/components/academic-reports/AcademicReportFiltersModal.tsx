@@ -1,7 +1,9 @@
-import { Search, Filter, X } from 'lucide-react'
+import { X, Filter } from 'lucide-react'
 import type { AcademicReportFilters, AcademicFilterOptions } from '../../types/academic-reports.types'
 
 interface AcademicReportFiltersProps {
+  isOpen: boolean
+  onClose: () => void
   filters: AcademicReportFilters
   filterOptions: AcademicFilterOptions
   isLoadingOptions: boolean
@@ -10,7 +12,9 @@ interface AcademicReportFiltersProps {
   onClearFilters: () => void
 }
 
-export default function AcademicReportFilters({
+export default function AcademicReportFiltersModal({
+  isOpen,
+  onClose,
   filters,
   filterOptions,
   isLoadingOptions,
@@ -18,14 +22,33 @@ export default function AcademicReportFilters({
   onApplyFilters,
   onClearFilters
 }: AcademicReportFiltersProps) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Filter className="h-5 w-5 text-purple-600" />
-        <h2 className="text-lg font-semibold text-gray-900">Filtros Acadêmicos</h2>
-      </div>
+  if (!isOpen) return null
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#007C00]/10 rounded-lg flex items-center justify-center">
+              <Filter className="h-5 w-5 text-[#007C00]" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Filtros Avançados</h2>
+              <p className="text-sm text-gray-500">Refine a busca de relatórios académicos</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* Ano Académico */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -35,7 +58,7 @@ export default function AcademicReportFilters({
             value={filters.anoAcademico || ''}
             onChange={(e) => onFilterChange('anoAcademico', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todos os Anos</option>
             {filterOptions.anosAcademicos?.map((ano) => (
@@ -55,7 +78,7 @@ export default function AcademicReportFilters({
             value={filters.classe || ''}
             onChange={(e) => onFilterChange('classe', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todas as Classes</option>
             {filterOptions.classes?.map((classe) => (
@@ -75,7 +98,7 @@ export default function AcademicReportFilters({
             value={filters.curso || ''}
             onChange={(e) => onFilterChange('curso', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todos os Cursos</option>
             {filterOptions.cursos?.map((curso) => (
@@ -95,7 +118,7 @@ export default function AcademicReportFilters({
             value={filters.turma || ''}
             onChange={(e) => onFilterChange('turma', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todas as Turmas</option>
             {filterOptions.turmas?.map((turma) => (
@@ -115,7 +138,7 @@ export default function AcademicReportFilters({
             value={filters.disciplina || ''}
             onChange={(e) => onFilterChange('disciplina', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todas as Disciplinas</option>
             {filterOptions.disciplinas?.map((disciplina) => (
@@ -135,7 +158,7 @@ export default function AcademicReportFilters({
             value={filters.professor || ''}
             onChange={(e) => onFilterChange('professor', e.target.value || undefined)}
             disabled={isLoadingOptions}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] disabled:bg-gray-100"
           >
             <option value="">Todos os Professores</option>
             {filterOptions.professores?.map((professor) => (
@@ -154,7 +177,7 @@ export default function AcademicReportFilters({
           <select
             value={filters.periodo || ''}
             onChange={(e) => onFilterChange('periodo', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           >
             <option value="">Todos os Períodos</option>
             {filterOptions.periodos?.map((periodo) => (
@@ -173,7 +196,7 @@ export default function AcademicReportFilters({
           <select
             value={filters.trimestre || 'todos'}
             onChange={(e) => onFilterChange('trimestre', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           >
             <option value="todos">Todos os Trimestres</option>
             <option value="1">1º Trimestre</option>
@@ -190,7 +213,7 @@ export default function AcademicReportFilters({
           <select
             value={filters.statusAluno || 'todos'}
             onChange={(e) => onFilterChange('statusAluno', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           >
             <option value="todos">Todos os Status</option>
             <option value="ativo">Ativo</option>
@@ -208,7 +231,7 @@ export default function AcademicReportFilters({
           <select
             value={filters.tipoRelatorio || 'todos'}
             onChange={(e) => onFilterChange('tipoRelatorio', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           >
             <option value="todos">Todos os Tipos</option>
             <option value="notas">Notas</option>
@@ -226,7 +249,7 @@ export default function AcademicReportFilters({
             type="date"
             value={filters.dataInicio || ''}
             onChange={(e) => onFilterChange('dataInicio', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           />
         </div>
 
@@ -239,28 +262,31 @@ export default function AcademicReportFilters({
             type="date"
             value={filters.dataFim || ''}
             onChange={(e) => onFilterChange('dataFim', e.target.value || undefined)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00]"
           />
         </div>
       </div>
+        </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={onApplyFilters}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          <Search className="h-4 w-4" />
-          Aplicar Filtros
-        </button>
-        
-        <button
-          onClick={onClearFilters}
-          className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <X className="h-4 w-4" />
-          Limpar Filtros
-        </button>
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3 rounded-b-2xl">
+          <button
+            onClick={onClearFilters}
+            className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          >
+            Limpar Filtros
+          </button>
+          
+          <button
+            onClick={() => {
+              onApplyFilters()
+              onClose()
+            }}
+            className="px-5 py-2.5 text-sm font-medium text-white bg-[#007C00] rounded-xl hover:bg-[#005a00] transition-colors shadow-sm"
+          >
+            Aplicar Filtros
+          </button>
+        </div>
       </div>
     </div>
   )

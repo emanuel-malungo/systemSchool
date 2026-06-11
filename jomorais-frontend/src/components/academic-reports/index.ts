@@ -1,4 +1,4 @@
-export { default as AcademicReportFilters } from './AcademicReportFilters'
+export { default as AcademicReportFiltersModal } from './AcademicReportFiltersModal'
 export { default as AcademicStudentsTable } from './AcademicStudentsTable'
 export { default as AcademicReportGenerationModal } from './AcademicReportGenerationModal'
 export { default as AcademicStatisticsCards } from './AcademicStatisticsCards'

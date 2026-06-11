@@ -2,7 +2,6 @@ import { useState, useMemo, Fragment } from 'react'
 import {
   FileText,
   Download,
-  Share2,
   AlertCircle,
   Loader2,
   ChevronLeft,
@@ -17,7 +16,6 @@ import {
 import Container from '../../../components/layout/Container'
 import {
   usePauta,
-  useExportPautaPDF,
   useExportPautaExcel,
 } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
@@ -155,7 +153,6 @@ export default function PautaManagement() {
   }, [consolidatedPauta, filters.page, filters.limit])
 
   // Hooks de mutação
-  const { mutate: exportPDF, isPending: isExportingPDF } = useExportPautaPDF()
   const { mutate: exportExcel, isPending: isExportingExcel } = useExportPautaExcel()
 
   // Handlers
@@ -177,15 +174,6 @@ export default function PautaManagement() {
       setIsGeneratingPauta(false)
       setShowGenerateConfirm(false)
     }
-  }
-
-  const handleExportPDF = () => {
-    if (!pauta) return
-    exportPDF({
-      codigoTurma: parseInt(filters.codigoTurma),
-      codigoTrimestre: parseInt(filters.codigoTrimestre),
-      codigoAnoLectivo: parseInt(filters.codigoAnoLectivo),
-    })
   }
 
   const handleExportExcel = () => {
