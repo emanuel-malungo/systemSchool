@@ -329,13 +329,13 @@ export default function Sidebar() {
     <aside ref={sidebarRef} className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
       {/* Logo/Branding - Fixo no topo */}
       <div className="p-6 h-16 flex items-center shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-            <img src="/icon.png" alt="Logo Jomorais" className="w-full h-full object-contain" />
+        <div className="flex items-center gap-3 select-none">
+          <div className="w-9 h-9 bg-[#007C00] rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-sm shrink-0">
+            J
           </div>
           <div>
-            <h2 className="text-gray-900 font-bold text-lg leading-tight">Jomorais</h2>
-            <p className="text-gray-500 text-[10px] uppercase font-semibold">Sistema Escolar</p>
+            <h2 className="text-gray-800 font-bold text-base leading-tight tracking-wider uppercase">Jomorais</h2>
+            <p className="text-gray-400 text-[9px] uppercase font-bold tracking-widest">Sistema Escolar</p>
           </div>
         </div>
       </div>
@@ -347,7 +347,7 @@ export default function Sidebar() {
 
       {/* Botão de Logout + Footer - Fixo no rodapé */}
       <div className="shrink-0 bg-white">
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-4 border-t border-gray-100 pb-2">
           <button
             onClick={logout}
             className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg
@@ -358,8 +358,29 @@ export default function Sidebar() {
             <span>Sair do Sistema</span>
           </button>
         </div>
+        
+        {/* Mini Ilustração Skyline para Consistência */}
+        <div className="w-full h-10 select-none pointer-events-none mb-1 opacity-70">
+          <svg className="w-full h-full" viewBox="0 0 256 40" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            {/* Camada Traseira (Verde Claro / Menta) */}
+            <path d="M0 40 V20 Q50 10 100 25 T200 20 Q228 15 256 25 V40 H0Z" fill="#a7f3d0" opacity="0.5" />
+            
+            {/* Camada Intermediária (Verde Médio / Esmeralda) */}
+            <path d="M0 40 V28 Q60 18 120 33 T240 28 Q248 25 256 30 V40 H0Z" fill="#10b981" opacity="0.6" />
+            
+            {/* Pequenos elementos geométricos */}
+            <rect x="35" y="18" width="10" height="22" fill="#007C00" />
+            <polygon points="35,18 40,11 45,18" fill="#005a00" />
+            <rect x="180" y="22" width="12" height="18" fill="#007C00" />
+            <rect x="192" y="24" width="8" height="16" fill="#005a00" />
+
+            {/* Camada Frontal (Verde Principal da Plataforma) */}
+            <path d="M0 40 V33 Q80 30 160 35 T256 34 V40 H0Z" fill="#005a00" />
+          </svg>
+        </div>
+
         <div className="px-4 pb-4">
-          <p className="text-gray-400 text-xs text-center">
+          <p className="text-gray-400 text-[10px] text-center uppercase tracking-wider font-semibold">
             © 2025 Sistema Escolar
           </p>
         </div>
