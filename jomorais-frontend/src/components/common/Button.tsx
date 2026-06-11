@@ -26,26 +26,26 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const variants: Record<ButtonVariant, string> = {
     primary:
-      "bg-[#0f355c] hover:bg-[#0f355c] focus:ring-2 focus:ring-[#113F6A]/40 focus:outline-none text-white cursor-pointer",
+      "bg-[#007C00] hover:bg-[#005a00] focus:ring-2 focus:ring-[#007C00]/40 focus:outline-none text-white cursor-pointer border-transparent",
     secondary:
-      "bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none text-gray-700 border-gray-300 cursor-pointer",
-    ghost: "bg-transparent hover:bg-gray-100 focus:ring-2 focus:ring-gray-300 focus:outline-none text-gray-700 border-transparent cursor-pointer",
-    danger: "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500/40 focus:outline-none text-white cursor-pointer",
+      "bg-white hover:bg-gray-50 focus:ring-2 focus:ring-gray-200 focus:outline-none text-gray-700 border-gray-200 cursor-pointer",
+    ghost: "bg-transparent hover:bg-gray-100 focus:ring-2 focus:ring-gray-200 focus:outline-none text-gray-700 border-transparent cursor-pointer",
+    danger: "bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500/40 focus:outline-none text-white border-transparent cursor-pointer",
   };
 
   const sizes: Record<ButtonSize, string> = {
     sm: "px-3 py-2 text-xs h-8",
     md: "px-4 py-2.5 text-sm h-10",
-    lg: "px-6 py-3 text-base h-12",
+    lg: "px-6 py-3 text-sm h-11",
   };
 
   // Base classes without variant/size specific styles
   const baseClasses = `
     rounded-lg font-medium
-    shadow-sm hover:shadow-md
-    transform hover:scale-[1.01] active:scale-[0.99]
+    shadow-sm
+    active:scale-[0.98]
     transition-all duration-200
-    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:transform-none
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
     flex items-center justify-center gap-2
     text-center
     leading-tight

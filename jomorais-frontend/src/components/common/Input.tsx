@@ -25,7 +25,7 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {/* Label */}
       {label && (
         <label className="block text-gray-700 text-sm font-medium">
@@ -36,22 +36,23 @@ const Input: React.FC<InputProps> = ({
       {/* Input com ícone e toggle */}
       <div className="relative">
         {Icon && (
-          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         )}
 
         <input
           type={type}
           placeholder={placeholder}
           className={`
-            w-full px-4 py-3 rounded-lg
-            ${Icon ? "pl-11" : "pl-4"}
+            w-full px-4 py-2.5 rounded-lg
+            ${Icon ? "pl-10" : "pl-4"}
             ${showPasswordToggle ? "pr-11" : "pr-4"}
-            bg-white
-            border border-gray-300
-            text-gray-700 placeholder:text-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-[#1A4F7A]
+            bg-gray-50 hover:bg-gray-100/75
+            border border-transparent
+            text-sm text-gray-700 placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100
             transition-all duration-200
-            ${error ? "ring-2 ring-red-400 border-red-400" : ""}
+            disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed
+            ${error ? "ring-2 ring-red-400/50 bg-red-50/30" : ""}
             ${className || ""}
           `.replace(/\s+/g, ' ').trim()}
           {...props}
@@ -60,18 +61,17 @@ const Input: React.FC<InputProps> = ({
         {showPasswordToggle && (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             onClick={onTogglePassword}
           >
-            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
           </button>
         )}
       </div>
 
       {/* Mensagem de erro */}
       {error && (
-        <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
-          <span className="w-1 h-1 bg-red-600 rounded-full"></span>
+        <p className="text-red-500 text-xs mt-1">
           {error}
         </p>
       )}
