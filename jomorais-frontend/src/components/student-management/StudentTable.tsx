@@ -1,4 +1,4 @@
-import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Users } from 'lucide-react'
 import type { Student } from '../../types/student.types'
 
 interface StudentTableProps {
@@ -24,9 +24,33 @@ export default function StudentTable({
 }: StudentTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8">
-        <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007C00]"></div>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="p-6 space-y-4">
+          {/* Skeleton Header */}
+          <div className="flex gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex-1 h-3 bg-gray-100 rounded-full animate-pulse" />
+            ))}
+          </div>
+          {/* Skeleton Rows */}
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4 py-4 border-t border-gray-50">
+              <div className="w-9 h-9 bg-gray-100 rounded-full animate-pulse shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3.5 bg-gray-100 rounded-full w-2/5 animate-pulse" />
+                <div className="h-2.5 bg-gray-50 rounded-full w-1/4 animate-pulse" />
+              </div>
+              <div className="h-3 bg-gray-100 rounded-full w-16 animate-pulse" />
+              <div className="h-5 bg-gray-100 rounded-full w-20 animate-pulse" />
+              <div className="h-3 bg-gray-100 rounded-full w-20 animate-pulse" />
+              <div className="h-3 bg-gray-100 rounded-full w-16 animate-pulse" />
+              <div className="flex gap-1.5">
+                <div className="w-8 h-8 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="w-8 h-8 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="w-8 h-8 bg-gray-100 rounded-lg animate-pulse" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -34,10 +58,15 @@ export default function StudentTable({
 
   if (students.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8">
-        <div className="text-center text-gray-500">
-          <p className="text-lg">Nenhum estudante encontrado</p>
-          <p className="text-sm mt-2">Tente ajustar os filtros ou adicionar um novo estudante</p>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12">
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+            <Users className="h-8 w-8 text-gray-300" />
+          </div>
+          <p className="text-gray-900 font-semibold text-base mb-1">Nenhum estudante encontrado</p>
+          <p className="text-gray-500 text-sm max-w-xs">
+            Tente ajustar os filtros de pesquisa ou adicione um novo estudante ao sistema.
+          </p>
         </div>
       </div>
     )
@@ -54,95 +83,119 @@ export default function StudentTable({
     }
   }
 
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(' ')
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+    }
+    return name.substring(0, 2).toUpperCase()
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       {/* Tabela */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nome
+        <table className="min-w-full">
+          <thead>
+            <tr className="border-b border-gray-100">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                Estudante
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 ID Matrícula
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Sexo
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Data Nascimento
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Telefone
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Morada
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3.5 text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 Ações
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {students.map((student) => (
-              <tr key={student.codigo} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{student.nome}</div>
-                  {student.email && (
-                    <div className="text-sm text-gray-500">{student.email}</div>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-semibold text-[#007C00]">
-                    {student.tb_matriculas?.codigo ? `#${student.tb_matriculas.codigo}` : 'N/A'}
+          <tbody>
+            {students.map((student, index) => (
+              <tr
+                key={student.codigo}
+                className={`
+                  group transition-colors duration-150
+                  hover:bg-gray-50/80
+                  ${index !== students.length - 1 ? 'border-b border-gray-50' : ''}
+                `}
+              >
+                <td className="px-6 py-3.5 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-full flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="text-white font-bold text-[11px]">
+                        {getInitials(student.nome)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 leading-tight">{student.nome}</p>
+                      {student.email && (
+                        <p className="text-xs text-gray-400 mt-0.5">{student.email}</p>
+                      )}
+                    </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                <td className="px-6 py-3.5 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2.5 py-1 bg-green-50 text-[#007C00] text-xs font-semibold rounded-md">
+                    {student.tb_matriculas?.codigo ? `#${student.tb_matriculas.codigo}` : 'N/A'}
+                  </span>
+                </td>
+                <td className="px-6 py-3.5 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md ${
                     student.sexo === 'Masculino' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-pink-100 text-pink-800'
+                      ? 'bg-blue-50 text-blue-700' 
+                      : 'bg-pink-50 text-pink-700'
                   }`}>
                     {student.sexo}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-3.5 whitespace-nowrap text-sm text-gray-600">
                   {formatDate(student.dataNascimento)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {student.telefone && student.telefone !== '.' ? student.telefone : 'N/A'}
+                <td className="px-6 py-3.5 whitespace-nowrap text-sm text-gray-600">
+                  {student.telefone && student.telefone !== '.' ? student.telefone : '—'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {student.morada || 'N/A'}
+                <td className="px-6 py-3.5 whitespace-nowrap text-sm text-gray-600 max-w-[180px] truncate">
+                  {student.morada || '—'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end gap-2">
+                <td className="px-6 py-3.5 whitespace-nowrap text-right">
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     {/* Visualizar */}
                     <button
                       onClick={() => onView(student)}
-                      className="text-[#007C00] hover:text-[#005a00] transition-colors p-1 hover:bg-green-50 rounded"
+                      className="p-2 text-gray-400 hover:text-[#007C00] hover:bg-green-50 rounded-lg transition-all duration-200"
                       title="Visualizar"
                     >
-                      <Eye className="h-5 w-5" />
+                      <Eye className="h-4 w-4" />
                     </button>
 
                     {/* Editar */}
                     <button
                       onClick={() => onEdit(student)}
-                      className="text-yellow-600 hover:text-yellow-900 transition-colors p-1 hover:bg-yellow-50 rounded"
+                      className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200"
                       title="Editar"
                     >
-                      <Edit2 className="h-5 w-5" />
+                      <Edit2 className="h-4 w-4" />
                     </button>
 
                     {/* Deletar */}
                     <button
                       onClick={() => onDelete(student)}
-                      className="text-red-600 hover:text-red-900 transition-colors p-1 hover:bg-red-50 rounded"
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                       title="Deletar"
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
@@ -154,70 +207,49 @@ export default function StudentTable({
 
       {/* Paginação */}
       {totalPages > 1 && (
-        <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-          <div className="flex-1 flex justify-between sm:hidden">
+        <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100">
+          <p className="text-sm text-gray-500">
+            Página <span className="font-semibold text-gray-700">{currentPage}</span> de{' '}
+            <span className="font-semibold text-gray-700">{totalPages}</span>
+          </p>
+          
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
-              Anterior
+              <ChevronLeft className="h-4 w-4" />
             </button>
+            
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              let page = i + 1
+              if (totalPages > 5 && currentPage > 3) {
+                page = currentPage - 2 + i
+                if (page > totalPages) page = totalPages - (4 - i)
+              }
+              return (
+                <button
+                  key={page}
+                  onClick={() => onPageChange(page)}
+                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
+                    page === currentPage
+                      ? 'bg-[#007C00] text-white shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            })}
+
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
-              Próxima
+              <ChevronRight className="h-4 w-4" />
             </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Página <span className="font-medium">{currentPage}</span> de{' '}
-                <span className="font-medium">{totalPages}</span>
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                <button
-                  onClick={() => onPageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                  let page = i + 1
-                  if (totalPages > 5 && currentPage > 3) {
-                    page = currentPage - 2 + i
-                    if (page > totalPages) page = totalPages - (4 - i)
-                  }
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => onPageChange(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        page === currentPage
-                          ? 'z-10 bg-green-50 border-[#007C00] text-[#007C00]'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                })}
-
-                <button
-                  onClick={() => onPageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </nav>
-            </div>
           </div>
         </div>
       )}
