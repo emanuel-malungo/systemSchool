@@ -53,6 +53,7 @@ export default function AcademicReports() {
     students,
     pagination,
     statistics,
+    filterOptions: apiFilterOptions,
     isGeneratingReport,
     isGeneratingWordReport,
     isGeneratingPDFReport,
@@ -67,12 +68,12 @@ export default function AcademicReports() {
 
   // Preparar opções de filtros com dados reais
   const filterOptions = {
-    anosAcademicos: anosLectivosData?.data || [],
-    classes: classesData?.data || [],
-    cursos: cursosData?.data || [],
-    turmas: [], // TODO: Implementar hook para turmas
-    disciplinas: [], // TODO: Implementar hook para disciplinas
-    professores: [], // TODO: Implementar hook para professores
+    anosAcademicos: anosLectivosData?.data || apiFilterOptions?.anosAcademicos || [],
+    classes: classesData?.data || apiFilterOptions?.classes || [],
+    cursos: cursosData?.data || apiFilterOptions?.cursos || [],
+    turmas: apiFilterOptions?.turmas || [],
+    disciplinas: apiFilterOptions?.disciplinas || [],
+    professores: apiFilterOptions?.professores || [],
     periodos: commonPeriods.map((periodo) => ({
       value: periodo.designacao,
       label: periodo.designacao,
