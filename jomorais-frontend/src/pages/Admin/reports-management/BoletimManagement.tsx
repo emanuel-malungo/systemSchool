@@ -3,7 +3,7 @@ import api from '../../../utils/api.utils'
 import { useTurmas } from '../../../hooks/useTurma'
 import Container from '../../../components/layout/Container'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
-import { BoletimPdfGenerator } from '../../../utils/BoletimPdfGenerator'
+import { BoletimWordGenerator } from '../../../utils/BoletimWordGenerator'
 import type { IBoletimTurmaData } from '../../../utils/BoletimPdfGenerator'
 import { BoletimFiltersModal } from '../../../components/reports-management'
 import { FileText, Printer, BookOpen, Users, AlertCircle} from 'lucide-react'
@@ -59,7 +59,7 @@ export default function BoletimManagement() {
 
   const handlePrint = () => {
     if (!previewData) return
-    BoletimPdfGenerator.generatePDF(previewData)
+    BoletimWordGenerator.generateWord(previewData)
   }
 
   const trimestreLabel = TRIMESTRES.find(t => t.codigo === parseInt(selectedTrimestre))?.designacao || ''
@@ -98,7 +98,7 @@ export default function BoletimManagement() {
                 className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
               >
                 <Printer className="h-4 w-4" />
-                Imprimir PDF
+                Gerar Word
               </button>
             )}
           </div>
@@ -220,7 +220,7 @@ export default function BoletimManagement() {
                 className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#007C00] hover:bg-[#005a00] text-white font-medium text-sm shadow transition-all duration-200 active:scale-[0.98]"
               >
                 <Printer className="h-4 w-4" />
-                Gerar PDF
+                Gerar Word
               </button>
             </div>
           </div>
