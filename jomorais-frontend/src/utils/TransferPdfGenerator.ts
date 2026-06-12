@@ -230,13 +230,11 @@ export class TransferPdfGenerator {
     const textX = logoX + logoSize + 3
     doc.text(instNome, textX, logoY + logoSize / 2 + 2)
 
-    // Sublinhado sob a logo e o texto
-    const textWidth = (doc.getStringUnitWidth(instNome) * 16) / doc.internal.scaleFactor
-    const totalWidth = logoSize + 3 + textWidth
+    // Sublinhado ocupando toda a largura e com espaço abaixo
     y = logoY + logoSize + 3
     doc.setLineWidth(0.6)
-    doc.line(marginL, y, marginL + totalWidth, y)
-    y += 8
+    doc.line(marginL, y, pageWidth - marginR, y)
+    y += 14
 
     // Título do documento no corpo
     const anoEmissao = transferencia.dataTransferencia
@@ -458,7 +456,7 @@ export class TransferPdfGenerator {
             default: new Header({
               children: [
                 new Table({
-                  width: { size: 100, type: WidthType.AUTO },
+                  width: { size: 100, type: WidthType.PERCENTAGE },
                   borders: {
                     top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                     left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
@@ -495,6 +493,8 @@ export class TransferPdfGenerator {
                     })
                   ]
                 }),
+                new Paragraph({ text: "" }),
+                new Paragraph({ text: "" }),
               ]
             })
           },
