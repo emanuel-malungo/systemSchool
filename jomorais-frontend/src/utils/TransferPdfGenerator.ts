@@ -135,12 +135,12 @@ export class TransferPdfGenerator {
     let currentWidth = 0
 
     const getWordWidth = (w: Word): number => {
-      doc.setFont('Helvetica', w.bold ? 'bold' : 'normal')
+      doc.setFont('Comic Sans MS', w.bold ? 'bold' : 'normal')
       return (doc.getStringUnitWidth(w.word) * fontSize) / scaleFactor
     }
 
     const spaceWidth = (): number => {
-      doc.setFont('Helvetica', 'normal')
+      doc.setFont('Comic Sans MS', 'normal')
       return (doc.getStringUnitWidth(' ') * fontSize) / scaleFactor
     }
 
@@ -176,7 +176,7 @@ export class TransferPdfGenerator {
       let curX = x
       for (let wi = 0; wi < line.length; wi++) {
         const w = line[wi]
-        doc.setFont('Helvetica', w.bold ? 'bold' : 'normal')
+        doc.setFont('Comic Sans MS', w.bold ? 'bold' : 'normal')
         doc.text(w.word, curX, y)
 
         if (w.underline) {
@@ -200,6 +200,8 @@ export class TransferPdfGenerator {
   static generatePDF(data: ITransferPdfData): void {
     const { transferencia, proveniencia, instituicao } = data
     const aluno = transferencia.tb_alunos
+    console.log(data)
+    console.log(aluno)
 
     // Inicializar documento A4 vertical
     const doc = new jsPDF({
@@ -256,8 +258,8 @@ export class TransferPdfGenerator {
     y += 14
 
     // ── CORPO DO TEXTO ───────────────────────────────────────────────────────
-    doc.setFontSize(11)
-    const lh = 6.5 // line height
+    doc.setFontSize(12)
+    const lh = 5.5 // line height (approx 1.15 spacing for 12pt)
 
     // Dados do aluno
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
@@ -305,11 +307,11 @@ export class TransferPdfGenerator {
     y += 6
 
     // "Para o ESCOLA DESTINO." — "Para o " normal, nome sublinhado bold
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(11)
+    doc.setFont('Comic Sans MS', 'normal')
+    doc.setFontSize(12)
     doc.text('Para o ', marginL, y)
     const paraOWidth = this.textWidth(doc, 'Para o ')
-    doc.setFont('Helvetica', 'bold')
+    doc.setFont('Comic Sans MS', 'bold')
     doc.text(escolaDestino + '.', marginL + paraOWidth, y)
     // Sublinhado no nome da escola
     const escolaWidth = this.textWidth(doc, escolaDestino + '.')
@@ -318,8 +320,8 @@ export class TransferPdfGenerator {
     y += lh + 4
 
     // OBS
-    doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(11)
+    doc.setFont('Comic Sans MS', 'bold')
+    doc.setFontSize(12)
     doc.text(`OBS: Vai matricular-se na ${classe}ª Classe.`, marginL, y)
     y += lh + 4
 
@@ -335,8 +337,8 @@ export class TransferPdfGenerator {
 
     // Observação adicional se existir
     if (transferencia.obs && transferencia.obs.trim()) {
-      doc.setFont('Helvetica', 'italic')
-      doc.setFontSize(10)
+      doc.setFont('Comic Sans MS', 'italic')
+      doc.setFontSize(12)
       const obsLines = doc.splitTextToSize(`Observação: ${transferencia.obs}`, maxWidth)
       doc.text(obsLines, marginL, y, { align: 'justify' })
       y += obsLines.length * lh + 4
@@ -353,8 +355,8 @@ export class TransferPdfGenerator {
 
     // ── DATA E LOCAL ─────────────────────────────────────────────────────────
     const dataDoc = this.formatDateLong(transferencia.dataTransferencia)
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(11)
+    doc.setFont('Comic Sans MS', 'normal')
+    doc.setFontSize(12)
     doc.text(`${instNome}, ${dataDoc}. –`, marginL, y)
     y += 20
 
@@ -543,56 +545,52 @@ export class TransferPdfGenerator {
             // Corpo
             new Paragraph({
               alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: "Passa a favor do(a) Aluno(a): ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: nomeAluno + ",", font: "Times New Roman", size: 24, bold: true }),
-              ]
-            }),
-            new Paragraph({
-              alignment: AlignmentType.JUSTIFIED,
-              children: [
-                new TextRun({ text: "Filho de: ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: pai, font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: " e de ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: mae + ",", font: "Times New Roman", size: 24, bold: true }),
-              ]
-            }),
-            new Paragraph({
-              alignment: AlignmentType.JUSTIFIED,
-              children: [
-                new TextRun({ text: "Nascido aos ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: this.formatDateLong(aluno.dataNascimento) + ",", font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: " natural de: ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: naturalidade + ",", font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: " portador(a) do Bilhete de Identidade n.º ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: biNum + ",", font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: ` emitido pela Identificação de ${biProv}, ${biData}.`, font: "Times New Roman", size: 24 }),
-              ]
-            }),
-            new Paragraph({ text: "" }),
-
-            new Paragraph({
-              alignment: AlignmentType.LEFT,
-              children: [
-                new TextRun({ text: "Para o ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: escolaDestino + ".", font: "Times New Roman", size: 24, bold: true, underline: { type: UnderlineType.SINGLE } }),
-              ]
-            }),
-            new Paragraph({ text: "" }),
-
-            new Paragraph({
-              alignment: AlignmentType.LEFT,
-              children: [
-                new TextRun({ text: `OBS: Vai matricular-se na ${classe}ª Classe.`, font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: "Para os fins julgados convenientes e conforme solicitado pelo (a) Encarregado (a) da educação, é transferido o aluno ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: nomeAluno + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: ` da ${classe}ª Classe, nº._______, turma: _______, período: _______, curso: `, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: curso + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " processo nº._______, filho de ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: pai, font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " e de ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: mae + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " natural de ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: naturalidade + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " município de _______, província de _______, nascido aos ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: this.formatDateLong(aluno.dataNascimento) + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " portador da Bilhete de Identidade nº.", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: biNum + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: ` emitido pela Identificação de ${biProv}, ${biData}.`, font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "" }),
 
             new Paragraph({
               alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: "CONSTITUÍ O SEU PROCESSO INDIVIDUAL: ", font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: "cópia do bilhete de identidade, certificado de conclusão do I ciclo do Ensino Secundário Geral e Ficha Académica do Ensino Médio de Saúde.", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: "Para o ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: escolaDestino + ".", font: "Comic Sans MS", size: 24, bold: true, underline: { type: UnderlineType.SINGLE } }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
+              children: [
+                new TextRun({ text: `OBS: Vai matricular-se na ${classe}ª Classe.`, font: "Comic Sans MS", size: 24, bold: true }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
+              children: [
+                new TextRun({ text: "CONSTITUÍ O SEU PROCESSO INDIVIDUAL: ", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: "cópia do bilhete de identidade, certificado de conclusão do I ciclo do Ensino Secundário Geral e Ficha Académica do Ensino Médio de Saúde.", font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "" }),
@@ -600,8 +598,9 @@ export class TransferPdfGenerator {
             ...(transferencia.obs ? [
               new Paragraph({
                 alignment: AlignmentType.JUSTIFIED,
+                spacing: { line: 276, lineRule: "auto" },
                 children: [
-                  new TextRun({ text: `Observação: ${transferencia.obs}`, font: "Times New Roman", size: 20, italics: true }),
+                  new TextRun({ text: `Observação: ${transferencia.obs}`, font: "Comic Sans MS", size: 24, italics: true }),
                 ]
               }),
               new Paragraph({ text: "" })
@@ -609,18 +608,20 @@ export class TransferPdfGenerator {
 
             new Paragraph({
               alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: "Por ser verdade e me ter sido solicitada, passou-se a presente ", font: "Times New Roman", size: 24 }),
-                new TextRun({ text: "GUIA DE TRANSFERÊNCIA", font: "Times New Roman", size: 24, bold: true }),
-                new TextRun({ text: " que vai por mim assinada e autenticada com o carimbo em uso nesta Instituição de Ensino.", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: "Por ser verdade e me ter sido solicitada, passou-se a presente ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: "GUIA DE TRANSFERÊNCIA", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " que vai por mim assinada e autenticada com o carimbo em uso nesta Instituição de Ensino.", font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "\n" }),
 
             new Paragraph({
-              alignment: AlignmentType.LEFT,
+              alignment: AlignmentType.JUSTIFIED,
+              spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}. –`, font: "Times New Roman", size: 24 }),
+                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}. –`, font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "\n" }),
