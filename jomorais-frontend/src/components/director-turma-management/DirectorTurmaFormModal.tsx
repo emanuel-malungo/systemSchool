@@ -244,7 +244,7 @@ export default function DirectorTurmaFormModal({
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Info className="h-5 w-5 text-[#007C00] flex-shrink-0 mt-0.5" />
+                <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h4 className="text-sm font-semibold text-blue-900 mb-1">Informação</h4>
                   <p className="text-sm text-blue-700">
