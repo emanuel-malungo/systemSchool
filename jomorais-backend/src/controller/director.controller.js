@@ -104,7 +104,8 @@ export class DirectorController {
           },
           include: {
             tb_disciplinas: { select: { codigo: true, designacao: true } }
-          }
+          },
+          distinct: ['codigo_disciplina']
         });
 
         turmasFormatadas.push({
