@@ -194,7 +194,7 @@ export class BoletimWordGenerator {
                           alignment: AlignmentType.CENTER,
                           children: [
                             new TextRun({
-                              text: (instituicao.nome || "INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS").toUpperCase(),
+                              text: ("INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS").toUpperCase(),
                               font,
                               size: 28,
                               bold: true,
