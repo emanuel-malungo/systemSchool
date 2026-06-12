@@ -147,23 +147,74 @@ export class BoletimWordGenerator {
           verticalAlign: VerticalAlign.CENTER,
           margins: { top: 60, bottom: 60, left: 100, right: 100 },
           children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                ...(logoBuffer ? [
-                  new ImageRun({
-                    data: logoBuffer,
-                    transformation: { width: 50, height: 20 },
-                    type: "png"
-                  }),
-                  new TextRun({ text: "      " })
-                ] : []),
-                new TextRun({
-                  text: (instituicao.nome || "INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS").toUpperCase(),
-                  font,
-                  size: 28,
-                  bold: true,
-                  color: colorBlack
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              borders: {
+                top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }
+              },
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      width: { size: 15, type: WidthType.PERCENTAGE },
+                      borders: {
+                        top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }
+                      },
+                      children: [
+                        new Paragraph({
+                          alignment: AlignmentType.LEFT,
+                          children: logoBuffer ? [
+                            new ImageRun({
+                              data: logoBuffer,
+                              transformation: { width: 50, height: 20 },
+                              type: "png"
+                            })
+                          ] : []
+                        })
+                      ]
+                    }),
+                    new TableCell({
+                      width: { size: 70, type: WidthType.PERCENTAGE },
+                      verticalAlign: VerticalAlign.CENTER,
+                      borders: {
+                        top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }
+                      },
+                      children: [
+                        new Paragraph({
+                          alignment: AlignmentType.CENTER,
+                          children: [
+                            new TextRun({
+                              text: (instituicao.nome || "INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS").toUpperCase(),
+                              font,
+                              size: 28,
+                              bold: true,
+                              color: colorBlack
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+                    new TableCell({
+                      width: { size: 15, type: WidthType.PERCENTAGE },
+                      borders: {
+                        top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }
+                      },
+                      children: [new Paragraph({ text: "" })]
+                    }),
+                  ]
                 })
               ]
             })
