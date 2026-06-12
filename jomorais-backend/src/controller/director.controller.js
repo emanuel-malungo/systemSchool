@@ -163,7 +163,6 @@ export class DirectorController {
       const confirmacoes = await prisma.tb_confirmacoes.findMany({
         where: {
           codigo_Turma: parseInt(turmaId),
-          codigo_Ano_lectivo: anoObj.codigo,
           codigo_Status: 1
         },
         include: {
