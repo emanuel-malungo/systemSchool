@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
-import Container from '../../components/layout/Container'
-import { DirectorService, type IDirectorTurma } from '../../services/director.service'
-import api from '../../utils/api.utils'
 import { toast } from 'react-toastify'
+import api from '../../utils/api.utils'
+import { useState, useEffect, useMemo } from 'react'
+import Container from '../../components/layout/Container'
+import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 
 interface IPeriodoLancamento {
   codigo: number;
