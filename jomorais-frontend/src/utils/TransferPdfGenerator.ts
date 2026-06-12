@@ -216,21 +216,23 @@ export class TransferPdfGenerator {
     let y = 20
 
     // ── CABEÇALHO: Logo à esquerda + Nome da instituição à direita ──────────
+
     const logoX = marginL
     const logoY = y
-    const logoSize = 22
+    const logoSize = 16
 
-    // Desenhar escudo simulado (círculo verde + contorno) coloque a logo import icon from "../assets/images/icon.png"
     doc.addImage(icon, 'PNG', logoX, logoY, logoSize, logoSize)
 
-    // Nome da instituição alinhado verticalmente ao centro do logo
+    // Nome da instituição ao lado da logo
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
-    doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(16)
-    const textX = logoX + logoSize + 5
-    doc.text(instNome, textX, logoY + logoSize / 2 + 2)
+    doc.setFontSize(11)
+    const textX = logoX + logoSize + 3
+    doc.text(instNome, textX, logoY + logoSize / 2 + 1.5)
 
-    y = logoY + logoSize + 8
+    y = logoY + logoSize + 3
+    doc.setLineWidth(0.5)
+    doc.line(marginL, y, pageWidth - marginR, y)
+    y += 8
 
     // Título do documento no cabeçalho
     const anoEmissao = transferencia.dataTransferencia
@@ -377,18 +379,20 @@ export class TransferPdfGenerator {
     // ── RODAPÉ ───────────────────────────────────────────────────────────────
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(8)
-    doc.setTextColor(100, 100, 100)
+    doc.setTextColor(0, 0, 0)
 
     const footerBairro = (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') 
       + '. TELEFONE: ' + (instituicao.telefone || '915 312 187')
     const footerEmail = 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com')
     const footerFacebook = 'FACEBOOK: Colégio Jomorais'
 
-    doc.text(footerBairro, pageWidth / 2, pageHeight - 16, { align: 'center' })
-    doc.text(footerEmail, pageWidth / 2, pageHeight - 12, { align: 'center' })
-    doc.text(footerFacebook, pageWidth / 2, pageHeight - 8, { align: 'center' })
+    const footerY = pageHeight - 20
+    doc.setLineWidth(0.5)
+    doc.line(marginL, footerY, pageWidth - marginR, footerY)
 
-    doc.setTextColor(0, 0, 0)
+    doc.text(footerBairro, pageWidth / 2, footerY + 5, { align: 'center' })
+    doc.text(footerEmail, pageWidth / 2, footerY + 9, { align: 'center' })
+    doc.text(footerFacebook, pageWidth / 2, footerY + 13, { align: 'center' })
 
     // Salvar PDF
     const fileName = `Guia_Transferencia_${nomeAluno.replace(/\s+/g, '_')}_${numGuia}.pdf`
@@ -449,25 +453,53 @@ export class TransferPdfGenerator {
       sections: [
         {
           properties: {},
-          children: [
-            // Cabecalho (República, etc)
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
+          headers: {
+            default: new Header({
               children: [
-                ...(logoBuffer ? [
-                  new TextRun({ text: "\n" }),
-                  new ImageRun({
-                    data: logoBuffer,
-                    transformation: { width: 60, height: 60 },
-                    type: "png"
-                  }),
-                  new TextRun({ text: "\n\n" })
-                ] : [new TextRun({ text: "\n\n" })]),
-                new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
-              ],
-            }),
-            new Paragraph({ text: "", border: { bottom: { color: "auto", space: 1, value: "single", size: 12 } } }),
-            new Paragraph({ text: "" }),
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: [
+                    ...(logoBuffer ? [
+                      new ImageRun({
+                        data: logoBuffer,
+                        transformation: { width: 30, height: 30 },
+                        type: "png"
+                      }),
+                      new TextRun({ text: "  " })
+                    ] : []),
+                    new TextRun({ text: instNome, font: "Times New Roman", size: 24, bold: true }),
+                  ],
+                  border: { bottom: { color: "auto", space: 1, value: "single", size: 12 } }
+                }),
+              ]
+            })
+          },
+          footers: {
+            default: new Footer({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  border: { top: { color: "auto", space: 1, value: "single", size: 12 } },
+                  children: [
+                    new TextRun({ text: (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') + '. TELEFONE: ' + (instituicao.telefone || '915 312 187'), font: "Times New Roman", size: 16, bold: true })
+                  ]
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({ text: 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com'), font: "Times New Roman", size: 16, bold: true })
+                  ]
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({ text: 'FACEBOOK: Colégio Jomorais', font: "Times New Roman", size: 16, bold: true })
+                  ]
+                })
+              ]
+            })
+          },
+          children: [
             
             // Título
             new Paragraph({
@@ -591,25 +623,7 @@ export class TransferPdfGenerator {
             }),
             new Paragraph({ text: "\n\n" }),
 
-            // Footer info at bottom
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') + '. TELEFONE: ' + (instituicao.telefone || '915 312 187'), font: "Times New Roman", size: 16, color: "666666" })
-              ]
-            }),
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com'), font: "Times New Roman", size: 16, color: "666666" })
-              ]
-            }),
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [
-                new TextRun({ text: 'FACEBOOK: Colégio Jomorais', font: "Times New Roman", size: 16, color: "666666" })
-              ]
-            })
+            new Paragraph({ text: "\n\n" })
           ],
         },
       ],
