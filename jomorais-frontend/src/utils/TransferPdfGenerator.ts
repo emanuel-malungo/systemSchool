@@ -262,32 +262,43 @@ export class TransferPdfGenerator {
     const lh = 5.5 // line height (approx 1.15 spacing for 12pt)
 
     // Dados do aluno
-    const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
-    const matricula = aluno.tb_matriculas  // singular (tb_matriculas?)
-    const confirmacao = matricula?.tb_confirmacoes?.[0]
+    const nomeAluno = (aluno.nome || '___').toUpperCase()
+    const matricula = aluno.tb_matriculas
+    const confirmacoes = matricula?.tb_confirmacoes || []
+    const confirmacao = confirmacoes[confirmacoes.length - 1]
     const turma = confirmacao?.tb_turmas
-    const classe = turma?.tb_classes?.designacao || 'N/A'
-    const numTurma = turma?.designacao || 'N/A'   // ex: "22"
-    const letraTurma = 'E'                          // letra da turma (campo separado se existir)
-    const periodo = turma?.tb_periodos?.designacao || 'N/A'
-    const curso = (matricula?.tb_cursos?.designacao || 'N/A').toUpperCase()
+    const classeFull = turma?.tb_classes?.designacao || '___'
+    const classeMatch = classeFull.match(/(\d+)/)
+    const classeNum = classeMatch ? classeMatch[1] : '___'
+
+    const numTurma = '___'
+    const letraTurmaMatch = turma?.designacao?.match(/-([A-Z])-/i) || turma?.designacao?.match(/-([A-Z])\b/i)
+    const letraTurma = letraTurmaMatch ? letraTurmaMatch[1].toUpperCase() : '___'
+
+    const periodoRaw = turma?.tb_periodos?.designacao?.toUpperCase() || ''
+    const periodo = periodoRaw === 'TARDE' ? 'Vespertino' : (periodoRaw === 'MANHA' || periodoRaw === 'MANHÃ' ? 'Matutino' : (periodoRaw === 'NOITE' ? 'Noturno' : periodoRaw))
+
+    const curso = matricula?.tb_cursos?.designacao || '___'
     const nProcesso = String(aluno.codigo).padStart(4, '0')
-    const pai = (aluno.pai || 'N/A').toUpperCase()
-    const mae = (aluno.mae || 'N/A').toUpperCase()
-    const municipio = aluno.tb_comunas?.tb_municipios?.designacao || 'Cabinda'
-    const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || 'Cabinda'
-    const naturalidade = aluno.tb_comunas?.designacao || municipio
+    const pai = aluno.pai || '___'
+    const mae = aluno.mae || '___'
+    
+    let naturalidade = aluno.tb_comunas?.designacao || ''
+    const municipio = aluno.tb_comunas?.tb_municipios?.designacao || '___'
+    const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || '___'
+    if (!naturalidade.trim()) naturalidade = municipio
+
     const dataNasc = this.formatDateLong(aluno.dataNascimento)
-    const biNum = aluno.n_documento_identificacao || 'N/A'
-    const biProv = aluno.provinciaEmissao || 'Cabinda'
-    const biData = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : 'N/A'
-    const escolaDestino = (proveniencia?.designacao || 'N/A').toUpperCase()
+    const biNum = aluno.n_documento_identificacao || '___'
+    const biProv = aluno.provinciaEmissao || '___'
+    const biData = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : '___'
+    const escolaDestino = (proveniencia?.designacao || '___').toUpperCase()
 
     // Parágrafo 1 — mistura bold (nomes) e normal — fiel ao modelo da imagem
     const p1: Array<{ text: string; bold: boolean; underline?: boolean }> = [
       { text: 'Para os fins julgados convenientes e conforme solicitado pelo (a) Encarregado (a) da educação, é transferido o aluno ', bold: false },
       { text: nomeAluno + ',', bold: true },
-      { text: ` da ${classe}ª Classe, nº.`, bold: false },
+      { text: ` da ${classeNum}ª Classe, nº.`, bold: false },
       { text: numTurma + ',', bold: true },
       { text: ' turma: ', bold: false },
       { text: letraTurma + ',', bold: true },
@@ -297,7 +308,7 @@ export class TransferPdfGenerator {
       { text: curso + ',', bold: true },
       { text: ` processo nº.${nProcesso}, filho de `, bold: false },
       { text: pai, bold: true },
-      { text: ' e ', bold: false },
+      { text: ' e de ', bold: false },
       { text: mae + ',', bold: true },
       { text: ` natural de ${naturalidade}, município de ${municipio}, província de ${provincia}, nascido aos ${dataNasc}, portador da Bilhete de Identidade nº.`, bold: false },
       { text: biNum + ',', bold: true },
@@ -322,7 +333,7 @@ export class TransferPdfGenerator {
     // OBS
     doc.setFont('Comic Sans MS', 'bold')
     doc.setFontSize(12)
-    doc.text(`OBS: Vai matricular-se na ${classe}ª Classe.`, marginL, y)
+    doc.text(`OBS: Vai matricular-se na ${classeNum}ª Classe.`, marginL, y)
     y += lh + 4
 
     // CONSTITUÍ O SEU PROCESSO INDIVIDUAL
@@ -416,30 +427,36 @@ export class TransferPdfGenerator {
     const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
 
     const matricula = aluno.tb_matriculas
-    const confirmacao = matricula?.tb_confirmacoes?.[0]
-    const classe = confirmacao?.tb_turmas?.tb_classes?.designacao || '___'
-    const curso = matricula?.tb_cursos?.designacao || 'Enfermagem'
+    const confirmacoes = matricula?.tb_confirmacoes || []
+    const confirmacao = confirmacoes[confirmacoes.length - 1]
+    const turma = confirmacao?.tb_turmas
+    const classeFull = turma?.tb_classes?.designacao || '___'
+    const classeMatch = classeFull.match(/(\d+)/)
+    const classeNum = classeMatch ? classeMatch[1] : '___'
+
+    const numTurma = '___'
+    const letraTurmaMatch = turma?.designacao?.match(/-([A-Z])-/i) || turma?.designacao?.match(/-([A-Z])\b/i)
+    const letraTurma = letraTurmaMatch ? letraTurmaMatch[1].toUpperCase() : '___'
+
+    const periodoRaw = turma?.tb_periodos?.designacao?.toUpperCase() || ''
+    const periodo = periodoRaw === 'TARDE' ? 'Vespertino' : (periodoRaw === 'MANHA' || periodoRaw === 'MANHÃ' ? 'Matutino' : (periodoRaw === 'NOITE' ? 'Noturno' : periodoRaw))
+
+    const curso = matricula?.tb_cursos?.designacao || '___'
     const escolaDestino = (proveniencia?.designacao || 'Outra Instituição').toUpperCase()
 
-    const biNum = aluno.n_documento_identificacao || '_________________'
-    const biProv = aluno.provinciaEmissao || '________'
-    const biData = this.formatDateLong(aluno.dataEmissao)
+    const nProcesso = String(aluno.codigo).padStart(4, '0')
 
-    let naturalidade = ''
-    if (aluno.tb_comunas) {
-      naturalidade += aluno.tb_comunas.designacao
-      if (aluno.tb_comunas.tb_municipios) {
-        naturalidade += `, Município de ${aluno.tb_comunas.tb_municipios.designacao}`
-        if (aluno.tb_comunas.tb_municipios.tb_provincias) {
-          naturalidade += `, Província de ${aluno.tb_comunas.tb_municipios.tb_provincias.designacao}`
-        }
-      }
-    } else {
-      naturalidade = '_____________________________'
-    }
+    const biNum = aluno.n_documento_identificacao || '___'
+    const biProv = aluno.provinciaEmissao || '___'
+    const biData = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : '___'
 
-    const pai = aluno.pai || '_____________________________'
-    const mae = aluno.mae || '_____________________________'
+    const pai = aluno.pai || '___'
+    const mae = aluno.mae || '___'
+
+    let naturalidade = aluno.tb_comunas?.designacao || ''
+    const municipio = aluno.tb_comunas?.tb_municipios?.designacao || '___'
+    const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || '___'
+    if (!naturalidade.trim()) naturalidade = municipio
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
 
     let logoBuffer: ArrayBuffer | undefined
@@ -549,15 +566,19 @@ export class TransferPdfGenerator {
               children: [
                 new TextRun({ text: "Para os fins julgados convenientes e conforme solicitado pelo (a) Encarregado (a) da educação, é transferido o aluno ", font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: nomeAluno + ",", font: "Comic Sans MS", size: 24, bold: true }),
-                new TextRun({ text: ` da ${classe}ª Classe, nº._______, turma: _______, período: _______, curso: `, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: ` da ${classeNum}ª Classe, nº.`, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: numTurma + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " turma: ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: letraTurma + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " período: ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: periodo + ",", font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: " curso: ", font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: curso + ",", font: "Comic Sans MS", size: 24, bold: true }),
-                new TextRun({ text: " processo nº._______, filho de ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: ` processo nº.${nProcesso}, filho de `, font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: pai, font: "Comic Sans MS", size: 24, bold: true }),
                 new TextRun({ text: " e de ", font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: mae + ",", font: "Comic Sans MS", size: 24, bold: true }),
-                new TextRun({ text: " natural de ", font: "Comic Sans MS", size: 24 }),
-                new TextRun({ text: naturalidade + ",", font: "Comic Sans MS", size: 24, bold: true }),
-                new TextRun({ text: " município de _______, província de _______, nascido aos ", font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: ` natural de ${naturalidade}, município de ${municipio}, província de ${provincia}, nascido aos `, font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: this.formatDateLong(aluno.dataNascimento) + ",", font: "Comic Sans MS", size: 24, bold: true }),
                 new TextRun({ text: " portador da Bilhete de Identidade nº.", font: "Comic Sans MS", size: 24 }),
                 new TextRun({ text: biNum + ",", font: "Comic Sans MS", size: 24, bold: true }),
@@ -580,7 +601,7 @@ export class TransferPdfGenerator {
               alignment: AlignmentType.JUSTIFIED,
               spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: `OBS: Vai matricular-se na ${classe}ª Classe.`, font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: `OBS: Vai matricular-se na ${classeNum}ª Classe.`, font: "Comic Sans MS", size: 24, bold: true }),
               ]
             }),
             new Paragraph({ text: "" }),
