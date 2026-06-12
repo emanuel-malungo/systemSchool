@@ -45,6 +45,11 @@ import ProfessorPerfil from '../pages/Professor/ProfessorPerfil'
 import ProfessorLancamento from '../pages/Professor/ProfessorLancamento'
 import ProfessorNotas from '../pages/Professor/ProfessorNotas'
 
+// Importações do Portal do Diretor
+import DirectorDashboard from '../pages/Director/DirectorDashboard'
+import DirectorLancamento from '../pages/Director/DirectorLancamento'
+import DirectorBoletins from '../pages/Director/DirectorBoletins'
+
 export default function IndexRoutes() {
   return (
 	<Routes>
@@ -105,6 +110,12 @@ export default function IndexRoutes() {
 	  	<Route path='/professor/perfil' element={<ProfessorPerfil />} />
 	  	<Route path='/professor/lancar-notas' element={<ProfessorLancamento />} />
 	  	<Route path='/professor/minhas-notas' element={<ProfessorNotas />} />
+
+	  	{/* Rotas do Portal do Diretor de Turma */}
+	  	<Route path='/director' element={<Navigate to='/director/dashboard' replace />} />
+	  	<Route path='/director/dashboard' element={<DirectorDashboard />} />
+	  	<Route path='/director/lancar-notas' element={<DirectorLancamento />} />
+	  	<Route path='/director/boletins' element={<DirectorBoletins />} />
 	  </Route>
 
 	  {/* Rota 404 - redireciona para auth */}

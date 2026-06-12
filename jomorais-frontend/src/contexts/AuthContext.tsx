@@ -92,8 +92,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Atualizar estado do Zustand
         setLoginState(userData, authToken)
         
-        // Redirecionar para dashboard/admin
-        navigate('/admin')
+        // Redirecionar baseado no tipo de utilizador
+        const tipoDesc = userData.tipoDesignacao?.toUpperCase() || '';
+        if (tipoDesc.includes('PROFESSOR')) {
+          navigate('/professor')
+        } else if (tipoDesc === 'DIRECTOR DE TURMA') {
+          navigate('/director')
+        } else {
+          navigate('/admin')
+        }
       } else {
         throw new Error(response.message || 'Falha ao fazer login')
       }

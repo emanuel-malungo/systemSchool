@@ -65,6 +65,7 @@ export function usePermissions() {
     if ('tipoDesignacao' in user && user.tipoDesignacao) {
       const designation = user.tipoDesignacao.toLowerCase()
       if (designation.includes('professor')) return 'professor'
+      if (designation.includes('director') || designation.includes('diretor')) return 'director'
       if (designation.includes('administrador')) return 'administrador'
       if (designation.includes('chefe') || designation.includes('secretaria') || designation.includes('secretária')) return 'chefe de secretaria'
       if (designation.includes('assistente')) return 'assistente administrativo'
@@ -82,7 +83,8 @@ export function usePermissions() {
       4: 'professor',
       5: 'pedagogico',
       6: 'administrador',
-      7: 'chefe de secretaria'
+      7: 'chefe de secretaria',
+      10: 'director'
     }
     
     return typeMapping[Number(user.tipo)] || 'unknown'

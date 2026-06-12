@@ -62,6 +62,24 @@ export default function Sidebar() {
     }
   ], [])
 
+  const directorMenuItems: MenuItem[] = React.useMemo(() => [
+    {
+      title: "Dashboard",
+      icon: Home,
+      href: "/director/dashboard"
+    },
+    {
+      title: "Lançamento de Notas",
+      icon: BarChart3,
+      href: "/director/lancar-notas"
+    },
+    {
+      title: "Boletins da Turma",
+      icon: FileText,
+      href: "/director/boletins"
+    }
+  ], [])
+
   const menuItems: MenuItem[] = React.useMemo(() => [
     {
       title: "Dashboard",
@@ -204,8 +222,11 @@ export default function Sidebar() {
     if (userType === 'professor') {
       return professorMenuItems
     }
+    if (userType === 'director') {
+      return directorMenuItems
+    }
     return filterMenuItems(menuItems)
-  }, [userType, professorMenuItems, filterMenuItems, menuItems])
+  }, [userType, professorMenuItems, directorMenuItems, filterMenuItems, menuItems])
 
   // Função auxiliar para verificar se algum filho está ativo
   const hasActiveChild = React.useCallback((item: MenuItem): boolean => {
