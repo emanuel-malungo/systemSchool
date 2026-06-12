@@ -235,7 +235,7 @@ export class TransferPdfGenerator {
     doc.line(marginL, y, pageWidth - marginR, y)
     y += 8
 
-    // Título do documento no cabeçalho
+    // Título do documento no corpo
     const anoEmissao = transferencia.dataTransferencia
       ? new Date(transferencia.dataTransferencia).getFullYear()
       : new Date().getFullYear()
@@ -243,18 +243,15 @@ export class TransferPdfGenerator {
     const sigla = 'DCITPSJM'
     const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
 
-    doc.setFont('Times', 'bold')
+    doc.setFont('Comic Sans MS', 'bolditalic')
     doc.setFontSize(14)
-    doc.text('GUIA DE TRANSFERÊNCIA', pageWidth / 2, y, { align: 'center' })
-    y += 7
-    doc.setFont('Times', 'normal')
-    doc.setFontSize(11)
-    doc.text(`Nº.${numGuia}/${sigla}/${anoEmissao}`, pageWidth / 2, y, { align: 'center' })
+    doc.text(titulo, pageWidth / 2, y, { align: 'center' })
+    
+    // Sublinhado do título
+    const titleWidth = (doc.getStringUnitWidth(titulo) * 14) / doc.internal.scaleFactor
+    doc.setLineWidth(0.4)
+    doc.line((pageWidth - titleWidth) / 2, y + 1, (pageWidth + titleWidth) / 2, y + 1)
 
-    y += 8
-    doc.setDrawColor(0, 0, 0)
-    doc.setLineWidth(0.8)
-    doc.line(marginL, y, pageWidth - marginR, y)
     y += 14
 
     // ── CORPO DO TEXTO ───────────────────────────────────────────────────────
@@ -470,7 +467,7 @@ export class TransferPdfGenerator {
                     ] : []),
                     new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
                   ],
-                  border: { bottom: { color: "auto", space: 1, value: "single", size: 12 } }
+                  border: { bottom: { color: "auto", space: 1, value: "double", size: 6 } }
                 }),
               ]
             })
@@ -508,9 +505,10 @@ export class TransferPdfGenerator {
               children: [
                 new TextRun({
                   text: titulo,
-                  font: "Times New Roman",
-                  size: 26,
+                  font: "Comic Sans MS",
+                  size: 28, // 14pt (28 half-points)
                   bold: true,
+                  italics: true,
                   underline: { type: UnderlineType.SINGLE }
                 })
               ]
