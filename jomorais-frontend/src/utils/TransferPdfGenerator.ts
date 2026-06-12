@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, UnderlineType, Tab, Header, Footer } from 'docx'
 import icon from "../assets/images/icon.png"
 
 export interface ITransferPdfData {
@@ -67,6 +68,7 @@ export interface ITransferPdfData {
 }
 
 export class TransferPdfGenerator {
+  
   /** Formata a data por extenso em Português (pt-AO) */
   private static formatDateLong(dateStr: string | null | undefined): string {
     if (!dateStr) return '___/___/______'
@@ -223,20 +225,14 @@ export class TransferPdfGenerator {
 
     // Nome da instituição alinhado verticalmente ao centro do logo
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
-    doc.setFont('Agency FB', 'bold')
+    doc.setFont('Helvetica', 'bold')
     doc.setFontSize(16)
     const textX = logoX + logoSize + 5
     doc.text(instNome, textX, logoY + logoSize / 2 + 2)
 
-    y = logoY + logoSize + 4
+    y = logoY + logoSize + 8
 
-    // Linha horizontal sob o cabeçalho
-    doc.setDrawColor(0, 0, 0)
-    doc.setLineWidth(0.8)
-    doc.line(marginL, y, pageWidth - marginR, y)
-    y += 14
-
-    // ── TÍTULO ──────────────────────────────────────────────────────────────
+    // Título do documento no cabeçalho
     const anoEmissao = transferencia.dataTransferencia
       ? new Date(transferencia.dataTransferencia).getFullYear()
       : new Date().getFullYear()
@@ -244,14 +240,18 @@ export class TransferPdfGenerator {
     const sigla = 'DCITPSJM'
     const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
 
-    doc.setFont('Comic Sans MS', 'bold')
-    doc.setFontSize(13)
-    const tituloWidth = (doc.getStringUnitWidth(titulo) * 13) / doc.internal.scaleFactor
-    const tituloX = (pageWidth - tituloWidth) / 2
-    doc.text(titulo, tituloX, y)
-    // Sublinhado do título
-    doc.setLineWidth(0.4)
-    doc.line(tituloX, y + 1, tituloX + tituloWidth, y + 1)
+    doc.setFont('Times', 'bold')
+    doc.setFontSize(14)
+    doc.text('GUIA DE TRANSFERÊNCIA', pageWidth / 2, y, { align: 'center' })
+    y += 7
+    doc.setFont('Times', 'normal')
+    doc.setFontSize(11)
+    doc.text(`Nº.${numGuia}/${sigla}/${anoEmissao}`, pageWidth / 2, y, { align: 'center' })
+
+    y += 8
+    doc.setDrawColor(0, 0, 0)
+    doc.setLineWidth(0.8)
+    doc.line(marginL, y, pageWidth - marginR, y)
     y += 14
 
     // ── CORPO DO TEXTO ───────────────────────────────────────────────────────
@@ -393,5 +393,236 @@ export class TransferPdfGenerator {
     // Salvar PDF
     const fileName = `Guia_Transferencia_${nomeAluno.replace(/\s+/g, '_')}_${numGuia}.pdf`
     doc.save(fileName)
+  }
+
+  /**
+   * Gera o mesmo documento em formato Word (.docx)
+   */
+  public static async generateWord(data: ITransferPdfData) {
+    const { transferencia, proveniencia, instituicao } = data
+    const aluno = transferencia.tb_alunos
+
+    const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
+    const numGuia = String(transferencia.codigo).padStart(3, '0')
+    const sigla = 'DCITPSJM'
+    const anoEmissao = transferencia.dataTransferencia
+      ? new Date(transferencia.dataTransferencia).getFullYear()
+      : new Date().getFullYear()
+    const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
+
+    const matricula = aluno.tb_matriculas
+    const confirmacao = matricula?.tb_confirmacoes?.[0]
+    const classe = confirmacao?.tb_turmas?.tb_classes?.designacao || '___'
+    const curso = matricula?.tb_cursos?.designacao || 'Enfermagem'
+    const escolaDestino = (proveniencia?.designacao || 'Outra Instituição').toUpperCase()
+
+    const biNum = aluno.n_documento_identificacao || '_________________'
+    const biProv = aluno.provinciaEmissao || '________'
+    const biData = this.formatDateLong(aluno.dataEmissao)
+
+    let naturalidade = ''
+    if (aluno.tb_comunas) {
+      naturalidade += aluno.tb_comunas.designacao
+      if (aluno.tb_comunas.tb_municipios) {
+        naturalidade += `, Município de ${aluno.tb_comunas.tb_municipios.designacao}`
+        if (aluno.tb_comunas.tb_municipios.tb_provincias) {
+          naturalidade += `, Província de ${aluno.tb_comunas.tb_municipios.tb_provincias.designacao}`
+        }
+      }
+    } else {
+      naturalidade = '_____________________________'
+    }
+
+    const pai = aluno.pai || '_____________________________'
+    const mae = aluno.mae || '_____________________________'
+    const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
+
+    let logoBuffer: ArrayBuffer | undefined
+    try {
+      const response = await fetch(icon)
+      logoBuffer = await response.arrayBuffer()
+    } catch (e) {
+      console.warn("Could not load logo for Word document", e)
+    }
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            // Cabecalho (República, etc)
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                ...(logoBuffer ? [
+                  new TextRun({ text: "\n" }),
+                  new ImageRun({
+                    data: logoBuffer,
+                    transformation: { width: 60, height: 60 },
+                    type: "png"
+                  }),
+                  new TextRun({ text: "\n\n" })
+                ] : [new TextRun({ text: "\n\n" })]),
+                new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
+              ],
+            }),
+            new Paragraph({ text: "", border: { bottom: { color: "auto", space: 1, value: "single", size: 12 } } }),
+            new Paragraph({ text: "" }),
+            
+            // Título
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({
+                  text: titulo,
+                  font: "Times New Roman",
+                  size: 26,
+                  bold: true,
+                  underline: { type: UnderlineType.SINGLE }
+                })
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            // Corpo
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: "Passa a favor do(a) Aluno(a): ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: nomeAluno + ",", font: "Times New Roman", size: 24, bold: true }),
+              ]
+            }),
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: "Filho de: ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: pai, font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: " e de ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: mae + ",", font: "Times New Roman", size: 24, bold: true }),
+              ]
+            }),
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: "Nascido aos ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: this.formatDateLong(aluno.dataNascimento) + ",", font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: " natural de: ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: naturalidade + ",", font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: " portador(a) do Bilhete de Identidade n.º ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: biNum + ",", font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: ` emitido pela Identificação de ${biProv}, ${biData}.`, font: "Times New Roman", size: 24 }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [
+                new TextRun({ text: "Para o ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: escolaDestino + ".", font: "Times New Roman", size: 24, bold: true, underline: { type: UnderlineType.SINGLE } }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [
+                new TextRun({ text: `OBS: Vai matricular-se na ${classe}ª Classe.`, font: "Times New Roman", size: 24, bold: true }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: "CONSTITUÍ O SEU PROCESSO INDIVIDUAL: ", font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: "cópia do bilhete de identidade, certificado de conclusão do I ciclo do Ensino Secundário Geral e Ficha Académica do Ensino Médio de Saúde.", font: "Times New Roman", size: 24 }),
+              ]
+            }),
+            new Paragraph({ text: "" }),
+
+            ...(transferencia.obs ? [
+              new Paragraph({
+                alignment: AlignmentType.JUSTIFIED,
+                children: [
+                  new TextRun({ text: `Observação: ${transferencia.obs}`, font: "Times New Roman", size: 20, italics: true }),
+                ]
+              }),
+              new Paragraph({ text: "" })
+            ] : []),
+
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              children: [
+                new TextRun({ text: "Por ser verdade e me ter sido solicitada, passou-se a presente ", font: "Times New Roman", size: 24 }),
+                new TextRun({ text: "GUIA DE TRANSFERÊNCIA", font: "Times New Roman", size: 24, bold: true }),
+                new TextRun({ text: " que vai por mim assinada e autenticada com o carimbo em uso nesta Instituição de Ensino.", font: "Times New Roman", size: 24 }),
+              ]
+            }),
+            new Paragraph({ text: "\n" }),
+
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [
+                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}. –`, font: "Times New Roman", size: 24 }),
+              ]
+            }),
+            new Paragraph({ text: "\n" }),
+
+            // Assinatura
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: "O Director do Instituto", font: "Times New Roman", size: 20 }),
+              ]
+            }),
+            new Paragraph({ text: "\n\n" }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: "________________________________________________", font: "Times New Roman", size: 20 }),
+              ]
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: "GABRIEL PRÓSPERO MABIALA", font: "Times New Roman", size: 20, bold: true }),
+              ]
+            }),
+            new Paragraph({ text: "\n\n" }),
+
+            // Footer info at bottom
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') + '. TELEFONE: ' + (instituicao.telefone || '915 312 187'), font: "Times New Roman", size: 16, color: "666666" })
+              ]
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com'), font: "Times New Roman", size: 16, color: "666666" })
+              ]
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'FACEBOOK: Colégio Jomorais', font: "Times New Roman", size: 16, color: "666666" })
+              ]
+            })
+          ],
+        },
+      ],
+    })
+
+    const blob = await Packer.toBlob(doc)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `Guia_Transferencia_${nomeAluno.replace(/\s+/g, '_')}_${numGuia}.docx`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 }

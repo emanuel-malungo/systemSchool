@@ -98,17 +98,33 @@ export default function TransferManagement() {
 
   const handlePrintTransfer = async (transfer: ITransfer) => {
     try {
-      toast.info('Buscando dados para emissão da guia...')
+      toast.info('Buscando dados para emissão da guia em PDF...')
       const response = await transferService.getTransferPdfData(transfer.codigo)
       if (response.success && response.data) {
         TransferPdfGenerator.generatePDF(response.data)
-        toast.success('Guia de transferência gerada com sucesso!')
+        toast.success('Guia de transferência (PDF) gerada com sucesso!')
       } else {
         toast.error('Erro ao buscar dados para emissão da guia')
       }
     } catch (error) {
       console.error('Erro ao gerar guia de transferência:', error)
       toast.error('Erro ao gerar guia de transferência. Tente novamente.')
+    }
+  }
+
+  const handleExportWord = async (transfer: ITransfer) => {
+    try {
+      toast.info('Buscando dados para emissão da guia em Word...')
+      const response = await transferService.getTransferPdfData(transfer.codigo)
+      if (response.success && response.data) {
+        await TransferPdfGenerator.generateWord(response.data)
+        toast.success('Guia de transferência (Word) gerada com sucesso!')
+      } else {
+        toast.error('Erro ao buscar dados para emissão da guia')
+      }
+    } catch (error) {
+      console.error('Erro ao exportar guia para Word:', error)
+      toast.error('Erro ao exportar guia para Word. Tente novamente.')
     }
   }
 
@@ -245,6 +261,7 @@ export default function TransferManagement() {
         onView={handleViewTransfer}
         onDelete={handleDeleteClick}
         onPrint={handlePrintTransfer}
+        onExportWord={handleExportWord}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}

@@ -1,4 +1,4 @@
-import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Printer } from 'lucide-react'
+import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Printer, FileText } from 'lucide-react'
 import type { ITransfer } from '../../types/transfer.types'
 
 interface TransferTableProps {
@@ -8,6 +8,7 @@ interface TransferTableProps {
   onView: (transfer: ITransfer) => void
   onDelete: (transfer: ITransfer) => void
   onPrint?: (transfer: ITransfer) => void
+  onExportWord?: (transfer: ITransfer) => void
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
@@ -20,6 +21,7 @@ export default function TransferTable({
   onView,
   onDelete,
   onPrint,
+  onExportWord,
   currentPage,
   totalPages,
   onPageChange,
@@ -140,9 +142,20 @@ export default function TransferTable({
                       <button
                         onClick={() => onPrint(transfer)}
                         className="text-blue-600 hover:text-blue-900 transition-colors p-1 hover:bg-blue-50 rounded"
-                        title="Imprimir Guia"
+                        title="Imprimir Guia (PDF)"
                       >
                         <Printer className="h-5 w-5" />
+                      </button>
+                    )}
+
+                    {/* Exportar Word */}
+                    {onExportWord && (
+                      <button
+                        onClick={() => onExportWord(transfer)}
+                        className="text-indigo-600 hover:text-indigo-900 transition-colors p-1 hover:bg-indigo-50 rounded"
+                        title="Exportar para Word"
+                      >
+                        <FileText className="h-5 w-5" />
                       </button>
                     )}
 
