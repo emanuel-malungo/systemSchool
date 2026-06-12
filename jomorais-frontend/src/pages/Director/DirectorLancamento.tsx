@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, Save } from 'lucide-react'
+import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 import api from '../../utils/api.utils'
@@ -79,6 +79,21 @@ export default function DirectorLancamento() {
       return pTrim?.toString() === selectedTrimestre && pTipo === selectedTipoNota && inicio <= agora && fim >= agora;
     });
     return !!active;
+  }, [openPeriods, selectedAnoLectivo, selectedTrimestre, selectedTipoNota])
+
+  // Verificar data final do período de lançamento se houver
+  const dataFimPeriodo = useMemo(() => {
+    if (!selectedAnoLectivo || !selectedTrimestre || !selectedTipoNota) return null;
+    const active = openPeriods.find(p => {
+      const pTrim = p.trimestre || p.Trimestre;
+      const pTipo = p.tipoNota || p.TipoAvaliacao;
+
+      return (
+        pTrim?.toString() === selectedTrimestre &&
+        pTipo === selectedTipoNota
+      );
+    });
+    return active ? new Date(active.dataFim || active.DataFim || '').toLocaleDateString('pt-AO') : null;
   }, [openPeriods, selectedAnoLectivo, selectedTrimestre, selectedTipoNota])
 
   useEffect(() => {
@@ -225,15 +240,49 @@ export default function DirectorLancamento() {
                 className="mt-2 w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium focus:ring-[#007C00] outline-none disabled:bg-gray-50"
               >
                 <option value="">Selecione...</option>
-                {openPeriods.map(p => (
-                  <option key={p.codigo} value={p.codigo}>
-                    {p.nome || `${p.trimestre || p.Trimestre}º Trimestre - ${p.tipoNota || p.TipoAvaliacao}`}
-                  </option>
-                ))}
+                {openPeriods.map(p => {
+                  const pTrim = p.trimestre || p.Trimestre
+                  const pTipo = p.tipoNota || p.TipoAvaliacao
+                  const pAno = p.anoLectivo || p.AnoLectivo
+                  return (
+                    <option key={p.codigo} value={p.codigo}>
+                      {p.nome || `${pTrim}º Trimestre - ${pTipo}`} ({pAno})
+                    </option>
+                  )
+                })}
               </select>
+              {openPeriods.length === 0 && (
+                <div className="mt-2 text-xs text-amber-600 flex items-center gap-1 font-semibold">
+                  ⚠️ Nenhum período ativo cadastrado pelo administrador.
+                </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Banner de status do Período de Lançamento */}
+        {isContextSelected && (
+          <div className={`p-5 rounded-2xl flex items-center justify-between border ${
+            isPeriodoAtivo 
+              ? 'bg-emerald-50 border-emerald-100 text-emerald-800' 
+              : 'bg-rose-50 border-rose-100 text-rose-800'
+          }`}>
+            <div className="flex items-center gap-3">
+              {isPeriodoAtivo ? <CheckCircle2 size={24} className="text-emerald-600" /> : <AlertCircle size={24} className="text-rose-600" />}
+              <div>
+                <p className="font-bold text-base">
+                  O período de lançamento para {selectedTipoNota} está {isPeriodoAtivo ? 'ATIVO' : 'FECHADO'}
+                </p>
+                <p className="text-sm opacity-90 mt-0.5">
+                  {isPeriodoAtivo 
+                    ? `Você pode inserir e atualizar notas livremente. Data final limite: ${dataFimPeriodo}.`
+                    : 'Lançamentos e edições estão bloqueados para este trimestre/tipo.'
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {isContextSelected && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden">
