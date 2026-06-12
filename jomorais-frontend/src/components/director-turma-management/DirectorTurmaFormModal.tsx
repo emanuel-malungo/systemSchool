@@ -115,20 +115,21 @@ export default function DirectorTurmaFormModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/20 transition-opacity" onClick={isLoading ? undefined : onClose} />
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={isLoading ? undefined : onClose} />
 
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-xl shadow-xl max-w-2xl w-full">
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">
+        <div className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full transform transition-all flex flex-col max-h-[90vh]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
+            <h2 className="text-xl font-bold text-gray-900">
               {isEditMode ? 'Editar Diretor de Turma' : 'Novo Diretor de Turma'}
             </h2>
-            <button onClick={onClose} disabled={isLoading} className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50">
-              <X className="h-6 w-6" />
+            <button onClick={onClose} disabled={isLoading} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200 disabled:opacity-50">
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmitForm)} className="p-6 space-y-6">
+          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
             {/* Designação */}
             <div>
               <Input
@@ -255,15 +256,17 @@ export default function DirectorTurmaFormModal({
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-              <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>
-                Cancelar
-              </Button>
-              <Button type="submit" variant="primary" loading={isLoading} className="bg-[#007C00] hover:bg-[#005a00]">
-                {isEditMode ? 'Atualizar' : 'Criar'} Diretor de Turma
-              </Button>
-            </div>
-          </form>
+            </form>
+          </div>
+          
+          <div className="flex justify-end gap-3 px-6 py-5 border-t border-gray-100 shrink-0 bg-gray-50/50 rounded-b-xl">
+            <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading} size="md">
+              Cancelar
+            </Button>
+            <Button type="submit" variant="primary" loading={isLoading} size="md" className="bg-[#007C00] hover:bg-[#005a00]">
+              {isEditMode ? 'Atualizar' : 'Criar'} Diretor de Turma
+            </Button>
+          </div>
         </div>
       </div>
     </div>
