@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FileText, Loader2, Download } from 'lucide-react'
+import { Loader2, Download } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 import { BoletimWordGenerator } from '../../utils/BoletimWordGenerator'
@@ -43,12 +43,11 @@ export default function DirectorBoletins() {
       const data = await DirectorService.getBoletimTurma(
         selectedTurma.codigo_Turma, 
         parseInt(selectedTrimestreId), 
-        parseInt(selectedTurma.tb_turmas?.codigo || '1') // need to pass anoLectivoId, but our backend can figure it out or we send it
+        parseInt(String(selectedTurma.tb_turmas?.codigo || '1')) // need to pass anoLectivoId, but our backend can figure it out or we send it
       )
       
       const turmaDesignacao = selectedTurma.tb_turmas?.designacao || 'Turma'
-      const generator = new BoletimWordGenerator()
-      await generator.generateWord(data, `Boletins_${turmaDesignacao}.docx`)
+      await BoletimWordGenerator.generateWord(data, `Boletins_${turmaDesignacao}.docx`)
 
       toast.success('Boletins gerados com sucesso!')
     } catch (error: any) {

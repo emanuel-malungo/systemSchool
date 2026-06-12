@@ -93,7 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoginState(userData, authToken)
         
         // Redirecionar baseado no tipo de utilizador
-        const tipoDesc = userData.tipoDesignacao?.toUpperCase() || '';
+        const tipoDesc = (userData as any).tipoDesignacao?.toUpperCase() || '';
         if (tipoDesc.includes('PROFESSOR')) {
           navigate('/professor')
         } else if (tipoDesc === 'DIRECTOR DE TURMA') {

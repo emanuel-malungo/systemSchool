@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Loader2, Save } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 import api from '../../utils/api.utils'
@@ -101,7 +101,7 @@ export default function DirectorLancamento() {
         })
 
         const localMap: Record<number, string> = {}
-        alunosList.forEach(a => {
+        alunosList.forEach((a: any) => {
           const match = notasExistentes.find((n: any) => {
             const normDb = n.tipoAvaliacao.descricao === 'NPP' ? 'PP' : (n.tipoAvaliacao.descricao === 'NPT' ? 'PT' : n.tipoAvaliacao.descricao);
             const normSel = selectedTipoNota === 'NPP' ? 'PP' : (selectedTipoNota === 'NPT' ? 'PT' : selectedTipoNota);

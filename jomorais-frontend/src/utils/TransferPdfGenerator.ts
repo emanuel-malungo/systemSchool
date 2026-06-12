@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, UnderlineType, Tab, Header, Footer, Table, TableRow, TableCell, WidthType, BorderStyle } from 'docx'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, UnderlineType, Header, Footer, Table, TableRow, TableCell, WidthType, BorderStyle } from 'docx'
 import icon from "../assets/images/icon.png"
 
 export interface ITransferPdfData {
@@ -198,7 +198,7 @@ export class TransferPdfGenerator {
    * Gera o PDF oficial da Guia de Transferência fiel ao modelo institucional.
    */
   static generatePDF(data: ITransferPdfData): void {
-    const { transferencia, proveniencia, instituicao } = data
+    const { transferencia, proveniencia } = data
     const instNome = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS'
     const aluno = transferencia.tb_alunos
     console.log(data)
@@ -419,7 +419,7 @@ export class TransferPdfGenerator {
    * Gera o mesmo documento em formato Word (.docx)
    */
   public static async generateWord(data: ITransferPdfData) {
-    const { transferencia, proveniencia, instituicao } = data
+    const { transferencia, proveniencia } = data
     const instNome = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS'
     const aluno = transferencia.tb_alunos
 

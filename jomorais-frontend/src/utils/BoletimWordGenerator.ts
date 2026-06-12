@@ -70,7 +70,6 @@ export class BoletimWordGenerator {
 
     const colsDisciplinas = [...disciplinas.slice(0, 12)]
     const N = colsDisciplinas.length
-    const totalCols = N + 3 // Nº, NOME, Disciplinas..., OBS
 
     // Build the document
     const doc = new Document({
@@ -82,7 +81,7 @@ export class BoletimWordGenerator {
               margin: { top: 700, right: 500, bottom: 700, left: 500 }, // Narrow A4 margins
             }
           },
-          children: boletins.flatMap((boletim, idx) => {
+          children: boletins.flatMap((boletim) => {
             const table = this.createBoletimTable(
               boletim,
               turma,
@@ -122,7 +121,7 @@ export class BoletimWordGenerator {
     anoLetivo: string,
     trimLabel: string,
     colsDisciplinas: any[],
-    instituicao: any,
+    _instituicao: any,
     directorTurma: string,
     contactoDirector: string,
     logoBuffer: ArrayBuffer | undefined,

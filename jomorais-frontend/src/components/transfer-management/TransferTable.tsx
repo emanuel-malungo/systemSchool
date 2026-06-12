@@ -1,4 +1,4 @@
-import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, Printer, FileText } from 'lucide-react'
+import { Eye, Edit2, Trash2, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import type { ITransfer } from '../../types/transfer.types'
 
 interface TransferTableProps {
@@ -55,28 +55,6 @@ export default function TransferTable({
     }
   }
 
-  // Mapeamento de motivos (pode ser carregado de uma API futuramente)
-  const getMotivoText = (codigoMotivo: number) => {
-    const motivos: Record<number, string> = {
-      1: 'Mudança de Residência',
-      2: 'Problemas Financeiros',
-      3: 'Insatisfação com a Escola',
-      4: 'Problemas de Saúde',
-      5: 'Outros Motivos',
-    }
-    return motivos[codigoMotivo] || `Motivo ${codigoMotivo}`
-  }
-
-  const getMotivoColor = (codigoMotivo: number) => {
-    const colors: Record<number, string> = {
-      1: 'bg-blue-100 text-blue-800',
-      2: 'bg-yellow-100 text-yellow-800',
-      3: 'bg-red-100 text-red-800',
-      4: 'bg-purple-100 text-purple-800',
-      5: 'bg-gray-100 text-gray-800',
-    }
-    return colors[codigoMotivo] || 'bg-gray-100 text-gray-800'
-  }
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
