@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, UnderlineType, Tab, Header, Footer } from 'docx'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, UnderlineType, Tab, Header, Footer, Table, TableRow, TableCell, WidthType, BorderStyle } from 'docx'
 import icon from "../assets/images/icon.png"
 
 export interface ITransferPdfData {
@@ -219,7 +219,7 @@ export class TransferPdfGenerator {
 
     const logoX = marginL
     const logoY = y
-    const logoSize = 16
+    const logoSize = 22
 
     doc.addImage(icon, 'PNG', logoX, logoY, logoSize, logoSize)
 
@@ -230,9 +230,12 @@ export class TransferPdfGenerator {
     const textX = logoX + logoSize + 3
     doc.text(instNome, textX, logoY + logoSize / 2 + 2)
 
+    // Sublinhado sob a logo e o texto
+    const textWidth = (doc.getStringUnitWidth(instNome) * 16) / doc.internal.scaleFactor
+    const totalWidth = logoSize + 3 + textWidth
     y = logoY + logoSize + 3
-    doc.setLineWidth(0.5)
-    doc.line(marginL, y, pageWidth - marginR, y)
+    doc.setLineWidth(0.6)
+    doc.line(marginL, y, marginL + totalWidth, y)
     y += 8
 
     // Título do documento no corpo
@@ -454,20 +457,43 @@ export class TransferPdfGenerator {
           headers: {
             default: new Header({
               children: [
-                new Paragraph({
-                  alignment: AlignmentType.LEFT,
-                  children: [
-                    ...(logoBuffer ? [
-                      new ImageRun({
-                        data: logoBuffer,
-                        transformation: { width: 30, height: 30 },
-                        type: "png"
-                      }),
-                      new TextRun({ text: "  " })
-                    ] : []),
-                    new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
-                  ],
-                  border: { bottom: { color: "auto", space: 1, value: "double", size: 6 } }
+                new Table({
+                  width: { size: 100, type: WidthType.AUTO },
+                  borders: {
+                    top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                    left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                    right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                    bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                    insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                    insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }
+                  },
+                  rows: [
+                    new TableRow({
+                      children: [
+                        new TableCell({
+                          borders: {
+                            bottom: { style: BorderStyle.DOUBLE, size: 6, color: "auto" }
+                          },
+                          children: [
+                            new Paragraph({
+                              alignment: AlignmentType.LEFT,
+                              children: [
+                                ...(logoBuffer ? [
+                                  new ImageRun({
+                                    data: logoBuffer,
+                                    transformation: { width: 45, height: 45 },
+                                    type: "png"
+                                  }),
+                                  new TextRun({ text: "  " })
+                                ] : []),
+                                new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
+                              ]
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  ]
                 }),
               ]
             })
