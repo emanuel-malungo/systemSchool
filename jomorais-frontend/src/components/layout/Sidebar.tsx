@@ -64,12 +64,12 @@ export default function Sidebar() {
 
   const directorMenuItems: MenuItem[] = React.useMemo(() => [
     {
-      title: "Dashboard",
+      title: "Painel do Diretor",
       icon: Home,
       href: "/director/dashboard"
     },
     {
-      title: "Lançamento de Notas",
+      title: "Lançamento da Turma",
       icon: BarChart3,
       href: "/director/lancar-notas"
     },
@@ -77,6 +77,21 @@ export default function Sidebar() {
       title: "Boletins da Turma",
       icon: FileText,
       href: "/director/boletins"
+    },
+    {
+      title: "Meu Perfil",
+      icon: Users,
+      href: "/professor/perfil"
+    },
+    {
+      title: "Lançamento (Minhas Disciplinas)",
+      icon: BookOpen,
+      href: "/professor/lancar-notas"
+    },
+    {
+      title: "Minhas Notas",
+      icon: FileText,
+      href: "/professor/minhas-notas"
     }
   ], [])
 

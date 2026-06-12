@@ -223,12 +223,31 @@ export class AuthService {
       data: { loginStatus: 'ON' }
     });
 
+    let finalTipo = user.codigo_Tipo_Utilizador;
+    let finalDesignacao = user.tb_tipos_utilizador.designacao;
+
+    // Verificar se o utilizador é professor (tipo 4) e promovê-lo a Diretor (tipo 10) se aplicável
+    if (finalTipo === 4) {
+      const docente = await prisma.tb_docente.findFirst({
+        where: { codigo_utilizador: user.codigo }
+      });
+      if (docente) {
+        const isDirector = await prisma.tb_directores_turmas.findFirst({
+          where: { codigoDocente: docente.codigo }
+        });
+        if (isDirector) {
+          finalTipo = 10;
+          finalDesignacao = 'DIRECTOR DE TURMA';
+        }
+      }
+    }
+
     const token = generateToken({
       id: user.codigo.toString(),
       username: user.user,
       nome: user.nome,
-      tipo: user.codigo_Tipo_Utilizador,
-      tipoDesignacao: user.tb_tipos_utilizador.designacao,
+      tipo: finalTipo,
+      tipoDesignacao: finalDesignacao,
       legacy: true
     });
 
@@ -237,8 +256,8 @@ export class AuthService {
         id: user.codigo,
         nome: user.nome,
         username: user.user,
-        tipo: user.codigo_Tipo_Utilizador,
-        tipoDesignacao: user.tb_tipos_utilizador.designacao,
+        tipo: finalTipo,
+        tipoDesignacao: finalDesignacao,
         estadoActual: user.estadoActual,
         dataCadastro: user.dataCadastro,
         legacy: true
