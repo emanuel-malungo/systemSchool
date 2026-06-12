@@ -225,9 +225,10 @@ export class TransferPdfGenerator {
 
     // Nome da instituição ao lado da logo
     const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
-    doc.setFontSize(11)
+    doc.setFont('Agency FB', 'bold')
+    doc.setFontSize(16)
     const textX = logoX + logoSize + 3
-    doc.text(instNome, textX, logoY + logoSize / 2 + 1.5)
+    doc.text(instNome, textX, logoY + logoSize / 2 + 2)
 
     y = logoY + logoSize + 3
     doc.setLineWidth(0.5)
@@ -467,7 +468,7 @@ export class TransferPdfGenerator {
                       }),
                       new TextRun({ text: "  " })
                     ] : []),
-                    new TextRun({ text: instNome, font: "Times New Roman", size: 24, bold: true }),
+                    new TextRun({ text: instNome, font: "Agency FB", size: 32, bold: true }),
                   ],
                   border: { bottom: { color: "auto", space: 1, value: "single", size: 12 } }
                 }),
