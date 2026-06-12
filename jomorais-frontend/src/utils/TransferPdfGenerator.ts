@@ -526,7 +526,7 @@ export class TransferPdfGenerator {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  border: { top: { color: "auto", space: 1, value: "single", size: 12 } },
+                  border: { top: { color: "auto", space: 1, style: BorderStyle.SINGLE, size: 12 } },
                   children: [
                     new TextRun({ text: "BAIRRO: 1º DE MAIO, NA RUA 3X3. TELEFONE: 915 312 187", font: "Arial", size: 20 })
                   ]
