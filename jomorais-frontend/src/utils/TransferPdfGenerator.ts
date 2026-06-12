@@ -243,7 +243,7 @@ export class TransferPdfGenerator {
     const sigla = 'DCITPSJM'
     const titulo = `GUIA DE TRANSFERÊNCIA Nº.${numGuia}/${sigla}/${anoEmissao}`
 
-    doc.setFont('Comic Sans MS', 'bolditalic')
+    doc.setFont('Comic Sans MS', 'bold')
     doc.setFontSize(14)
     doc.text(titulo, pageWidth / 2, y, { align: 'center' })
     
@@ -508,7 +508,6 @@ export class TransferPdfGenerator {
                   font: "Comic Sans MS",
                   size: 28, // 14pt (28 half-points)
                   bold: true,
-                  italics: true,
                   underline: { type: UnderlineType.SINGLE }
                 })
               ]
