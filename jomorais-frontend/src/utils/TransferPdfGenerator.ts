@@ -199,6 +199,7 @@ export class TransferPdfGenerator {
    */
   static generatePDF(data: ITransferPdfData): void {
     const { transferencia, proveniencia, instituicao } = data
+    const instNome = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS'
     const aluno = transferencia.tb_alunos
     console.log(data)
     console.log(aluno)
@@ -226,7 +227,6 @@ export class TransferPdfGenerator {
     doc.addImage(icon, 'PNG', logoX, logoY, logoSize, logoSize)
 
     // Nome da instituição ao lado da logo
-    const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
     doc.setFont('Agency FB', 'bold')
     doc.setFontSize(16)
     const textX = logoX + logoSize + 3
@@ -331,7 +331,7 @@ export class TransferPdfGenerator {
     y += lh + 4
 
     // OBS
-    doc.setFont('Comic Sans MS', 'bold')
+    doc.setFont('Comic Sans MS', 'normal')
     doc.setFontSize(12)
     doc.text(`OBS: Vai matricular-se na ${classeNum}ª Classe.`, marginL, y)
     y += lh + 4
@@ -366,16 +366,21 @@ export class TransferPdfGenerator {
 
     // ── DATA E LOCAL ─────────────────────────────────────────────────────────
     const dataDoc = this.formatDateLong(transferencia.dataTransferencia)
+    const datePrefix = `${instNome}, `
     doc.setFont('Comic Sans MS', 'normal')
     doc.setFontSize(12)
-    doc.text(`${instNome}, ${dataDoc}.`, marginL, y)
+    doc.text(datePrefix, marginL, y)
+    const prefixWidth = this.textWidth(doc, datePrefix)
+    doc.setFont('Comic Sans MS', 'bold')
+    doc.setFontSize(9)
+    doc.text(`${dataDoc}. –`, marginL + prefixWidth, y)
     y += 20
 
     // ── ASSINATURA ───────────────────────────────────────────────────────────
     // Bloco de assinatura centralizado
     const sigX = pageWidth / 2
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(10)
+    doc.setFont('Edwardian Script ITC', 'normal')
+    doc.setFontSize(18)
     doc.text('O Director do Instituto', sigX, y, { align: 'center' })
     y += 20
 
@@ -384,18 +389,17 @@ export class TransferPdfGenerator {
     doc.line(sigX - 40, y, sigX + 40, y)
     y += 6
 
-    doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(10)
+    doc.setFont('Comic Sans MS', 'normal')
+    doc.setFontSize(12)
     doc.text('GABRIEL PRÓSPERO MABIALA', sigX, y, { align: 'center' })
 
     // ── RODAPÉ ───────────────────────────────────────────────────────────────
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(8)
+    doc.setFont('Arial', 'normal')
+    doc.setFontSize(10)
     doc.setTextColor(0, 0, 0)
 
-    const footerBairro = (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') 
-      + '. TELEFONE: ' + (instituicao.telefone || '915 312 187')
-    const footerEmail = 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com')
+    const footerBairro = 'BAIRRO: 1º DE MAIO, NA RUA 3X3. TELEFONE: 915 312 187'
+    const footerEmail = 'EMAIL: colegiojomorais@gmail.com'
     const footerFacebook = 'FACEBOOK: Colégio Jomorais'
 
     const footerY = pageHeight - 20
@@ -416,6 +420,7 @@ export class TransferPdfGenerator {
    */
   public static async generateWord(data: ITransferPdfData) {
     const { transferencia, proveniencia, instituicao } = data
+    const instNome = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS'
     const aluno = transferencia.tb_alunos
 
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
@@ -457,7 +462,6 @@ export class TransferPdfGenerator {
     const municipio = aluno.tb_comunas?.tb_municipios?.designacao || '___'
     const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || '___'
     if (!naturalidade.trim()) naturalidade = municipio
-    const instNome = (instituicao.nome || 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS').toUpperCase()
 
     let logoBuffer: ArrayBuffer | undefined
     try {
@@ -524,19 +528,19 @@ export class TransferPdfGenerator {
                   alignment: AlignmentType.CENTER,
                   border: { top: { color: "auto", space: 1, value: "single", size: 12 } },
                   children: [
-                    new TextRun({ text: (instituicao.endereco ? `BAIRRO: ${instituicao.endereco.toUpperCase()}` : 'BAIRRO: 1º DE MAIO, NA RUA 3X3') + '. TELEFONE: ' + (instituicao.telefone || '915 312 187'), font: "Times New Roman", size: 16, bold: true })
+                    new TextRun({ text: "BAIRRO: 1º DE MAIO, NA RUA 3X3. TELEFONE: 915 312 187", font: "Arial", size: 20 })
                   ]
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: 'EMAIL: ' + (instituicao.email || 'colegiojomorais@gmail.com'), font: "Times New Roman", size: 16, bold: true })
+                    new TextRun({ text: "EMAIL: colegiojomorais@gmail.com", font: "Arial", size: 20 })
                   ]
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [
-                    new TextRun({ text: 'FACEBOOK: Colégio Jomorais', font: "Times New Roman", size: 16, bold: true })
+                    new TextRun({ text: "FACEBOOK: Colégio Jomorais", font: "Arial", size: 20 })
                   ]
                 })
               ]
@@ -601,7 +605,7 @@ export class TransferPdfGenerator {
               alignment: AlignmentType.JUSTIFIED,
               spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: `OBS: Vai matricular-se na ${classeNum}ª Classe.`, font: "Comic Sans MS", size: 24, bold: true }),
+                new TextRun({ text: `OBS: Vai matricular-se na ${classeNum}ª Classe.`, font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "" }),
@@ -642,7 +646,8 @@ export class TransferPdfGenerator {
               alignment: AlignmentType.JUSTIFIED,
               spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}.`, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: `${instNome}, `, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: `${this.formatDateLong(transferencia.dataTransferencia)}. –`, font: "Comic Sans MS", size: 18, bold: true }),
               ]
             }),
             new Paragraph({ text: "\n" }),
@@ -651,7 +656,7 @@ export class TransferPdfGenerator {
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: "O Director do Instituto", font: "Times New Roman", size: 20 }),
+                new TextRun({ text: "O Director do Instituto", font: "Edwardian Script ITC", size: 36 }),
               ]
             }),
             new Paragraph({ text: "\n\n" }),
@@ -664,7 +669,7 @@ export class TransferPdfGenerator {
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: "GABRIEL PRÓSPERO MABIALA", font: "Times New Roman", size: 20, bold: true }),
+                new TextRun({ text: "GABRIEL PRÓSPERO MABIALA", font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "\n\n" }),
