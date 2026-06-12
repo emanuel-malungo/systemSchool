@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth, usePermissions } from '../hooks/useAuth'
 
 interface PublicRouteProps {
   redirectTo?: string
@@ -8,12 +8,17 @@ interface PublicRouteProps {
 export function PublicRoute({ 
   redirectTo = '/admin'
 }: PublicRouteProps) {
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated } = useAuth()
+  const { userType } = usePermissions()
 
   // Se estiver autenticado, redirecionar para área protegida correspondente
   if (isAuthenticated) {
-    const isProfessor = Number(user?.tipo) === 4
-    return <Navigate to={isProfessor ? '/professor/dashboard' : redirectTo} replace />
+    if (userType === 'professor') {
+      return <Navigate to="/professor/dashboard" replace />
+    } else if (userType === 'director') {
+      return <Navigate to="/director/dashboard" replace />
+    }
+    return <Navigate to={redirectTo} replace />
   }
 
   // Renderizar rota pública

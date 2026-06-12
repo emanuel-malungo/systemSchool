@@ -226,8 +226,8 @@ export class AuthService {
     let finalTipo = user.codigo_Tipo_Utilizador;
     let finalDesignacao = user.tb_tipos_utilizador.designacao;
 
-    // Verificar se o utilizador é professor (tipo 4) e promovê-lo a Diretor (tipo 10) se aplicável
-    if (finalTipo === 4) {
+    // Verificar se o utilizador é professor (tipo 4 ou 8) e promovê-lo a Diretor (tipo 10) se aplicável
+    if (finalTipo === 4 || finalTipo === 8) {
       const docente = await prisma.tb_docente.findFirst({
         where: { codigo_utilizador: user.codigo }
       });

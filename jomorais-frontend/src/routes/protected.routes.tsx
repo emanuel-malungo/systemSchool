@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth, usePermissions } from '../hooks/useAuth'
 import { useEffect } from 'react'
 import authService from '../services/auth.service'
 
@@ -13,13 +13,13 @@ export function ProtectedRoute({
   requiredRole
 }: ProtectedRouteProps) {
   const { isAuthenticated, user, logout } = useAuth()
+  const { userType } = usePermissions()
   const location = useLocation()
 
   // Verificar validade do token periodicamente
   useEffect(() => {
     const checkTokenValidity = () => {
       if (isAuthenticated && !authService.hasValidToken()) {
-        // console.warn('🔐 Token inválido detectado - fazendo logout automático');
         logout();
       }
     };
@@ -38,9 +38,9 @@ export function ProtectedRoute({
     return <Navigate to={redirectTo} replace />
   }
 
-  // Redirecionar professores tentando acessar a área administrativa
-  if (Number(user?.tipo) === 4 && location.pathname.startsWith('/admin')) {
-    return <Navigate to="/professor/dashboard" replace />
+  // Redirecionar professores e diretores tentando acessar a área administrativa
+  if ((userType === 'professor' || userType === 'director') && location.pathname.startsWith('/admin')) {
+    return <Navigate to={userType === 'director' ? "/director/dashboard" : "/professor/dashboard"} replace />
   }
 
   // Verificar role se especificado
