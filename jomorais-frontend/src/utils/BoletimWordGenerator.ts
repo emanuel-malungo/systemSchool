@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, VerticalAlign, TextDirection } from 'docx'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, VerticalAlign, PageOrientation } from 'docx'
 
 import icon from '../assets/images/icon.png'
 import type { IBoletimTurmaData, IBoletimAlunoData } from './BoletimPdfGenerator'
@@ -76,7 +76,12 @@ export class BoletimWordGenerator {
     const doc = new Document({
       sections: [
         {
-          properties: {},
+          properties: {
+            page: {
+              size: { orientation: PageOrientation.PORTRAIT },
+              margin: { top: 700, right: 500, bottom: 700, left: 500 }, // Narrow A4 margins
+            }
+          },
           children: boletins.flatMap((boletim, idx) => {
             const table = this.createBoletimTable(
               boletim,
@@ -140,7 +145,7 @@ export class BoletimWordGenerator {
         new TableCell({
           columnSpan: totalCols,
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 100, bottom: 100, left: 100, right: 100 },
+          margins: { top: 60, bottom: 60, left: 100, right: 100 },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
@@ -173,21 +178,21 @@ export class BoletimWordGenerator {
         new TableCell({
           columnSpan: totalCols,
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 100, bottom: 100, left: 100, right: 100 },
+          margins: { top: 60, bottom: 60, left: 100, right: 100 },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({ text: "ANO LECTIVO: ", font, size, bold: true, color: colorRed }),
-                new TextRun({ text: `${anoLetivo}      `, font, size, bold: true, color: colorBlack }),
+                new TextRun({ text: `${anoLetivo}       `, font, size, bold: true, color: colorBlack }),
                 new TextRun({ text: "CLASSE: ", font, size, bold: true, color: colorRed }),
-                new TextRun({ text: `${turma.classe ? turma.classe + 'ª' : '-'}      `, font, size, bold: true, color: colorBlack }),
+                new TextRun({ text: `${turma.classe ? turma.classe + 'ª' : '-'}       `, font, size, bold: true, color: colorBlack }),
                 new TextRun({ text: "CURSO: ", font, size, bold: true, color: colorRed }),
-                new TextRun({ text: `${turma.curso || '-'}      `, font, size, bold: true, color: colorBlack }),
+                new TextRun({ text: `${turma.curso || '-'}       `, font, size, bold: true, color: colorBlack }),
                 new TextRun({ text: "SALA: ", font, size, bold: true, color: colorRed }),
-                new TextRun({ text: `${turma.sala || turma.designacao}      `, font, size, bold: true, color: colorBlack }),
+                new TextRun({ text: `${turma.sala || turma.designacao}       `, font, size, bold: true, color: colorBlack }),
                 new TextRun({ text: "PERIODO: ", font, size, bold: true, color: colorRed }),
-                new TextRun({ text: `${(turma.periodo || '').toUpperCase()}      `, font, size, bold: true, color: colorBlack }),
+                new TextRun({ text: `${(turma.periodo || '').toUpperCase()}       `, font, size, bold: true, color: colorBlack }),
                 new TextRun({ text: `${trimLabel}`, font, size, bold: true, color: colorRed }),
               ]
             })
@@ -200,25 +205,25 @@ export class BoletimWordGenerator {
     const row3Cells = [
       new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+        margins: { top: 60, bottom: 60, left: 40, right: 40 },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nº", font, size, bold: true, italics: true, color: colorBlack })] })]
       }),
       new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+        margins: { top: 60, bottom: 60, left: 40, right: 40 },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "NOME", font, size, bold: true, italics: true, color: colorBlack })] })]
       })
     ]
     colsDisciplinas.forEach(disc => {
       row3Cells.push(new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 50, right: 50 },
+        margins: { top: 60, bottom: 60, left: 40, right: 40 },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: disc.abreviatura || abbrev(disc.designacao), font, size, bold: true, color: colorBlue })] })]
       }))
     })
     row3Cells.push(new TableCell({
       verticalAlign: VerticalAlign.CENTER,
-      margins: { top: 100, bottom: 100, left: 100, right: 100 },
+      margins: { top: 60, bottom: 60, left: 40, right: 40 },
       children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "OBS", font, size, bold: true, color: colorBlack })] })]
     }))
     const row3 = new TableRow({ children: row3Cells })
@@ -227,13 +232,13 @@ export class BoletimWordGenerator {
     const row4Cells = [
       new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 100, right: 100 },
+        margins: { top: 60, bottom: 60, left: 40, right: 40 },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(boletim.numero), font, size, bold: true, color: colorBlack })] })]
       }),
       new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 100, right: 100 },
-        children: [new Paragraph({ children: [new TextRun({ text: boletim.aluno.nome, font, size: 20, color: colorBlack })] })]
+        margins: { top: 60, bottom: 60, left: 60, right: 40 }, // Left aligned with padding
+        children: [new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: boletim.aluno.nome, font, size: 20, color: colorBlack })] })]
       })
     ]
     colsDisciplinas.forEach(disc => {
@@ -247,14 +252,14 @@ export class BoletimWordGenerator {
       }
       row4Cells.push(new TableCell({
         verticalAlign: VerticalAlign.CENTER,
-        margins: { top: 100, bottom: 100, left: 50, right: 50 },
+        margins: { top: 60, bottom: 60, left: 40, right: 40 },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: notaStr, font, size, bold: true, color: notaColor })] })]
       }))
     })
     const isTransita = boletim.situacao === 'TRANSITA'
     row4Cells.push(new TableCell({
       verticalAlign: VerticalAlign.CENTER,
-      margins: { top: 100, bottom: 100, left: 100, right: 100 },
+      margins: { top: 60, bottom: 60, left: 40, right: 40 },
       children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: boletim.situacao, font, size, bold: true, color: isTransita ? colorBlue : colorDanger })] })]
     }))
     const row4 = new TableRow({ children: row4Cells })
@@ -263,21 +268,21 @@ export class BoletimWordGenerator {
     const row5 = new TableRow({
       children: [
         new TableCell({
-          columnSpan: 2,
+          columnSpan: 2, // Nº and NOME
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 100, bottom: 100, left: 100, right: 100 },
-          children: [new Paragraph({ children: [new TextRun({ text: `Comportamento: ${boletim.comportamento}`, font, size: 20, color: colorBlack })] })]
+          margins: { top: 40, bottom: 40, left: 40, right: 40 },
+          children: [new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: `Comportamento: ${boletim.comportamento}`, font, size: 20, color: colorBlack })] })]
         }),
         new TableCell({
-          columnSpan: N,
+          columnSpan: N, // Disciplines
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 100, bottom: 100, left: 100, right: 100 },
+          margins: { top: 40, bottom: 40, left: 40, right: 40 },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({ text: "Faltas: ", font, size, bold: true, color: colorBlue }),
-                new TextRun({ text: `${boletim.faltas}                `, font, size, bold: true, color: colorBlue }),
+                new TextRun({ text: `${boletim.faltas}                                        `, font, size, bold: true, color: colorBlue }),
                 new TextRun({ text: "Directora de turma: ", font, size, bold: true, color: colorBlue }),
                 new TextRun({ text: directorTurma, font, size, bold: true, color: colorBlue })
               ]
@@ -285,9 +290,9 @@ export class BoletimWordGenerator {
           ]
         }),
         new TableCell({
-          columnSpan: 1,
+          columnSpan: 1, // OBS
           verticalAlign: VerticalAlign.CENTER,
-          margins: { top: 100, bottom: 100, left: 100, right: 100 },
+          margins: { top: 40, bottom: 40, left: 40, right: 40 },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
@@ -301,8 +306,17 @@ export class BoletimWordGenerator {
       ]
     })
 
+    // Adjusted column widths for A4 Portrait (Total ~10900 DXA)
+    const colWidths = [
+      400, // Nº
+      2900, // NOME
+      ...colsDisciplinas.map(() => 550), // 12 Disciplines
+      1000 // OBS
+    ]
+
     return new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
+      columnWidths: colWidths,
       borders: {
         top: { style: BorderStyle.DOUBLE, size: 6, color: colorBlack },
         bottom: { style: BorderStyle.DOUBLE, size: 6, color: colorBlack },
