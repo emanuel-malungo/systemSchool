@@ -368,7 +368,7 @@ export class TransferPdfGenerator {
     const dataDoc = this.formatDateLong(transferencia.dataTransferencia)
     doc.setFont('Comic Sans MS', 'normal')
     doc.setFontSize(12)
-    doc.text(`${instNome}, ${dataDoc}. –`, marginL, y)
+    doc.text(`${instNome}, ${dataDoc}.`, marginL, y)
     y += 20
 
     // ── ASSINATURA ───────────────────────────────────────────────────────────
@@ -642,7 +642,7 @@ export class TransferPdfGenerator {
               alignment: AlignmentType.JUSTIFIED,
               spacing: { line: 276, lineRule: "auto" },
               children: [
-                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}. –`, font: "Comic Sans MS", size: 24 }),
+                new TextRun({ text: `${instNome}, ${this.formatDateLong(transferencia.dataTransferencia)}.`, font: "Comic Sans MS", size: 24 }),
               ]
             }),
             new Paragraph({ text: "\n" }),
