@@ -196,7 +196,7 @@ export class BoletimWordGenerator {
                             new TextRun({
                               text: ("INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS").toUpperCase(),
                               font,
-                              size: 28,
+                              size: 22, // 11pt
                               bold: true,
                               color: colorBlack
                             })
