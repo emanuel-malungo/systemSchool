@@ -129,7 +129,7 @@ export default function DirectorTurmaFormModal({
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-            <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
+            <form id="director-turma-form" onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
             {/* Designação */}
             <div>
               <Input
@@ -263,7 +263,7 @@ export default function DirectorTurmaFormModal({
             <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading} size="md">
               Cancelar
             </Button>
-            <Button type="submit" variant="primary" loading={isLoading} size="md" className="bg-[#007C00] hover:bg-[#005a00]">
+            <Button type="submit" form="director-turma-form" variant="primary" loading={isLoading} size="md" className="bg-[#007C00] hover:bg-[#005a00]">
               {isEditMode ? 'Atualizar' : 'Criar'} Diretor de Turma
             </Button>
           </div>
