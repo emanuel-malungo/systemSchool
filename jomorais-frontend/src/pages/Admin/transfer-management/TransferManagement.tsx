@@ -96,22 +96,6 @@ export default function TransferManagement() {
     }
   }
 
-  const handlePrintTransfer = async (transfer: ITransfer) => {
-    try {
-      toast.info('Buscando dados para emissão da guia em PDF...')
-      const response = await transferService.getTransferPdfData(transfer.codigo)
-      if (response.success && response.data) {
-        TransferPdfGenerator.generatePDF(response.data)
-        toast.success('Guia de transferência (PDF) gerada com sucesso!')
-      } else {
-        toast.error('Erro ao buscar dados para emissão da guia')
-      }
-    } catch (error) {
-      console.error('Erro ao gerar guia de transferência:', error)
-      toast.error('Erro ao gerar guia de transferência. Tente novamente.')
-    }
-  }
-
   const handleExportWord = async (transfer: ITransfer) => {
     try {
       toast.info('Buscando dados para emissão da guia em Word...')
@@ -260,7 +244,6 @@ export default function TransferManagement() {
         onEdit={handleEditTransfer}
         onView={handleViewTransfer}
         onDelete={handleDeleteClick}
-        onPrint={handlePrintTransfer}
         onExportWord={handleExportWord}
         currentPage={currentPage}
         totalPages={totalPages}

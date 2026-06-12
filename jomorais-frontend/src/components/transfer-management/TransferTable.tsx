@@ -7,7 +7,6 @@ interface TransferTableProps {
   onEdit: (transfer: ITransfer) => void
   onView: (transfer: ITransfer) => void
   onDelete: (transfer: ITransfer) => void
-  onPrint?: (transfer: ITransfer) => void
   onExportWord?: (transfer: ITransfer) => void
   currentPage: number
   totalPages: number
@@ -20,7 +19,6 @@ export default function TransferTable({
   onEdit,
   onView,
   onDelete,
-  onPrint,
   onExportWord,
   currentPage,
   totalPages,
@@ -137,17 +135,6 @@ export default function TransferTable({
 
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
-                    {/* Imprimir Guia */}
-                    {onPrint && (
-                      <button
-                        onClick={() => onPrint(transfer)}
-                        className="text-blue-600 hover:text-blue-900 transition-colors p-1 hover:bg-blue-50 rounded"
-                        title="Imprimir Guia (PDF)"
-                      >
-                        <Printer className="h-5 w-5" />
-                      </button>
-                    )}
-
                     {/* Exportar Word */}
                     {onExportWord && (
                       <button
