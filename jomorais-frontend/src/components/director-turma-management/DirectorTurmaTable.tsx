@@ -24,7 +24,7 @@ export default function DirectorTurmaTable({
     return (
       <div className="p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007C00]"></div>
         </div>
         <p className="text-center text-gray-500 mt-4">Carregando diretores de turma...</p>
       </div>
@@ -90,8 +90,8 @@ export default function DirectorTurmaTable({
 
                 <td className="px-6 py-4">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-emerald-100">
-                      <User className="h-5 w-5 text-emerald-600" />
+                    <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#007C00]/10">
+                      <User className="h-5 w-5 text-[#007C00]" />
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">
@@ -169,7 +169,7 @@ export default function DirectorTurmaTable({
                           onClick={() => onPageChange(page)}
                           className={`inline-flex items-center justify-center min-w-[2.25rem] h-9 px-3 rounded-lg border transition-colors ${
                             page === currentPage
-                              ? 'border-emerald-600 bg-emerald-600 text-white font-medium'
+                              ? 'border-[#007C00] bg-[#007C00] text-white font-medium'
                               : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                           }`}
                         >

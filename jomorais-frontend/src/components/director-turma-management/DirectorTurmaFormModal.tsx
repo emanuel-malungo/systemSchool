@@ -151,14 +151,14 @@ export default function DirectorTurmaFormModal({
                   placeholder="Buscar professor..."
                   value={docenteSearch}
                   onChange={(e) => setDocenteSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
                   disabled={isLoading || isLoadingDocentes}
                 />
               </div>
               <select
                 {...register('codigoDocente', { valueAsNumber: true })}
                 disabled={isLoading || isLoadingDocentes}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition-all ${
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all ${
                   errors.codigoDocente ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                 } ${isLoading || isLoadingDocentes ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
               >
@@ -184,7 +184,7 @@ export default function DirectorTurmaFormModal({
                 <select
                   {...register('codigoAnoLectivo', { valueAsNumber: true })}
                   disabled={isLoading || isLoadingAnosLectivos}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition-all ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all ${
                     errors.codigoAnoLectivo ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                   } ${isLoading || isLoadingAnosLectivos ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                 >
@@ -212,14 +212,14 @@ export default function DirectorTurmaFormModal({
                     placeholder="Buscar turma..."
                     value={turmaSearch}
                     onChange={(e) => setTurmaSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00]"
                     disabled={isLoading || isLoadingTurmas || selectedAnoLectivo === 0}
                   />
                 </div>
                 <select
                   {...register('codigoTurma', { valueAsNumber: true })}
                   disabled={isLoading || isLoadingTurmas || (selectedAnoLectivo !== 0 && filteredTurmas.length === 0)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 transition-all ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all ${
                     errors.codigoTurma ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
                   } ${isLoading || isLoadingTurmas ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
                 >
@@ -242,12 +242,12 @@ export default function DirectorTurmaFormModal({
               </div>
             </div>
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Info className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <Info className="h-5 w-5 text-[#007C00] flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-emerald-900 mb-1">Informação</h4>
-                  <p className="text-sm text-emerald-700">
+                  <h4 className="text-sm font-semibold text-blue-900 mb-1">Informação</h4>
+                  <p className="text-sm text-blue-700">
                     O diretor de turma é responsável pela gestão pedagógica e administrativa da turma.
                     Selecione primeiro o ano letivo para ver as turmas disponíveis. Use a barra de busca para encontrar rapidamente professores e turmas.
                   </p>
@@ -259,7 +259,7 @@ export default function DirectorTurmaFormModal({
               <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>
                 Cancelar
               </Button>
-              <Button type="submit" variant="primary" loading={isLoading} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button type="submit" variant="primary" loading={isLoading} className="bg-[#007C00] hover:bg-[#005a00]">
                 {isEditMode ? 'Atualizar' : 'Criar'} Diretor de Turma
               </Button>
             </div>
