@@ -22,7 +22,7 @@ import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useAuth } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
 import type { ITurma } from '../../../types/turma.types'
-import { CertificatePdfGenerator } from '../../../utils/CertificatePdfGenerator'
+import { CertificateWordGenerator } from '../../../utils/CertificateWordGenerator'
 import certificateService from '../../../services/certificate.service'
 
 export default function CertificateManagement() {
@@ -141,18 +141,18 @@ export default function CertificateManagement() {
     }
   }
 
-  const handleDownloadPdf = async (certificateId: number) => {
+  const handleDownloadWord = async (certificateId: number) => {
     try {
       setIsDownloading(certificateId)
       const res = await certificateService.getCertificateById(certificateId)
       if (res && res.data) {
-        CertificatePdfGenerator.generatePDF(res.data as any)
-        toast.success('PDF gerado com sucesso')
+        await CertificateWordGenerator.generateWord(res.data as any)
+        toast.success('Documento Word gerado com sucesso')
       } else {
         toast.error('Erro ao obter dados do certificado')
       }
     } catch (error: any) {
-      toast.error(error.message || 'Erro ao gerar PDF do certificado')
+      toast.error(error.message || 'Erro ao gerar documento Word do certificado')
     } finally {
       setIsDownloading(null)
     }
@@ -343,10 +343,10 @@ export default function CertificateManagement() {
 
                         {cert.Status === 'Assinado' && (
                           <button
-                            onClick={() => handleDownloadPdf(cert.Codigo)}
+                            onClick={() => handleDownloadWord(cert.Codigo)}
                             disabled={isDownloading === cert.Codigo}
                             className="text-amber-600 hover:text-amber-800 flex items-center gap-1 disabled:opacity-50"
-                            title="Descarregar PDF"
+                            title="Descarregar Word"
                           >
                             {isDownloading === cert.Codigo ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -626,7 +626,7 @@ export default function CertificateManagement() {
               {selectedCertificate.Status === 'Assinado' && (
                 <button
                   onClick={() => {
-                    handleDownloadPdf(selectedCertificate.Codigo)
+                    handleDownloadWord(selectedCertificate.Codigo)
                     setShowDetailModal(false)
                   }}
                   disabled={isDownloading === selectedCertificate.Codigo}
@@ -637,7 +637,7 @@ export default function CertificateManagement() {
                   ) : (
                     <Download className="w-4 h-4" />
                   )}
-                  Descarregar PDF
+                  Descarregar Word
                 </button>
               )}
             </div>
