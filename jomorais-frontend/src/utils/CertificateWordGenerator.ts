@@ -599,12 +599,12 @@ export class CertificateWordGenerator {
       ],
     })
 
-    // ── Título: Certificado de Habilitações (size 22pt, Times New Roman, itálico) ──
+    // ── Título: Certificado de Habilitações (size 14pt, Script MT Bold) ──
     const titleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { before: 200, after: 100 },
       children: [
-        new TextRun({ text: 'Certificado de Habilitações', font, size: 44, italics: true }),
+        new TextRun({ text: 'Certificado de Habilitações', font: 'Script MT Bold', size: 28 }),
       ],
     })
 
