@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import {
-  BookOpen,
   Users,
   BarChart3,
   AlertCircle,
@@ -9,6 +8,7 @@ import {
   GraduationCap,
   CheckCircle,
   Clock,
+  Filter,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
@@ -333,77 +333,69 @@ export default function GradeLaunching() {
   return (
     <Container>
       {/* Header */}
-      <div className="mb-8 bg-linear-to-br from-emerald-50 via-white to-emerald-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-100/30 rounded-full -ml-12 -mb-12"></div>
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <BarChart3 className="h-8 w-8 text-white" />
-              </div>
-
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Lançamento de Notas
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Selecione o contexto para lançar ou atualizar as notas dos alunos em lote
-                </p>
-              </div>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+            <BarChart3 className="h-6 w-6 text-[#007C00]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Lançamento de Notas
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Selecione o contexto para lançar ou atualizar as notas dos alunos em lote
+            </p>
           </div>
         </div>
       </div>
 
       {/* Estatísticas Rápidas */}
       {isContextSelected && students.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Média da Turma</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.media}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Média da Turma</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.media}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Alunos Avaliados</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.total} / {students.length}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Alunos Avaliados</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total} / {students.length}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <Users className="h-6 w-6 text-purple-600" />
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+                <Users className="h-5 w-5 text-purple-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Aprovados (Média ≥ 10)</p>
-                <p className="text-3xl font-bold text-green-600">{stats.aprovados}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Aprovados (Média ≥ 10)</p>
+                <p className="text-2xl font-bold text-green-600">{stats.aprovados}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Reprovados (Média &lt; 10)</p>
-                <p className="text-3xl font-bold text-red-600">{stats.reprovados}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Reprovados (Média &lt; 10)</p>
+                <p className="text-2xl font-bold text-red-600">{stats.reprovados}</p>
               </div>
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <Clock className="h-6 w-6 text-red-600" />
+              <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                <Clock className="h-5 w-5 text-red-600" />
               </div>
             </div>
           </div>
@@ -411,22 +403,22 @@ export default function GradeLaunching() {
       )}
 
       {/* Seletores de Contexto */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-[#007C00]" />
-          Seleção de Contexto
-        </h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className="h-4 w-4 text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">Seleção de Contexto</span>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Ano Letivo */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Ano Letivo *
             </label>
             <select
               value={selectedAnoLectivo}
               onChange={e => handleAnoLectivoChange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               disabled={isLoadingAnosLetivos}
             >
               <option value="">Selecione um ano...</option>
@@ -440,13 +432,13 @@ export default function GradeLaunching() {
 
           {/* Turma */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Turma *
             </label>
             <select
               value={selectedTurmaId}
               onChange={e => handleTurmaChange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               disabled={!selectedAnoLectivo || isLoadingTurmas}
             >
               <option value="">Selecione uma turma...</option>
@@ -460,13 +452,13 @@ export default function GradeLaunching() {
 
           {/* Disciplina */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Disciplina *
             </label>
             <select
               value={selectedDisciplinaId}
               onChange={e => setSelectedDisciplinaId(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               disabled={!selectedTurmaId || isLoadingDisciplinas}
             >
               <option value="">Selecione a disciplina...</option>
@@ -480,13 +472,13 @@ export default function GradeLaunching() {
 
           {/* Trimestre */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Trimestre *
             </label>
             <select
               value={selectedTrimestre}
               onChange={e => setSelectedTrimestre(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200 cursor-pointer"
             >
               <option value="">Selecione o trimestre...</option>
               {trimestres.map(t => (
@@ -501,30 +493,30 @@ export default function GradeLaunching() {
 
       {/* Lançamento das Notas */}
       {isContextSelected ? (
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+          <div className="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div>
-              <h3 className="font-bold text-gray-900 text-lg">
+              <h3 className="font-semibold text-gray-900">
                 Alunos da Turma: {selectedTurma?.designacao}
               </h3>
-              <p className="text-sm text-gray-500">
-                Disciplina: <span className="font-semibold text-gray-700">{selectedDisciplinaDesignacao}</span> | Trimestre: <span className="font-semibold text-gray-700">{selectedTrimestre}º</span>
+              <p className="text-sm text-gray-500 mt-1">
+                Disciplina: <span className="font-medium text-gray-700">{selectedDisciplinaDesignacao}</span> | Trimestre: <span className="font-medium text-gray-700">{selectedTrimestre}º</span>
               </p>
             </div>
 
             <button
               onClick={handleSaveAllGrades}
               disabled={saving || isLoadingAlunos || isLoadingGrades || students.length === 0}
-              className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-[#007C00] to-[#005a00] text-white rounded-xl hover:from-[#005a00] hover:to-[#004000] transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Salvando...
                 </>
               ) : (
                 <>
-                  <Save className="h-5 w-5" />
+                  <Save className="h-4 w-4" />
                   Salvar Notas
                 </>
               )}
@@ -579,7 +571,7 @@ export default function GradeLaunching() {
                             step="0.1"
                             value={grades.MAC !== undefined ? grades.MAC : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'MAC', e.target.value)}
-                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
                             placeholder="0-20"
                           />
                         </td>
@@ -593,7 +585,7 @@ export default function GradeLaunching() {
                             step="0.1"
                             value={grades.PP !== undefined ? grades.PP : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'PP', e.target.value)}
-                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
                             placeholder="0-20"
                           />
                         </td>
@@ -607,7 +599,7 @@ export default function GradeLaunching() {
                             step="0.1"
                             value={grades.PT !== undefined ? grades.PT : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'PT', e.target.value)}
-                            className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm font-medium text-center"
+                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
                             placeholder="0-20"
                           />
                         </td>
@@ -644,10 +636,10 @@ export default function GradeLaunching() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-12 text-center">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
           <GraduationCap className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">Aguardando Seleção de Contexto</h3>
-          <p className="text-gray-500 max-w-md mx-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Aguardando Seleção de Contexto</h3>
+          <p className="text-sm text-gray-500 max-w-md mx-auto">
             Por favor, selecione o Ano Letivo, Turma, Disciplina e Trimestre nos filtros acima para carregar a lista de alunos e começar o lançamento de notas.
           </p>
         </div>
