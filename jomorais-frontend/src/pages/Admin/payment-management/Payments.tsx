@@ -1034,50 +1034,97 @@ export default function Payments() {
                     </div>
                   ) : (
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b">
+                      <thead className="bg-gray-50/80 border-b border-gray-100">
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Aluno</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Documento</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Turma</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Curso</th>
-                          <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">Ações</th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Aluno
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Turma
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Curso / Classe
+                          </th>
+                          <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Ações
+                          </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {students.map((student) => (
-                          <tr key={student.codigo} className="hover:bg-gray-50">
-                            <td className="px-4 py-3">
-                              <div className="font-medium text-gray-900">{student.nome}</div>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
-                              {student.n_documento_identificacao}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
-                              {student.confirmacao?.turma?.designacao || 'N/A'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
-                              {student.confirmacao?.turma?.tb_classes?.designacao || 'N/A'}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <button
-                                  onClick={() => handleViewStudent(student)}
-                                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                  <Eye className="w-4 h-4 inline mr-1" />
-                                  Visualizar
-                                </button>
-                                <button
-                                  onClick={() => handleMakePaymentFromStudents(student)}
-                                  className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                                >
-                                  <DollarSign className="w-4 h-4 inline mr-1" />
-                                  Pagar
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                      <tbody className="divide-y divide-gray-100">
+                        {students.map((student) => {
+                          // Try different property paths since API response might vary
+                          const s = student as any;
+                          const turmaStr = s.tb_matriculas?.tb_confirmacoes?.[0]?.tb_turmas?.designacao 
+                                        || s.tb_matriculas?.tb_turmas?.designacao 
+                                        || s.confirmacao?.turma?.designacao 
+                                        || 'N/A';
+                                        
+                          const classeStr = s.tb_matriculas?.tb_confirmacoes?.[0]?.tb_turmas?.tb_classes?.designacao
+                                         || s.tb_matriculas?.tb_turmas?.tb_classes?.designacao
+                                         || s.confirmacao?.turma?.tb_classes?.designacao 
+                                         || '';
+
+                          const cursoNome = s.tb_matriculas?.tb_cursos?.designacao 
+                                         || s.confirmacao?.turma?.curso?.designacao 
+                                         || 'N/A';
+
+                          const cursoStr = classeStr ? `${cursoNome} / ${classeStr}` : cursoNome;
+                          
+                          const getInitials = (name: string) => {
+                            if (!name) return 'N/A';
+                            const parts = name.trim().split(' ');
+                            if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+                            return name.substring(0, 2).toUpperCase();
+                          };
+
+                          return (
+                            <tr key={student.codigo} className="hover:bg-gray-50/80 transition-colors group">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-full flex items-center justify-center shrink-0 shadow-xs">
+                                    <span className="text-white font-bold text-[11px]">
+                                      {getInitials(student.nome)}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold text-gray-900 leading-tight">{student.nome}</p>
+                                    <p className="text-xs text-gray-400 mt-0.5">
+                                      {student.n_documento_identificacao ? `BI: ${student.n_documento_identificacao}` : 'Sem documento'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md">
+                                  {turmaStr}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-sm text-gray-600">
+                                  {cursoStr}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                  <button
+                                    onClick={() => handleViewStudent(student)}
+                                    className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all shadow-sm flex items-center gap-1.5"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                    Visualizar
+                                  </button>
+                                  <button
+                                    onClick={() => handleMakePaymentFromStudents(student)}
+                                    className="px-3 py-1.5 text-xs font-medium bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-all shadow-sm flex items-center gap-1.5"
+                                  >
+                                    <DollarSign className="w-3.5 h-3.5" />
+                                    Pagar
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   )}
