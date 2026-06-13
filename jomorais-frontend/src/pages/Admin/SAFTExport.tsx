@@ -41,8 +41,8 @@ const ExportProgressModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
         <div className="text-center">
-          <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FileText className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FileText className="h-8 w-8 text-[#007C00]" />
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -74,7 +74,7 @@ const ExportProgressModal = ({
           {progress === 100 && (
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-colors"
             >
               Fechar
             </button>
@@ -165,7 +165,7 @@ const ConfirmExportModal = ({
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-colors font-medium flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-3 bg-[#007C00] text-white rounded-xl hover:bg-[#005a00] transition-colors font-medium flex items-center justify-center gap-2"
           >
             <Download className="h-5 w-5" />
             Confirmar Exportação
@@ -513,45 +513,39 @@ export default function SAFTExport() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        {/* <div className="bg-linear-to-br from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-          <div className="relative p-8">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-100/30 rounded-full -ml-12 -mb-12"></div>
-            
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                  <FileText className="h-8 w-8 text-white" />
-                </div>
-                
-                <div>
-                  <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                    Exportação SAFT-AO
-                  </h1>
-                  <p className="text-gray-600 text-lg max-w-2xl">
-                    Gere ficheiros SAFT (Standard Audit File for Tax) em conformidade com a legislação fiscal angolana.
-                  </p>
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-green-600 font-medium">Sistema conforme Decreto Executivo 74/19</span>
-                  </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+              <FileText className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Exportação SAFT-AO
+                </h1>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-100">
+                  <div className="w-1.5 h-1.5 bg-[#007C00] rounded-full animate-pulse"></div>
+                  <span className="text-xs text-[#007C00] font-medium">Decreto Executivo 74/19</span>
                 </div>
               </div>
-              
-              <div className="flex gap-3">
-                {lastExport && (
-                  <button
-                    onClick={downloadLastExport}
-                    className="flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors shadow-md"
-                  >
-                    <FileDown className="h-5 w-5" />
-                    Último Ficheiro
-                  </button>
-                )}
-              </div>
+              <p className="text-sm text-gray-500 mt-0.5 max-w-2xl">
+                Gere ficheiros SAFT (Standard Audit File for Tax) em conformidade com a legislação fiscal angolana.
+              </p>
             </div>
           </div>
-        </div> */}
+          
+          <div className="flex gap-3">
+            {lastExport && (
+              <button
+                onClick={downloadLastExport}
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+              >
+                <Download className="h-4 w-4" />
+                Último Ficheiro
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Error State */}
         {error && (
@@ -621,13 +615,13 @@ export default function SAFTExport() {
         </ErrorBoundary> */}
 
         {/* Segurança Criptográfica */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="p-8">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-linear-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center">
-                <Key className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                <Key className="h-5 w-5 text-[#007C00]" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Segurança Criptográfica</h2>
+              <h2 className="text-xl font-bold text-gray-900">Segurança Criptográfica</h2>
             </div>
 
             <div className="space-y-6">
@@ -636,8 +630,8 @@ export default function SAFTExport() {
                 <div className="flex items-center gap-4">
                   {hasKeys ? (
                     <>
-                      <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <CheckCircle className="h-6 w-6 text-green-600" />
+                      <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                        <CheckCircle className="h-6 w-6 text-[#007C00]" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">Chaves Configuradas</h3>
@@ -661,9 +655,9 @@ export default function SAFTExport() {
                   <button
                     onClick={generateKeys}
                     disabled={isExporting}
-                    className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Key className="h-5 w-5" />
+                    <Key className="h-4 w-4" />
                     Gerar Chaves RSA
                   </button>
                 ) : (
@@ -725,14 +719,13 @@ export default function SAFTExport() {
         </div>
 
         {/* Export Configuration Form */}
-		
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
-                    <Settings className="h-5 w-5 text-white" />
+                  <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                    <Settings className="h-5 w-5 text-[#007C00]" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900">Configuração da Exportação</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Configuração da Exportação</h2>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -740,7 +733,7 @@ export default function SAFTExport() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-blue-600" />
+                        <Calendar className="h-5 w-5 text-[#007C00]" />
                         Período da Exportação
                       </h3>
                       
@@ -806,7 +799,7 @@ export default function SAFTExport() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-blue-600" />
+                        <Building2 className="h-5 w-5 text-[#007C00]" />
                         Informações da Empresa
                       </h3>
                       
@@ -958,11 +951,11 @@ export default function SAFTExport() {
                     <button
                       onClick={handleSubmit}
                       disabled={isExporting}
-                      className={`flex items-center gap-2 px-8 py-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-colors font-medium shadow-md ${
+                      className={`flex items-center gap-2 px-6 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] transition-colors font-medium shadow-sm ${
                         isExporting ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
                     >
-                      <Download className="h-5 w-5" />
+                      <Download className="h-4 w-4" />
                       {isExporting ? 'Exportando...' : 'Gerar SAFT'}
                     </button>
                   </div>
