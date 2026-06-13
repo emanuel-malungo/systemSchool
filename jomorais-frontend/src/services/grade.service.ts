@@ -204,7 +204,7 @@ class GradeService {
     codigoUtilizador: number
   }): Promise<any> {
     try {
-      const response = await api.post(`${this.baseURL}/notas/import-bulk`, data)
+      const response = await api.post(`${this.baseURL}/import-bulk`, data)
       return response.data
     } catch (error) {
       console.error('Erro ao importar notas em lote:', error)
