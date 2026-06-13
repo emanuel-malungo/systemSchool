@@ -467,41 +467,42 @@ export default function Payments() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-linear-to-br from-[#182F59] to-[#1a3260] rounded-xl shadow-md">
-                  <DollarSign className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Gestão de Pagamentos</h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-green-600 font-medium">Sistema ativo</span>
-                  </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <DollarSign className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Gestão de Pagamentos
+                </h1>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-100">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-700 font-medium">Sistema ativo</span>
                 </div>
               </div>
-              <p className="text-gray-600 text-base max-w-2xl">
-                Gerencie pagamentos de propinas e outros serviços financeiros da instituição de forma rápida e eficiente
+              <p className="text-sm text-gray-500 mt-0.5">
+                Gerencie pagamentos de propinas e outros serviços financeiros
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <button
-                onClick={() => setShowStudentsModal(true)}
-                className="flex items-center justify-center gap-2 px-5 py-3 bg-white text-[#182F59] rounded-xl hover:bg-gray-50 transition-all duration-200 border-2 border-[#182F59] shadow-md hover:shadow-lg group"
-              >
-                <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Estado dos Alunos</span>
-              </button>
-              <button
-                onClick={() => setShowMakePaymentModal(true)}
-                className="flex items-center justify-center gap-2 px-5 py-3 bg-linear-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 group"
-              >
-                <DollarSign className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Fazer Pagamento</span>
-              </button>
-            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowStudentsModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+            >
+              <Users className="h-4 w-4" />
+              Estado dos Alunos
+            </button>
+            <button
+              onClick={() => setShowMakePaymentModal(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+            >
+              <DollarSign className="h-4 w-4" />
+              Fazer Pagamento
+            </button>
           </div>
         </div>
 
@@ -617,40 +618,42 @@ export default function Payments() {
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Filtros de pesquisa</span>
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="text-sm text-[#007C00] font-medium hover:text-[#005a00] transition-colors"
+            >
+              {showFilters ? 'Ocultar opções avançadas' : 'Mostrar opções avançadas'}
+            </button>
+          </div>
+
           <div className="space-y-4">
             {/* Search Bar */}
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Buscar por nome do aluno, fatura ou borderô..."
                   value={search}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
                 />
               </div>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                  showFilters
-                    ? "bg-blue-50 border-blue-500 text-blue-600"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                <Filter className="w-5 h-5" />
-                Filtros
-              </button>
             </div>
 
             {/* Filters Panel */}
             {showFilters && (
-              <div className="border-t pt-4 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="pt-4 border-t border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   {/* Tipo de Serviço */}
                   <div>
-                    <label htmlFor="tipo-servico-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="tipo-servico-filter" className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wider">
                       Tipo de Serviço
                     </label>
                     <select
@@ -658,7 +661,7 @@ export default function Payments() {
                       title="Tipo de Serviço"
                       value={filterTipoServico}
                       onChange={(e) => setFilterTipoServico(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 text-sm"
                     >
                       <option value="">Todos os serviços</option>
                       {tiposServicoData?.data?.map((tipo) => (
@@ -671,7 +674,7 @@ export default function Payments() {
 
                   {/* Data Início */}
                   <div>
-                    <label htmlFor="data-inicio-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="data-inicio-filter" className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wider">
                       Data Início
                     </label>
                     <input
@@ -680,13 +683,13 @@ export default function Payments() {
                       type="date"
                       value={filterDataInicio}
                       onChange={(e) => setFilterDataInicio(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 text-sm"
                     />
                   </div>
 
                   {/* Data Fim */}
                   <div>
-                    <label htmlFor="data-fim-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="data-fim-filter" className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wider">
                       Data Fim
                     </label>
                     <input
@@ -695,24 +698,24 @@ export default function Payments() {
                       type="date"
                       value={filterDataFim}
                       onChange={(e) => setFilterDataFim(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Filter Actions */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleFilter}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Aplicar Filtros
-                  </button>
+                <div className="flex gap-2 justify-end">
                   <button
                     onClick={handleClearFilters}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                   >
-                    Limpar Filtros
+                    Limpar
+                  </button>
+                  <button
+                    onClick={handleFilter}
+                    className="px-4 py-2 text-sm text-white bg-[#007C00] hover:bg-[#005a00] rounded-lg transition-colors shadow-sm"
+                  >
+                    Aplicar Filtros
                   </button>
                 </div>
               </div>
