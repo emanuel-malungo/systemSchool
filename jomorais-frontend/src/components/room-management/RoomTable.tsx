@@ -69,12 +69,12 @@ export default function RoomTable({
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* Tabela */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
+          <thead>
+            <tr className="bg-gray-50/80 border-b border-gray-200">
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Código
               </th>
@@ -86,7 +86,7 @@ export default function RoomTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100 bg-white">
             {rooms.map((room) => (
               <tr
                 key={room.codigo}
@@ -116,19 +116,21 @@ export default function RoomTable({
                     {/* Editar */}
                     <button
                       onClick={() => onEdit(room)}
-                      className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#007C00] bg-green-50 border border-green-100 rounded-lg hover:bg-green-100 transition-colors"
                       title="Editar"
                     >
                       <Pencil className="h-4 w-4" />
+                      <span>Editar</span>
                     </button>
 
                     {/* Deletar */}
                     <button
                       onClick={() => onDelete(room)}
-                      className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                      title="Deletar"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors"
+                      title="Eliminar"
                     >
                       <Trash2 className="h-4 w-4" />
+                      <span>Eliminar</span>
                     </button>
                   </div>
                 </td>
@@ -140,82 +142,75 @@ export default function RoomTable({
 
       {/* Paginação */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-between">
-            {/* Info */}
-            <div className="text-sm text-gray-600">
-              Mostrando{' '}
-              <span className="font-medium text-gray-900">
-                {(currentPage - 1) * pagination.itemsPerPage + 1}
-              </span>{' '}
-              até{' '}
-              <span className="font-medium text-gray-900">
-                {Math.min(
-                  currentPage * pagination.itemsPerPage,
-                  pagination.totalItems
-                )}
-              </span>{' '}
-              de{' '}
-              <span className="font-medium text-gray-900">
-                {pagination.totalItems}
-              </span>{' '}
-              resultados
+        <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={!pagination.hasPreviousPage}
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={!pagination.hasNextPage}
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Próxima
+            </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-600">
+                Página <span className="font-semibold text-gray-900">{currentPage}</span> de{' '}
+                <span className="font-semibold text-gray-900">{pagination.totalPages}</span>
+              </p>
             </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px border border-gray-200 overflow-hidden" aria-label="Pagination">
+                <button
+                  onClick={() => onPageChange(currentPage - 1)}
+                  disabled={!pagination.hasPreviousPage}
+                  className="relative inline-flex items-center px-3 py-2 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                
+                {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
+                  let page: number
+                  if (pagination.totalPages <= 5) {
+                    page = i + 1
+                  } else if (currentPage <= 3) {
+                    page = i + 1
+                  } else if (currentPage >= pagination.totalPages - 2) {
+                    page = pagination.totalPages - 4 + i
+                  } else {
+                    page = currentPage - 2 + i
+                  }
+                  
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => onPageChange(page)}
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors ${
+                        page === currentPage
+                          ? 'z-10 bg-green-50 text-[#007C00] border-x border-green-200'
+                          : 'bg-white text-gray-600 hover:bg-gray-50 border-x border-gray-200'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                })}
 
-            {/* Botões de Paginação */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={!pagination.hasPreviousPage}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                title="Página anterior"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-
-              {/* Números de Página */}
-              <div className="flex items-center gap-1">
-                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                  .filter((page) => {
-                    // Mostra primeira, última e páginas próximas à atual
-                    return (
-                      page === 1 ||
-                      page === pagination.totalPages ||
-                      (page >= currentPage - 1 && page <= currentPage + 1)
-                    )
-                  })
-                  .map((page, index, array) => {
-                    // Adiciona "..." entre páginas não consecutivas
-                    const prevPage = array[index - 1]
-                    const showEllipsis = prevPage && page - prevPage > 1
-
-                    return (
-                      <div key={page} className="flex items-center gap-1">
-                        {showEllipsis && (
-                          <span className="px-2 text-gray-500">...</span>
-                        )}
-                        <button
-                          onClick={() => onPageChange(page)}
-                          className={`inline-flex items-center justify-center min-w-[2.25rem] h-9 px-3 rounded-lg border transition-colors ${
-                            page === currentPage
-                              ? 'border-[#007C00] bg-[#007C00] text-white font-medium'
-                              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      </div>
-                    )
-                  })}
-              </div>
-
-              <button
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={!pagination.hasNextPage}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
+                <button
+                  onClick={() => onPageChange(currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="relative inline-flex items-center px-3 py-2 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </nav>
             </div>
           </div>
         </div>
