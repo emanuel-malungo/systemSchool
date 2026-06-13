@@ -51,11 +51,6 @@ export default function Sidebar() {
       href: "/professor/perfil"
     },
     {
-      title: "Lançamento de Notas",
-      icon: BarChart3,
-      href: "/professor/lancar-notas"
-    },
-    {
       title: "Minhas Notas",
       icon: BookOpen,
       href: "/professor/minhas-notas"
