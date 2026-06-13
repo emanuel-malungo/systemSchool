@@ -610,7 +610,7 @@ export class CertificateWordGenerator {
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
       children: [
-        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font: 'Calibri', size: 24, color: 'C80000' }),
+        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font: 'Calibri', bold: true, size: 24, color: 'C80000' }),
       ],
     })
 
