@@ -118,7 +118,7 @@ export const USER_PERMISSIONS: Record<string, UserPermissions> = {
     canAccessStudentManagement: true,
     canAccessAcademicManagement: true,
     canAccessFinancial: false,
-    canAccessReports: false,
+    canAccessReports: true,
     canAccessSettings: false,
     canAccessPayments: false,
     canAccessInvoices: false,

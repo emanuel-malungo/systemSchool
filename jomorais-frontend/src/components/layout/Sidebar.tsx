@@ -123,10 +123,7 @@ export default function Sidebar() {
       icon: GraduationCap,
       children: [
         { title: "Professores", icon: GraduationCap, href: "/admin/teacher-management/teacher" },
-        { title: "Lançamento de Notas", icon: BarChart3, href: "/admin/teacher-management/grade-launching" },
-        { title: "Pautas", icon: FileText, href: "/admin/teacher-management/pauta" },
         { title: "Notas por Disciplina", icon: BookOpen, href: "/admin/teacher-management/notes-by-discipline" },
-        { title: "Certificados", icon: Award, href: "/admin/teacher-management/certificates" },
         { title: "Disciplinas do Docente", icon: BookOpen, href: "/admin/teacher-management/discipline-teacher" },
         { title: "Diretores de Turma", icon: UserCheck, href: "/admin/teacher-management/director-turma" }
       ]
@@ -148,6 +145,9 @@ export default function Sidebar() {
         { title: "Relatórios de Alunos", icon: Users, href: "/admin/reports-management/students" },
         { title: "Relatórios Acadêmicos", icon: BookOpen, href: "/admin/reports-management/academic" },
         { title: "Boletim de Notas", icon: FileText, href: "/admin/reports-management/boletim" },
+        { title: "Lançamento de Notas", icon: BarChart3, href: "/admin/teacher-management/grade-launching" },
+        { title: "Pautas", icon: FileText, href: "/admin/teacher-management/pauta" },
+        { title: "Certificados", icon: Award, href: "/admin/teacher-management/certificates" },
         { title: "Relatório de Vendas", icon: DollarSign, href: "/admin/reports-management/sales" }
       ]
     },
