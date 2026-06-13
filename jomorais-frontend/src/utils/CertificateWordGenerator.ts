@@ -11,6 +11,10 @@ import {
   WidthType,
   BorderStyle,
   VerticalAlign,
+  HeadingLevel,
+  TabStopPosition,
+  TabStopType,
+  LeaderType,
   UnderlineType,
   ShadingType,
 } from 'docx'
