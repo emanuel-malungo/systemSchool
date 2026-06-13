@@ -113,6 +113,7 @@ export class DirectorController {
           codigo_Professor: dir.codigoDocente,
           codigo_Turma: dir.codigoTurma,
           anoLectivo: dir.tb_ano_lectivo?.designacao || '',
+          codigoAnoLectivo: dir.codigoAnoLectivo,
           tb_turmas: dir.tb_turmas,
           disciplinas: disciplinas.map(d => d.tb_disciplinas).filter(Boolean)
         });

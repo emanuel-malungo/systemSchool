@@ -5,6 +5,7 @@ export interface IDirectorTurma {
   codigo_Professor: number;
   codigo_Turma: number;
   anoLectivo: string;
+  codigoAnoLectivo?: number;
   tb_turmas?: {
     codigo: number;
     designacao: string;

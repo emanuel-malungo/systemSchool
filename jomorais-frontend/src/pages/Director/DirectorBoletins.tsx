@@ -44,7 +44,7 @@ export default function DirectorBoletins() {
       const data = await DirectorService.getBoletimTurma(
         selectedTurma.codigo_Turma, 
         parseInt(selectedTrimestreId), 
-        parseInt(String(selectedTurma.tb_turmas?.codigo || '1')) // need to pass anoLectivoId, but our backend can figure it out or we send it
+        selectedTurma.codigoAnoLectivo || parseInt(String((selectedTurma.tb_turmas as any)?.codigo_AnoLectivo || '1')) // uses explicit codigoAnoLectivo or fallback
       )
       
       await BoletimWordGenerator.generateWord(data)
