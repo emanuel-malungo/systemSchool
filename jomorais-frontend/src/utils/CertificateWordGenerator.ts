@@ -546,26 +546,25 @@ export class CertificateWordGenerator {
       rows: [
         new TableRow({
           children: [
-            // Coluna 1: Insígnia
+            // Coluna 1: Espaço vazio (para equilibrar a coluna direita)
             new TableCell({
               width: { size: 15, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
-              verticalAlign: VerticalAlign.CENTER,
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.LEFT,
-                  children: logoBuffer
-                    ? [new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'jpg' })]
-                    : [],
-                }),
-              ],
+              children: [],
             }),
-            // Coluna 2: Texto Central
+            // Coluna 2: Insígnia e Texto Central
             new TableCell({
               width: { size: 70, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               verticalAlign: VerticalAlign.CENTER,
               children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 60 },
+                  children: logoBuffer
+                    ? [new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'jpg' })]
+                    : [],
+                }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   children: [new TextRun({ text: 'REPÚBLICA DE ANGOLA', font, size: 18 })],
@@ -586,8 +585,6 @@ export class CertificateWordGenerator {
               borders: this.noBorders(),
               verticalAlign: VerticalAlign.BOTTOM,
               children: [
-                new Paragraph({ children: [new TextRun({ text: '', font, size: 18 })] }), // Empty line to push down
-                new Paragraph({ children: [new TextRun({ text: '', font, size: 18 })] }), // Empty line to push down
                 new Paragraph({
                   alignment: AlignmentType.RIGHT,
                   children: [new TextRun({ text: data.NumeroCertificado || '001-AC-25/26', font, size: 12 })],
