@@ -507,113 +507,71 @@ export default function Payments() {
         </div>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <div className="bg-linear-to-br from-green-50 via-white to-green-50/50 rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-linear-to-br from-green-500 to-green-600 rounded-xl shadow-sm">
-                <DollarSign className="w-6 h-6 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          {/* Total Recebido */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-[#007C00]" />
               </div>
               {dashboardStats.hasRealData && (
-                <div className="flex items-center space-x-1 text-sm bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 text-emerald-500" />
-                  <span className="font-bold text-xs text-emerald-600">
-                    Ativo
-                  </span>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3 text-green-500" />
+                  <span className="text-xs font-medium text-green-600">Ativo</span>
                 </div>
               )}
             </div>
             <div>
-              <p className="text-sm font-semibold mb-2 text-green-600">Total Recebido</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 mb-1">Total Recebido</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {formatCompactCurrency(dashboardStats.totalRecebido)}
               </p>
-              {!dashboardStats.hasRealData && (
-                <p className="text-xs text-gray-400 mt-1">Aguardando dados</p>
-              )}
             </div>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
           </div>
 
-          <div className="bg-linear-to-br from-blue-50 via-white to-blue-50/50 rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-linear-to-br from-[#182F59] to-[#1a3260] rounded-xl shadow-sm">
-                <TrendingUp className="w-6 h-6 text-white" />
+          {/* Pagamentos Hoje */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-blue-600" />
               </div>
-              {dashboardStats.pagamentosHoje > 0 && (
-                <div className="flex items-center space-x-1 text-sm bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 text-blue-500" />
-                  <span className="font-bold text-xs text-blue-600">
-                    Hoje
-                  </span>
-                </div>
-              )}
             </div>
             <div>
-              <p className="text-sm font-semibold mb-2 text-[#182F59]">Pagamentos Hoje</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 mb-1">Pagamentos Hoje</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {dashboardStats.pagamentosHoje}
               </p>
-              {dashboardStats.pagamentosHoje === 0 && (
-                <p className="text-xs text-gray-400 mt-1">Nenhum pagamento hoje</p>
-              )}
             </div>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
           </div>
 
-          <div className="bg-linear-to-br from-purple-50 via-white to-purple-50/50 rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm">
-                <Calendar className="w-6 h-6 text-white" />
+          {/* Receita Mensal */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-purple-600" />
               </div>
-              {dashboardStats.receitaMensal > 0 && (
-                <div className="flex items-center space-x-1 text-sm bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 text-purple-500" />
-                  <span className="font-bold text-xs text-purple-600">
-                    Mês
-                  </span>
-                </div>
-              )}
             </div>
             <div>
-              <p className="text-sm font-semibold mb-2 text-purple-600">Receita Mensal</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 mb-1">Receita Mensal</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {formatCompactCurrency(dashboardStats.receitaMensal)}
               </p>
-              {dashboardStats.receitaMensal === 0 && (
-                <p className="text-xs text-gray-400 mt-1">Sem receita este mês</p>
-              )}
             </div>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
           </div>
 
-          <div className="bg-linear-to-br from-orange-50 via-white to-orange-50/50 rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-linear-to-br from-orange-500 to-orange-600 rounded-xl shadow-sm">
-                <CreditCard className="w-6 h-6 text-white" />
+          {/* Pendentes */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-orange-600" />
               </div>
-              {dashboardStats.totalPendente > 0 && (
-                <div className="flex items-center space-x-1 text-sm bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <TrendingUp className="h-3 w-3 text-orange-500" />
-                  <span className="font-bold text-xs text-orange-600">
-                    Aberto
-                  </span>
-                </div>
-              )}
             </div>
             <div>
-              <p className="text-sm font-semibold mb-2 text-orange-600">Pendentes</p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 mb-1">Pendentes</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {formatCompactCurrency(dashboardStats.totalPendente)}
               </p>
-              {dashboardStats.totalPendente === 0 && (
-                <p className="text-xs text-gray-400 mt-1">Nenhum valor pendente</p>
-              )}
             </div>
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/20 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
           </div>
         </div>
 
@@ -727,30 +685,21 @@ export default function Payments() {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50/80 border-b border-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fatura
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Aluno
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Serviço
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Serviço / Referência
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Mês/Ano
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Valor Pago
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Forma Pagamento
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Valor
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Data
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Ações
                   </th>
                 </tr>
@@ -774,49 +723,38 @@ export default function Payments() {
                 ) : (
                   payments.map((payment) => (
                     <tr key={payment.codigo} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <FileText className="w-5 h-5 text-gray-400 mr-2" />
-                          <span className="text-sm font-medium text-gray-900">
-                            {payment.fatura || '-'}
-                          </span>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                            <Users className="w-4 h-4 text-gray-500" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {payment.aluno?.nome || 'N/A'}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {payment.aluno?.n_documento_identificacao || '-'}
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 font-medium">
-                          {payment.aluno?.nome || 'N/A'}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {payment.aluno?.n_documento_identificacao || '-'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-900">
+                        <div className="text-sm font-medium text-gray-900">
                           {payment.tipoServico?.designacao || '-'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                          <span className="text-sm text-gray-900">
-                            {payment.mes}/{payment.ano}
-                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          Ref: {payment.mes}/{payment.ano}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {payment.formaPagamento?.designacao || 'DINHEIRO'}
-                        </span>
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-green-600">
+                        <span className="text-sm font-bold text-[#007C00]">
                           {formatCurrency(payment.preco)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
                         {formatDate(payment.data)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleViewDetails(payment)}
