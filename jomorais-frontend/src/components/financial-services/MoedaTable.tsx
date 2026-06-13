@@ -24,7 +24,7 @@ export default function MoedaTable({
 }: MoedaTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-8 text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#007C00]"></div>
           <p className="mt-4 text-gray-600">Carregando moedas...</p>
@@ -35,7 +35,7 @@ export default function MoedaTable({
 
   if (moedas.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-8 text-center">
           <p className="text-gray-600">Nenhuma moeda encontrada.</p>
         </div>
@@ -44,7 +44,7 @@ export default function MoedaTable({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">

@@ -35,7 +35,7 @@ export default function TipoServicoTable({
 }: TipoServicoTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-8 text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#007C00]"></div>
           <p className="mt-4 text-gray-600">Carregando tipos de serviços...</p>
@@ -46,7 +46,7 @@ export default function TipoServicoTable({
 
   if (tiposServicos.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-8 text-center">
           <p className="text-gray-600">Nenhum tipo de serviço encontrado.</p>
         </div>
@@ -62,7 +62,7 @@ export default function TipoServicoTable({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -107,7 +107,7 @@ export default function TipoServicoTable({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#007C00]/10 text-[#007C00] border border-[#007C00]/20">
                     {tipo.tipoServico}
                   </span>
                 </td>
