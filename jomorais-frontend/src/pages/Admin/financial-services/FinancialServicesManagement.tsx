@@ -289,44 +289,40 @@ export default function FinancialServicesManagement() {
   return (
     <Container>
       {/* Header */}
-      <div className="mb-8 bg-linear-to-br from-blue-50 via-white to-blue-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-100/30 rounded-full -ml-12 -mb-12"></div>
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <DollarSign className="h-8 w-8 text-white" />
-              </div>
-
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Serviços Financeiros
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Gerencie moedas, categorias e tipos de serviços da instituição
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                if (activeTab === 'moedas') handleCreateMoeda()
-                else if (activeTab === 'categorias') handleCreateCategoria()
-                else handleCreateTipoServico()
-              }}
-              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-[#007C00] to-[#005a00] text-white rounded-xl hover:from-[#005a00] hover:to-[#004000] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-            >
-              <Plus className="h-5 w-5" />
-              Novo {activeTab === 'moedas' ? 'Moeda' : activeTab === 'categorias' ? 'Categoria' : 'Serviço'}
-            </button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+            <DollarSign className="h-6 w-6 text-[#007C00]" />
           </div>
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Serviços Financeiros
+              </h1>
+            </div>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Gerencie moedas, categorias e tipos de serviços da instituição
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              if (activeTab === 'moedas') handleCreateMoeda()
+              else if (activeTab === 'categorias') handleCreateCategoria()
+              else handleCreateTipoServico()
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            Novo {activeTab === 'moedas' ? 'Moeda' : activeTab === 'categorias' ? 'Categoria' : 'Serviço'}
+          </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
         <div className="border-b border-gray-200">
           <nav className="flex -mb-px">
             {tabs.map((tab) => {
@@ -363,7 +359,7 @@ export default function FinancialServicesManagement() {
       {activeTab === 'moedas' && (
         <>
           {/* Filtros e Pesquisa - Moedas */}
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -432,7 +428,7 @@ export default function FinancialServicesManagement() {
       {activeTab === 'categorias' && (
         <>
           {/* Filtros e Pesquisa - Categorias */}
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -501,7 +497,7 @@ export default function FinancialServicesManagement() {
       {activeTab === 'tipos-servicos' && (
         <>
           {/* Filtros e Pesquisa - Tipos de Serviços */}
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
