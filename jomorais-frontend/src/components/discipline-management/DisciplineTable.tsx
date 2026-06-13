@@ -132,7 +132,7 @@ export default function DisciplineTable({
                     {/* Editar */}
                     <button
                       onClick={() => onEdit(discipline)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#007C00] bg-green-50 border border-green-100 rounded-lg hover:bg-green-100 transition-colors"
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4" />
@@ -210,7 +210,7 @@ export default function DisciplineTable({
                       onClick={() => onPageChange(page)}
                       className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors ${
                         page === currentPage
-                          ? 'z-10 bg-blue-50 text-blue-600 border-x border-blue-200'
+                          ? 'z-10 bg-green-50 text-[#007C00] border-x border-green-200'
                           : 'bg-white text-gray-600 hover:bg-gray-50 border-x border-gray-200'
                       }`}
                     >
