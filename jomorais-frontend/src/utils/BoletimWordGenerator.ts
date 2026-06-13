@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, VerticalAlign, PageOrientation } from 'docx'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, VerticalAlign, PageOrientation, PageBreak } from 'docx'
 
 import icon from '../assets/images/icon.png'
 import type { IBoletimTurmaData, IBoletimAlunoData } from './BoletimPdfGenerator'
@@ -81,7 +81,7 @@ export class BoletimWordGenerator {
               margin: { top: 700, right: 500, bottom: 700, left: 500 }, // Narrow A4 margins
             }
           },
-          children: boletins.flatMap((boletim) => {
+          children: boletins.flatMap((boletim, index) => {
             const table = this.createBoletimTable(
               boletim,
               turma,
@@ -94,6 +94,18 @@ export class BoletimWordGenerator {
               logoBuffer,
               abbrev
             )
+            
+            const isLast = index === boletins.length - 1
+            const isFourth = (index + 1) % 4 === 0
+
+            if (isFourth && !isLast) {
+              return [table, new Paragraph({ children: [new PageBreak()] })]
+            }
+
+            if (isLast) {
+              return [table]
+            }
+
             // Empty paragraph as gap between cards
             return [table, new Paragraph({ text: "" }), new Paragraph({ text: "" })]
           })
