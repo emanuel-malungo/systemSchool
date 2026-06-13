@@ -606,13 +606,16 @@ export class CertificatePdfGenerator {
       const isSociocult = sociocultural.some(s => nameLower.includes(s.toLowerCase()))
       const isCient = cientifica.some(c => nameLower.includes(c.toLowerCase()))
       
-      // Estágio Curricular, PAP e Projeto/Projecto são tratados à parte
+      // Estágio Curricular, PAP, Projeto/Projecto, Exame Prático são tratados à parte
       const isSpecial = nameLower.includes('estágio') || 
                         nameLower.includes('prova de aptidão') || 
                         nameLower.includes('projeto') || 
                         nameLower.includes('projecto') || 
                         nameLower.includes('pap') ||
-                        nameLower.includes('gestão de saúde')
+                        nameLower.includes('gestão de saúde') ||
+                        nameLower.includes('exame prático') ||
+                        nameLower.includes('exame pratico') ||
+                        nameLower.includes('prova prática')
       
       if (!isSociocult && !isCient && !isSpecial) {
         const grade = Object.values(d.notas)[0]
@@ -659,11 +662,12 @@ export class CertificatePdfGenerator {
       })
     }
 
-    // Estágio, PAP, Projeto e Gestão de Saúde
+    // Estágio, PAP, Projeto, Gestão de Saúde e Exame Prático
     const projGrade = getGradeForMid('Projecto Tecnológico') || getGradeForMid('Projeto Tecnológico') || 14
     const gestaoSaudeGrade = getGradeForMid('Gestão de Saúde') || 15
     const estagioGrade = getGradeForMid('Estágio Curricular') || getGradeForMid('Estágio') || 14
     const papGrade = getGradeForMid('Prova de Aptidão Profissional') || getGradeForMid('PAP') || 15
+    const examePraticoGrade = getGradeForMid('Exame Prático') || getGradeForMid('Exame Pratico') || getGradeForMid('Prova Prática') || 15
 
     // Tabela rows
     const tableData: any[] = []
@@ -718,6 +722,13 @@ export class CertificatePdfGenerator {
       { content: `(${this.numberToWords(pcVal)})`, styles: { fontStyle: 'bold' } }
     ])
 
+    // Exame Prático
+    tableData.push([
+      { content: padWithDots('Classificação do Exame Prático (EP)', true), styles: { fontStyle: 'bold' } },
+      { content: examePraticoGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center' } },
+      { content: `(${this.numberToWords(examePraticoGrade)})`, styles: { fontStyle: 'bold' } }
+    ])
+
     // PAP
     tableData.push([
       { content: padWithDots('Classificação Da Prova de Aptidão Profissional (PAP)', true), styles: { fontStyle: 'bold' } },
@@ -725,10 +736,10 @@ export class CertificatePdfGenerator {
       { content: `(${this.numberToWords(papGrade)})`, styles: { fontStyle: 'bold' } }
     ])
 
-    // Classificação Final Curso (4*PC + EC + PAP) / 6
-    const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + papGrade) / 6)
+    // Classificação Final Curso (4*PC + EC + EP + PAP) / 7
+    const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + examePraticoGrade + papGrade) / 7)
     tableData.push([
-      { content: padWithDots('Classificação Final do Curso = (4xPC+EC+PAP) /6', true), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } },
+      { content: padWithDots('Classificação Final do Curso = (4xPC+EC+EP+PAP) /7', true), styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } },
       { content: finalCourseGrade.toString().padStart(2, '0'), styles: { fontStyle: 'bold', halign: 'center', fillColor: [230, 230, 230] } },
       { content: `(${this.numberToWords(finalCourseGrade)})`, styles: { fontStyle: 'bold', fillColor: [230, 230, 230] } }
     ])
