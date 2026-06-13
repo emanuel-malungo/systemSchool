@@ -620,19 +620,19 @@ export class CertificateWordGenerator {
     // ── Corpo do texto ──
     const bodyParagraph = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { after: 100, line: 280 },
+      spacing: { after: 100, line: 240 },
       children: [
-        new TextRun({ text: 'A Directora do Instituto, ', font, size: 22 }),
-        new TextRun({ text: nomeDirectora, font, size: 22, bold: true }),
-        new TextRun({ text: ', certifica de acordo com o art.º 25 e 27 dos estatutos de Subsistema do Ensino Técnico Profissional, aprovado pelo Decreto nº 90/04, de 3 de Dezembro de 2004, que ', font, size: 22 }),
-        new TextRun({ text: nomeAluno, font, size: 22, bold: true, color: 'C80000' }),
-        new TextRun({ text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos `, font, size: 22 }),
-        new TextRun({ text: dataNasc, font, size: 22, bold: true }),
-        new TextRun({ text: `, ${portadorPortadora} do bilhete de identidade n.º ${biNum}, passado pelo Arquivo de Identificação de Cabinda, concluiu, em regime diurno, no ano lectivo ${anoConclusao}, o curso `, font, size: 22 }),
-        new TextRun({ text: cursoNome, font, size: 22, bold: true }),
-        new TextRun({ text: areaFormacao, font, size: 22 }),
-        new TextRun({ text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, n.º `, font, size: 22 }),
-        new TextRun({ text: `${aluno.codigo}:`, font, size: 22, bold: true }),
+        new TextRun({ text: 'A Directora do Instituto, ', font, size: 20 }),
+        new TextRun({ text: nomeDirectora, font, size: 20, bold: true }),
+        new TextRun({ text: ', certifica de acordo com o art.º 25 e 27 dos estatutos de Subsistema do Ensino Técnico Profissional, aprovado pelo Decreto nº 90/04, de 3 de Dezembro de 2004, que ', font, size: 20 }),
+        new TextRun({ text: nomeAluno, font, size: 20, bold: true, color: 'C80000' }),
+        new TextRun({ text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos `, font, size: 20 }),
+        new TextRun({ text: dataNasc, font, size: 20, bold: true }),
+        new TextRun({ text: `, ${portadorPortadora} do bilhete de identidade n.º ${biNum}, passado pelo Arquivo de Identificação de Cabinda, concluiu, em regime diurno, no ano lectivo ${anoConclusao}, o curso `, font, size: 20 }),
+        new TextRun({ text: cursoNome, font, size: 20, bold: true }),
+        new TextRun({ text: areaFormacao, font, size: 20 }),
+        new TextRun({ text: `, tendo obtido as seguintes classificações, conforme consta na pauta do ano ${anoConclusao}, Turma ${turma}, n.º `, font, size: 20 }),
+        new TextRun({ text: `${aluno.codigo}:`, font, size: 20, bold: true, highlight: 'yellow' }),
       ],
     })
 
