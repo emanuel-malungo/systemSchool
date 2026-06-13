@@ -69,11 +69,25 @@ const CreditNotes: React.FC = () => {
   const formatDate = (dateString: string): string => {
     if (!dateString || dateString === '00-00-0000' || dateString === '0000-00-00') return 'N/A';
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'N/A';
-      return date.toLocaleDateString('pt-BR');
+      let date = new Date(dateString);
+      
+      if (isNaN(date.getTime())) {
+        const parts = dateString.split(/[-/]/);
+        if (parts.length === 3) {
+          // Tentativa de parse DD-MM-YYYY ou DD/MM/YYYY
+          date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
+        }
+      }
+
+      if (isNaN(date.getTime())) return dateString; // Fallback para mostrar a string original
+
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
     } catch {
-      return 'N/A';
+      return dateString;
     }
   };
 
@@ -158,10 +172,18 @@ const CreditNotes: React.FC = () => {
               <p className="text-sm font-medium text-gray-500 mb-1">Notas Este Mês</p>
               <p className="text-2xl font-bold text-gray-900">
                 {filteredNotas.filter(nota => {
-                  if (!nota.data || nota.data === '00-00-0000' || nota.data === '0000-00-00') return false;
+                  const dataNota = nota.data || (nota as any).createdAt || (nota as any).created_at;
+                  if (!dataNota || dataNota === '00-00-0000' || dataNota === '0000-00-00') return false;
                   try {
-                    const noteDate = new Date(nota.data);
+                    let noteDate = new Date(dataNota);
+                    if (isNaN(noteDate.getTime())) {
+                      const parts = dataNota.split(/[-/]/);
+                      if (parts.length === 3) {
+                        noteDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
+                      }
+                    }
                     if (isNaN(noteDate.getTime())) return false;
+                    
                     const currentDate = new Date();
                     return noteDate.getMonth() === currentDate.getMonth() && 
                            noteDate.getFullYear() === currentDate.getFullYear();
@@ -300,7 +322,7 @@ const CreditNotes: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-6 py-3.5 whitespace-nowrap text-sm text-gray-600 font-medium">
-                          {formatDate(nota.data)}
+                          {formatDate(nota.data || (nota as any).createdAt || (nota as any).created_at)}
                         </td>
                         <td className="px-6 py-3.5 text-sm text-gray-600 max-w-[200px] truncate" title={nota.designacao}>
                           {nota.designacao}
@@ -413,7 +435,7 @@ const CreditNotes: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-xs font-medium text-gray-500">Data de Emissão</p>
-                      <p className="text-sm font-semibold text-gray-900 mt-0.5">{formatDate(selectedNote.data)}</p>
+                      <p className="text-sm font-semibold text-gray-900 mt-0.5">{formatDate(selectedNote.data || (selectedNote as any).createdAt || (selectedNote as any).created_at)}</p>
                     </div>
                     <div>
                       <p className="text-xs font-medium text-gray-500">Valor Revertido</p>

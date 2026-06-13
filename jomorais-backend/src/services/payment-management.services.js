@@ -877,8 +877,14 @@ export class PaymentManagementService {
 
       console.log(`[GET NOTAS CRÉDITO] Encontradas ${notasCredito.length} notas de crédito, total: ${total}`);
 
+      // Mapeia dataOperacao para data para o frontend
+      const formatadasNotasCredito = notasCredito.map(nota => ({
+        ...nota,
+        data: nota.dataOperacao || '00-00-0000'
+      }));
+
       return {
-        data: notasCredito,
+        data: formatadasNotasCredito,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(total / limit),
@@ -926,7 +932,13 @@ export class PaymentManagementService {
         throw new AppError('Nota de crédito não encontrada', 404);
       }
 
-      return notaCredito;
+      // Mapear dataOperacao para data
+      const formatadaNotaCredito = {
+        ...notaCredito,
+        data: notaCredito.dataOperacao || '00-00-0000'
+      };
+
+      return formatadaNotaCredito;
     } catch (error) {
       if (error instanceof AppError) throw error;
       console.error('Erro ao buscar nota de crédito:', error);
