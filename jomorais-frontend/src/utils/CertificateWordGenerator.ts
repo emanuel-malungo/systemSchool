@@ -904,10 +904,10 @@ export class CertificateWordGenerator {
             page: {
               margin: { top: 600, right: 600, bottom: 600, left: 800 },
               borders: {
-                pageBorderTop: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
-                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
-                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
-                pageBorderRight: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderTop: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
+                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
+                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
+                pageBorderRight: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
               },
             },
           },
