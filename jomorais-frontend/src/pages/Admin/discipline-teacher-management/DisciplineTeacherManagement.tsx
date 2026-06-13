@@ -6,7 +6,9 @@ import type { AtribuicaoCompleta, IAtribuicaoCompletaInput } from '../../../type
 import DisciplineTeacherTable from '../../../components/discipline-teacher-management/DisciplineTeacherTable'
 import DisciplineTeacherFormModal from '../../../components/discipline-teacher-management/DisciplineTeacherFormModal'
 import DeleteConfirmModal from '../../../components/discipline-teacher-management/DeleteConfirmModal'
+import FilterModal from '../../../components/discipline-teacher-management/FilterModal'
 import Container from '../../../components/layout/Container'
+import { Filter } from 'lucide-react'
 
 export default function DisciplineTeacherManagement() {
   // Estados
@@ -19,6 +21,7 @@ export default function DisciplineTeacherManagement() {
   // Modais
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [disciplineTeacherToDelete, setDisciplineTeacherToDelete] = useState<AtribuicaoCompleta | null>(null)
 
   // Hook de gerenciamento
@@ -119,179 +122,139 @@ export default function DisciplineTeacherManagement() {
 
   return (
     <Container>
-      {/* Header */}
-      <div className="mb-8 bg-linear-to-br from-purple-50 via-white to-purple-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-100/30 rounded-full -ml-12 -mb-12"></div>
-          
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-linear-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <BookOpen className="h-8 w-8 text-white" />
-              </div>
-              
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+              <BookOpen className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-gray-900">
                   Atribuições de Professores
                 </h1>
-                <p className="text-gray-600 text-lg">
-                  Gerencie as atribuições de disciplinas e turmas para os professores
-                </p>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-100">
+                  <div className="w-1.5 h-1.5 bg-[#007C00] rounded-full animate-pulse"></div>
+                  <span className="text-xs text-[#007C00] font-medium">{stats.total} Atribuições</span>
+                </div>
               </div>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Gerencie as atribuições de disciplinas e turmas para os professores
+              </p>
             </div>
-            
+          </div>
+          
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm shadow-sm"
+            >
+              <Filter className="h-4 w-4" />
+              Filtros Avançados
+            </button>
             <button
               onClick={handleCreateDisciplineTeacher}
-              className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-purple-600 to-purple-800 text-white rounded-xl hover:from-purple-700 hover:to-purple-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-4 w-4" />
               Nova Atribuição
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Estatísticas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Atribuições */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
-          <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center">
-            <BookOpen className="h-6 w-6" />
+        {/* Estatísticas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total Atribuições */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Total Atribuições</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-50 text-[#007C00] rounded-lg flex items-center justify-center">
+              <BookOpen className="h-6 w-6" />
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-500">Total Atribuições</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          {/* Disciplinas Atribuídas */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Disciplinas</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.disciplinas}</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+              <GraduationCap className="h-6 w-6" />
+            </div>
+          </div>
+          {/* Turmas Atribuídas */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Turmas</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.turmas}</p>
+            </div>
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center">
+              <Users className="h-6 w-6" />
+            </div>
+          </div>
+          {/* Professores Ativos */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Professores Ativos</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.professoresAtivos}</p>
+            </div>
+            <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
+              <Award className="h-6 w-6" />
+            </div>
           </div>
         </div>
-        {/* Disciplinas Atribuídas */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
-            <GraduationCap className="h-6 w-6" />
+
+        {/* Pesquisa e Filtros Rápidos */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Barra de Pesquisa */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Pesquisar por professor, disciplina ou curso..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
+                }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all text-sm"
+              />
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-500">Disciplinas</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.disciplinas}</p>
+
+          {/* Contador de Resultados e Limpar Filtros Rápido */}
+          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-sm text-gray-500">
+              Mostrando <span className="font-medium text-gray-900">{filteredAtribuicoes.length}</span> resultados
+              {(professorFilter !== 'all' || disciplinaFilter !== 'all' || tipoFilter !== 'all') && (
+                <span className="ml-1 text-[#007C00]">
+                  (Filtros Avançados ativos)
+                </span>
+              )}
+            </span>
+            {(searchTerm || professorFilter !== 'all' || disciplinaFilter !== 'all' || tipoFilter !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('')
+                  setProfessorFilter('all')
+                  setDisciplinaFilter('all')
+                  setTipoFilter('all')
+                  setCurrentPage(1)
+                }}
+                className="text-sm text-[#007C00] hover:text-[#005a00] font-medium transition-colors"
+              >
+                Limpar tudo
+              </button>
+            )}
           </div>
         </div>
-        {/* Turmas Atribuídas */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
-            <Users className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-500">Turmas</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.turmas}</p>
-          </div>
-        </div>
-        {/* Professores Ativos */}
-        <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center gap-4 transition-all hover:shadow-lg">
-          <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center">
-            <Award className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-500">Professores Ativos</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.professoresAtivos}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filtros e Pesquisa */}
-      <div className="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Barra de Pesquisa */}
-          <div className="relative md:col-span-4">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Pesquisar por professor, disciplina ou curso..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-                setCurrentPage(1)
-              }}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all bg-gray-50/30"
-            />
-          </div>
-
-          {/* Professor Select */}
-          <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Professor</label>
-            <select
-              value={professorFilter}
-              onChange={(e) => {
-                setProfessorFilter(e.target.value)
-                setCurrentPage(1)
-              }}
-              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
-            >
-              <option value="all">Todos os Professores</option>
-              {professoresList.map((prof: any) => (
-                <option key={prof.codigo} value={prof.codigo}>
-                  {prof.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Disciplina Select */}
-          <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Disciplina</label>
-            <select
-              value={disciplinaFilter}
-              onChange={(e) => {
-                setDisciplinaFilter(e.target.value)
-                setCurrentPage(1)
-              }}
-              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
-            >
-              <option value="all">Todas as Disciplinas</option>
-              {disciplinasList.map((disc: any) => (
-                <option key={disc.codigo} value={disc.codigo}>
-                  {disc.designacao}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tipo Select */}
-          <div>
-            <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Tipo</label>
-            <select
-              value={tipoFilter}
-              onChange={(e) => {
-                setTipoFilter(e.target.value)
-                setCurrentPage(1)
-              }}
-              className="w-full px-4 py-3 border border-gray-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all font-medium text-gray-700"
-            >
-              <option value="all">Todos os Tipos</option>
-              <option value="disciplina">Apenas Disciplinas</option>
-              <option value="turma">Apenas Turmas</option>
-            </select>
-          </div>
-
-          {/* Limpar Filtros */}
-          <div className="flex items-end">
-            <button
-              onClick={() => {
-                setSearchTerm('')
-                setProfessorFilter('all')
-                setDisciplinaFilter('all')
-                setTipoFilter('all')
-                setCurrentPage(1)
-              }}
-              className="w-full py-3 px-4 border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all font-semibold text-sm active:scale-95 cursor-pointer"
-            >
-              Limpar Filtros
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-        <DisciplineTeacherTable
+      <DisciplineTeacherTable
           disciplineTeachers={paginatedAtribuicoes}
           isLoading={isLoading}
           onDelete={handleDeleteClick}
@@ -299,7 +262,6 @@ export default function DisciplineTeacherManagement() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
-      </div>
 
       {/* Modais */}
       <DisciplineTeacherFormModal
@@ -325,6 +287,27 @@ export default function DisciplineTeacherManagement() {
         }
         isLoading={isDeleting}
       />
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        filters={{ professorFilter, disciplinaFilter, tipoFilter }}
+        setFilters={(f) => {
+          setProfessorFilter(f.professorFilter)
+          setDisciplinaFilter(f.disciplinaFilter)
+          setTipoFilter(f.tipoFilter)
+          setCurrentPage(1)
+        }}
+        professoresList={professoresList}
+        disciplinasList={disciplinasList}
+        onClear={() => {
+          setProfessorFilter('all')
+          setDisciplinaFilter('all')
+          setTipoFilter('all')
+          setCurrentPage(1)
+        }}
+      />
+      </div>
     </Container>
   )
 }

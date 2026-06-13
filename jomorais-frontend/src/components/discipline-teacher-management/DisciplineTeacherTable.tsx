@@ -22,7 +22,7 @@ export default function DisciplineTeacherTable({
     return (
       <div className="p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007C00]"></div>
         </div>
         <p className="text-center text-gray-500 mt-4">Carregando atribuições...</p>
       </div>
@@ -46,11 +46,11 @@ export default function DisciplineTeacherTable({
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
+          <thead>
+            <tr className="bg-gray-50/80 border-b border-gray-200">
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Professor
               </th>
@@ -74,14 +74,14 @@ export default function DisciplineTeacherTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100 bg-white">
             {disciplineTeachers.map((dt) => (
               <tr key={`${dt.tipo}-${dt.codigo}`} className="hover:bg-gray-50/50 transition-colors">
                 {/* Professor */}
                 <td className="px-6 py-4">
                   <div className="flex items-center">
-                    <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-purple-50 border border-purple-100">
-                      <User className="h-5 w-5 text-purple-600" />
+                    <div className="shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-green-50 border border-green-100">
+                      <User className="h-5 w-5 text-[#007C00]" />
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-semibold text-gray-900">
@@ -99,7 +99,7 @@ export default function DisciplineTeacherTable({
                 {/* Disciplina */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-purple-400 shrink-0" />
+                    <BookOpen className="h-4 w-4 text-gray-400 shrink-0" />
                     <span className="text-sm font-medium text-gray-800">
                       {dt.disciplina?.designacao || 'N/A'}
                     </span>
@@ -132,8 +132,8 @@ export default function DisciplineTeacherTable({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
                     dt.tipo === 'disciplina'
-                      ? 'bg-purple-50 text-purple-700 border-purple-200'
-                      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-[#007C00]/10 text-[#007C00] border-[#007C00]/20'
                   }`}>
                     {dt.tipo === 'disciplina' ? 'Disciplina' : 'Turma'}
                   </span>
@@ -155,10 +155,11 @@ export default function DisciplineTeacherTable({
                   <div className="flex items-center justify-end">
                     <button
                       onClick={() => onDelete(dt)}
-                      className="inline-flex items-center justify-center w-9 h-9 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-700 border border-transparent hover:border-red-100 transition-all active:scale-95 shadow-xs"
-                      title="Excluir Atribuição"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors"
+                      title="Eliminar Atribuição"
                     >
-                      <Trash2 className="h-4.5 w-4.5" />
+                      <Trash2 className="h-4 w-4" />
+                      <span>Eliminar</span>
                     </button>
                   </div>
                 </td>
@@ -169,57 +170,76 @@ export default function DisciplineTeacherTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-          <span className="text-sm text-gray-600 font-medium">
-            Página {currentPage} de {totalPages}
-          </span>
-          <div className="flex items-center gap-2">
+        <div className="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div className="flex-1 flex justify-between sm:hidden">
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="h-5 w-5" />
+              Anterior
             </button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter((page) => {
-                  return (
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= currentPage - 1 && page <= currentPage + 1)
-                  )
-                })
-                .map((page, index, array) => {
-                  const prevPage = array[index - 1]
-                  const showEllipsis = prevPage && page - prevPage > 1
-
-                  return (
-                    <div key={page} className="flex items-center gap-1">
-                      {showEllipsis && <span className="px-2 text-gray-500">...</span>}
-                      <button
-                        onClick={() => onPageChange(page)}
-                        className={`inline-flex items-center justify-center min-w-[2.25rem] h-9 px-3 rounded-lg border transition-colors ${
-                          page === currentPage
-                            ? 'border-purple-600 bg-purple-600 text-white font-semibold'
-                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    </div>
-                  )
-                })}
-            </div>
-
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronRight className="h-5 w-5" />
+              Próxima
             </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-600">
+                Página <span className="font-semibold text-gray-900">{currentPage}</span> de{' '}
+                <span className="font-semibold text-gray-900">{totalPages}</span>
+              </p>
+            </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px border border-gray-200 overflow-hidden" aria-label="Pagination">
+                <button
+                  onClick={() => onPageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-3 py-2 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let page: number
+                  if (totalPages <= 5) {
+                    page = i + 1
+                  } else if (currentPage <= 3) {
+                    page = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    page = totalPages - 4 + i
+                  } else {
+                    page = currentPage - 2 + i
+                  }
+                  
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => onPageChange(page)}
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold transition-colors ${
+                        page === currentPage
+                          ? 'z-10 bg-green-50 text-[#007C00] border-x border-green-200'
+                          : 'bg-white text-gray-600 hover:bg-gray-50 border-x border-gray-200'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                })}
+
+                <button
+                  onClick={() => onPageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="relative inline-flex items-center px-3 py-2 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </nav>
+            </div>
           </div>
         </div>
       )}
