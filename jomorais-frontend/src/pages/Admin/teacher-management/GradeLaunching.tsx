@@ -11,7 +11,7 @@ import {
   Filter,
 } from 'lucide-react'
 import { toast } from 'react-toastify'
-import { useAuth } from '../../../hooks/useAuth'
+import { useAuth, usePermissions } from '../../../hooks/useAuth'
 import type { ITurma } from '../../../types/turma.types'
 import Container from '../../../components/layout/Container'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
@@ -28,6 +28,10 @@ interface GradeEntry {
 
 export default function GradeLaunching() {
   const { user } = useAuth()
+  const { userType, isAdmin } = usePermissions()
+  
+  // Pedagogico e Secretaria apenas visualizam
+  const isReadOnly = userType === 'pedagogico' || userType === 'chefe de secretaria'
 
   // Estados dos seletores de contexto
   const [selectedAnoLectivo, setSelectedAnoLectivo] = useState('')
@@ -510,23 +514,25 @@ export default function GradeLaunching() {
               </p>
             </div>
 
-            <button
-              onClick={handleSaveAllGrades}
-              disabled={saving || isLoadingAlunos || isLoadingGrades || students.length === 0}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Salvar Notas
-                </>
-              )}
-            </button>
+            {!isReadOnly && (
+              <button
+                onClick={handleSaveAllGrades}
+                disabled={saving || isLoadingAlunos || isLoadingGrades || students.length === 0}
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Salvar Notas
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           <div className="overflow-x-auto">
@@ -575,9 +581,14 @@ export default function GradeLaunching() {
                             min="0"
                             max="20"
                             step="0.1"
+                            disabled={isReadOnly}
                             value={grades.MAC !== undefined ? grades.MAC : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'MAC', e.target.value)}
-                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
+                            className={`w-20 px-2 py-1.5 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 text-sm font-medium text-center transition-all ${
+                              isReadOnly 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : 'bg-gray-50 focus:bg-gray-100 hover:bg-gray-100/75 placeholder:text-gray-400'
+                            }`}
                             placeholder="0-20"
                           />
                         </td>
@@ -589,9 +600,14 @@ export default function GradeLaunching() {
                             min="0"
                             max="20"
                             step="0.1"
+                            disabled={isReadOnly}
                             value={grades.PP !== undefined ? grades.PP : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'PP', e.target.value)}
-                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
+                            className={`w-20 px-2 py-1.5 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 text-sm font-medium text-center transition-all ${
+                              isReadOnly 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : 'bg-gray-50 focus:bg-gray-100 hover:bg-gray-100/75 placeholder:text-gray-400'
+                            }`}
                             placeholder="0-20"
                           />
                         </td>
@@ -603,9 +619,14 @@ export default function GradeLaunching() {
                             min="0"
                             max="20"
                             step="0.1"
+                            disabled={isReadOnly}
                             value={grades.PT !== undefined ? grades.PT : ''}
                             onChange={(e) => updateGradeField(student.codigo, 'PT', e.target.value)}
-                            className="w-20 px-2 py-1.5 bg-gray-50 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 hover:bg-gray-100/75 transition-all text-sm font-medium text-center placeholder:text-gray-400"
+                            className={`w-20 px-2 py-1.5 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 text-sm font-medium text-center transition-all ${
+                              isReadOnly 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : 'bg-gray-50 focus:bg-gray-100 hover:bg-gray-100/75 placeholder:text-gray-400'
+                            }`}
                             placeholder="0-20"
                           />
                         </td>

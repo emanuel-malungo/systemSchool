@@ -43,18 +43,18 @@ export const USER_PERMISSIONS: Record<string, UserPermissions> = {
     canAccessFinancialSettings: true,
   },
   
-  // Chefe de Secretaria - Acesso total
+  // Chefe de Secretaria - Sem acesso financeiro
   'chefe de secretaria': {
     canAccessStudentManagement: true,
     canAccessAcademicManagement: true,
-    canAccessFinancial: true,
+    canAccessFinancial: false,
     canAccessReports: true,
     canAccessSettings: true,
-    canAccessPayments: true,
-    canAccessInvoices: true,
-    canAccessFinancialReports: true,
-    canAccessSAFT: true,
-    canAccessFinancialSettings: true,
+    canAccessPayments: false,
+    canAccessInvoices: false,
+    canAccessFinancialReports: false,
+    canAccessSAFT: false,
+    canAccessFinancialSettings: false,
   },
   
   // Assistente Administrativo - Acesso limitado
