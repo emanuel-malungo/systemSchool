@@ -50,6 +50,19 @@ class DisciplinaService {
       throw error
     }
   }
+
+  // Buscar disciplinas por curso
+  async getDisciplinasByCurso(cursoId: number): Promise<ApiResponse<IDisciplina[]>> {
+    try {
+      const response = await api.get<ApiResponse<IDisciplina[]>>(
+        `${this.baseURL}/curso/${cursoId}`
+      )
+      return response.data
+    } catch (error) {
+      console.error('Erro ao buscar disciplinas por curso:', error)
+      throw error
+    }
+  }
 }
 
 export default new DisciplinaService()

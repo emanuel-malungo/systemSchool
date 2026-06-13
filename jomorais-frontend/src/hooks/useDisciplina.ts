@@ -34,3 +34,21 @@ export const useDisciplinaById = (id: number | null, enabled: boolean = true) =>
     retry: 1,
   })
 }
+
+export const useDisciplinasByCurso = (cursoId: number | null, enabled: boolean = true) => {
+  return useQuery<IDisciplina[], Error>({
+    queryKey: ['disciplinas', 'curso', cursoId],
+    queryFn: async () => {
+      if (!cursoId) return []
+      const response = await disciplinaService.getDisciplinasByCurso(cursoId)
+      if (!response.success) {
+        throw new Error(response.message)
+      }
+      return response.data || []
+    },
+    enabled: !!cursoId && enabled,
+    staleTime: 10 * 60 * 1000, // 10 minutos
+    gcTime: 30 * 60 * 1000, // 30 minutos
+    retry: 1,
+  })
+}

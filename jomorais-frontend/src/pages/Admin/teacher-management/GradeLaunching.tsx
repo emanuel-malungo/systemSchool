@@ -10,14 +10,14 @@ import {
   Clock,
   Filter,
 } from 'lucide-react'
-import Container from '../../../components/layout/Container'
-import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
-import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
-import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
-import { useDisciplinas } from '../../../hooks/useDisciplina'
-import { useAuth } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
+import { useAuth } from '../../../hooks/useAuth'
 import type { ITurma } from '../../../types/turma.types'
+import Container from '../../../components/layout/Container'
+import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
+import { useDisciplinasByCurso } from '../../../hooks/useDisciplina'
+import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
+import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
 
 interface GradeEntry {
   MAC?: number
@@ -42,10 +42,22 @@ export default function GradeLaunching() {
   // Hooks de busca de dados
   const { data: anosLetivosData, isLoading: isLoadingAnosLetivos } = useAnosLectivos({ page: 1, limit: 1000 })
   const { data: turmasData, isLoading: isLoadingTurmas } = useTurmasComplete('')
-  const { data: disciplinasData, isLoading: isLoadingDisciplinas } = useDisciplinas()
 
   const anosLetivos = anosLetivosData?.data || []
   const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
+
+  // Obter a turma selecionada atualmente
+  const selectedTurma = useMemo(() => {
+    if (!selectedTurmaId) return null
+    return turmas.find((t: ITurma) => t.codigo?.toString() === selectedTurmaId)
+  }, [turmas, selectedTurmaId])
+
+  // Buscar disciplinas pelo curso da turma
+  const { data: disciplinasData, isLoading: isLoadingDisciplinas } = useDisciplinasByCurso(
+    selectedTurma?.codigo_Curso || null,
+    !!selectedTurma?.codigo_Curso
+  )
+  
   const disciplines = Array.isArray(disciplinasData) ? disciplinasData : []
 
   // Filtrar as turmas de acordo com o Ano Letivo selecionado
@@ -53,12 +65,6 @@ export default function GradeLaunching() {
     if (!selectedAnoLectivo) return []
     return turmas.filter((t: ITurma) => t.codigo_AnoLectivo?.toString() === selectedAnoLectivo)
   }, [turmas, selectedAnoLectivo])
-
-  // Obter a turma selecionada atualmente
-  const selectedTurma = useMemo(() => {
-    if (!selectedTurmaId) return null
-    return turmas.find((t: ITurma) => t.codigo?.toString() === selectedTurmaId)
-  }, [turmas, selectedTurmaId])
 
   // Hook dependente apenas da turma selecionada para buscar alunos
   const { data: alunosTurmaResponse, isLoading: isLoadingAlunos } = useAlunosByTurma(
