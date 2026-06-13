@@ -113,33 +113,26 @@ export default function NotesByDiscipline() {
 
   return (
     <Container>
-      {/* Header */}
-      <div className="mb-8 bg-linear-to-br from-indigo-50 via-white to-indigo-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-100/30 rounded-full -ml-12 -mb-12"></div>
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <BookOpen className="h-8 w-8 text-white" />
-              </div>
-
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Notas por Disciplina
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Dashboard consolidado de notas agrupadas por disciplina
-                </p>
-              </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+              <BookOpen className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Notas por Disciplina
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Dashboard consolidado de notas agrupadas por disciplina
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
+        {/* Filtros */}
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="h-5 w-5 text-gray-700" />
           <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
@@ -215,64 +208,64 @@ export default function NotesByDiscipline() {
 
       {/* Estatísticas Gerais */}
       {isContextSelected && disciplineStats.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Disciplinas</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-gray-500 text-sm font-medium mb-1">Disciplinas</p>
+                <p className="text-2xl font-bold text-gray-900">
                   {generalStats.totalDisciplinas}
                 </p>
               </div>
-              <BookOpen className="h-8 w-8 text-indigo-600" />
+              <BookOpen className="h-6 w-6 text-[#007C00]" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Média Geral</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-gray-500 text-sm font-medium mb-1">Média Geral</p>
+                <p className="text-2xl font-bold text-gray-900">
                   {generalStats.mediaGeral.toFixed(2)}
                 </p>
               </div>
-              <BarChart3 className="h-8 w-8 text-purple-600" />
+              <BarChart3 className="h-6 w-6 text-gray-400" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Aprovados</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-gray-500 text-sm font-medium mb-1">Aprovados</p>
+                <p className="text-2xl font-bold text-[#007C00]">
                   {generalStats.totalAprovados}
                 </p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-6 w-6 text-[#007C00]" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Reprovados</p>
-                <p className="text-3xl font-bold text-red-600">
+                <p className="text-gray-500 text-sm font-medium mb-1">Reprovados</p>
+                <p className="text-2xl font-bold text-red-600">
                   {generalStats.totalReprovados}
                 </p>
               </div>
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-6 w-6 text-red-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-1">Taxa Aprovação</p>
-                <p className={`text-3xl font-bold ${getDisciplinePerformanceColor(generalStats.percentualAprovacaoGeral)}`}>
+                <p className="text-gray-500 text-sm font-medium mb-1">Taxa Aprovação</p>
+                <p className={`text-2xl font-bold ${getDisciplinePerformanceColor(generalStats.percentualAprovacaoGeral)}`}>
                   {generalStats.percentualAprovacaoGeral.toFixed(1)}%
                 </p>
               </div>
-              <TrendingUp className="h-8 w-8 text-blue-600" />
+              <TrendingUp className="h-6 w-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -281,23 +274,23 @@ export default function NotesByDiscipline() {
       {/* Disciplinas */}
       <div className="space-y-4">
         {!isContextSelected ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-200">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
-            <p className="text-gray-600 font-medium">Filtros não selecionados</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-gray-900 font-semibold">Filtros não selecionados</p>
+            <p className="text-sm text-gray-500 mt-1">
               Selecione o Ano Letivo, a Turma e o Trimestre acima para visualizar as notas agrupadas por disciplina.
             </p>
           </div>
         ) : isLoadingStats ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-200">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-[#007C00]" />
             <p className="text-gray-600">Carregando notas...</p>
           </div>
         ) : disciplineStats.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-200">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
-            <p className="text-gray-600 font-medium">Nenhuma nota encontrada</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-gray-900 font-semibold">Nenhuma nota encontrada</p>
+            <p className="text-sm text-gray-500 mt-1">
               Não existem notas lançadas para a turma, ano letivo e trimestre selecionados.
             </p>
           </div>
@@ -305,7 +298,7 @@ export default function NotesByDiscipline() {
           disciplineStats.map((discipline: any) => (
             <div
               key={discipline.codigoDisciplina}
-              className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
             >
               {/* Header da Disciplina */}
               <button
@@ -378,30 +371,30 @@ export default function NotesByDiscipline() {
 
               {/* Detalhes da Disciplina */}
               {expandedDisciplines.has(discipline.codigoDisciplina) && (
-                <div className="border-t border-gray-100 bg-gray-50/50">
+                <div className="border-t border-gray-200 bg-gray-50/50">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="bg-gray-100 border-b border-gray-200">
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                        <tr className="bg-gray-50/80 border-b border-gray-200">
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Aluno
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Código
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             MAC
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             PP
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             PT
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Nota Final
                           </th>
-                          <th className="px-6 py-3 text-center text-xs font-semibold text-gray-700">
+                          <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Status
                           </th>
                         </tr>
@@ -451,12 +444,12 @@ export default function NotesByDiscipline() {
 
       {/* Rodapé com informações */}
       {isContextSelected && disciplineStats.length > 0 && (
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <div className="mt-8 bg-green-50/50 border border-green-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-blue-900">
+            <AlertCircle className="h-5 w-5 text-[#007C00] mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-[#007C00]">
               <p className="font-semibold mb-1">Resumo da Análise:</p>
-              <ul className="space-y-1 text-blue-800">
+              <ul className="space-y-1 opacity-90">
                 <li>
                   • Total de disciplinas: <strong>{generalStats.totalDisciplinas}</strong>
                 </li>
@@ -481,6 +474,7 @@ export default function NotesByDiscipline() {
           </div>
         </div>
       )}
+      </div>
     </Container>
   )
 }
