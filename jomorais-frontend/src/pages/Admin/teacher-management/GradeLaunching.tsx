@@ -28,7 +28,7 @@ interface GradeEntry {
 
 export default function GradeLaunching() {
   const { user } = useAuth()
-  const { userType, isAdmin } = usePermissions()
+  const { userType } = usePermissions()
   
   // Pedagogico e Secretaria apenas visualizam
   const isReadOnly = userType === 'pedagogico' || userType === 'chefe de secretaria'

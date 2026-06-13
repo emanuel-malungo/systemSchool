@@ -1,7 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import {
-  Users,
-  BarChart3,
   AlertCircle,
   Loader2,
   Save,

@@ -69,7 +69,6 @@ export class BoletimWordGenerator {
     const trimLabel = `${romanMap[trimNum] || trimNum}-TRIMESTRE`
 
     const colsDisciplinas = [...disciplinas.slice(0, 12)]
-    const N = colsDisciplinas.length
 
     // Build the document
     const doc = new Document({

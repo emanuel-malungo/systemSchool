@@ -11,8 +11,6 @@ import {
   WidthType,
   BorderStyle,
   VerticalAlign,
-  HeadingLevel,
-  TabStopPosition,
   TabStopType,
   LeaderType,
   UnderlineType,
@@ -329,7 +327,7 @@ export class CertificateWordGenerator {
 
       const cellStyle = {
         borders: this.thinBorders(),
-        verticalAlign: VerticalAlign.CENTER as const,
+        verticalAlign: VerticalAlign.CENTER,
         margins: { top: 20, bottom: 20, left: 40, right: 40 },
       }
 
@@ -462,12 +460,15 @@ export class CertificateWordGenerator {
         {
           properties: {
             page: {
-              margin: { top: 800, right: 800, bottom: 800, left: 1000 },
+              margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 },
               borders: {
-                pageBorderTop: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 10 },
-                pageBorderBottom: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 10 },
-                pageBorderLeft: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 10 },
-                pageBorderRight: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 10 },
+                pageBorders: {
+                  offsetFrom: 'text',
+                },
+                pageBorderTop: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
+                pageBorderBottom: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
+                pageBorderLeft: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
+                pageBorderRight: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
               },
             },
           },
@@ -694,7 +695,6 @@ export class CertificateWordGenerator {
     const gestaoSaudeGrade = getGradeForMid('Gestão de Saúde') || 15
     const estagioGrade = getGradeForMid('Estágio Curricular') || getGradeForMid('Estágio') || 14
     const papGrade = getGradeForMid('Prova de Aptidão Profissional') || getGradeForMid('PAP') || 15
-    const examePraticoGrade = getGradeForMid('Exame Prático') || getGradeForMid('Exame Pratico') || getGradeForMid('Prova Prática') || 15
 
     const isSaude = curso.toLowerCase().includes('análises clínicas') ||
       curso.toLowerCase().includes('enfermagem') || curso.toLowerCase().includes('saúde')
@@ -705,7 +705,7 @@ export class CertificateWordGenerator {
     // ── Build Grade Table ──
     const cellStyle = {
       borders: this.noBorders(),
-      verticalAlign: VerticalAlign.CENTER as const,
+      verticalAlign: VerticalAlign.CENTER,
       margins: { top: 0, bottom: 0, left: 0, right: 0 },
     }
 
@@ -899,12 +899,15 @@ export class CertificateWordGenerator {
         {
           properties: {
             page: {
-              margin: { top: 600, right: 600, bottom: 600, left: 800 },
+              margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 },
               borders: {
-                pageBorderTop: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 8 },
-                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 8 },
-                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 8 },
-                pageBorderRight: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 8 },
+                pageBorders: {
+                  offsetFrom: 'text',
+                },
+                pageBorderTop: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+                pageBorderRight: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
               },
             },
           },
