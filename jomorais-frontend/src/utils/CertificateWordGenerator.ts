@@ -627,8 +627,8 @@ export class CertificateWordGenerator {
       alignment: AlignmentType.JUSTIFIED,
       spacing: { after: 100, line: 240 },
       children: [
-        new TextRun({ text: 'A Directora do Instituto, ', font, size: 20 }),
-        new TextRun({ text: nomeDirectora, font, size: 20, bold: true }),
+        new TextRun({ text: 'A Directora do Instituto, ', font, size: 22, bold: true }),
+        new TextRun({ text: nomeDirectora, font: 'Edwardian Script ITC', size: 28 }),
         new TextRun({ text: ', certifica de acordo com o art.º 25 e 27 dos estatutos de Subsistema do Ensino Técnico Profissional, aprovado pelo Decreto nº 90/04, de 3 de Dezembro de 2004, que ', font, size: 20 }),
         new TextRun({ text: nomeAluno, font, size: 20, bold: true, color: 'C80000' }),
         new TextRun({ text: `, ${filhoFilha} de ${pai} e de ${mae}, natural de Cabinda, província de Cabinda, ${nascidoNascida} aos `, font, size: 20 }),
@@ -862,7 +862,7 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font, size: 20 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font, size: 22, bold: true })] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({
@@ -875,7 +875,7 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'A Directora do Instituto', font, size: 20 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'A Directora do Instituto', font, size: 22, bold: true })] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({
@@ -884,7 +884,7 @@ export class CertificateWordGenerator {
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: nomeDirectora, font, size: 24, italics: true })],
+                  children: [new TextRun({ text: nomeDirectora, font: 'Edwardian Script ITC', size: 28 })],
                 }),
               ],
             }),
