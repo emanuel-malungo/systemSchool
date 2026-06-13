@@ -548,7 +548,7 @@ export class CertificateWordGenerator {
           children: [
             // Coluna 1: Insígnia
             new TableCell({
-              width: { size: 12, type: WidthType.PERCENTAGE },
+              width: { size: 15, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               verticalAlign: VerticalAlign.CENTER,
               children: [
@@ -562,7 +562,7 @@ export class CertificateWordGenerator {
             }),
             // Coluna 2: Texto Central
             new TableCell({
-              width: { size: 76, type: WidthType.PERCENTAGE },
+              width: { size: 70, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               verticalAlign: VerticalAlign.CENTER,
               children: [
@@ -582,13 +582,15 @@ export class CertificateWordGenerator {
             }),
             // Coluna 3: Número do Certificado
             new TableCell({
-              width: { size: 12, type: WidthType.PERCENTAGE },
+              width: { size: 15, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
-              verticalAlign: VerticalAlign.CENTER,
+              verticalAlign: VerticalAlign.BOTTOM,
               children: [
+                new Paragraph({ children: [new TextRun({ text: '', font, size: 18 })] }), // Empty line to push down
+                new Paragraph({ children: [new TextRun({ text: '', font, size: 18 })] }), // Empty line to push down
                 new Paragraph({
                   alignment: AlignmentType.RIGHT,
-                  children: [new TextRun({ text: data.NumeroCertificado || '001-AC-25/26', font, size: 18 })],
+                  children: [new TextRun({ text: data.NumeroCertificado || '001-AC-25/26', font, size: 12 })],
                 }),
               ],
             }),
@@ -611,7 +613,7 @@ export class CertificateWordGenerator {
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
       children: [
-        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font, size: 24 }),
+        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font, size: 24, color: 'C80000' }),
       ],
     })
 
