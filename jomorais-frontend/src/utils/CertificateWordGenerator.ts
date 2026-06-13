@@ -567,14 +567,17 @@ export class CertificateWordGenerator {
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { line: 240 },
                   children: [new TextRun({ text: 'REPÚBLICA DE ANGOLA', font, size: 18 })],
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { line: 240 },
                   children: [new TextRun({ text: 'MINISTÉRIO DA EDUCAÇÃO', font, size: 18 })],
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { line: 240 },
                   children: [new TextRun({ text: 'INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', font, size: 18, bold: true })],
                 }),
               ],
@@ -599,16 +602,16 @@ export class CertificateWordGenerator {
     // ── Título: Certificado de Habilitações (size 14pt, Script MT Bold) ──
     const titleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 200, after: 100 },
+      spacing: { before: 100, after: 0, line: 240 },
       children: [
-        new TextRun({ text: 'Certificado de Habilitações', font: 'Script MT Bold', size: 28 }),
+        new TextRun({ text: 'Certificado de Habilitações', bold: true, font: 'Script MT Bold', size: 28 }),
       ],
     })
 
     // ── Subtítulo: (Instituto Técnico Privado de Saúde Jomorais) (size 12pt, Calibri) ──
     const subtitleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
+      spacing: { before: 0, after: 120, line: 240 },
       children: [
         new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font: 'Calibri', bold: true, size: 24, color: 'C80000' }),
       ],
