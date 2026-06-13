@@ -146,6 +146,7 @@ export default function Sidebar() {
         { title: "Relatórios Acadêmicos", icon: BookOpen, href: "/admin/reports-management/academic" },
         { title: "Boletim de Notas", icon: FileText, href: "/admin/reports-management/boletim" },
         { title: "Lançamento de Notas", icon: BarChart3, href: "/admin/teacher-management/grade-launching" },
+        { title: "Lançamento Exames & PAP", icon: Award, href: "/admin/teacher-management/final-exams-launching" },
         { title: "Pautas", icon: FileText, href: "/admin/teacher-management/pauta" },
         { title: "Certificados", icon: Award, href: "/admin/teacher-management/certificates" },
         { title: "Relatório de Vendas", icon: DollarSign, href: "/admin/reports-management/sales" }

@@ -21,6 +21,7 @@ import DisciplineManagement from '../pages/Admin/discipline-management/Disciplin
 import RoomManagement from '../pages/Admin/room-management/RoomManagement'
 import TeacherManagement from '../pages/Admin/teacher-management/TeacherManagement'
 import GradeLaunching from '../pages/Admin/teacher-management/GradeLaunching'
+import FinalExamsLaunching from '../pages/Admin/teacher-management/FinalExamsLaunching'
 import PautaManagement from '../pages/Admin/teacher-management/PautaManagement'
 import NotesByDiscipline from '../pages/Admin/teacher-management/NotesByDiscipline'
 import CertificateManagement from '../pages/Admin/teacher-management/CertificateManagement'
@@ -87,6 +88,7 @@ export default function IndexRoutes() {
 	  	<Route path='/admin/academic-management/salas' element={<RoomManagement />} />
 	  	<Route path='/admin/teacher-management/teacher' element={<TeacherManagement />} />
 	  	<Route path='/admin/teacher-management/grade-launching' element={<GradeLaunching />} />
+	  	<Route path='/admin/teacher-management/final-exams-launching' element={<FinalExamsLaunching />} />
 	  	<Route path='/admin/teacher-management/pauta' element={<PautaManagement />} />
 	  	<Route path='/admin/teacher-management/notes-by-discipline' element={<NotesByDiscipline />} />
 	  	<Route path='/admin/teacher-management/certificates' element={<CertificateManagement />} />
