@@ -779,13 +779,9 @@ export class CertificateWordGenerator {
         }),
         new TableCell({
           ...cellStyle,
-          width: { size: 10, type: WidthType.PERCENTAGE },
+          columnSpan: 2,
+          width: { size: 25, type: WidthType.PERCENTAGE },
           children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Nota', font, size: 20, bold: true })] })],
-        }),
-        new TableCell({
-          ...cellStyle,
-          width: { size: 15, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ children: [new TextRun({ text: '', font, size: 20 })] })],
         }),
       ],
     }))
@@ -821,7 +817,8 @@ export class CertificateWordGenerator {
     gradeRows.push(makeGradeRow('Classificação Final do Curso = (4xPC+EC+PAP) /6', finalCourseGrade, true, true))
 
     const gradesTable = new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
+      width: { size: 85, type: WidthType.PERCENTAGE },
+      alignment: AlignmentType.CENTER,
       borders: this.noBorders(),
       rows: gradeRows,
     })
@@ -904,10 +901,10 @@ export class CertificateWordGenerator {
             page: {
               margin: { top: 600, right: 600, bottom: 600, left: 800 },
               borders: {
-                pageBorderTop: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
-                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
-                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
-                pageBorderRight: { style: BorderStyle.TRIPLE, size: 8, color: '000000', space: 8 },
+                pageBorderTop: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderRight: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
               },
             },
           },
