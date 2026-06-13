@@ -4,7 +4,6 @@ import Container from '../../components/layout/Container'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 import { BoletimWordGenerator } from '../../utils/BoletimWordGenerator'
 import { toast } from 'react-toastify'
-import api from '../../utils/api.utils'
 
 export default function DirectorBoletins() {
   const [loading, setLoading] = useState(false)
@@ -12,7 +11,12 @@ export default function DirectorBoletins() {
   
   const [selectedTurmaId, setSelectedTurmaId] = useState('')
   const [selectedTrimestreId, setSelectedTrimestreId] = useState('1')
-  const [trimestres, setTrimestres] = useState<any[]>([])
+
+  const TRIMESTRES = [
+    { codigo: 1, designacao: '1º Trimestre' },
+    { codigo: 2, designacao: '2º Trimestre' },
+    { codigo: 3, designacao: '3º Trimestre' },
+  ]
 
   const selectedTurma = turmasDirigidas.find(t => t.codigo_Turma.toString() === selectedTurmaId)
 
@@ -24,9 +28,6 @@ export default function DirectorBoletins() {
     try {
       const turmas = await DirectorService.getMinhasTurmas()
       setTurmasDirigidas(turmas)
-
-      const tr = await api.get('/api/academic-management/trimestres')
-      if (tr.data?.success) setTrimestres(tr.data.data)
     } catch (error) {
       console.error(error)
     }
@@ -46,8 +47,7 @@ export default function DirectorBoletins() {
         parseInt(String(selectedTurma.tb_turmas?.codigo || '1')) // need to pass anoLectivoId, but our backend can figure it out or we send it
       )
       
-      const turmaDesignacao = selectedTurma.tb_turmas?.designacao || 'Turma'
-      await BoletimWordGenerator.generateWord(data, `Boletins_${turmaDesignacao}.docx`)
+      await BoletimWordGenerator.generateWord(data)
 
       toast.success('Boletins gerados com sucesso!')
     } catch (error: any) {
@@ -90,7 +90,7 @@ export default function DirectorBoletins() {
                 onChange={e => setSelectedTrimestreId(e.target.value)}
                 className="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-medium focus:ring-[#007C00] outline-none bg-gray-50"
               >
-                {trimestres.map(t => (
+                {TRIMESTRES.map(t => (
                   <option key={t.codigo} value={t.codigo}>{t.designacao}</option>
                 ))}
               </select>
