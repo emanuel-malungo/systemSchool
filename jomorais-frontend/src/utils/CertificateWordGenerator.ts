@@ -532,52 +532,86 @@ export class CertificateWordGenerator {
 
     const font = 'Times New Roman'
 
-    // ── Cabeçalho centrado ──
-    const headerParagraphs: Paragraph[] = []
-
-    if (logoBuffer) {
-      headerParagraphs.push(
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 60 },
+    // ── Cabeçalho: Tabela com Insígnia | Texto Central | Nº Certificado ──
+    const headerTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: {
+        top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        insideHorizontal: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+        insideVertical: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
+      },
+      rows: [
+        new TableRow({
           children: [
-            new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'png' }),
+            // Coluna 1: Insígnia
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              borders: this.noBorders(),
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: logoBuffer
+                    ? [new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'jpg' })]
+                    : [],
+                }),
+              ],
+            }),
+            // Coluna 2: Texto Central
+            new TableCell({
+              width: { size: 76, type: WidthType.PERCENTAGE },
+              borders: this.noBorders(),
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: 'REPÚBLICA DE ANGOLA', font, size: 18 })],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: 'MINISTÉRIO DA EDUCAÇÃO', font, size: 18 })],
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: 'INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', font, size: 18, bold: true })],
+                }),
+              ],
+            }),
+            // Coluna 3: Número do Certificado
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              borders: this.noBorders(),
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [new TextRun({ text: data.NumeroCertificado || '001-AC-25/26', font, size: 18 })],
+                }),
+              ],
+            }),
           ],
-        })
-      )
-    }
+        }),
+      ],
+    })
 
-    headerParagraphs.push(
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: 'REPÚBLICA DE ANGOLA', font, size: 20 })],
-      }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        children: [new TextRun({ text: 'MINISTÉRIO DA EDUCAÇÃO', font, size: 20 })],
-      }),
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 200 },
-        children: [new TextRun({ text: 'INSTITUTO TÉCNICO DE SAÚDE DE CABINDA', font, size: 22, bold: true })],
-      }),
-    )
-
-    // ── Título ──
+    // ── Título: Certificado de Habilitações (size 22pt, Times New Roman, itálico) ──
     const titleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 100 },
+      spacing: { before: 200, after: 100 },
       children: [
         new TextRun({ text: 'Certificado de Habilitações', font, size: 44, italics: true }),
       ],
     })
 
-    // ── Subtítulo em vermelho ──
+    // ── Subtítulo: (Instituto Técnico Privado de Saúde Jomorais) (size 12pt, Times New Roman) ──
     const subtitleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
       children: [
-        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font, size: 24, bold: true, color: 'C80000' }),
+        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font, size: 24 }),
       ],
     })
 
@@ -865,7 +899,7 @@ export class CertificateWordGenerator {
             },
           },
           children: [
-            ...headerParagraphs,
+            headerTable,
             titleParagraph,
             subtitleParagraph,
             bodyParagraph,
