@@ -704,17 +704,9 @@ export class CertificateWordGenerator {
 
     // ── Build Grade Table ──
     const cellStyle = {
-      borders: this.thinBorders(),
+      borders: this.noBorders(),
       verticalAlign: VerticalAlign.CENTER as const,
-      margins: { top: 15, bottom: 15, left: 40, right: 40 },
-    }
-
-    const padWithDots = (name: string): string => {
-      const targetLen = 80
-      if (name.length < targetLen) {
-        return name + ' ' + '.'.repeat(Math.max(0, targetLen - name.length))
-      }
-      return name
+      margins: { top: 0, bottom: 0, left: 0, right: 0 },
     }
 
     const makeGradeRow = (name: string, grade: number, isBold: boolean = false, isHighlight: boolean = false) => {
@@ -728,19 +720,36 @@ export class CertificateWordGenerator {
             ...cellStyle,
             width: { size: 75, type: WidthType.PERCENTAGE },
             ...(shadingObj ? { shading: shadingObj } : {}),
-            children: [new Paragraph({ children: [new TextRun({ text: padWithDots(name), font, size: 18, bold: isBold })] })],
+            children: [
+              new Paragraph({
+                tabStops: [{ type: TabStopType.RIGHT, position: 9000, leader: LeaderType.DOT }],
+                children: [
+                  new TextRun({ text: name, font, size: 20, bold: isBold }),
+                  new TextRun({ text: '\t', font, size: 20 }),
+                ],
+              }),
+            ],
           }),
           new TableCell({
             ...cellStyle,
             width: { size: 10, type: WidthType.PERCENTAGE },
             ...(shadingObj ? { shading: shadingObj } : {}),
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: grade.toString().padStart(2, '0'), font, size: 18, bold: isBold })] })],
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [new TextRun({ text: grade.toString().padStart(2, '0'), font, size: 20, bold: isBold })],
+              }),
+            ],
           }),
           new TableCell({
             ...cellStyle,
             width: { size: 15, type: WidthType.PERCENTAGE },
             ...(shadingObj ? { shading: shadingObj } : {}),
-            children: [new Paragraph({ children: [new TextRun({ text: `(${this.numberToWords(grade)})`, font, size: 18, bold: isBold })] })],
+            children: [
+              new Paragraph({
+                children: [new TextRun({ text: `(${this.numberToWords(grade)})`, font, size: 20, bold: isBold })],
+              }),
+            ],
           }),
         ],
       })
@@ -752,7 +761,7 @@ export class CertificateWordGenerator {
           new TableCell({
             ...cellStyle,
             columnSpan: 3,
-            children: [new Paragraph({ children: [new TextRun({ text: title, font, size: 18, bold: true })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: title, font, size: 20, bold: true })] })],
           }),
         ],
       })
@@ -766,34 +775,34 @@ export class CertificateWordGenerator {
         new TableCell({
           ...cellStyle,
           width: { size: 75, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ children: [new TextRun({ text: 'Componente Sociocultural', font, size: 18, bold: true })] })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'Componente Sociocultural', font, size: 20, bold: true })] })],
         }),
         new TableCell({
           ...cellStyle,
           width: { size: 10, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Nota', font, size: 18, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Nota', font, size: 20, bold: true })] })],
         }),
         new TableCell({
           ...cellStyle,
           width: { size: 15, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ children: [new TextRun({ text: '', font, size: 18 })] })],
+          children: [new Paragraph({ children: [new TextRun({ text: '', font, size: 20 })] })],
         }),
       ],
     }))
-    listSociocultural.forEach(item => gradeRows.push(makeGradeRow('   ' + item.name, item.grade)))
+    listSociocultural.forEach(item => gradeRows.push(makeGradeRow(item.name, item.grade)))
 
     gradeRows.push(makeSectionHeaderRow('Componente Científica'))
-    listCientifica.forEach(item => gradeRows.push(makeGradeRow('   ' + item.name, item.grade)))
+    listCientifica.forEach(item => gradeRows.push(makeGradeRow(item.name, item.grade)))
 
     gradeRows.push(makeSectionHeaderRow('Componente Técnica, Tecnológica e Prática'))
-    listTecnica.forEach(item => gradeRows.push(makeGradeRow('   ' + item.name, item.grade)))
+    listTecnica.forEach(item => gradeRows.push(makeGradeRow(item.name, item.grade)))
 
     // Projecto Tecnológico
-    gradeRows.push(makeGradeRow('   Projecto Tecnológico', projGrade))
+    gradeRows.push(makeGradeRow('Projecto Tecnológico', projGrade))
 
     // Gestão de Saúde (condicional)
     if (isSaude || hasGestaoSaude) {
-      gradeRows.push(makeGradeRow('   Gestão de Saúde', gestaoSaudeGrade))
+      gradeRows.push(makeGradeRow('Gestão de Saúde', gestaoSaudeGrade))
     }
 
     // Estágio Curricular
@@ -804,18 +813,16 @@ export class CertificateWordGenerator {
     const pcVal = Math.round(allAcademicGrades.reduce((a, b) => a + b, 0) / allAcademicGrades.length) || 14
     gradeRows.push(makeGradeRow('Classificação Final do Plano Curricular (PC)', pcVal, true))
 
-    // Exame Prático
-    gradeRows.push(makeGradeRow('Classificação do Exame Prático (EP)', examePraticoGrade, true))
-
     // PAP
     gradeRows.push(makeGradeRow('Classificação Da Prova de Aptidão Profissional (PAP)', papGrade, true))
 
     // Classificação Final do Curso
-    const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + examePraticoGrade + papGrade) / 7)
-    gradeRows.push(makeGradeRow('Classificação Final do Curso = (4xPC+EC+EP+PAP) /7', finalCourseGrade, true, true))
+    const finalCourseGrade = Math.round((4 * pcVal + estagioGrade + papGrade) / 6)
+    gradeRows.push(makeGradeRow('Classificação Final do Curso = (4xPC+EC+PAP) /6', finalCourseGrade, true, true))
 
     const gradesTable = new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: this.noBorders(),
       rows: gradeRows,
     })
 
@@ -897,10 +904,10 @@ export class CertificateWordGenerator {
             page: {
               margin: { top: 600, right: 600, bottom: 600, left: 800 },
               borders: {
-                pageBorderTop: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 8 },
-                pageBorderBottom: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 8 },
-                pageBorderLeft: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 8 },
-                pageBorderRight: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 8 },
+                pageBorderTop: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
+                pageBorderRight: { style: BorderStyle.TRIPLE, size: 24, color: '000000', space: 8 },
               },
             },
           },
