@@ -722,10 +722,10 @@ export class CertificateWordGenerator {
             ...(shadingObj ? { shading: shadingObj } : {}),
             children: [
               new Paragraph({
-                tabStops: [{ type: TabStopType.RIGHT, position: 9000, leader: LeaderType.DOT }],
+                tabStops: [{ type: TabStopType.RIGHT, position: 5800, leader: LeaderType.DOT }],
                 children: [
-                  new TextRun({ text: name, font, size: 20, bold: isBold }),
-                  new TextRun({ text: '\t', font, size: 20 }),
+                  new TextRun({ text: name, font: 'Calibri', size: 20, bold: isBold }),
+                  new TextRun({ text: '\t', font: 'Calibri', size: 20 }),
                 ],
               }),
             ],
@@ -737,7 +737,7 @@ export class CertificateWordGenerator {
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: grade.toString().padStart(2, '0'), font, size: 20, bold: isBold })],
+                children: [new TextRun({ text: grade.toString().padStart(2, '0'), font: 'Calibri', size: 20, bold: isBold })],
               }),
             ],
           }),
@@ -747,7 +747,7 @@ export class CertificateWordGenerator {
             ...(shadingObj ? { shading: shadingObj } : {}),
             children: [
               new Paragraph({
-                children: [new TextRun({ text: `(${this.numberToWords(grade)})`, font, size: 20, bold: isBold })],
+                children: [new TextRun({ text: `(${this.numberToWords(grade)})`, font: 'Calibri', size: 20, bold: isBold })],
               }),
             ],
           }),
@@ -761,7 +761,7 @@ export class CertificateWordGenerator {
           new TableCell({
             ...cellStyle,
             columnSpan: 3,
-            children: [new Paragraph({ children: [new TextRun({ text: title, font, size: 20, bold: true })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: title, font: 'Calibri', size: 20, bold: true })] })],
           }),
         ],
       })
@@ -775,13 +775,13 @@ export class CertificateWordGenerator {
         new TableCell({
           ...cellStyle,
           width: { size: 75, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ children: [new TextRun({ text: 'Componente Sociocultural', font, size: 20, bold: true })] })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'Componente Sociocultural', font: 'Calibri', size: 20, bold: true })] })],
         }),
         new TableCell({
           ...cellStyle,
           columnSpan: 2,
           width: { size: 25, type: WidthType.PERCENTAGE },
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Nota', font, size: 20, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Nota', font: 'Calibri', size: 20, bold: true })] })],
         }),
       ],
     }))
