@@ -608,12 +608,12 @@ export class CertificateWordGenerator {
       ],
     })
 
-    // ── Subtítulo: (Instituto Técnico Privado de Saúde Jomorais) (size 12pt, Times New Roman) ──
+    // ── Subtítulo: (Instituto Técnico Privado de Saúde Jomorais) (size 12pt, Calibri) ──
     const subtitleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
       children: [
-        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font, size: 24, color: 'C80000' }),
+        new TextRun({ text: '(Instituto Técnico Privado de Saúde Jomorais)', font: 'Calibri', size: 24, color: 'C80000' }),
       ],
     })
 
