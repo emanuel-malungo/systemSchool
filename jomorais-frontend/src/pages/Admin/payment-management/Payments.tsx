@@ -24,8 +24,11 @@ import {
 } from "../../../hooks/usePayment"
 import { StudentFinancialModal, CreditNoteModal, MakePaymentModal } from "../../../components/payment-management"
 import type { PagamentoDetalhe, AlunoConfirmado } from "../../../types/payment.types"
+import { usePageTitle } from "../../../hooks/usePageTitle"
 
 export default function Payments() {
+  usePageTitle('Gestão de Pagamentos')
+
   const [currentPage, setCurrentPage] = useState(1)
   const [search, setSearch] = useState("")
   const [filterTipoServico, setFilterTipoServico] = useState<string>("")

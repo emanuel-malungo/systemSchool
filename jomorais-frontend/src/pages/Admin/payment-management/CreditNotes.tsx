@@ -18,8 +18,11 @@ import {
   useNotasCredito
 } from '../../../hooks/usePayment';
 import type { NotaCredito } from '../../../types/payment.types';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 
 const CreditNotes: React.FC = () => {
+  usePageTitle('Notas de Crédito')
+
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedNote, setSelectedNote] = useState<NotaCredito | null>(null);

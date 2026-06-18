@@ -16,8 +16,11 @@ import { useClassesComplete } from '../../../hooks/useClass'
 import { useCoursesComplete } from '../../../hooks/useCourse'
 import { commonPeriods } from '../../../mocks/periods.mock'
 import type { FinancialReportFilters as IFinancialReportFilters } from '../../../types/financial-reports.types'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function FinancialReports() {
+  usePageTitle('Relatórios Financeiros')
+
   const initialFilters: IFinancialReportFilters = {
     anoAcademico: undefined,
     classe: undefined,

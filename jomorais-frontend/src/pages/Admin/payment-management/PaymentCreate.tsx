@@ -25,6 +25,7 @@ import {
   useCreatePagamento
 } from "../../../hooks/usePayment"
 import type { AlunoConfirmado } from "../../../types/payment.types"
+import { usePageTitle } from "../../../hooks/usePageTitle"
 
 interface PaymentFormData {
   codigo_Aluno: number
@@ -53,6 +54,8 @@ const schema = yup.object({
 }).required()
 
 export default function PaymentCreate() {
+  usePageTitle('Registrar Pagamento')
+
   const [searchStudent, setSearchStudent] = useState("")
   const [selectedStudent, setSelectedStudent] = useState<AlunoConfirmado | null>(null)
   const [showStudentSearch, setShowStudentSearch] = useState(false)

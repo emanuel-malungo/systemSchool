@@ -39,10 +39,13 @@ import CategoriaServicoFormModal from '../../../components/financial-services/Ca
 // Componentes de Tipos de Serviços
 import TipoServicoTable from '../../../components/financial-services/TipoServicoTable'
 import TipoServicoFormModal from '../../../components/financial-services/TipoServicoFormModal'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 type TabType = 'moedas' | 'categorias' | 'tipos-servicos'
 
 export default function FinancialServicesManagement() {
+  usePageTitle('Serviços Financeiros')
+
   const [activeTab, setActiveTab] = useState<TabType>('tipos-servicos')
 
   // Estados de paginação e busca - Moedas

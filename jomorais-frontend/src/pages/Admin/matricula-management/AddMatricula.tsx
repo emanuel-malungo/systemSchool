@@ -14,6 +14,7 @@ import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
 import type { IMatriculaInput } from '../../../types/matricula.types'
 import { mockStatus } from '../../../mocks/status.mock'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 // Validation Schema
 const addMatriculaSchema = yup.object().shape({
@@ -26,6 +27,8 @@ const addMatriculaSchema = yup.object().shape({
 type AddMatriculaFormData = yup.InferType<typeof addMatriculaSchema>
 
 export default function AddMatricula() {
+  usePageTitle('Nova Matrícula')
+
   const navigate = useNavigate()
   const { user } = useAuth()
   const [searchAluno, setSearchAluno] = useState('')

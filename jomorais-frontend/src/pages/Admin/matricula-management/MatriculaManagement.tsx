@@ -7,8 +7,11 @@ import MatriculaViewModal from '../../../components/matricula-management/Matricu
 import DeleteConfirmModal from '../../../components/matricula-management/DeleteConfirmModal'
 import type { IMatricula } from '../../../types/matricula.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function MatriculaManagement() {
+  usePageTitle('Gerenciamento de Matrículas')
+
   const navigate = useNavigate()
   
   // Estados

@@ -7,8 +7,11 @@ import ProvenienciaFormModal from '../../../components/proveniencia-management/P
 import DeleteConfirmModal from '../../../components/proveniencia-management/DeleteConfirmModal'
 import type { Proveniencia, CreateProvenienciaPayload, UpdateProvenienciaPayload } from '../../../types/proveniencia.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function ProvenienciaManagement() {
+  usePageTitle('Gerenciamento de Proveniências')
+
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
