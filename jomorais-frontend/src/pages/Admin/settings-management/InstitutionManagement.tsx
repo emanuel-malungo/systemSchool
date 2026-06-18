@@ -39,7 +39,6 @@ type FormData = IInstitutionInput
 
 export default function InstitutionManagement() {
   const [logoFile, setLogoFile] = useState<File | null>(null)
-  // const [logoPreview, setLogoPreview] = useState<string | null>(null)
 
   const {
     principal,
@@ -56,7 +55,6 @@ export default function InstitutionManagement() {
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: yupResolver(validationSchema) as any,
     defaultValues: {
       nome: '',
@@ -85,7 +83,6 @@ export default function InstitutionManagement() {
     },
   })
 
-  // Carregar dados da instituição quando disponível
   useEffect(() => {
     if (principal) {
       reset({
@@ -113,9 +110,6 @@ export default function InstitutionManagement() {
         taxaIva: principal.taxaIva || 0,
         logotipo: principal.logotipo || '',
       })
-      // if (principal.logotipo) {
-      //   setLogoPreview(principal.logotipo)
-      // }
     }
   }, [principal, reset])
 
@@ -135,17 +129,6 @@ export default function InstitutionManagement() {
     }
   }
 
-  // const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0]
-  //   if (file) {
-  //     setLogoFile(file)
-  //     const reader = new FileReader()
-  //     reader.onloadend = () => {
-  //       setLogoPreview(reader.result as string)
-  //     }
-  //     reader.readAsDataURL(file)
-  //   }
-  // }
 
   if (isLoading) {
     return (
@@ -160,26 +143,18 @@ export default function InstitutionManagement() {
   return (
     <Container>
       {/* Header */}
-      <div className="mb-8 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-green-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-100/30 rounded-full -ml-12 -mb-12"></div>
-          
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                <Building className="h-8 w-8 text-white" />
-              </div>
-              
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Dados Institucionais
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Configure as informações da sua instituição de ensino
-                </p>
-              </div>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+            <Building className="h-6 w-6 text-[#007C00]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Dados Institucionais
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Configure as informações da sua instituição de ensino
+            </p>
           </div>
         </div>
       </div>
@@ -187,48 +162,7 @@ export default function InstitutionManagement() {
       {/* Formulário */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
-          {/* Logo */}
-          {/* <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100"> */}
-            {/* <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <ImageIcon className="h-5 w-5 text-[#007C00]" />
-              Logotipo
-            </h2> */}
-            
-            {/* <div className="flex items-center gap-6"> */}
-              {/* Preview do Logo */}
-              {/* <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
-                {logoPreview ? (
-                  <img src={logoPreview} alt="Logo" className="w-full h-full object-contain" />
-                ) : (
-                  <ImageIcon className="h-12 w-12 text-gray-400" />
-                )}
-              </div> */}
-
-              {/* Upload */}
-              {/* <div className="flex-1">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoChange}
-                    className="hidden"
-                    id="logo-upload"
-                  />
-                  <label
-                    htmlFor="logo-upload"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer transition-colors"
-                  >
-                    <Upload className="h-4 w-4" />
-                    Escolher Imagem
-                  </label>
-                </label>
-                <p className="text-sm text-gray-500 mt-2">
-                  Formatos aceitos: JPG, PNG, SVG (máx. 2MB)
-                </p>
-              </div>
-            </div> */}
-          {/* </div> */}
-
+    
           {/* Informações Básicas */}
           <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Informações Básicas</h2>
