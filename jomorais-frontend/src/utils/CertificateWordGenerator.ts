@@ -352,9 +352,9 @@ export class CertificateWordGenerator {
     const year8 = year9 - 1
     const year7 = year9 - 2
 
-    // Table Header Row
+    // Table Header Row - Changed from gray to white shading fill
     const headerCellStyle = {
-      shading: { fill: 'E6E6E6', type: ShadingType.CLEAR, color: 'auto' },
+      shading: { fill: 'FFFFFF', type: ShadingType.CLEAR, color: 'auto' },
       borders: this.thinBorders(),
       verticalAlign: VerticalAlign.CENTER,
       margins: { top: 40, bottom: 40, left: 40, right: 40 },
@@ -365,7 +365,7 @@ export class CertificateWordGenerator {
         new TableCell({
           width: { size: 28, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font: 'Arial', size: 22, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font: 'Times New Roman', size: 22, bold: true })] })], // Times New Roman size 11
         }),
         new TableCell({
           width: { size: 16, type: WidthType.PERCENTAGE },
@@ -373,26 +373,26 @@ export class CertificateWordGenerator {
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: '7ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+              children: [new TextRun({ text: '7ª CLASSE', font: 'Times New Roman', size: 16, bold: true })], // Times New Roman size 8
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Times New Roman', size: 16 })],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: '08', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
-                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: 'Única', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Nº ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: '08', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: 'Única', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: String(year7), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Ano letivo: ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: String(year7), font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
           ],
@@ -403,26 +403,26 @@ export class CertificateWordGenerator {
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: '8ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+              children: [new TextRun({ text: '8ª CLASSE', font: 'Times New Roman', size: 16, bold: true })], // Times New Roman size 8
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Times New Roman', size: 16 })],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: '02', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
-                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: 'Única', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Nº ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: '02', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: 'Única', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: String(year8), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Ano letivo: ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: String(year8), font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
           ],
@@ -433,26 +433,26 @@ export class CertificateWordGenerator {
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: '9ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+              children: [new TextRun({ text: '9ª CLASSE', font: 'Times New Roman', size: 16, bold: true })], // Times New Roman size 8
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Times New Roman', size: 16 })],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: '02', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
-                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: confirmacao?.tb_turmas?.designacao || 'A', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Nº ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: '02', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: confirmacao?.tb_turmas?.designacao || 'A', font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
             new Paragraph({
               alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
-                new TextRun({ text: String(year9), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: 'Ano letivo: ', font: 'Times New Roman', size: 16 }),
+                new TextRun({ text: String(year9), font: 'Times New Roman', size: 16, bold: true, color: 'FF0000' }),
               ],
             }),
           ],
@@ -460,12 +460,12 @@ export class CertificateWordGenerator {
         new TableCell({
           width: { size: 10, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font: 'Arial', size: 16, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font: 'Times New Roman', size: 16, bold: true })] })], // Times New Roman size 8
         }),
         new TableCell({
           width: { size: 14, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font: 'Arial', size: 16, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font: 'Times New Roman', size: 16, bold: true })] })], // Times New Roman size 8
         }),
       ],
     })
@@ -526,27 +526,27 @@ export class CertificateWordGenerator {
       rows: [gradeTableHeaderRow, ...gradeTableRows],
     })
 
-    // ── Texto de Livro de Termos ──
+    // ── Texto de Livro de Termos ── (Space added before paragraph, font is Times New Roman size 12)
     const pTerms = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { before: 100, after: 80, line: 240 },
+      spacing: { before: 240, after: 100, line: 240 },
       children: [
-        new TextRun({ text: 'Para efeitos legais, lhe é passado o presente ', font: 'Arial Narrow', size: 24 }),
-        new TextRun({ text: 'CERTIFICADO', font: 'Arial Narrow', size: 24, bold: true }),
-        new TextRun({ text: ' que consta no livro de termos nº ', font: 'Arial Narrow', size: 24 }),
-        new TextRun({ text: '004', font: 'Arial Narrow', size: 24, bold: true }),
-        new TextRun({ text: ' folhas ', font: 'Arial Narrow', size: 24 }),
-        new TextRun({ text: '004', font: 'Arial Narrow', size: 24, bold: true }),
-        new TextRun({ text: ' assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: 'Para efeitos legais, lhe é passado o presente ', font: 'Times New Roman', size: 24 }),
+        new TextRun({ text: 'CERTIFICADO', font: 'Times New Roman', size: 24, bold: true }),
+        new TextRun({ text: ' que consta no livro de termos nº ', font: 'Times New Roman', size: 24 }),
+        new TextRun({ text: '004', font: 'Times New Roman', size: 24, bold: true }),
+        new TextRun({ text: ' folhas ', font: 'Times New Roman', size: 24 }),
+        new TextRun({ text: '004', font: 'Times New Roman', size: 24, bold: true }),
+        new TextRun({ text: ' assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', font: 'Times New Roman', size: 24 }),
       ],
     })
 
-    // ── Data de emissão ──
+    // ── Data de emissão ── (Space added before paragraph, city text is Times New Roman 12, date is Arial Narrow 12)
     const pDate = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 100, after: 150 },
+      spacing: { before: 240, after: 150 },
       children: [
-        new TextRun({ text: 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos ', font: 'Times New Roman', size: 24 }),
         new TextRun({ text: dataDoc, font: 'Arial Narrow', size: 24 }),
         new TextRun({ text: '.', font: 'Arial Narrow', size: 24 }),
       ],

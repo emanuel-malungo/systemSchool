@@ -399,8 +399,18 @@ export class CertificatePdfGenerator {
       theme: 'grid',
       styles: { fontSize: 7, cellPadding: 1, halign: 'center', valign: 'middle' },
       columnStyles: { 0: { halign: 'left', cellWidth: 35 }, 5: { halign: 'left' } },
-      headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 7.5 },
+      headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 8 },
       didParseCell: (dataCell: any) => {
+        // Apply header-specific fonts and sizes
+        if (dataCell.section === 'head') {
+          dataCell.cell.styles.font = 'times'
+          dataCell.cell.styles.fontStyle = 'bold'
+          if (dataCell.column.index === 0) {
+            dataCell.cell.styles.fontSize = 11
+          } else {
+            dataCell.cell.styles.fontSize = 8
+          }
+        }
         // Apply column-specific fonts
         if (dataCell.section === 'body') {
           if (dataCell.column.index === 0) {
@@ -420,36 +430,47 @@ export class CertificatePdfGenerator {
       }
     })
 
-    y = finalTableY + 4
+    y = finalTableY + 8 // Space after the table
 
-    // Livro de termos footer
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(10.5)
+    // Livro de termos footer - Set to Times New Roman, size 12
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
     
     // Justified block for Terms footer
     const pTerms = [
-      { text: 'Para efeitos legais, lhe é passado o presente ', bold: false, fontName: 'Helvetica' },
-      { text: 'CERTIFICADO ', bold: true, fontName: 'Helvetica' },
-      { text: 'que consta no livro de termos nº ', bold: false, fontName: 'Helvetica' },
-      { text: '004 ', bold: true, fontName: 'Helvetica' },
-      { text: 'folhas ', bold: false, fontName: 'Helvetica' },
-      { text: '004 ', bold: true, fontName: 'Helvetica' },
-      { text: 'assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', bold: false, fontName: 'Helvetica' }
+      { text: 'Para efeitos legais, lhe é passado o presente ', bold: false, fontName: 'times' },
+      { text: 'CERTIFICADO ', bold: true, fontName: 'times' },
+      { text: 'que consta no livro de termos nº ', bold: false, fontName: 'times' },
+      { text: '004 ', bold: true, fontName: 'times' },
+      { text: 'folhas ', bold: false, fontName: 'times' },
+      { text: '004 ', bold: true, fontName: 'times' },
+      { text: 'assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', bold: false, fontName: 'times' }
     ]
-    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 4.8)
-    y += 2
+    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 5.5)
+    y += 8 // Space after terms
 
-    // Data de emissão no final (centered)
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(10.5)
+    // Data de emissão no final (centered) - placeText is Times 12, dateText is Helvetica (Arial) 12
     const placeText = 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos '
     const dateText = `${dataDoc}.`
+
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
     const placeW = doc.getTextWidth(placeText)
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(12)
     const dateW = doc.getTextWidth(dateText)
+
     const totalDateW = placeW + dateW
     const startDateX = (pageWidth - totalDateW) / 2
+
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
     doc.text(placeText, startDateX, y)
-    doc.text(dateText, startDateX + placeW, y) // normal weight, not bold
+
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(12)
+    doc.text(dateText, startDateX + placeW, y)
     y += 12
 
     // ── ASSINATURAS ──
