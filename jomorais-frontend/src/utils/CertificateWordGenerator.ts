@@ -122,88 +122,90 @@ export class CertificateWordGenerator {
   // LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
   // ══════════════════════════════════════════════════════════════════
 
-  private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
+    private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
     const logoBuffer = await this.loadLogo()
 
     const aluno = data.tb_alunos
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
     const pai = (aluno.pai || 'N/A').toUpperCase()
     const mae = (aluno.mae || 'N/A').toUpperCase()
-    const dataNasc = this.formatDateShort(aluno.dataNascimento)
     const biNum = aluno.n_documento_identificacao || 'N/A'
-    const biData = aluno.dataEmissao ? this.formatDateShort(aluno.dataEmissao) : 'N/A'
     const naturalidade = aluno.naturalidade || aluno.tb_comunas?.designacao || 'Cabinda'
     const municipio = aluno.tb_comunas?.tb_municipios?.designacao || 'Cabinda'
     const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || 'Cabinda'
+    
+    // Dates in full words format (extenso)
+    const dataNascExtenso = this.formatDateLong(aluno.dataNascimento)
+    const biDataExtenso = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : 'N/A'
     const dataDoc = this.formatDateLong(data.DataEmissao)
+    
     const anoConclusao = data.tb_ano_lectivo.designacao
     const nomeDirectora = 'Júlia Maria da Conceição Franque'
 
-    const font = 'Times New Roman'
+    const confirmacao = data.tb_alunos.tb_matriculas?.tb_confirmacoes?.[0]
 
-    // ── Build header ──
-    const headerChildren: Paragraph[] = []
+    // ── Build header elements ──
+    const logoParagraph = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 100, after: 100 },
+      children: logoBuffer
+        ? [new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'jpg' })]
+        : [],
+    })
 
-    // Logo + Header text in a table
-    const logoCell = new TableCell({
-      width: { size: 15, type: WidthType.PERCENTAGE },
-      borders: this.noBorders(),
-      verticalAlign: VerticalAlign.CENTER,
+    const headerP1 = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 50 },
       children: [
-        new Paragraph({
-          alignment: AlignmentType.LEFT,
-          children: logoBuffer
-            ? [new ImageRun({ data: logoBuffer, transformation: { width: 55, height: 55 }, type: 'png' })]
-            : [],
+        new TextRun({
+          text: 'República de Angola',
+          font: 'Arial Narrow',
+          size: 32, // 16pt
         }),
       ],
     })
 
-    const headerTextCell = new TableCell({
-      width: { size: 85, type: WidthType.PERCENTAGE },
-      borders: this.noBorders(),
-      verticalAlign: VerticalAlign.CENTER,
+    const headerP2 = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 50 },
       children: [
-        new Paragraph({
-          children: [new TextRun({ text: 'República de Angola', font, size: 21 })],
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: 'Ministério da Educação', font, size: 21 })],
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: 'ENSINO GERAL', font, size: 21, bold: true })],
+        new TextRun({
+          text: 'Ministério da Educação',
+          font: 'Arial Narrow',
+          size: 32, // 16pt
         }),
       ],
     })
 
-    const headerTable = new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: {
-        top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-        bottom: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-        left: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-        right: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-        insideHorizontal: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-        insideVertical: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
-      },
-      rows: [new TableRow({ children: [logoCell, headerTextCell] })],
+    const headerP3 = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      children: [
+        new TextRun({
+          text: 'ENSINO GERAL',
+          font: 'Arial Narrow',
+          size: 32, // 16pt
+          bold: true,
+        }),
+        new TextRun({
+          text: `               Nº ${data.NumeroCertificado || '007 /2025'}`,
+          font: 'Arial Narrow',
+          size: 32, // 16pt
+          italics: true,
+        }),
+      ],
     })
-
-    headerChildren.push(
-      new Paragraph({ children: [] }), // top spacing
-    )
 
     // ── Título ──
     const titleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 300, after: 200 },
+      spacing: { before: 200, after: 300 },
       children: [
         new TextRun({
           text: 'CERTIFICADO DE HABILITAÇÕES',
-          font,
-          size: 28,
+          font: 'Arial Black',
+          size: 32, // 16pt
           bold: true,
-          underline: { type: UnderlineType.SINGLE },
         }),
       ],
     })
@@ -211,65 +213,134 @@ export class CertificateWordGenerator {
     // ── Corpo do texto (parágrafo 1) ──
     const p1 = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { after: 120, line: 300 },
+      spacing: { before: 100, after: 150, line: 280 },
       children: [
-        new TextRun({ text: `${nomeDirectora}, Directora do `, font, size: 21 }),
-        new TextRun({ text: 'Complexo Escolar Anexo ao Magistério de Cabinda', font, size: 21, bold: true }),
-        new TextRun({ text: ' Certifica que ', font, size: 21 }),
-        new TextRun({ text: nomeAluno, font, size: 21, bold: true }),
-        new TextRun({ text: ', filho de ', font, size: 21 }),
-        new TextRun({ text: pai, font, size: 21, bold: true }),
-        new TextRun({ text: ' e de ', font, size: 21 }),
-        new TextRun({ text: mae, font, size: 21, bold: true }),
-        new TextRun({ text: `, nascido aos ${dataNasc}, em ${naturalidade}, Município de `, font, size: 21 }),
-        new TextRun({ text: municipio, font, size: 21, bold: true }),
-        new TextRun({ text: `, Província de ${provincia}, Portador do BI/CP Nº. `, font, size: 21 }),
-        new TextRun({ text: biNum, font, size: 21, bold: true }),
-        new TextRun({ text: ` emitido, aos ${biData}, pelo Arquivo de Identificação de Cabinda.`, font, size: 21 }),
+        new TextRun({
+          text: `${nomeDirectora}, `,
+          font: 'Times New Roman',
+          bold: true,
+          size: 24, // 12pt
+        }),
+        new TextRun({
+          text: 'Directora do ',
+          font: 'Arial Narrow',
+          size: 24,
+        }),
+        new TextRun({
+          text: 'Complexo Escolar Anexo ao Magistério de Cabinda',
+          font: 'Arial Narrow',
+          bold: true,
+          size: 24,
+        }),
+        new TextRun({
+          text: ' Certifica ',
+          font: 'Arial Narrow',
+          bold: true,
+          italics: true,
+          size: 24,
+        }),
+        new TextRun({
+          text: 'que ',
+          font: 'Arial Narrow',
+          size: 24,
+        }),
+        new TextRun({
+          text: nomeAluno,
+          font: 'Arial Narrow',
+          bold: true,
+          color: 'FF0000',
+          size: 24,
+        }),
+        new TextRun({
+          text: `, filho de ${pai} e de ${mae}, nascido aos ${dataNascExtenso}, em ${naturalidade}, Município de ${municipio}, Província de ${provincia}, Portador do `,
+          font: 'Arial Narrow',
+          size: 24,
+        }),
+        new TextRun({
+          text: 'BI/CP',
+          font: 'Arial Narrow',
+          bold: true,
+          size: 24,
+        }),
+        new TextRun({
+          text: ` Nº.${biNum} emitido, aos ${biDataExtenso}, pelo Arquivo de Identificação de Cabinda.`,
+          font: 'Arial Narrow',
+          size: 24,
+        }),
       ],
     })
 
     // ── Corpo do texto (parágrafo 2) ──
     const p2 = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { after: 200, line: 300 },
+      spacing: { before: 100, after: 150, line: 280 },
       children: [
-        new TextRun({ text: 'Concluiu no ano lectivo de ', font, size: 21 }),
-        new TextRun({ text: anoConclusao, font, size: 21, bold: true }),
-        new TextRun({ text: ', o ', font, size: 21 }),
-        new TextRun({ text: 'I Ciclo de Ensino Secundário Geral', font, size: 21, bold: true }),
-        new TextRun({ text: ', conforme o disposto na alínea ', font, size: 21 }),
-        new TextRun({ text: 'c) do artigo 109 da LBSEE nº 17/16 de 7 de Outubro', font, size: 21, bold: true }),
-        new TextRun({ text: ', com a Média Final de ', font, size: 21 }),
-        new TextRun({ text: `${data.mediaFinal} valores`, font, size: 21, bold: true }),
-        new TextRun({ text: ' obtida nas seguintes classificações por ciclos de aprendizagem:', font, size: 21 }),
+        new TextRun({ text: 'Concluiu no ano lectivo de ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: anoConclusao, font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ', o ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: 'I Ciclo de Ensino Secundário Geral', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ', conforme o disposto na alínea ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: 'c)', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ' do artigo ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: '109 da IBSEE nº 17/16 de 7 de Outubro', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ', com a Média Final de ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({
+          text: `${data.mediaFinal} valores`,
+          font: 'Arial Narrow',
+          size: 24,
+          bold: true,
+          underline: { type: UnderlineType.SINGLE },
+        }),
+        new TextRun({ text: ' obtida nas seguintes classificações por ciclos de aprendizagem:', font: 'Arial Narrow', size: 24 }),
       ],
     })
 
     // ── Subtítulo Escola ──
     const escolaParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 100 },
+      spacing: { before: 150, after: 150 },
       children: [
-        new TextRun({ text: 'COMPLEXO ESCOLAR PRIVADO JOMORAIS', font, size: 22, bold: true }),
+        new TextRun({ text: 'COMPLEXO ESCOLAR PRIVADO JOMORAIS', font: 'Arial Narrow', size: 24, bold: true }),
       ],
     })
 
     // ── Tabela de Notas (7ª, 8ª, 9ª) ──
-    const nonaSubjects = [
-      'Língua Portuguesa', 'Matemática', 'Biologia', 'Geografia', 'História',
-      'Química', 'Física', 'Moral e Cívica', 'Educação Visual e Plástica',
-      'Língua Inglesa', 'Língua Francesa', 'Educação Laboral', 'Empreendedorismo', 'Educação Física',
+    const nonaSubjectsMap = [
+      { key: 'Língua Portuguesa', display: 'L. PORTUGUESA' },
+      { key: 'Matemática', display: 'MATEMÁTICA' },
+      { key: 'Biologia', display: 'BIOLOGIA' },
+      { key: 'Geografia', display: 'GEOGRAFIA' },
+      { key: 'História', display: 'HISTÓRIA' },
+      { key: 'Química', display: 'QUÍMICA' },
+      { key: 'Física', display: 'FÍSICA' },
+      { key: 'E.M.C', display: 'E.M.C' },
+      { key: 'E.V.P', display: 'E.V.P' },
+      { key: 'Língua Inglesa', display: 'INGLÊS' },
+      { key: 'Língua Francesa', display: 'FRANCÊS' },
+      { key: 'Educação Laboral', display: 'ED. LABORAL' },
+      { key: 'Empreendedorismo', display: 'EMPREENDED.' },
+      { key: 'Educação Física', display: 'ED. FÍSICA' }
     ]
 
-    const getGrade = (sub: string, cl: string): number | string => {
+    const getGrade = (subKey: string, cl: string): number | string => {
       const matched = data.gradeDetails?.find(d =>
-        d.designacao.toLowerCase().includes(sub.toLowerCase())
+        d.designacao.toLowerCase().includes(subKey.toLowerCase()) ||
+        (subKey.toLowerCase() === 'língua inglesa' && d.designacao.toLowerCase().includes('inglês')) ||
+        (subKey.toLowerCase() === 'língua francesa' && d.designacao.toLowerCase().includes('francês')) ||
+        (subKey.toLowerCase() === 'e.m.c' && (d.designacao.toLowerCase().includes('moral') || d.designacao.toLowerCase().includes('cívica') || d.designacao.toLowerCase().includes('emc'))) ||
+        (subKey.toLowerCase() === 'e.v.p' && (d.designacao.toLowerCase().includes('visual') || d.designacao.toLowerCase().includes('plástica') || d.designacao.toLowerCase().includes('evp'))) ||
+        (subKey.toLowerCase() === 'educação laboral' && (d.designacao.toLowerCase().includes('laboral') || d.designacao.toLowerCase().includes('trabalho'))) ||
+        (subKey.toLowerCase() === 'empreendedorismo' && (d.designacao.toLowerCase().includes('empreended') || d.designacao.toLowerCase().includes('empree')))
       )
       if (!matched || !matched.notas) return '-'
       const found = Object.entries(matched.notas).find(([k]) => k.includes(cl))
       return found ? found[1].nota : '-'
     }
+
+    // Dynamic years for headers
+    const year9 = parseInt(anoConclusao) || 2019
+    const year8 = year9 - 1
+    const year7 = year9 - 2
 
     // Table Header Row
     const headerCellStyle = {
@@ -282,42 +353,117 @@ export class CertificateWordGenerator {
     const gradeTableHeaderRow = new TableRow({
       children: [
         new TableCell({
-          width: { size: 30, type: WidthType.PERCENTAGE },
+          width: { size: 28, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font, size: 16, bold: true })] })],
-        }),
-        new TableCell({
-          width: { size: 14, type: WidthType.PERCENTAGE },
-          ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: '7ª CLASSE', font, size: 16, bold: true })] })],
-        }),
-        new TableCell({
-          width: { size: 14, type: WidthType.PERCENTAGE },
-          ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: '8ª CLASSE', font, size: 16, bold: true })] })],
-        }),
-        new TableCell({
-          width: { size: 14, type: WidthType.PERCENTAGE },
-          ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: '9ª CLASSE', font, size: 16, bold: true })] })],
-        }),
-        new TableCell({
-          width: { size: 12, type: WidthType.PERCENTAGE },
-          ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font, size: 16, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font: 'Arial Narrow', size: 14, bold: true })] })],
         }),
         new TableCell({
           width: { size: 16, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font, size: 16, bold: true })] })],
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: '7ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: '08', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: 'Única', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: String(year7), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+          ],
+        }),
+        new TableCell({
+          width: { size: 16, type: WidthType.PERCENTAGE },
+          ...headerCellStyle,
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: '8ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: '02', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: 'Única', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: String(year8), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+          ],
+        }),
+        new TableCell({
+          width: { size: 16, type: WidthType.PERCENTAGE },
+          ...headerCellStyle,
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: '9ª CLASSE', font: 'Arial Narrow', size: 14, bold: true })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [new TextRun({ text: 'Escola: C.E.P JOMORAIS', font: 'Arial Narrow', size: 12 })],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Nº ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: '02', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+                new TextRun({ text: ' Turma - ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: confirmacao?.tb_turmas?.designacao || 'A', font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: 'Ano letivo: ', font: 'Arial Narrow', size: 12 }),
+                new TextRun({ text: String(year9), font: 'Arial Narrow', size: 12, bold: true, color: 'FF0000' }),
+              ],
+            }),
+          ],
+        }),
+        new TableCell({
+          width: { size: 10, type: WidthType.PERCENTAGE },
+          ...headerCellStyle,
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font: 'Arial Narrow', size: 14, bold: true })] })],
+        }),
+        new TableCell({
+          width: { size: 14, type: WidthType.PERCENTAGE },
+          ...headerCellStyle,
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font: 'Arial Narrow', size: 14, bold: true })] })],
         }),
       ],
     })
 
-    const gradeTableRows = nonaSubjects.map(sub => {
-      const g7 = getGrade(sub, '7ª')
-      const g8 = getGrade(sub, '8ª')
-      const g9 = getGrade(sub, '9ª')
+    const gradeTableRows = nonaSubjectsMap.map(subItem => {
+      const g7 = getGrade(subItem.key, '7ª')
+      const g8 = getGrade(subItem.key, '8ª')
+      const g9 = getGrade(subItem.key, '9ª')
 
       let mediaDisc: number | string = '-'
       const grades = [g7, g8, g9].filter(g => typeof g === 'number') as number[]
@@ -331,31 +477,35 @@ export class CertificateWordGenerator {
         margins: { top: 20, bottom: 20, left: 40, right: 40 },
       }
 
+      const g7Text = g7 === '-' ? '-----------' : `${g7} (${this.numberToWords(g7)})`
+      const g8Text = g8 === '-' ? '-----------' : `${g8} (${this.numberToWords(g8)})`
+      const g9Text = g9 === '-' ? '-----------' : `${g9} (${this.numberToWords(g9)})`
+
       return new TableRow({
         children: [
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ children: [new TextRun({ text: sub.toUpperCase(), font, size: 15 })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: subItem.display, font: 'Arial Narrow', size: 20 })] })],
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g7 === '-' ? '-' : `${g7} (valores)`, font, size: 15 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g7Text, font: 'Arial Narrow', size: 20 })] })],
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g8 === '-' ? '-' : `${g8} (valores)`, font, size: 15 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g8Text, font: 'Arial Narrow', size: 20 })] })],
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g9 === '-' ? '-' : `${g9} (valores)`, font, size: 15 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g9Text, font: 'Arial Narrow', size: 20 })] })],
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: mediaDisc === '-' ? '-' : String(mediaDisc), font, size: 15, bold: true })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: mediaDisc === '-' ? '-' : String(mediaDisc), font: 'Arial Narrow', size: 20, bold: true })] })],
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ children: [new TextRun({ text: mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc), font, size: 15 })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc), font: 'Arial Narrow', size: 20 })] })],
           }),
         ],
       })
@@ -369,23 +519,26 @@ export class CertificateWordGenerator {
     // ── Texto de Livro de Termos ──
     const pTerms = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { before: 200, after: 100, line: 300 },
+      spacing: { before: 200, after: 150, line: 300 },
       children: [
-        new TextRun({ text: 'Para efeitos legais, lhe é passado o presente ', font, size: 21 }),
-        new TextRun({ text: 'CERTIFICADO', font, size: 21, bold: true }),
-        new TextRun({ text: ' que consta no livro de termos nº ', font, size: 21 }),
-        new TextRun({ text: '004', font, size: 21, bold: true }),
-        new TextRun({ text: ' folhas ', font, size: 21 }),
-        new TextRun({ text: '004', font, size: 21, bold: true }),
-        new TextRun({ text: ' assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', font, size: 21 }),
+        new TextRun({ text: 'Para efeitos legais, lhe é passado o presente ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: 'CERTIFICADO', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ' que consta no livro de termos nº ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: '004', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ' folhas ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: '004', font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: ' assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', font: 'Arial Narrow', size: 24 }),
       ],
     })
 
     // ── Data de emissão ──
     const pDate = new Paragraph({
+      alignment: AlignmentType.CENTER,
       spacing: { before: 200, after: 300 },
       children: [
-        new TextRun({ text: `Complexo Escolar Anexo Ao Magistério em Cabinda, aos ${dataDoc}.`, font, size: 21 }),
+        new TextRun({ text: 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos ', font: 'Arial Narrow', size: 24 }),
+        new TextRun({ text: dataDoc, font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: '.', font: 'Arial Narrow', size: 24 }),
       ],
     })
 
@@ -407,12 +560,12 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font, size: 21 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font: 'Arial Narrow', size: 24 })] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: '____________________________', font, size: 21 })],
+                  children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
                 }),
               ],
             }),
@@ -420,16 +573,16 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O(A) Director(a)', font, size: 21 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O(A) Director(a)', font: 'Arial Narrow', size: 24 })] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: '____________________________', font, size: 21 })],
+                  children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: nomeDirectora, font, size: 18, bold: true })],
+                  children: [new TextRun({ text: nomeDirectora, font: 'Arial Narrow', size: 24, bold: true })],
                 }),
               ],
             }),
@@ -446,7 +599,7 @@ export class CertificateWordGenerator {
       children: [
         new TextRun({
           text: `Autenticidade verificável em: ${host}/verificar/${data.NumeroCertificado} (Certificado: ${data.NumeroCertificado})`,
-          font,
+          font: 'Arial Narrow',
           size: 15,
           color: '666666',
           italics: true,
@@ -473,12 +626,10 @@ export class CertificateWordGenerator {
             },
           },
           children: [
-            headerTable,
-            new Paragraph({
-              spacing: { after: 100 },
-              children: [],
-              border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 4 } },
-            }),
+            logoParagraph,
+            headerP1,
+            headerP2,
+            headerP3,
             titleParagraph,
             p1,
             p2,

@@ -110,7 +110,7 @@ export class CertificatePdfGenerator {
 
   private static writeJustifiedMixed(
     doc: jsPDF,
-    segments: Array<{ text: string; bold: boolean; underline?: boolean; color?: number[] }>,
+    segments: Array<{ text: string; bold: boolean; underline?: boolean; color?: number[]; fontName?: string }>,
     x: number,
     y: number,
     maxWidth: number,
@@ -124,13 +124,14 @@ export class CertificatePdfGenerator {
       bold: boolean
       underline: boolean
       color?: number[]
+      fontName: string
     }
     const words: Word[] = []
     for (const seg of segments) {
       const parts = seg.text.split(/(\s+)/)
       for (const part of parts) {
         if (part.trim().length > 0) {
-          words.push({ word: part.trim(), bold: seg.bold, underline: seg.underline ?? false, color: seg.color })
+          words.push({ word: part.trim(), bold: seg.bold, underline: seg.underline ?? false, color: seg.color, fontName: seg.fontName || 'Helvetica' })
         }
       }
     }
@@ -140,18 +141,18 @@ export class CertificatePdfGenerator {
     let currentWidth = 0
 
     const getWordWidth = (w: Word): number => {
-      doc.setFont('Helvetica', w.bold ? 'bold' : 'normal')
+      doc.setFont(w.fontName, w.bold ? 'bold' : 'normal')
       return (doc.getStringUnitWidth(w.word) * fontSize) / scaleFactor
     }
 
-    const spaceWidth = (): number => {
-      doc.setFont('Helvetica', 'normal')
+    const spaceWidth = (fontName: string = 'Helvetica'): number => {
+      doc.setFont(fontName, 'normal')
       return (doc.getStringUnitWidth(' ') * fontSize) / scaleFactor
     }
 
     for (const word of words) {
       const ww = getWordWidth(word)
-      const gap = currentLine.length > 0 ? spaceWidth() : 0
+      const gap = currentLine.length > 0 ? spaceWidth(word.fontName) : 0
       if (currentWidth + gap + ww > maxWidth && currentLine.length > 0) {
         lines.push(currentLine)
         currentLine = [word]
@@ -174,12 +175,13 @@ export class CertificatePdfGenerator {
 
       const totalSpaceAvailable = maxWidth - totalWordWidth
       const gaps = line.length - 1
-      const spacePerGap = isLast || gaps === 0 ? spaceWidth() : totalSpaceAvailable / gaps
+      const defaultSpace = spaceWidth(line[0]?.fontName || 'Helvetica')
+      const spacePerGap = isLast || gaps === 0 ? defaultSpace : totalSpaceAvailable / gaps
 
       let curX = x
       for (let wi = 0; wi < line.length; wi++) {
         const w = line[wi]
-        doc.setFont('Helvetica', w.bold ? 'bold' : 'normal')
+        doc.setFont(w.fontName, w.bold ? 'bold' : 'normal')
         if (w.color) {
           doc.setTextColor(w.color[0], w.color[1], w.color[2])
         } else {
@@ -218,7 +220,7 @@ export class CertificatePdfGenerator {
   /**
    * LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
    */
-  private static generate9thClassPDF(data: ICertificatePdfData): void {
+      private static generate9thClassPDF(data: ICertificatePdfData): void {
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -239,127 +241,138 @@ export class CertificatePdfGenerator {
 
     // ── BRASÃO / LOGO ──
     const logoSize = 16
-    const logoX = marginL
+    const logoX = (pageWidth - logoSize) / 2
     try {
       doc.addImage(icon, 'PNG', logoX, y, logoSize, logoSize)
     } catch {}
 
-    // Cabeçalho Texto ao lado do Brasão
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(10.5)
-    doc.text('República de Angola', logoX + logoSize + 6, y + 4)
-    doc.text('Ministério da Educação', logoX + logoSize + 6, y + 9)
-    doc.setFont('Helvetica', 'bold')
-    doc.text('ENSINO GERAL', logoX + logoSize + 6, y + 14)
     y += logoSize + 4
 
-    // Linha Divisória
-    doc.setLineWidth(0.6)
-    doc.line(marginL, y, pageWidth - marginR, y)
-    y += 10
+    // República de Angola, etc
+    doc.setFont('Helvetica', 'normal')
+    doc.setFontSize(16)
+    doc.text('República de Angola', pageWidth / 2, y, { align: 'center' })
+    y += 6
+    doc.text('Ministério da Educação', pageWidth / 2, y, { align: 'center' })
+    y += 6
+    
+    // ENSINO GERAL bold, dynamic certificate number
+    doc.setFont('Helvetica', 'bold')
+    const w1 = doc.getTextWidth('ENSINO GERAL')
+    doc.setFont('Helvetica', 'normal')
+    const certNumStr = `  Nº ${data.NumeroCertificado || '007 /2025'}`
+    const w2 = doc.getTextWidth(certNumStr)
+    const totalW = w1 + w2
+    const startX = (pageWidth - totalW) / 2
+    
+    doc.setFont('Helvetica', 'bold')
+    doc.text('ENSINO GERAL', startX, y)
+    doc.setFont('Helvetica', 'normal')
+    doc.text(certNumStr, startX + w1, y)
+    y += 14
 
     // Título Principal
-    doc.setFontSize(14)
+    doc.setFont('Helvetica', 'bold')
+    doc.setFontSize(16)
     doc.text('CERTIFICADO DE HABILITAÇÕES', pageWidth / 2, y, { align: 'center' })
-    // Linha de sublinhado do título
-    doc.setLineWidth(0.3)
-    const titleW = doc.getTextWidth('CERTIFICADO DE HABILITAÇÕES')
-    doc.line((pageWidth - titleW) / 2, y + 1, (pageWidth + titleW) / 2, y + 1)
     y += 12
 
     // ── CORPO DO TEXTO ──
     const aluno = data.tb_alunos
-    const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
-    const pai = (aluno.pai || 'N/A').toUpperCase()
-    const mae = (aluno.mae || 'N/A').toUpperCase()
-    const dataNasc = this.formatDateShort(aluno.dataNascimento)
+    const nomeAluno = (aluno.nome || 'N/A')
+    const pai = (aluno.pai || 'N/A')
+    const mae = (aluno.mae || 'N/A')
+    
+    const dataNascExtenso = this.formatDateLong(aluno.dataNascimento) 
     const biNum = aluno.n_documento_identificacao || 'N/A'
-    const biData = aluno.dataEmissao ? this.formatDateShort(aluno.dataEmissao) : 'N/A'
+    const biDataExtenso = aluno.dataEmissao ? this.formatDateLong(aluno.dataEmissao) : 'N/A'
     const naturalidade = aluno.naturalidade || aluno.tb_comunas?.designacao || 'Cabinda'
     const municipio = aluno.tb_comunas?.tb_municipios?.designacao || 'Cabinda'
     const provincia = aluno.tb_comunas?.tb_municipios?.tb_provincias?.designacao || 'Cabinda'
-    const dataDoc = this.formatDateLong(data.DataEmissao)
     
-    // Ano letivo do certificado
+    const dataDoc = this.formatDateLong(data.DataEmissao)
     const anoConclusao = data.tb_ano_lectivo.designacao
-
-    // Directora Geral
     const nomeDirectora = 'Júlia Maria da Conceição Franque'
 
     const p1 = [
-      { text: `${nomeDirectora}, Directora do `, bold: false },
-      { text: 'Complexo Escolar Anexo ao Magistério de Cabinda', bold: true },
-      { text: ' Certifica que ', bold: false },
-      { text: nomeAluno, bold: true },
-      { text: ', filho de ', bold: false },
-      { text: pai, bold: true },
-      { text: ' e de ', bold: false },
-      { text: mae, bold: true },
-      { text: `, nascido aos ${dataNasc}, em ${naturalidade}, Município de `, bold: false },
-      { text: municipio, bold: true },
-      { text: `, Província de ${provincia}, Portador do BI/CP Nº. `, bold: false },
-      { text: biNum, bold: true },
-      { text: ` emitido, aos ${biData}, pelo Arquivo de Identificação de Cabinda.`, bold: false }
+      { text: `${nomeDirectora}, `, bold: true, fontName: 'times' },
+      { text: 'Directora do ', bold: false, fontName: 'Helvetica' },
+      { text: 'Complexo Escolar Anexo ao Magistério de Cabinda', bold: true, fontName: 'Helvetica' },
+      { text: ' Certifica ', bold: true, underline: false, fontName: 'Helvetica' },
+      { text: 'que ', bold: false, fontName: 'Helvetica' },
+      { text: `${nomeAluno}, `, bold: true, color: [255, 0, 0], fontName: 'Helvetica' },
+      { text: `filho de ${pai} e de ${mae}, nascido aos ${dataNascExtenso}, em ${naturalidade}, Município de ${municipio}, Província de ${provincia}, Portador do `, bold: false, fontName: 'Helvetica' },
+      { text: 'BI/CP ', bold: true, fontName: 'Helvetica' },
+      { text: `Nº.${biNum} emitido, aos ${biDataExtenso}, pelo Arquivo de Identificação de Cabinda.`, bold: false, fontName: 'Helvetica' }
     ]
 
     const p2 = [
-      { text: `Concluiu no ano lectivo de `, bold: false },
-      { text: anoConclusao, bold: true },
-      { text: ', o ', bold: false },
-      { text: 'I Ciclo de Ensino Secundário Geral', bold: true },
-      { text: ', conforme o disposto na alínea ', bold: false },
-      { text: 'c) do artigo 109 da LBSEE nº 17/16 de 7 de Outubro', bold: true },
-      { text: `, com a Média Final de `, bold: false },
-      { text: `${data.mediaFinal} valores`, bold: true },
-      { text: ' obtida nas seguintes classificações por ciclos de aprendizagem:', bold: false }
+      { text: `Concluiu no ano lectivo de `, bold: false, fontName: 'Helvetica' },
+      { text: `${anoConclusao}, o I Ciclo de Ensino Secundário Geral, `, bold: true, fontName: 'Helvetica' },
+      { text: `conforme o disposto na alínea `, bold: false, fontName: 'Helvetica' },
+      { text: `c) do artigo `, bold: true, fontName: 'Helvetica' },
+      { text: `109 da IBSEE nº 17/16 de 7 de Outubro`, bold: true, fontName: 'Helvetica' },
+      { text: `, com a Média Final de `, bold: false, fontName: 'Helvetica' },
+      { text: `${data.mediaFinal} valores`, bold: true, underline: true, fontName: 'Helvetica' },
+      { text: ` obtida nas seguintes classificações por ciclos de aprendizagem:`, bold: false, fontName: 'Helvetica' }
     ]
 
-    doc.setFontSize(10.5)
-    y = this.writeJustifiedMixed(doc, p1, marginL, y, maxWidth, 6)
-    y += 4
-    y = this.writeJustifiedMixed(doc, p2, marginL, y, maxWidth, 6)
-    y += 6
+    doc.setFontSize(12)
+    y = this.writeJustifiedMixed(doc, p1, marginL, y, maxWidth, 6.5)
+    y += 2
+    y = this.writeJustifiedMixed(doc, p2, marginL, y, maxWidth, 6.5)
+    y += 8
 
-    // Subtítulo da Escola
+    // Centered school name subtitle above table
     doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(11)
+    doc.setFontSize(12)
     doc.text('COMPLEXO ESCOLAR PRIVADO JOMORAIS', pageWidth / 2, y, { align: 'center' })
-    y += 4
+    y += 8
 
     // ── TABELA DE NOTAS COMPARATIVA (7ª, 8ª, 9ª classes) ──
-    const nonaSubjects = [
-      'Língua Portuguesa',
-      'Matemática',
-      'Biologia',
-      'Geografia',
-      'História',
-      'Química',
-      'Física',
-      'Moral e Cívica',
-      'Educação Visual e Plástica',
-      'Língua Inglesa',
-      'Língua Francesa',
-      'Educação Laboral',
-      'Empreendedorismo',
-      'Educação Física'
+    const nonaSubjectsMap = [
+      { key: 'Língua Portuguesa', display: 'L. PORTUGUESA' },
+      { key: 'Matemática', display: 'MATEMÁTICA' },
+      { key: 'Biologia', display: 'BIOLOGIA' },
+      { key: 'Geografia', display: 'GEOGRAFIA' },
+      { key: 'História', display: 'HISTÓRIA' },
+      { key: 'Química', display: 'QUÍMICA' },
+      { key: 'Física', display: 'FÍSICA' },
+      { key: 'E.M.C', display: 'E.M.C' },
+      { key: 'E.V.P', display: 'E.V.P' },
+      { key: 'Língua Inglesa', display: 'INGLÊS' },
+      { key: 'Língua Francesa', display: 'FRANCÊS' },
+      { key: 'Educação Laboral', display: 'ED. LABORAL' },
+      { key: 'Empreendedorismo', display: 'EMPREENDED.' },
+      { key: 'Educação Física', display: 'ED. FÍSICA' }
     ]
 
-    const getGradeHelper = (sub: string, cl: string): number | string => {
-      const matched = data.gradeDetails?.find(d => 
-        d.designacao.toLowerCase().includes(sub.toLowerCase())
+    const getGrade = (subKey: string, cl: string): number | string => {
+      const matched = data.gradeDetails?.find(d =>
+        d.designacao.toLowerCase().includes(subKey.toLowerCase()) ||
+        (subKey.toLowerCase() === 'língua inglesa' && d.designacao.toLowerCase().includes('inglês')) ||
+        (subKey.toLowerCase() === 'língua francesa' && d.designacao.toLowerCase().includes('francês')) ||
+        (subKey.toLowerCase() === 'e.m.c' && (d.designacao.toLowerCase().includes('moral') || d.designacao.toLowerCase().includes('cívica') || d.designacao.toLowerCase().includes('emc'))) ||
+        (subKey.toLowerCase() === 'e.v.p' && (d.designacao.toLowerCase().includes('visual') || d.designacao.toLowerCase().includes('plástica') || d.designacao.toLowerCase().includes('evp'))) ||
+        (subKey.toLowerCase() === 'educação laboral' && (d.designacao.toLowerCase().includes('laboral') || d.designacao.toLowerCase().includes('trabalho'))) ||
+        (subKey.toLowerCase() === 'empreendedorismo' && (d.designacao.toLowerCase().includes('empreended') || d.designacao.toLowerCase().includes('empree')))
       )
       if (!matched || !matched.notas) return '-'
-      
       const found = Object.entries(matched.notas).find(([k]) => k.includes(cl))
       return found ? found[1].nota : '-'
     }
 
-    const tableRows = nonaSubjects.map(sub => {
-      const g7 = getGradeHelper(sub, '7ª')
-      const g8 = getGradeHelper(sub, '8ª')
-      const g9 = getGradeHelper(sub, '9ª')
+    const confirmacao = data.tb_alunos.tb_matriculas?.tb_confirmacoes?.[0]
+    const year9 = parseInt(anoConclusao) || 2019
+    const year8 = year9 - 1
+    const year7 = year9 - 2
+    const currentTurma = confirmacao?.tb_turmas?.designacao || 'A'
 
-      // Média final do aluno nesta disciplina
+    const tableRows = nonaSubjectsMap.map(subItem => {
+      const g7 = getGrade(subItem.key, '7ª')
+      const g8 = getGrade(subItem.key, '8ª')
+      const g9 = getGrade(subItem.key, '9ª')
+
       let mediaDisc: number | string = '-'
       const grades = [g7, g8, g9].filter(g => typeof g === 'number') as number[]
       if (grades.length > 0) {
@@ -367,24 +380,30 @@ export class CertificatePdfGenerator {
       }
 
       return [
-        sub.toUpperCase(),
-        g7 === '-' ? '-' : `${g7} (valores)`,
-        g8 === '-' ? '-' : `${g8} (valores)`,
-        g9 === '-' ? '-' : `${g9} (valores)`,
+        subItem.display.toUpperCase(),
+        g7 === '-' ? '-----------' : `${g7} (${this.numberToWords(g7)})`,
+        g8 === '-' ? '-----------' : `${g8} (${this.numberToWords(g8)})`,
+        g9 === '-' ? '-----------' : `${g9} (${this.numberToWords(g9)})`,
         mediaDisc === '-' ? '-' : mediaDisc,
         mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc)
       ]
     })
 
-    // Desenhar tabela com jspdf-autotable
     let finalTableY = y
     autoTable(doc, {
       startY: y,
-      head: [['DISCIPLINAS', '7ª CLASSE', '8ª CLASSE', '9ª CLASSE', 'Média Final', 'Média por Extenso']],
+      head: [[
+        'DISCIPLINAS',
+        `7ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 08  Turma - Única\nAno letivo: ${year7}`,
+        `8ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - Única\nAno letivo: ${year8}`,
+        `9ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - ${currentTurma}\nAno letivo: ${year9}`,
+        'Média Final',
+        'Média por Extenso'
+      ]],
       body: tableRows,
       theme: 'grid',
-      styles: { fontSize: 7, cellPadding: 1, halign: 'center' },
-      columnStyles: { 0: { halign: 'left', cellWidth: 40 }, 5: { halign: 'left' } },
+      styles: { fontSize: 7, cellPadding: 1, halign: 'center', valign: 'middle' },
+      columnStyles: { 0: { halign: 'left', cellWidth: 35 }, 5: { halign: 'left' } },
       headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 7.5 },
       didDrawPage: (data: any) => {
         finalTableY = data.cursor.y
@@ -393,28 +412,42 @@ export class CertificatePdfGenerator {
 
     y = finalTableY + 8
 
-    // ── TEXTO DE LIVRO DE TERMOS / REGISTO ──
-    const pTerms = [
-      { text: 'Para efeitos legais, lhe é passado o presente ', bold: false },
-      { text: 'CERTIFICADO', bold: true },
-      { text: ' que consta no livro de termos nº ', bold: false },
-      { text: '004', bold: true },
-      { text: ' folhas ', bold: false },
-      { text: '004', bold: true },
-      { text: ' assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', bold: false }
-    ]
-    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 6)
-    y += 8
-
-    // Data de emissão no final
+    // Livro de termos footer
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(10.5)
-    doc.text(`Complexo Escolar Anexo Ao Magistério em Cabinda, aos ${dataDoc}.`, marginL, y)
+    
+    // Justified block for Terms footer
+    const pTerms = [
+      { text: 'Para efeitos legais, lhe é passado o presente ', bold: false, fontName: 'Helvetica' },
+      { text: 'CERTIFICADO ', bold: true, fontName: 'Helvetica' },
+      { text: 'que consta no livro de termos nº ', bold: false, fontName: 'Helvetica' },
+      { text: '004 ', bold: true, fontName: 'Helvetica' },
+      { text: 'folhas ', bold: false, fontName: 'Helvetica' },
+      { text: '004 ', bold: true, fontName: 'Helvetica' },
+      { text: 'assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', bold: false, fontName: 'Helvetica' }
+    ]
+    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 5.5)
+    y += 4
+
+    // Data de emissão no final (centered)
+    doc.setFont('Helvetica', 'normal')
+    doc.setFontSize(10.5)
+    const placeText = 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos '
+    const dateText = `${dataDoc}.`
+    const placeW = doc.getTextWidth(placeText)
+    const dateW = doc.getTextWidth(dateText)
+    const totalDateW = placeW + dateW
+    const startDateX = (pageWidth - totalDateW) / 2
+    doc.text(placeText, startDateX, y)
+    doc.setFont('Helvetica', 'bold')
+    doc.text(dateText, startDateX + placeW, y)
     y += 18
 
     // ── ASSINATURAS ──
     const sigW = maxWidth / 2
-    doc.text('Conferido por', marginL + 10, y)
+    doc.setFont('Helvetica', 'normal')
+    doc.setFontSize(10.5)
+    doc.text('Conferido por', marginL + 15, y)
     doc.text('O(A) Director(a)', marginL + sigW + 20, y)
     y += 14
 
@@ -424,9 +457,8 @@ export class CertificatePdfGenerator {
     y += 4
 
     doc.setFont('Helvetica', 'bold')
-    doc.setFontSize(9)
+    doc.setFontSize(9.5)
     doc.text(nomeDirectora, marginL + sigW + 40, y, { align: 'center' })
-    y += 8
 
     // Verificação pública de autenticidade (Rodapé discreto)
     const host = window.location.origin
