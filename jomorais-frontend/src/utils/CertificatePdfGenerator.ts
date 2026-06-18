@@ -298,6 +298,9 @@ export class CertificatePdfGenerator {
     const anoConclusao = data.tb_ano_lectivo.designacao
     const nomeDirectora = 'Júlia Maria da Conceição Franque'
 
+    const mediaNum = Number(data.mediaFinal)
+    const mediaFinalRounded = isNaN(mediaNum) ? data.mediaFinal : (Math.round(mediaNum * 2) / 2).toString().replace('.', ',')
+
     const p1 = [
       { text: `${nomeDirectora}, `, bold: true, fontName: 'times' },
       { text: 'Directora do ', bold: false, fontName: 'Helvetica' },
@@ -317,7 +320,7 @@ export class CertificatePdfGenerator {
       { text: `c) do artigo `, bold: true, fontName: 'Helvetica' },
       { text: `109 da IBSEE nº 17/16 de 7 de Outubro`, bold: true, fontName: 'Helvetica' },
       { text: `, com a Média Final de `, bold: false, fontName: 'Helvetica' },
-      { text: `${data.mediaFinal}`, bold: true, underline: true, fontName: 'Helvetica' },
+      { text: `${mediaFinalRounded}`, bold: true, underline: true, fontName: 'Helvetica' },
       { text: ` valores`, bold: true, underline: false, fontName: 'Helvetica' },
       { text: ` obtida nas seguintes classificações por ciclos de aprendizagem:`, bold: false, fontName: 'Helvetica' }
     ]

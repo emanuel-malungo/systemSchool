@@ -152,6 +152,9 @@ export class CertificateWordGenerator {
     const anoConclusao = data.tb_ano_lectivo.designacao
     const nomeDirectora = 'Júlia Maria da Conceição Franque'
 
+    const mediaNum = Number(data.mediaFinal)
+    const mediaFinalRounded = isNaN(mediaNum) ? data.mediaFinal : (Math.round(mediaNum * 2) / 2).toString().replace('.', ',')
+
     const confirmacao = data.tb_alunos.tb_matriculas?.tb_confirmacoes?.[0]
 
     // ── Build header elements ──
@@ -305,7 +308,7 @@ export class CertificateWordGenerator {
         new TextRun({ text: '109 da IBSEE nº 17/16 de 7 de Outubro', font: 'Arial Narrow', size: 24, bold: true }),
         new TextRun({ text: ', com a Média Final de ', font: 'Arial Narrow', size: 24 }),
         new TextRun({
-          text: `${data.mediaFinal}`,
+          text: `${mediaFinalRounded}`,
           font: 'Arial Narrow',
           size: 24,
           bold: true,
