@@ -17,9 +17,11 @@ import Container from '../components/layout/Container';
 import { 
   useNotasCredito
 } from '../hooks/usePayment';
+import { usePageTitle } from '../hooks/usePageTitle';
 import type { NotaCredito } from '../types/payment.types';
 
 const NotasCredito: React.FC = () => {
+  usePageTitle("Notas de Crédito");
   // Estados principais
   const [selectedCreditNote, setSelectedCreditNote] = useState<NotaCredito | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);

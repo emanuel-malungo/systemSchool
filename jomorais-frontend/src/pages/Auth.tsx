@@ -5,8 +5,10 @@ import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useAuth } from "../hooks/useAuth"
 import type { LegacyLoginCredentials } from "../types/auth.types"
+import { usePageTitle } from "../hooks/usePageTitle"
 
 export default function AuthPage() {
+  usePageTitle("Autenticação")
   const [showPassword, setShowPassword] = useState(false)
   const { login } = useAuth()
   
