@@ -325,7 +325,7 @@ export default function Sidebar() {
           <div 
             className={`
               overflow-hidden transition-all duration-300 ease-in-out
-              ${isOpen ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}
+              ${isOpen ? 'max-h-[1000px] opacity-100 mt-1' : 'max-h-0 opacity-0'}
             `}
           >
             <div className="ml-4 pl-4 border-l-2 border-gray-100 space-y-1">
@@ -351,8 +351,8 @@ export default function Sidebar() {
           ${isChild ? 'py-2 text-xs' : ''}
         `}
       >
-        <Icon size={isChild ? 18 : 20} />
-        <span>{item.title}</span>
+        <Icon size={isChild ? 18 : 20} className="shrink-0" />
+        <span className="leading-tight">{item.title}</span>
       </Link>
     )
   }
