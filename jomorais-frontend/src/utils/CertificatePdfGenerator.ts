@@ -364,9 +364,14 @@ export class CertificatePdfGenerator {
     const currentTurma = confirmacao?.tb_turmas?.designacao || 'A'
 
     const tableRows = nonaSubjectsMap.map(subItem => {
-      const g7 = getGrade(subItem.key, '7ª')
-      const g8 = getGrade(subItem.key, '8ª')
-      const g9 = getGrade(subItem.key, '9ª')
+      const g7Raw = getGrade(subItem.key, '7ª')
+      const g8Raw = getGrade(subItem.key, '8ª')
+      const g9Raw = getGrade(subItem.key, '9ª')
+
+      // Round individual class grades to avoid decimal display wrapping
+      const g7 = typeof g7Raw === 'number' ? Math.round(g7Raw) : g7Raw
+      const g8 = typeof g8Raw === 'number' ? Math.round(g8Raw) : g8Raw
+      const g9 = typeof g9Raw === 'number' ? Math.round(g9Raw) : g9Raw
 
       let mediaDisc: number | string = '-'
       const grades = [g7, g8, g9].filter(g => typeof g === 'number') as number[]
@@ -418,12 +423,22 @@ export class CertificatePdfGenerator {
             dataCell.cell.styles.fontSize = 11
           } else {
             dataCell.cell.styles.font = 'times'
-            dataCell.cell.styles.fontSize = 12
+            dataCell.cell.styles.fontSize = 10.5 // slightly reduced from 12 to 10.5 to prevent wraps
             if (dataCell.column.index === 4) {
               dataCell.cell.styles.fontStyle = 'bold'
             }
           }
         }
+      },
+      didDrawCell: (dataCell: any) => {
+        // Draw double borders using a parallel inner rect
+        const x = dataCell.cell.x
+        const y = dataCell.cell.y
+        const w = dataCell.cell.width
+        const h = dataCell.cell.height
+        doc.setDrawColor(0, 0, 0)
+        doc.setLineWidth(0.08)
+        doc.rect(x + 0.3, y + 0.3, w - 0.6, h - 0.6)
       },
       didDrawPage: (data: any) => {
         finalTableY = data.cursor.y

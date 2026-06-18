@@ -95,12 +95,13 @@ export class CertificateWordGenerator {
     }
   }
 
-  private static thinBorders() {
+
+  private static doubleBorders() {
     return {
-      top: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: '000000' },
+      top: { style: BorderStyle.DOUBLE, size: 6, color: '000000' },
+      bottom: { style: BorderStyle.DOUBLE, size: 6, color: '000000' },
+      left: { style: BorderStyle.DOUBLE, size: 6, color: '000000' },
+      right: { style: BorderStyle.DOUBLE, size: 6, color: '000000' },
     }
   }
 
@@ -352,10 +353,10 @@ export class CertificateWordGenerator {
     const year8 = year9 - 1
     const year7 = year9 - 2
 
-    // Table Header Row - Changed from gray to white shading fill
+    // Table Header Row - Changed from gray to white shading fill and added double borders
     const headerCellStyle = {
       shading: { fill: 'FFFFFF', type: ShadingType.CLEAR, color: 'auto' },
-      borders: this.thinBorders(),
+      borders: this.doubleBorders(),
       verticalAlign: VerticalAlign.CENTER,
       margins: { top: 40, bottom: 40, left: 40, right: 40 },
     }
@@ -471,9 +472,14 @@ export class CertificateWordGenerator {
     })
 
     const gradeTableRows = nonaSubjectsMap.map(subItem => {
-      const g7 = getGrade(subItem.key, '7ª')
-      const g8 = getGrade(subItem.key, '8ª')
-      const g9 = getGrade(subItem.key, '9ª')
+      const g7Raw = getGrade(subItem.key, '7ª')
+      const g8Raw = getGrade(subItem.key, '8ª')
+      const g9Raw = getGrade(subItem.key, '9ª')
+
+      // Round individual class grades to avoid decimal display wrapping
+      const g7 = typeof g7Raw === 'number' ? Math.round(g7Raw) : g7Raw
+      const g8 = typeof g8Raw === 'number' ? Math.round(g8Raw) : g8Raw
+      const g9 = typeof g9Raw === 'number' ? Math.round(g9Raw) : g9Raw
 
       let mediaDisc: number | string = '-'
       const grades = [g7, g8, g9].filter(g => typeof g === 'number') as number[]
@@ -482,7 +488,7 @@ export class CertificateWordGenerator {
       }
 
       const cellStyle = {
-        borders: this.thinBorders(),
+        borders: this.doubleBorders(),
         verticalAlign: VerticalAlign.CENTER,
         margins: { top: 20, bottom: 20, left: 40, right: 40 },
       }
