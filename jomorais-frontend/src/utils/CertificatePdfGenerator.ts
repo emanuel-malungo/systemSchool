@@ -490,8 +490,8 @@ export class CertificatePdfGenerator {
 
     // ── ASSINATURAS ──
     const sigW = maxWidth / 2
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(10.5)
+    doc.setFont('times', 'normal')
+    doc.setFontSize(12)
     doc.text('Conferido por', marginL + 15, y)
     doc.text('O (A) Director (a)', marginL + sigW + 20, y) // adjusted spelling to match O (A) Director (a)
     y += 10
@@ -501,8 +501,8 @@ export class CertificatePdfGenerator {
     doc.line(marginL + sigW + 10, y, marginL + sigW + 70, y)
     y += 3
 
-    doc.setFont('Helvetica', 'normal') // normal weight, not bold
-    doc.setFontSize(9.5)
+    doc.setFont('times', 'normal') // normal weight, not bold
+    doc.setFontSize(12)
     doc.text(nomeDirectora, marginL + sigW + 40, y, { align: 'center' })
 
     doc.save(`Certificado_9Classe_${nomeAluno.replace(/\s+/g, '_')}.pdf`)

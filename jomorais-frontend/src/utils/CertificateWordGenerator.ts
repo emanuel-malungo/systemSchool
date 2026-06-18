@@ -576,11 +576,11 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font: 'Arial Narrow', size: 24 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font: 'Times New Roman', size: 24 })] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   spacing: { before: 300 },
-                  children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
+                  children: [new TextRun({ text: '____________________________', font: 'Times New Roman', size: 24 })],
                 }),
               ],
             }),
@@ -588,16 +588,16 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O (A) Director (a)', font: 'Arial Narrow', size: 24 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O (A) Director (a)', font: 'Times New Roman', size: 24 })] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   spacing: { before: 300 },
-                  children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
+                  children: [new TextRun({ text: '____________________________', font: 'Times New Roman', size: 24 })],
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
                   spacing: { before: 60 },
-                  children: [new TextRun({ text: nomeDirectora, font: 'Arial Narrow', size: 24 })],
+                  children: [new TextRun({ text: nomeDirectora, font: 'Times New Roman', size: 24 })],
                 }),
               ],
             }),
