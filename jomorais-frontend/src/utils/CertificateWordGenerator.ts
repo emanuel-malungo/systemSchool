@@ -147,7 +147,7 @@ export class CertificateWordGenerator {
     // ── Build header elements ──
     const logoParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 100, after: 100 },
+      spacing: { before: 40, after: 40 },
       children: logoBuffer
         ? [new ImageRun({ data: logoBuffer, transformation: { width: 45, height: 45 }, type: 'jpg' })]
         : [],
@@ -155,7 +155,7 @@ export class CertificateWordGenerator {
 
     const headerP1 = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 50 },
+      spacing: { after: 20 },
       children: [
         new TextRun({
           text: 'República de Angola',
@@ -167,7 +167,7 @@ export class CertificateWordGenerator {
 
     const headerP2 = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 50 },
+      spacing: { after: 20 },
       children: [
         new TextRun({
           text: 'Ministério da Educação',
@@ -183,7 +183,7 @@ export class CertificateWordGenerator {
         { type: TabStopType.CENTER, position: 5100 },
         { type: TabStopType.RIGHT, position: 10200 },
       ],
-      spacing: { after: 200 },
+      spacing: { after: 80 },
       children: [
         new TextRun({
           text: '	',
@@ -209,7 +209,7 @@ export class CertificateWordGenerator {
     // ── Título ──
     const titleParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 200, after: 300 },
+      spacing: { before: 80, after: 100 },
       children: [
         new TextRun({
           text: 'CERTIFICADO DE HABILITAÇÕES',
@@ -223,7 +223,7 @@ export class CertificateWordGenerator {
     // ── Corpo do texto (parágrafo 1) ──
     const p1 = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { before: 100, after: 150, line: 280 },
+      spacing: { before: 60, after: 80, line: 240 },
       children: [
         new TextRun({
           text: `${nomeDirectora}, `,
@@ -283,7 +283,7 @@ export class CertificateWordGenerator {
     // ── Corpo do texto (parágrafo 2) ──
     const p2 = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { before: 100, after: 150, line: 280 },
+      spacing: { before: 60, after: 80, line: 240 },
       children: [
         new TextRun({ text: 'Concluiu no ano lectivo de ', font: 'Arial Narrow', size: 24 }),
         new TextRun({ text: anoConclusao, font: 'Arial Narrow', size: 24, bold: true }),
@@ -308,7 +308,7 @@ export class CertificateWordGenerator {
     // ── Subtítulo Escola ──
     const escolaParagraph = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 150, after: 150 },
+      spacing: { before: 80, after: 80 },
       children: [
         new TextRun({ text: 'COMPLEXO ESCOLAR PRIVADO JOMORAIS', font: 'Arial Narrow', size: 24, bold: true }),
       ],
@@ -529,7 +529,7 @@ export class CertificateWordGenerator {
     // ── Texto de Livro de Termos ──
     const pTerms = new Paragraph({
       alignment: AlignmentType.JUSTIFIED,
-      spacing: { before: 200, after: 150, line: 300 },
+      spacing: { before: 100, after: 80, line: 240 },
       children: [
         new TextRun({ text: 'Para efeitos legais, lhe é passado o presente ', font: 'Arial Narrow', size: 24 }),
         new TextRun({ text: 'CERTIFICADO', font: 'Arial Narrow', size: 24, bold: true }),
@@ -544,7 +544,7 @@ export class CertificateWordGenerator {
     // ── Data de emissão ──
     const pDate = new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { before: 200, after: 300 },
+      spacing: { before: 100, after: 150 },
       children: [
         new TextRun({ text: 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos ', font: 'Arial Narrow', size: 24 }),
         new TextRun({ text: dataDoc, font: 'Arial Narrow', size: 24 }),
@@ -571,10 +571,9 @@ export class CertificateWordGenerator {
               borders: this.noBorders(),
               children: [
                 new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Conferido por', font: 'Arial Narrow', size: 24 })] }),
-                new Paragraph({ children: [] }),
-                new Paragraph({ children: [] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { before: 300 },
                   children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
                 }),
               ],
@@ -584,14 +583,14 @@ export class CertificateWordGenerator {
               borders: this.noBorders(),
               children: [
                 new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O (A) Director (a)', font: 'Arial Narrow', size: 24 })] }),
-                new Paragraph({ children: [] }),
-                new Paragraph({ children: [] }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { before: 300 },
                   children: [new TextRun({ text: '____________________________', font: 'Arial Narrow', size: 24 })],
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
+                  spacing: { before: 60 },
                   children: [new TextRun({ text: nomeDirectora, font: 'Arial Narrow', size: 24 })],
                 }),
               ],
@@ -611,10 +610,10 @@ export class CertificateWordGenerator {
                 pageBorders: {
                   offsetFrom: 'text',
                 },
-                pageBorderTop: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 }, // Thick border
-                pageBorderBottom: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
-                pageBorderLeft: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
-                pageBorderRight: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
+                pageBorderTop: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 }, // Much thicker border (4pt)
+                pageBorderBottom: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
+                pageBorderLeft: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
+                pageBorderRight: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
               },
             },
           },

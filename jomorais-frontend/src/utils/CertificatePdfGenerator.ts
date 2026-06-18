@@ -232,29 +232,29 @@ export class CertificatePdfGenerator {
     const marginL = 15
     const marginR = 15
     const maxWidth = pageWidth - marginL - marginR
-    let y = 15
+    let y = 12
 
     // ── BORDA EXTERNA ──
     doc.setDrawColor(0, 0, 0)
-    doc.setLineWidth(0.4)
+    doc.setLineWidth(1.2) // Thicker premium border
     doc.rect(10, 10, pageWidth - 20, pageHeight - 20)
 
     // ── BRASÃO / LOGO ──
-    const logoSize = 16
+    const logoSize = 14
     const logoX = (pageWidth - logoSize) / 2
     try {
       doc.addImage(icon, 'PNG', logoX, y, logoSize, logoSize)
     } catch {}
 
-    y += logoSize + 4
+    y += logoSize + 3
 
     // República de Angola, etc
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(16)
     doc.text('República de Angola', pageWidth / 2, y, { align: 'center' })
-    y += 6
+    y += 5
     doc.text('Ministério da Educação', pageWidth / 2, y, { align: 'center' })
-    y += 6
+    y += 5
     
     // Centered "ENSINO GERAL" and right-aligned Certificate Number
     doc.setFont('Helvetica', 'bold')
@@ -264,13 +264,13 @@ export class CertificatePdfGenerator {
     doc.setFont('times', 'italic')
     doc.setFontSize(14)
     doc.text(`Nº ${data.NumeroCertificado || '007 /2025'}`, pageWidth - marginR, y, { align: 'right' })
-    y += 14
+    y += 10
 
     // Título Principal
     doc.setFont('Helvetica', 'bold')
     doc.setFontSize(16)
     doc.text('CERTIFICADO DE HABILITAÇÕES', pageWidth / 2, y, { align: 'center' })
-    y += 12
+    y += 10
 
     // ── CORPO DO TEXTO ──
     const aluno = data.tb_alunos
@@ -313,16 +313,16 @@ export class CertificatePdfGenerator {
     ]
 
     doc.setFontSize(12)
-    y = this.writeJustifiedMixed(doc, p1, marginL, y, maxWidth, 6.5)
-    y += 2
-    y = this.writeJustifiedMixed(doc, p2, marginL, y, maxWidth, 6.5)
-    y += 8
+    y = this.writeJustifiedMixed(doc, p1, marginL, y, maxWidth, 5.8)
+    y += 1.5
+    y = this.writeJustifiedMixed(doc, p2, marginL, y, maxWidth, 5.8)
+    y += 4
 
     // Centered school name subtitle above table
     doc.setFont('Helvetica', 'bold')
     doc.setFontSize(12)
     doc.text('COMPLEXO ESCOLAR PRIVADO JOMORAIS', pageWidth / 2, y, { align: 'center' })
-    y += 8
+    y += 5
 
     // ── TABELA DE NOTAS COMPARATIVA (7ª, 8ª, 9ª classes) ──
     const nonaSubjectsMap = [
@@ -420,7 +420,7 @@ export class CertificatePdfGenerator {
       }
     })
 
-    y = finalTableY + 8
+    y = finalTableY + 4
 
     // Livro de termos footer
     doc.setFont('Helvetica', 'normal')
@@ -436,8 +436,8 @@ export class CertificatePdfGenerator {
       { text: '004 ', bold: true, fontName: 'Helvetica' },
       { text: 'assinado e autenticado com o carimbo/selo branco em uso neste estabelecimento de ensino.', bold: false, fontName: 'Helvetica' }
     ]
-    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 5.5)
-    y += 4
+    y = this.writeJustifiedMixed(doc, pTerms, marginL, y, maxWidth, 4.8)
+    y += 2
 
     // Data de emissão no final (centered)
     doc.setFont('Helvetica', 'normal')
@@ -450,7 +450,7 @@ export class CertificatePdfGenerator {
     const startDateX = (pageWidth - totalDateW) / 2
     doc.text(placeText, startDateX, y)
     doc.text(dateText, startDateX + placeW, y) // normal weight, not bold
-    y += 18
+    y += 12
 
     // ── ASSINATURAS ──
     const sigW = maxWidth / 2
@@ -458,12 +458,12 @@ export class CertificatePdfGenerator {
     doc.setFontSize(10.5)
     doc.text('Conferido por', marginL + 15, y)
     doc.text('O (A) Director (a)', marginL + sigW + 20, y) // adjusted spelling to match O (A) Director (a)
-    y += 14
+    y += 10
 
     doc.setLineWidth(0.3)
     doc.line(marginL, y, marginL + 50, y)
     doc.line(marginL + sigW + 10, y, marginL + sigW + 70, y)
-    y += 4
+    y += 3
 
     doc.setFont('Helvetica', 'normal') // normal weight, not bold
     doc.setFontSize(9.5)
