@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Settings, Search, Bell } from 'lucide-react'
+import { User, Settings, Bell } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function Header() {
