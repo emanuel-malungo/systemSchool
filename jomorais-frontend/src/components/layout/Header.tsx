@@ -37,19 +37,8 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-72 right-0 h-16 bg-white border-b border-gray-200 shadow-sm z-40">
-      <div className="h-full px-6 flex items-center justify-between gap-6">
-        {/* Barra de Pesquisa */}
-        <div className="flex-1 max-w-2xl">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Pesquisar no sistema (alunos, turmas, notas...)"
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-[#007C00]/20 focus:border-[#007C00] transition-all"
-            />
-          </div>
-        </div>
-
+      <div className="h-full px-6 flex items-center justify-end gap-6">
+        
         {/* Ações do Header */}
         <div className="flex items-center gap-2">
           {/* Notificações */}

@@ -125,20 +125,20 @@ const NotasCredito: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-blue-50 via-white to-blue-50/50 rounded-xl p-6 border border-blue-100">
+        <div className="bg-linear-to-br from-blue-50 via-white to-blue-50/50 rounded-xl p-6 border border-blue-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-blue-600">Total de Notas</p>
               <p className="text-2xl font-bold text-blue-900">{totalItems}</p>
               <p className="text-xs text-blue-500 mt-1">Notas de crédito emitidas</p>
             </div>
-            <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg">
+            <div className="p-3 bg-linear-to-br from-blue-600 to-blue-700 rounded-lg">
               <FileText className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 via-white to-red-50/50 rounded-xl p-6 border border-red-100">
+        <div className="bg-linear-to-br from-red-50 via-white to-red-50/50 rounded-xl p-6 border border-red-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-red-600">Valor Total Anulado</p>
@@ -147,13 +147,13 @@ const NotasCredito: React.FC = () => {
               </p>
               <p className="text-xs text-red-500 mt-1">Valor total revertido</p>
             </div>
-            <div className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-lg">
+            <div className="p-3 bg-linear-to-br from-red-500 to-red-600 rounded-lg">
               <DollarSign className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 via-white to-purple-50/50 rounded-xl p-6 border border-purple-100">
+        <div className="bg-linear-to-br from-purple-50 via-white to-purple-50/50 rounded-xl p-6 border border-purple-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-purple-600">Notas Este Mês</p>
@@ -167,13 +167,13 @@ const NotasCredito: React.FC = () => {
               </p>
               <p className="text-xs text-purple-500 mt-1">Emitidas este mês</p>
             </div>
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+            <div className="p-3 bg-linear-to-br from-purple-500 to-purple-600 rounded-lg">
               <Calendar className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 via-white to-green-50/50 rounded-xl p-6 border border-green-100">
+        <div className="bg-linear-to-br from-green-50 via-white to-green-50/50 rounded-xl p-6 border border-green-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-green-600">Alunos Afetados</p>
@@ -182,7 +182,7 @@ const NotasCredito: React.FC = () => {
               </p>
               <p className="text-xs text-green-500 mt-1">Alunos únicos</p>
             </div>
-            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+            <div className="p-3 bg-linear-to-br from-green-500 to-green-600 rounded-lg">
               <User className="w-6 h-6 text-white" />
             </div>
           </div>
