@@ -273,10 +273,19 @@ export class CertificatePdfGenerator {
     y += 10
 
     // ── CORPO DO TEXTO ──
+    const toTitleCase = (str: string) => {
+      if (!str || str === 'N/A') return 'N/A';
+      const lowercaseWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
+      return str.toLowerCase().split(' ').map((word, index) => {
+        if (index !== 0 && lowercaseWords.includes(word)) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }).join(' ');
+    };
+
     const aluno = data.tb_alunos
-    const nomeAluno = (aluno.nome || 'N/A')
-    const pai = (aluno.pai || 'N/A')
-    const mae = (aluno.mae || 'N/A')
+    const nomeAluno = toTitleCase(aluno.nome)
+    const pai = toTitleCase(aluno.pai)
+    const mae = toTitleCase(aluno.mae)
     
     const dataNascExtenso = this.formatDateLong(aluno.dataNascimento) 
     const biNum = aluno.n_documento_identificacao || 'N/A'

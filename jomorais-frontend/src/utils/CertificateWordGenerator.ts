@@ -126,10 +126,19 @@ export class CertificateWordGenerator {
       private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
     const logoBuffer = await this.loadLogo()
 
+    const toTitleCase = (str: string) => {
+      if (!str || str === 'N/A') return 'N/A';
+      const lowercaseWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
+      return str.toLowerCase().split(' ').map((word, index) => {
+        if (index !== 0 && lowercaseWords.includes(word)) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }).join(' ');
+    };
+
     const aluno = data.tb_alunos
-    const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
-    const pai = (aluno.pai || 'N/A').toUpperCase()
-    const mae = (aluno.mae || 'N/A').toUpperCase()
+    const nomeAluno = toTitleCase(aluno.nome)
+    const pai = toTitleCase(aluno.pai)
+    const mae = toTitleCase(aluno.mae)
     const biNum = aluno.n_documento_identificacao || 'N/A'
     const naturalidade = aluno.naturalidade || aluno.tb_comunas?.designacao || 'Cabinda'
     const municipio = aluno.tb_comunas?.tb_municipios?.designacao || 'Cabinda'
