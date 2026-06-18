@@ -20,6 +20,7 @@ import type { Student } from '../../../types/student.types'
 import { useDocumentTypes } from '../../../hooks/useDocument'
 import { useProfessions } from '../../../hooks/useProfession'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
 import {
@@ -83,6 +84,8 @@ const tabs = [
 ]
 
 export default function AddStudent() {
+  usePageTitle('Adicionar Aluno')
+
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'personal' | 'document' | 'guardian'>('personal')
 

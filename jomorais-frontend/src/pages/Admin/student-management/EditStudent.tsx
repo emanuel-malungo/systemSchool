@@ -22,6 +22,7 @@ import type { Student } from '../../../types/student.types'
 import { useDocumentTypes } from '../../../hooks/useDocument'
 import { useProfessions } from '../../../hooks/useProfession'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
 import {
@@ -84,6 +85,8 @@ const tabs = [
 ]
 
 export default function EditStudent() {
+  usePageTitle('Editar Aluno')
+
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const studentId = id ? parseInt(id) : 0

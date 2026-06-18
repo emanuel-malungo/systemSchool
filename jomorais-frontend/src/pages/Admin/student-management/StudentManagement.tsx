@@ -7,8 +7,11 @@ import StudentViewModal from '../../../components/student-management/StudentView
 import DeleteConfirmModal from '../../../components/student-management/DeleteConfirmModal'
 import type { Student } from '../../../types/student.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function StudentManagement() {
+  usePageTitle('Gestão de Alunos')
+
   const navigate = useNavigate()
   
   // Estados
