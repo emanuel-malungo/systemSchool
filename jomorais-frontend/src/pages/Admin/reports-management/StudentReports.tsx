@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FileText, BarChart3, Filter } from 'lucide-react'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import {
   StudentReportFiltersModal, 
   StudentsPreviewTable, 
@@ -20,6 +21,8 @@ import type { ReportFilters as IReportFilters } from '../../../types/reports.typ
 // Usar o tipo importado em vez de interface local
 
 export default function StudentReports() {
+  usePageTitle('Relatórios de Alunos')
+
   const [filters, setFilters] = useState<IReportFilters>({
     anoAcademico: undefined,
     classe: undefined,

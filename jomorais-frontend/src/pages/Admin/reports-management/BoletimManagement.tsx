@@ -2,6 +2,7 @@ import { useState } from 'react'
 import api from '../../../utils/api.utils'
 import { useTurmas } from '../../../hooks/useTurma'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { BoletimWordGenerator } from '../../../utils/BoletimWordGenerator'
 import type { IBoletimTurmaData } from '../../../utils/BoletimPdfGenerator'
@@ -16,6 +17,8 @@ const TRIMESTRES = [
 ]
 
 export default function BoletimManagement() {
+  usePageTitle('Boletim de Notas')
+
   const [selectedTurma, setSelectedTurma] = useState('')
   const [selectedTrimestre, setSelectedTrimestre] = useState('')
   const [selectedAnoLetivo, setSelectedAnoLetivo] = useState('')

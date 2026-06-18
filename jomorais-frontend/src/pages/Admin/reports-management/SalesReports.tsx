@@ -11,6 +11,7 @@ import {
   BarChart3,
 } from 'lucide-react';
 import Container from '../../../components/layout/Container';
+import { usePageTitle } from '../../../hooks/usePageTitle';
 import { 
   useRelatorioVendasGeral, 
   useRelatorioVendasDetalhado,
@@ -24,6 +25,8 @@ import autoTable from 'jspdf-autotable';
 import { toast } from 'react-toastify';
 
 export default function SalesReports() {
+  usePageTitle('Relatório de Vendas');
+
   // Estados
   const [periodo, setPeriodo] = useState<PeriodoRelatorio>('diario');
   const [dataInicio, setDataInicio] = useState<string>(format(new Date(), 'yyyy-MM-dd'));

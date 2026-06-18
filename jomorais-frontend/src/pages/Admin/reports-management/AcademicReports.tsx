@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BookOpen, TrendingUp, Search, Filter } from 'lucide-react'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import { 
   AcademicStudentsTable, 
   AcademicReportGenerationModal,
@@ -18,6 +19,8 @@ import { commonPeriods } from '../../../mocks/periods.mock'
 import type { AcademicReportFilters as IAcademicReportFilters, StudentAcademicData } from '../../../types/academic-reports.types'
 
 export default function AcademicReports() {
+  usePageTitle('Gestão de Matrículas e Ocupação')
+
   const [filters, setFilters] = useState<IAcademicReportFilters>({
     anoAcademico: undefined,
     classe: undefined,
