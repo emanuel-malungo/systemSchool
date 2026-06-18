@@ -220,7 +220,7 @@ export class CertificatePdfGenerator {
   /**
    * LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
    */
-      private static generate9thClassPDF(data: ICertificatePdfData): void {
+        private static generate9thClassPDF(data: ICertificatePdfData): void {
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -229,8 +229,8 @@ export class CertificatePdfGenerator {
 
     const pageWidth = doc.internal.pageSize.width
     const pageHeight = doc.internal.pageSize.height
-    const marginL = 25
-    const marginR = 20
+    const marginL = 15
+    const marginR = 15
     const maxWidth = pageWidth - marginL - marginR
     let y = 15
 
@@ -256,19 +256,14 @@ export class CertificatePdfGenerator {
     doc.text('Ministério da Educação', pageWidth / 2, y, { align: 'center' })
     y += 6
     
-    // ENSINO GERAL bold, dynamic certificate number
+    // Centered "ENSINO GERAL" and right-aligned Certificate Number
     doc.setFont('Helvetica', 'bold')
-    const w1 = doc.getTextWidth('ENSINO GERAL')
-    doc.setFont('Helvetica', 'normal')
-    const certNumStr = `  Nº ${data.NumeroCertificado || '007 /2025'}`
-    const w2 = doc.getTextWidth(certNumStr)
-    const totalW = w1 + w2
-    const startX = (pageWidth - totalW) / 2
+    doc.setFontSize(16)
+    doc.text('ENSINO GERAL', pageWidth / 2, y, { align: 'center' })
     
-    doc.setFont('Helvetica', 'bold')
-    doc.text('ENSINO GERAL', startX, y)
-    doc.setFont('Helvetica', 'normal')
-    doc.text(certNumStr, startX + w1, y)
+    doc.setFont('times', 'italic')
+    doc.setFontSize(14)
+    doc.text(`Nº ${data.NumeroCertificado || '007 /2025'}`, pageWidth - marginR, y, { align: 'right' })
     y += 14
 
     // Título Principal
@@ -341,7 +336,7 @@ export class CertificatePdfGenerator {
       { key: 'E.M.C', display: 'E.M.C' },
       { key: 'E.V.P', display: 'E.V.P' },
       { key: 'Língua Inglesa', display: 'INGLÊS' },
-      { key: 'Língua Francesa', display: 'FRANCÊS' },
+      { key: 'Língua Francesa', display: 'FRANÇÊS' },
       { key: 'Educação Laboral', display: 'ED. LABORAL' },
       { key: 'Empreendedorismo', display: 'EMPREENDED.' },
       { key: 'Educação Física', display: 'ED. FÍSICA' }
@@ -381,9 +376,9 @@ export class CertificatePdfGenerator {
 
       return [
         subItem.display.toUpperCase(),
-        g7 === '-' ? '-----------' : `${g7} (${this.numberToWords(g7)})`,
-        g8 === '-' ? '-----------' : `${g8} (${this.numberToWords(g8)})`,
-        g9 === '-' ? '-----------' : `${g9} (${this.numberToWords(g9)})`,
+        g7 === '-' ? '-----------------' : `${g7} (${this.numberToWords(g7)})`,
+        g8 === '-' ? '-----------------' : `${g8} (${this.numberToWords(g8)})`,
+        g9 === '-' ? '-----------------' : `${g9} (${this.numberToWords(g9)})`,
         mediaDisc === '-' ? '-' : mediaDisc,
         mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc)
       ]
@@ -394,9 +389,9 @@ export class CertificatePdfGenerator {
       startY: y,
       head: [[
         'DISCIPLINAS',
-        `7ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 08  Turma - Única\nAno letivo: ${year7}`,
-        `8ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - Única\nAno letivo: ${year8}`,
-        `9ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - ${currentTurma}\nAno letivo: ${year9}`,
+        `7ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 08  Turma - Única\nAno letivo: sub${year7}`,
+        `8ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - Única\nAno letivo: sub${year8}`,
+        `9ª CLASSE\nEscola: C.E.P JOMORAIS\nNº 02  Turma - ${currentTurma}\nAno letivo: sub${year9}`,
         'Média Final',
         'Média por Extenso'
       ]],
@@ -405,6 +400,21 @@ export class CertificatePdfGenerator {
       styles: { fontSize: 7, cellPadding: 1, halign: 'center', valign: 'middle' },
       columnStyles: { 0: { halign: 'left', cellWidth: 35 }, 5: { halign: 'left' } },
       headStyles: { fillColor: [230, 230, 230], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 7.5 },
+      didParseCell: (dataCell: any) => {
+        // Apply column-specific fonts
+        if (dataCell.section === 'body') {
+          if (dataCell.column.index === 0) {
+            dataCell.cell.styles.font = 'helvetica'
+            dataCell.cell.styles.fontSize = 11
+          } else {
+            dataCell.cell.styles.font = 'times'
+            dataCell.cell.styles.fontSize = 12
+            if (dataCell.column.index === 4) {
+              dataCell.cell.styles.fontStyle = 'bold'
+            }
+          }
+        }
+      },
       didDrawPage: (data: any) => {
         finalTableY = data.cursor.y
       }
@@ -439,8 +449,7 @@ export class CertificatePdfGenerator {
     const totalDateW = placeW + dateW
     const startDateX = (pageWidth - totalDateW) / 2
     doc.text(placeText, startDateX, y)
-    doc.setFont('Helvetica', 'bold')
-    doc.text(dateText, startDateX + placeW, y)
+    doc.text(dateText, startDateX + placeW, y) // normal weight, not bold
     y += 18
 
     // ── ASSINATURAS ──
@@ -448,7 +457,7 @@ export class CertificatePdfGenerator {
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(10.5)
     doc.text('Conferido por', marginL + 15, y)
-    doc.text('O(A) Director(a)', marginL + sigW + 20, y)
+    doc.text('O (A) Director (a)', marginL + sigW + 20, y) // adjusted spelling to match O (A) Director (a)
     y += 14
 
     doc.setLineWidth(0.3)
@@ -456,7 +465,7 @@ export class CertificatePdfGenerator {
     doc.line(marginL + sigW + 10, y, marginL + sigW + 70, y)
     y += 4
 
-    doc.setFont('Helvetica', 'bold')
+    doc.setFont('Helvetica', 'normal') // normal weight, not bold
     doc.setFontSize(9.5)
     doc.text(nomeDirectora, marginL + sigW + 40, y, { align: 'center' })
 
@@ -465,9 +474,9 @@ export class CertificatePdfGenerator {
     doc.setFont('Helvetica', 'normal')
     doc.setFontSize(7.5)
     doc.setTextColor(100, 100, 100)
-    doc.text(`Autenticidade verificável em: ${host}/verificar/${data.NumeroCertificado} (Certificado: ${data.NumeroCertificado})`, pageWidth / 2, pageHeight - 6, { align: 'center' })
+    doc.text(`Autenticidade verificável em: sub${host}/verificar/sub${data.NumeroCertificado} (Certificado: sub${data.NumeroCertificado})`, pageWidth / 2, pageHeight - 6, { align: 'center' })
 
-    doc.save(`Certificado_9Classe_${nomeAluno.replace(/\s+/g, '_')}.pdf`)
+    doc.save(`Certificado_9Classe_sub${nomeAluno.replace(/\s+/g, '_')}.pdf`)
   }
 
   /**

@@ -122,7 +122,7 @@ export class CertificateWordGenerator {
   // LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
   // ══════════════════════════════════════════════════════════════════
 
-    private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
+      private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
     const logoBuffer = await this.loadLogo()
 
     const aluno = data.tb_alunos
@@ -178,9 +178,16 @@ export class CertificateWordGenerator {
     })
 
     const headerP3 = new Paragraph({
-      alignment: AlignmentType.CENTER,
+      alignment: AlignmentType.LEFT,
+      tabStops: [
+        { type: TabStopType.CENTER, position: 5100 },
+        { type: TabStopType.RIGHT, position: 10200 },
+      ],
       spacing: { after: 200 },
       children: [
+        new TextRun({
+          text: '	',
+        }),
         new TextRun({
           text: 'ENSINO GERAL',
           font: 'Arial Narrow',
@@ -188,9 +195,12 @@ export class CertificateWordGenerator {
           bold: true,
         }),
         new TextRun({
-          text: `               Nº ${data.NumeroCertificado || '007 /2025'}`,
-          font: 'Arial Narrow',
-          size: 32, // 16pt
+          text: '	',
+        }),
+        new TextRun({
+          text: `Nº ${data.NumeroCertificado || '007 /2025'}`,
+          font: 'Times New Roman',
+          size: 28, // 14pt
           italics: true,
         }),
       ],
@@ -316,7 +326,7 @@ export class CertificateWordGenerator {
       { key: 'E.M.C', display: 'E.M.C' },
       { key: 'E.V.P', display: 'E.V.P' },
       { key: 'Língua Inglesa', display: 'INGLÊS' },
-      { key: 'Língua Francesa', display: 'FRANCÊS' },
+      { key: 'Língua Francesa', display: 'FRANÇÊS' },
       { key: 'Educação Laboral', display: 'ED. LABORAL' },
       { key: 'Empreendedorismo', display: 'EMPREENDED.' },
       { key: 'Educação Física', display: 'ED. FÍSICA' }
@@ -355,7 +365,7 @@ export class CertificateWordGenerator {
         new TableCell({
           width: { size: 28, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font: 'Arial Narrow', size: 14, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'DISCIPLINAS', font: 'Arial', size: 22, bold: true })] })],
         }),
         new TableCell({
           width: { size: 16, type: WidthType.PERCENTAGE },
@@ -450,12 +460,12 @@ export class CertificateWordGenerator {
         new TableCell({
           width: { size: 10, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font: 'Arial Narrow', size: 14, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média Final', font: 'Arial', size: 16, bold: true })] })],
         }),
         new TableCell({
           width: { size: 14, type: WidthType.PERCENTAGE },
           ...headerCellStyle,
-          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font: 'Arial Narrow', size: 14, bold: true })] })],
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Média por Extenso', font: 'Arial', size: 16, bold: true })] })],
         }),
       ],
     })
@@ -477,35 +487,35 @@ export class CertificateWordGenerator {
         margins: { top: 20, bottom: 20, left: 40, right: 40 },
       }
 
-      const g7Text = g7 === '-' ? '-----------' : `${g7} (${this.numberToWords(g7)})`
-      const g8Text = g8 === '-' ? '-----------' : `${g8} (${this.numberToWords(g8)})`
-      const g9Text = g9 === '-' ? '-----------' : `${g9} (${this.numberToWords(g9)})`
+      const g7Text = g7 === '-' ? '-----------------' : `${g7} (${this.numberToWords(g7)})`
+      const g8Text = g8 === '-' ? '-----------------' : `${g8} (${this.numberToWords(g8)})`
+      const g9Text = g9 === '-' ? '-----------------' : `${g9} (${this.numberToWords(g9)})`
 
       return new TableRow({
         children: [
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ children: [new TextRun({ text: subItem.display, font: 'Arial Narrow', size: 20 })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: subItem.display, font: 'Arial', size: 22 })] })], // Arial 11
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g7Text, font: 'Arial Narrow', size: 20 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g7Text, font: 'Times New Roman', size: 24 })] })], // Times 12
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g8Text, font: 'Arial Narrow', size: 20 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g8Text, font: 'Times New Roman', size: 24 })] })], // Times 12
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g9Text, font: 'Arial Narrow', size: 20 })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: g9Text, font: 'Times New Roman', size: 24 })] })], // Times 12
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: mediaDisc === '-' ? '-' : String(mediaDisc), font: 'Arial Narrow', size: 20, bold: true })] })],
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: mediaDisc === '-' ? '-' : String(mediaDisc), font: 'Times New Roman', size: 24, bold: true })] })], // Times 12 Bold
           }),
           new TableCell({
             ...cellStyle,
-            children: [new Paragraph({ children: [new TextRun({ text: mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc), font: 'Arial Narrow', size: 20 })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: mediaDisc === '-' ? '-' : this.numberToWords(mediaDisc), font: 'Times New Roman', size: 24 })] })], // Times 12
           }),
         ],
       })
@@ -537,7 +547,7 @@ export class CertificateWordGenerator {
       spacing: { before: 200, after: 300 },
       children: [
         new TextRun({ text: 'Complexo Escolar Anexo Ao Magistério em Cabinda, aos ', font: 'Arial Narrow', size: 24 }),
-        new TextRun({ text: dataDoc, font: 'Arial Narrow', size: 24, bold: true }),
+        new TextRun({ text: dataDoc, font: 'Arial Narrow', size: 24 }),
         new TextRun({ text: '.', font: 'Arial Narrow', size: 24 }),
       ],
     })
@@ -573,7 +583,7 @@ export class CertificateWordGenerator {
               width: { size: 50, type: WidthType.PERCENTAGE },
               borders: this.noBorders(),
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O(A) Director(a)', font: 'Arial Narrow', size: 24 })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'O (A) Director (a)', font: 'Arial Narrow', size: 24 })] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({ children: [] }),
                 new Paragraph({
@@ -582,7 +592,7 @@ export class CertificateWordGenerator {
                 }),
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: nomeDirectora, font: 'Arial Narrow', size: 24, bold: true })],
+                  children: [new TextRun({ text: nomeDirectora, font: 'Arial Narrow', size: 24 })],
                 }),
               ],
             }),
@@ -613,15 +623,15 @@ export class CertificateWordGenerator {
         {
           properties: {
             page: {
-              margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 },
+              margin: { top: 850, right: 850, bottom: 850, left: 850 }, // Margins 15mm (850 dxa)
               borders: {
                 pageBorders: {
                   offsetFrom: 'text',
                 },
-                pageBorderTop: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
-                pageBorderBottom: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
-                pageBorderLeft: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
-                pageBorderRight: { style: BorderStyle.SINGLE, size: 6, color: '000000', space: 16 },
+                pageBorderTop: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 }, // Thick border
+                pageBorderBottom: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
+                pageBorderLeft: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
+                pageBorderRight: { style: BorderStyle.SINGLE, size: 18, color: '000000', space: 16 },
               },
             },
           },
