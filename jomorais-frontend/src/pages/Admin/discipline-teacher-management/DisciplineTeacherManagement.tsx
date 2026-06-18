@@ -9,8 +9,11 @@ import DeleteConfirmModal from '../../../components/discipline-teacher-managemen
 import FilterModal from '../../../components/discipline-teacher-management/FilterModal'
 import Container from '../../../components/layout/Container'
 import { Filter } from 'lucide-react'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function DisciplineTeacherManagement() {
+  usePageTitle('Atribuições de Professores')
+
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')

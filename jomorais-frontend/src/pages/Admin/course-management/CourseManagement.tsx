@@ -6,8 +6,11 @@ import CourseFormModal from '../../../components/course-management/CourseFormMod
 import DeleteConfirmModal from '../../../components/course-management/DeleteConfirmModal'
 import type { ICourse, ICourseInput } from '../../../types/course.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function CourseManagement() {
+  usePageTitle('Gerenciamento de Cursos')
+
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')

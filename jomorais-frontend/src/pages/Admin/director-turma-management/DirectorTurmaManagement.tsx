@@ -6,8 +6,11 @@ import DirectorTurmaTable from '../../../components/director-turma-management/Di
 import DirectorTurmaFormModal from '../../../components/director-turma-management/DirectorTurmaFormModal'
 import DeleteConfirmModal from '../../../components/director-turma-management/DeleteConfirmModal'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function DirectorTurmaManagement() {
+  usePageTitle('Diretores de Turma')
+
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   

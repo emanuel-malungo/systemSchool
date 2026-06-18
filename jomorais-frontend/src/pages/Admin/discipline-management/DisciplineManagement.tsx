@@ -6,8 +6,11 @@ import DisciplineFormModal from '../../../components/discipline-management/Disci
 import DeleteConfirmModal from '../../../components/discipline-management/DeleteConfirmModal'
 import type { IDiscipline, IDisciplineInput } from '../../../types/discipline.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function DisciplineManagement() {
+  usePageTitle('Gerenciamento de Disciplinas')
+
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
