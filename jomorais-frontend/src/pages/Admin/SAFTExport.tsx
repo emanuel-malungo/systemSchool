@@ -21,6 +21,7 @@ import type { ISAFTExportConfig, ISAFTExportResponse } from '../../types/saft.ty
 import { toast } from 'react-toastify'
 import SAFTService from '../../services/saft.service'
 import CryptoService from '../../services/crypto.service'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import '../../assets/styles/saft.css'
 
 // Componente de Loading para estatísticas
@@ -177,6 +178,7 @@ const ConfirmExportModal = ({
 }
 
 export default function SAFTExport() {
+  usePageTitle('Exportação SAFT-AO')
   // Estado do formulário
   const [formData, setFormData] = useState<Partial<ISAFTExportConfig>>({
     startDate: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],

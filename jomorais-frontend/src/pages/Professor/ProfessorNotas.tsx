@@ -3,8 +3,10 @@ import { Filter, Loader2, RefreshCw, BarChart3 } from 'lucide-react'
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IAtribuicaoTurma, type INotaAlunoResponse } from '../../services/professor.service'
 import { toast } from 'react-toastify'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 export default function ProfessorNotas() {
+  usePageTitle('Histórico de Notas Lançadas')
   const [loading, setLoading] = useState(true)
   const [grades, setGrades] = useState<INotaAlunoResponse[]>([])
   const [atribuicoes, setAtribuicoes] = useState<IAtribuicaoTurma[]>([])

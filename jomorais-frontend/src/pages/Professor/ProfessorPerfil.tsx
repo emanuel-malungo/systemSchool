@@ -3,8 +3,10 @@ import { User, Mail, Phone, Award, Shield, Key, Loader2, UserCheck } from 'lucid
 import Container from '../../components/layout/Container'
 import { ProfessorService, type IProfessorPerfil } from '../../services/professor.service'
 import { toast } from 'react-toastify'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 export default function ProfessorPerfil() {
+  usePageTitle('Perfil do Docente')
   const [profile, setProfile] = useState<IProfessorPerfil | null>(null)
   const [loading, setLoading] = useState(true)
   const [savingPassword, setSavingPassword] = useState(false)

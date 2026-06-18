@@ -10,8 +10,10 @@ import Container from '../../../components/layout/Container'
 import { TransferPdfGenerator } from '../../../utils/TransferPdfGenerator'
 import transferService from '../../../services/transfer.service'
 import { toast } from 'react-toastify'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function TransferManagement() {
+  usePageTitle('Gerenciamento de Transferências')
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)

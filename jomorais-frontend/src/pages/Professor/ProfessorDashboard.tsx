@@ -5,6 +5,7 @@ import { ProfessorService, type IAtribuicaoDisciplina, type IAtribuicaoTurma } f
 import api from '../../utils/api.utils'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 interface IPeriodoLancamento {
   codigo: number;
@@ -22,6 +23,7 @@ interface IPeriodoLancamento {
 }
 
 export default function ProfessorDashboard() {
+  usePageTitle('Painel do Docente')
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<any>(null)
   const [atribuicoes, setAtribuicoes] = useState<{ disciplinas: IAtribuicaoDisciplina[]; turmas: IAtribuicaoTurma[] }>({

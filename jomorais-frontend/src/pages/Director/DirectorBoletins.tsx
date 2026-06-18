@@ -4,8 +4,10 @@ import Container from '../../components/layout/Container'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
 import { BoletimWordGenerator } from '../../utils/BoletimWordGenerator'
 import { toast } from 'react-toastify'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 export default function DirectorBoletins() {
+  usePageTitle('Emissão de Boletins')
   const [loading, setLoading] = useState(false)
   const [turmasDirigidas, setTurmasDirigidas] = useState<IDirectorTurma[]>([])
   

@@ -6,8 +6,10 @@ import RoomTable from '../../../components/room-management/RoomTable'
 import RoomFormModal from '../../../components/room-management/RoomFormModal'
 import DeleteConfirmModal from '../../../components/room-management/DeleteConfirmModal'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function RoomManagement() {
+  usePageTitle('Gerenciamento de Salas')
   // Estados de paginação e busca
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')

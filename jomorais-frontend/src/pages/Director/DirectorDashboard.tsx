@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { BookOpen, Users, FileText, CheckCircle } from 'lucide-react';
 import { DirectorService } from '../../services/director.service';
 import Container from '../../components/layout/Container';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export default function DirectorDashboard() {
+  usePageTitle('Painel do Diretor de Turma');
   const [stats, setStats] = useState({ turmas: 0, disciplinas: 0 });
   const [perfil, setPerfil] = useState<any>(null);
 

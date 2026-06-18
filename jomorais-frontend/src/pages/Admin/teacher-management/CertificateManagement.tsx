@@ -11,6 +11,7 @@ import {
   Download,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import {
   useCertificates,
   useCreateCertificate,
@@ -26,6 +27,7 @@ import { CertificateWordGenerator } from '../../../utils/CertificateWordGenerato
 import certificateService from '../../../services/certificate.service'
 
 export default function CertificateManagement() {
+  usePageTitle('Gestão de Certificados')
   const { user } = useAuth()
 
   // Estados

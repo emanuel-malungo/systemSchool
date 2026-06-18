@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Container from '../../components/layout/Container'
 import { Loader2, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { DirectorService, type IDirectorTurma } from '../../services/director.service'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 interface IPeriodoLancamento {
   codigo: number;
@@ -21,6 +22,7 @@ interface IPeriodoLancamento {
 }
 
 export default function DirectorLancamento() {
+  usePageTitle('Lançamento de Notas - Diretor')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   

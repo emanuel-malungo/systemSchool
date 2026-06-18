@@ -14,6 +14,7 @@ import {
   Filter,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 import {
   usePauta,
   useExportPautaExcel,
@@ -32,6 +33,7 @@ interface FilterState {
 }
 
 export default function PautaManagement() {
+  usePageTitle('Gestão de Pautas')
   // Estados de filtro
   const [filters, setFilters] = useState<FilterState>({
     codigoTurma: '',

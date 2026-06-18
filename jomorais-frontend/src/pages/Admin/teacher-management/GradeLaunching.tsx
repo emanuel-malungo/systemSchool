@@ -18,6 +18,7 @@ import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useDisciplinasByCurso } from '../../../hooks/useDisciplina'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 interface GradeEntry {
   MAC?: number
@@ -27,6 +28,7 @@ interface GradeEntry {
 }
 
 export default function GradeLaunching() {
+  usePageTitle('Lançamento de Notas')
   const { user } = useAuth()
   const { userType } = usePermissions()
   

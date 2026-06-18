@@ -16,6 +16,7 @@ import { useConsolidatedDisciplineStatistics } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import type { ITurma } from '../../../types/turma.types'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 interface FilterState {
   codigoTurma: string
@@ -24,6 +25,7 @@ interface FilterState {
 }
 
 export default function NotesByDiscipline() {
+  usePageTitle('Notas por Disciplina')
   // Estados de filtro
   const [filters, setFilters] = useState<FilterState>({
     codigoTurma: '',

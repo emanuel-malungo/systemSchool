@@ -14,6 +14,7 @@ import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
 import { useDisciplinasByCurso } from '../../../hooks/useDisciplina'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useGrades, useUpdateGrade, useImportGradesBulk } from '../../../hooks/useGrade'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 interface ExamGradeEntry {
   pap?: number
@@ -21,6 +22,7 @@ interface ExamGradeEntry {
 }
 
 export default function FinalExamsLaunching() {
+  usePageTitle('Lançamento de Exames e PAP')
   const { user } = useAuth()
   const { userType } = usePermissions()
   

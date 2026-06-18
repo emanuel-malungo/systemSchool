@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import Container from '../../components/layout/Container'
 import { useDashboardManager } from '../../hooks/useDashboard'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import StatCard from '../../components/common/StatCard'
 import ChartCard from '../../components/common/ChartCard'
 import ActivityFeed from '../../components/common/ActivityFeed'
@@ -76,6 +77,7 @@ const ErrorState = memo(({ onRetry }: { onRetry: () => void }) => (
 ErrorState.displayName = 'ErrorState'
 
 export default function Dashboard() {
+  usePageTitle('Dashboard')
   const {
     data,
     stats,

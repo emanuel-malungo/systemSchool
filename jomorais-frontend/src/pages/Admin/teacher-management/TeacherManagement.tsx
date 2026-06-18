@@ -7,8 +7,10 @@ import TeacherFormModal from '../../../components/teacher-management/TeacherForm
 import DeleteConfirmModal from '../../../components/teacher-management/DeleteConfirmModal'
 import Container from '../../../components/layout/Container'
 import CredentialsModal from '../../../components/teacher-management/CredentialsModal'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function TeacherManagement() {
+  usePageTitle('Gerenciamento de Professores')
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')

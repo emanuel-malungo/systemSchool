@@ -4,6 +4,7 @@ import Container from '../../components/layout/Container'
 import { ProfessorService, type IAtribuicaoTurma, type IProfessorAluno } from '../../services/professor.service'
 import api from '../../utils/api.utils'
 import { toast } from 'react-toastify'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 interface IPeriodoLancamento {
   codigo: number;
@@ -21,6 +22,7 @@ interface IPeriodoLancamento {
 }
 
 export default function ProfessorLancamento() {
+  usePageTitle('Lançamento de Notas')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   

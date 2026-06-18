@@ -9,8 +9,10 @@ import StudentReportModal from '../../../components/turma-management/StudentRepo
 import DebtorsReportModal from '../../../components/turma-management/DebtorsReportModal'
 import type { ITurma, ITurmaInput } from '../../../types/turma.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function TurmaManagement() {
+  usePageTitle('Gerenciamento de Turmas')
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
