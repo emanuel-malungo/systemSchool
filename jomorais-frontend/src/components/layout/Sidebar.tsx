@@ -358,7 +358,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside ref={sidebarRef} className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-50 flex flex-col">
+    <aside ref={sidebarRef} className="fixed left-0 top-0 h-screen w-72 bg-white border-r border-gray-200 z-50 flex flex-col">
       {/* Logo/Branding - Fixo no topo */}
       <div className="p-6 h-16 flex items-center shrink-0">
         <div className="flex items-center gap-3 select-none">

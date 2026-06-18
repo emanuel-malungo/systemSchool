@@ -36,7 +36,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 shadow-sm z-40">
+    <header className="fixed top-0 left-72 right-0 h-16 bg-white border-b border-gray-200 shadow-sm z-40">
       <div className="h-full px-6 flex items-center justify-between gap-6">
         {/* Barra de Pesquisa */}
         <div className="flex-1 max-w-2xl">
