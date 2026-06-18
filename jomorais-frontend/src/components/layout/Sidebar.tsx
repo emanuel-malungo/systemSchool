@@ -413,7 +413,7 @@ export default function Sidebar() {
 
         <div className="px-4 pb-4">
           <p className="text-gray-400 text-[10px] text-center uppercase tracking-wider font-semibold">
-            © 2025 Sistema Escolar
+            © 2026 Sistema Escolar
           </p>
         </div>
       </div>
