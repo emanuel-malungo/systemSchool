@@ -345,40 +345,38 @@ export default function PeriodosLancamentoManagement() {
   return (
     <Container>
       {/* Header */}
-      <div className="mb-8 bg-gradient-to-br from-green-50 via-white to-green-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-green-100/30 rounded-full -mr-20 -mt-20 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-28 h-28 bg-green-100/30 rounded-full -ml-14 -mb-14 pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <Calendar className="text-white" size={28} />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">Períodos de Lançamento</h1>
-                <p className="text-gray-500 text-sm">Gerencie os períodos de abertura para lançamento de notas</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={carregar}
-                disabled={loading}
-                className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-[#007C00] transition-all disabled:opacity-40"
-                title="Actualizar lista"
-              >
-                <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-              </button>
-              <button
-                onClick={() => setModalAberto(true)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#007C00] to-[#005a00] text-white rounded-xl hover:from-[#005a00] hover:to-[#004000] transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-semibold text-sm"
-              >
-                <Plus size={18} />
-                Novo Período
-              </button>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+            <Calendar className="h-6 w-6 text-[#007C00]" />
           </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Períodos de Lançamento
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Gerencie os períodos de abertura para lançamento de notas
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button
+            onClick={carregar}
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm disabled:opacity-50"
+            title="Actualizar lista"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Atualizar</span>
+          </button>
+          <button
+            onClick={() => setModalAberto(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+          >
+            <Plus className="h-4 w-4" />
+            Novo Período
+          </button>
         </div>
       </div>
 

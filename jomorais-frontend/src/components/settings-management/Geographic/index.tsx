@@ -177,20 +177,28 @@ export default function GeographicManagement() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-blue-600" />
-            Gestão Geográfica
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Gerencie províncias, municípios e comunas
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+            <MapPin className="h-6 w-6 text-[#007C00]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Gestão Geográfica
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Gerencie províncias, municípios e comunas
+            </p>
+          </div>
         </div>
-        <Button onClick={() => openModal('create', 'provincia')}>
-          <Plus className="h-4 w-4 mr-2" />
+        
+        <button
+          onClick={() => openModal('create', 'provincia')}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+        >
+          <Plus className="h-4 w-4" />
           Nova Província
-        </Button>
+        </button>
       </div>
 
       {/* Lista de Províncias */}
