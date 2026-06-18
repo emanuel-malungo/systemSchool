@@ -242,48 +242,49 @@ export default function SalesReports() {
     <Container>
       <div className="space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-gradient-to-br from-[#182F59] to-[#1a3260] rounded-xl shadow-md">
-                  <BarChart3 className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Relatório de Vendas</h1>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-green-600 font-medium">Atualizado em tempo real</span>
-                  </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+              <BarChart3 className="h-6 w-6 text-[#007C00]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Relatório de Vendas
+                </h1>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">Tempo real</span>
                 </div>
               </div>
-              <p className="text-gray-600 text-base max-w-2xl">
+              <p className="text-sm text-gray-500 mt-0.5">
                 Acompanhe o desempenho de vendas por funcionário e período
               </p>
             </div>
-            
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center justify-center gap-2 px-5 py-3 bg-white text-[#182F59] rounded-xl hover:bg-gray-50 transition-all duration-200 border-2 border-[#182F59] shadow-md hover:shadow-lg group"
-              >
-                <Filter className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Filtros</span>
-              </button>
-              
-              <button
-                onClick={handleExportarPDF}
-                className="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 group"
-              >
-                <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Exportar PDF</span>
-              </button>
-            </div>
           </div>
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filtros</span>
+            </button>
+            
+            <button
+              onClick={handleExportarPDF}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 font-medium text-sm shadow-sm"
+            >
+              <Download className="h-4 w-4" />
+              <span>Exportar PDF</span>
+            </button>
+          </div>
+        </div>
 
-          {/* Filtros - Sempre visíveis */}
+          {/* Filtros */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
               {/* Botões rápidos de período */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -427,7 +428,6 @@ export default function SalesReports() {
               </div>
             </div>
           )}
-        </div>
 
         {/* Loading State */}
         {isLoading && (
