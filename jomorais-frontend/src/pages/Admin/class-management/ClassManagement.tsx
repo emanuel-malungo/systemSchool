@@ -6,8 +6,11 @@ import ClassFormModal from '../../../components/class-management/ClassFormModal'
 import DeleteConfirmModal from '../../../components/class-management/DeleteConfirmModal'
 import type { IClass, IClassInput } from '../../../types/class.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function ClassManagement() {
+  usePageTitle('Gerenciamento de Classes')
+
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')

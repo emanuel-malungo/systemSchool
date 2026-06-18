@@ -8,8 +8,11 @@ import ConfirmationFormModal from '../../../components/confirmation-management/C
 import DeleteConfirmModal from '../../../components/confirmation-management/DeleteConfirmModal'
 import type { IConfirmation, IConfirmationInput } from '../../../types/confirmation.types'
 import Container from '../../../components/layout/Container'
+import { usePageTitle } from '../../../hooks/usePageTitle'
 
 export default function ConfirmationManagement() {
+  usePageTitle('Gerenciamento de Confirmações')
+
   const { isAdmin } = usePermissions()
   // Estados
   const [currentPage, setCurrentPage] = useState(1)
