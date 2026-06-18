@@ -220,7 +220,7 @@ export class CertificatePdfGenerator {
   /**
    * LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
    */
-        private static generate9thClassPDF(data: ICertificatePdfData): void {
+          private static generate9thClassPDF(data: ICertificatePdfData): void {
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -469,14 +469,7 @@ export class CertificatePdfGenerator {
     doc.setFontSize(9.5)
     doc.text(nomeDirectora, marginL + sigW + 40, y, { align: 'center' })
 
-    // Verificação pública de autenticidade (Rodapé discreto)
-    const host = window.location.origin
-    doc.setFont('Helvetica', 'normal')
-    doc.setFontSize(7.5)
-    doc.setTextColor(100, 100, 100)
-    doc.text(`Autenticidade verificável em: sub${host}/verificar/sub${data.NumeroCertificado} (Certificado: sub${data.NumeroCertificado})`, pageWidth / 2, pageHeight - 6, { align: 'center' })
-
-    doc.save(`Certificado_9Classe_sub${nomeAluno.replace(/\s+/g, '_')}.pdf`)
+    doc.save(`Certificado_9Classe_${nomeAluno.replace(/\s+/g, '_')}.pdf`)
   }
 
   /**

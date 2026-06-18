@@ -600,23 +600,6 @@ export class CertificateWordGenerator {
         }),
       ],
     })
-
-    // ── Rodapé: verificação ──
-    const host = window.location.origin
-    const footerParagraph = new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 400 },
-      children: [
-        new TextRun({
-          text: `Autenticidade verificável em: ${host}/verificar/${data.NumeroCertificado} (Certificado: ${data.NumeroCertificado})`,
-          font: 'Arial Narrow',
-          size: 15,
-          color: '666666',
-          italics: true,
-        }),
-      ],
-    })
-
     // ── Montar Documento ──
     const doc = new Document({
       sections: [
@@ -648,7 +631,6 @@ export class CertificateWordGenerator {
             pTerms,
             pDate,
             signatureTable,
-            footerParagraph,
           ],
         },
       ],
