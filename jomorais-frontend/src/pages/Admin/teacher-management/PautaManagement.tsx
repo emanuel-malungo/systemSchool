@@ -11,7 +11,7 @@ import {
   CheckCircle,
   XCircle,
   Calendar,
-  BookOpen,
+  Filter,
 } from 'lucide-react'
 import Container from '../../../components/layout/Container'
 import {
@@ -207,47 +207,39 @@ export default function PautaManagement() {
   return (
     <Container>
       {/* Header */}
-      <div className="mb-8 bg-linear-to-br from-purple-50 via-white to-purple-50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="relative p-8">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100/30 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-100/30 rounded-full -ml-12 -mb-12"></div>
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-linear-to-br from-[#007C00] to-[#005a00] rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <FileText className="h-8 w-8 text-white" />
-              </div>
-
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                  Gestão de Pautas
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Gere, visualize e publique as pautas consolidadas por turma e trimestre
-                </p>
-              </div>
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#007C00]/10 rounded-xl flex items-center justify-center shrink-0">
+            <FileText className="h-6 w-6 text-[#007C00]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Gestão de Pautas
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Gere, visualize e publique as pautas consolidadas por turma e trimestre
+            </p>
           </div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-[#007C00]" />
-          Filtros de Pauta
-        </h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className="h-4 w-4 text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">Filtros de pauta</span>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Ano Letivo */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Ano Letivo *
             </label>
             <select
               value={filters.codigoAnoLectivo}
               onChange={e => handleAnoLectivoChange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
               disabled={isLoadingAnosLetivos}
             >
               <option value="">Selecione um ano...</option>
@@ -261,7 +253,7 @@ export default function PautaManagement() {
 
           {/* Turma */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Turma *
             </label>
             <div className="space-y-2">
@@ -270,13 +262,13 @@ export default function PautaManagement() {
                 placeholder="🔍 Pesquisar turma..."
                 value={turmaSearch}
                 onChange={e => setTurmaSearch(e.target.value)}
-                className="w-full px-4 py-1.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] text-sm transition-all"
+                className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
                 disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
               />
               <select
                 value={filters.codigoTurma}
                 onChange={e => handleTurmaChange(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+                className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
                 disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
               >
                 <option value="">Selecione uma turma...</option>
@@ -291,13 +283,13 @@ export default function PautaManagement() {
 
           {/* Trimestre */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Trimestre *
             </label>
             <select
               value={filters.codigoTrimestre}
               onChange={e => setFilters(f => ({ ...f, codigoTrimestre: e.target.value, page: 1 }))}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C00] focus:border-[#007C00] transition-all bg-white"
+              className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
             >
               {trimestres.map(t => (
                 <option key={t.codigo} value={t.codigo}>
@@ -311,7 +303,7 @@ export default function PautaManagement() {
             <button
               onClick={() => setShowGenerateConfirm(true)}
               disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGeneratingPauta}
-              className="w-full py-2.5 bg-[#007C00] text-white rounded-xl hover:bg-[#005a00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center gap-2 shadow-md"
+              className="w-full py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
             >
               {isGeneratingPauta ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
               Gerar Pauta
@@ -323,7 +315,7 @@ export default function PautaManagement() {
       {/* Estatísticas Consolidadas da Pauta */}
       {consolidatedPauta && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Total de Alunos</p>
@@ -333,7 +325,7 @@ export default function PautaManagement() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Aprovados</p>
@@ -343,7 +335,7 @@ export default function PautaManagement() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Reprovados</p>
@@ -353,7 +345,7 @@ export default function PautaManagement() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">Média Geral</p>
@@ -399,7 +391,7 @@ export default function PautaManagement() {
       )}
 
       {/* Grid de Exibição da Pauta Matricial */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {!isContextSelected ? (
           <div className="px-6 py-12 text-center">
             <AlertCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-gray-400" />
