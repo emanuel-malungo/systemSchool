@@ -41,7 +41,6 @@ export default function PautaManagement() {
     limit: 10,
   })
 
-  const [turmaSearch, setTurmaSearch] = useState('')
   const [showGenerateConfirm, setShowGenerateConfirm] = useState(false)
   const [isGeneratingPauta, setIsGeneratingPauta] = useState(false)
 
@@ -52,16 +51,13 @@ export default function PautaManagement() {
   const anosLetivos = anosLetivosData?.data || []
   const turmas = Array.isArray(turmasData) ? turmasData : turmasData?.data || []
 
-  // Filtrar as turmas de acordo com o Ano Letivo selecionado e o termo de busca
+  // Filtrar as turmas de acordo com o Ano Letivo selecionado
   const filteredTurmas = useMemo(() => {
     if (!filters.codigoAnoLectivo) return []
     return turmas.filter((t: ITurma) => {
-      const matchAno = t.codigo_AnoLectivo?.toString() === filters.codigoAnoLectivo
-      if (!matchAno) return false
-      if (turmaSearch.trim() === '') return true
-      return t.designacao.toLowerCase().includes(turmaSearch.toLowerCase())
+      return t.codigo_AnoLectivo?.toString() === filters.codigoAnoLectivo
     })
-  }, [turmas, filters.codigoAnoLectivo, turmaSearch])
+  }, [turmas, filters.codigoAnoLectivo])
 
   // Turma e Ano selecionados
   const selectedTurma = useMemo(() => {
@@ -188,7 +184,6 @@ export default function PautaManagement() {
 
   const handleAnoLectivoChange = (value: string) => {
     setFilters(f => ({ ...f, codigoAnoLectivo: value, codigoTurma: '', page: 1 }))
-    setTurmaSearch('')
   }
 
   const handleTurmaChange = (value: string) => {
@@ -256,29 +251,19 @@ export default function PautaManagement() {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Turma *
             </label>
-            <div className="space-y-2">
-              <input
-                type="text"
-                placeholder="🔍 Pesquisar turma..."
-                value={turmaSearch}
-                onChange={e => setTurmaSearch(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
-                disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
-              />
-              <select
-                value={filters.codigoTurma}
-                onChange={e => handleTurmaChange(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
-                disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
-              >
-                <option value="">Selecione uma turma...</option>
-                {filteredTurmas.map((turma: ITurma) => (
-                  <option key={turma.codigo} value={turma.codigo}>
-                    {turma.designacao}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={filters.codigoTurma}
+              onChange={e => handleTurmaChange(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-50 hover:bg-gray-100/75 border border-transparent rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#007C00]/20 focus:bg-gray-100 transition-all duration-200"
+              disabled={!filters.codigoAnoLectivo || isLoadingTurmas}
+            >
+              <option value="">Selecione uma turma...</option>
+              {filteredTurmas.map((turma: ITurma) => (
+                <option key={turma.codigo} value={turma.codigo}>
+                  {turma.designacao}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Trimestre */}
