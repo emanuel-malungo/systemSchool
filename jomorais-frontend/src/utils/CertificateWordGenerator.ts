@@ -296,11 +296,17 @@ export class CertificateWordGenerator {
         new TextRun({ text: '109 da IBSEE nº 17/16 de 7 de Outubro', font: 'Arial Narrow', size: 24, bold: true }),
         new TextRun({ text: ', com a Média Final de ', font: 'Arial Narrow', size: 24 }),
         new TextRun({
-          text: `${data.mediaFinal} valores`,
+          text: `${data.mediaFinal}`,
           font: 'Arial Narrow',
           size: 24,
           bold: true,
           underline: { type: UnderlineType.SINGLE },
+        }),
+        new TextRun({
+          text: ` valores`,
+          font: 'Arial Narrow',
+          size: 24,
+          bold: true,
         }),
         new TextRun({ text: ' obtida nas seguintes classificações por ciclos de aprendizagem:', font: 'Arial Narrow', size: 24 }),
       ],

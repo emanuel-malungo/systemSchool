@@ -308,7 +308,8 @@ export class CertificatePdfGenerator {
       { text: `c) do artigo `, bold: true, fontName: 'Helvetica' },
       { text: `109 da IBSEE nº 17/16 de 7 de Outubro`, bold: true, fontName: 'Helvetica' },
       { text: `, com a Média Final de `, bold: false, fontName: 'Helvetica' },
-      { text: `${data.mediaFinal} valores`, bold: true, underline: true, fontName: 'Helvetica' },
+      { text: `${data.mediaFinal}`, bold: true, underline: true, fontName: 'Helvetica' },
+      { text: ` valores`, bold: true, underline: false, fontName: 'Helvetica' },
       { text: ` obtida nas seguintes classificações por ciclos de aprendizagem:`, bold: false, fontName: 'Helvetica' }
     ]
 
