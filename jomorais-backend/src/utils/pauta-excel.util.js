@@ -29,8 +29,8 @@ export async function buildPautaExcelTemplate(params) {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('PAUTA');
 
-  // Make grid lines visible
-  sheet.views = [{ showGridLines: true }];
+  // Hide grid lines to make the background clean white
+  sheet.views = [{ showGridLines: false }];
 
   // Base Styles
   const borderStyle = {
@@ -110,18 +110,18 @@ export async function buildPautaExcelTemplate(params) {
   sheet.getRow(4).height = 18;
   sheet.getRow(5).height = 18;
   sheet.getRow(6).height = 12; // Spacer/Separator row
-  sheet.getRow(7).height = 25; // Title row
-  sheet.getRow(8).height = 18; // Subtitle row
+  sheet.getRow(7).height = 30; // Title row
+  sheet.getRow(8).height = 25; // Subtitle row
   sheet.getRow(9).height = 10; // Spacing before cards
   sheet.getRow(10).height = 20;
   sheet.getRow(11).height = 20;
   sheet.getRow(12).height = 20;
   sheet.getRow(13).height = 20;
 
-  // Row 1-4: Institution Name
+  // Row 1-4: Institution Name next to logo
   const titleVal = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
-  styleAndMergeRange('D2:R4', titleVal,
-    { name: 'Segoe UI', size: 16, bold: true, color: { argb: 'FF1F497D' } },
+  styleAndMergeRange(`D2:${maxColLetter}4`, titleVal,
+    { name: 'Calibri', size: 20, bold: true },
     null, null, { horizontal: 'left', vertical: 'middle' }
   );
 
@@ -138,179 +138,189 @@ export async function buildPautaExcelTemplate(params) {
     });
   }
 
-  // Row 5: Separator line
+  // Row 5: Separator line (Green)
   styleAndMergeRange(`B5:${maxColLetter}5`, '', 
     null, null, 
-    { bottom: { style: 'medium', color: { argb: 'FF1F497D' } } }, 
+    { bottom: { style: 'medium', color: { argb: 'FF385723' } } }, 
     null
   );
 
-  // Row 7: Subtitle
-  styleAndMergeRange('B7:R7', 'PAUTA DE APROVEITAMENTO ESCOLAR',
-    { name: 'Segoe UI', size: 14, bold: true, color: { argb: 'FF1F497D' } },
-    null, null, { horizontal: 'left', vertical: 'middle' }
-  );
-
-  // Row 8: Area de formacao
-  styleAndMergeRange('B8:R8', {
-    richText: [
-      { text: 'ÁREA DE FORMAÇÃO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF555555' } } },
-      { text: 'SAÚDE', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } }
-    ]
-  },
-    null, null, null, { horizontal: 'left', vertical: 'middle' }
-  );
-
-  // --- LEFT CARD: O Director do Instituto ---
-  styleAndMergeRange('B10:D10', 'O Director do Instituto',
-    { name: 'Segoe UI', size: 10, bold: true, italic: true, color: { argb: 'FF555555' } },
+  // Row 7: Title
+  styleAndMergeRange(`D7:${maxColLetter}7`, 'PAUTA DE APROVEITAMENTO ESCOLAR',
+    { name: 'Arial Rounded MT Bold', size: 20, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange('B11:D11', '________________________________________',
-    { name: 'Segoe UI', size: 10, color: { argb: 'FF888888' } },
-    null, null, { horizontal: 'center', vertical: 'bottom' }
+  // Row 8: Area de formacao
+  styleAndMergeRange(`D8:${maxColLetter}8`, {
+    richText: [
+      { text: 'ÁREA DE FORMAÇÃO: ', font: { name: 'Algerian', size: 18, bold: true } },
+      { text: 'SAÚDE', font: { name: 'Algerian', size: 18, bold: true, color: { argb: 'FF0070C0' } } }
+    ]
+  },
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  const dirNameVal = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MADIALA').toUpperCase();
+  // --- METADATA CARDS LAYOUT CALCULATION (Rows 10-13) ---
+  const leftStartCol = 2; // B
+  const leftEndCol = 4;   // D
+  
+  // Dynamic columns for metadata to scale based on sheet width
+  const classStartCol = 7; // G
+  const classEndCol = 9;   // I
+  
+  const dateEndCol = maxColIndex;
+  const dateStartCol = maxColIndex - 3;
+  
+  const statsCardEndCol = dateStartCol - 1;
+  const statsCardStartCol = statsCardEndCol - 1;
+  
+  const periodEndCol = statsCardStartCol - 1;
+  const periodStartCol = periodEndCol - 3;
+  
+  let courseStartCol = classEndCol + 2; // K (11)
+  let courseEndCol = periodStartCol - 2;
+  if (courseEndCol < courseStartCol) {
+    courseEndCol = courseStartCol + 3;
+  }
+
+  const classStartColLetter = columnToLetter(classStartCol);
+  const classEndColLetter = columnToLetter(classEndCol);
+  const courseStartColLetter = columnToLetter(courseStartCol);
+  const courseEndColLetter = columnToLetter(courseEndCol);
+  const periodStartColLetter = columnToLetter(periodStartCol);
+  const periodEndColLetter = columnToLetter(periodEndCol);
+  const statsCardStartColLetter = columnToLetter(statsCardStartCol);
+  const statsCardEndColLetter = columnToLetter(statsCardEndCol);
+  const dateStartColLetter = columnToLetter(dateStartCol);
+  const dateEndColLetter = columnToLetter(dateEndCol);
+
+  // --- LEFT SIGNATURE: O Director do Instituto ---
+  styleAndMergeRange('B10:D10', 'O Director do Instituto',
+    { name: 'Segoe UI', size: 10, bold: true, italic: true, color: { argb: 'FF333333' } },
+    null, null, { horizontal: 'center', vertical: 'middle' }
+  );
+
+  // Empty row 11 with a bottom border for signature line
+  styleAndMergeRange('B11:D11', '',
+    null, null,
+    { bottom: { style: 'thin', color: { argb: 'FF000000' } } },
+    { horizontal: 'center', vertical: 'middle' }
+  );
+
+  const dirNameVal = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MABIALA').toUpperCase();
   styleAndMergeRange('B12:D12', dirNameVal,
     { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF333333' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange('B13:D13', `DATA ______ / ______ / ${new Date().getFullYear()}`,
+  styleAndMergeRange('B13:D13', `DATA ____ / ____ / ${new Date().getFullYear()}`,
     { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- MIDDLE CARD: Academic Metadata ---
-  const cardFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F7FA' } };
-  const cardBorderColor = 'FFD0D5DD';
-
-  for (let r = 10; r <= 12; r++) {
-    for (let c = 6; c <= 12; c++) {
-      const cell = sheet.getCell(r, c);
-      cell.fill = cardFill;
-      const cellBorder = {};
-      if (r === 10) cellBorder.top = { style: 'thin', color: { argb: cardBorderColor } };
-      if (r === 12) cellBorder.bottom = { style: 'thin', color: { argb: cardBorderColor } };
-      if (c === 6) cellBorder.left = { style: 'thin', color: { argb: cardBorderColor } };
-      if (c === 12) cellBorder.right = { style: 'thin', color: { argb: cardBorderColor } };
-      cell.border = cellBorder;
-    }
-  }
-
-  // F10: CURSO Label
-  const cellF10 = sheet.getCell('F10');
-  cellF10.value = 'CURSO:';
-  cellF10.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellF10.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // G10:L10: CURSO Value
-  styleAndMergeRange('G10:L10', descCurso,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF1F497D' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  // --- CLASS / TURMA CARD ---
+  styleAndMergeRange(`${classStartColLetter}10:${classEndColLetter}10`, descClasse,
+    { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } },
+    null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // F11: CLASSE Label
-  const cellF11 = sheet.getCell('F11');
-  cellF11.value = 'CLASSE:';
-  cellF11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellF11.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // G11:H11: CLASSE Value
-  styleAndMergeRange('G11:H11', descClasse,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  styleAndMergeRange(`${classStartColLetter}12:${classEndColLetter}12`, {
+    richText: [
+      { text: 'TURMA: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descTurma, font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+    ]
+  },
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // I11: TURMA Label
-  const cellI11 = sheet.getCell('I11');
-  cellI11.value = 'TURMA:';
-  cellI11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellI11.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // J11:L11: TURMA Value
-  styleAndMergeRange('J11:L11', descTurma,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FFFF0000' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  // --- COURSE CARD (Centered) ---
+  styleAndMergeRange(`${courseStartColLetter}11:${courseEndColLetter}11`, `CURSO: ${descCurso.toUpperCase()}`,
+    { name: 'Segoe UI', size: 14, bold: true, color: { argb: 'FF0070C0' } },
+    null, 
+    { bottom: { style: 'thin', color: { argb: 'FF000000' } } }, 
+    { horizontal: 'center', vertical: 'middle' }
   );
 
-  // F12: PERÍODO Label
-  const cellF12 = sheet.getCell('F12');
-  cellF12.value = 'PERÍODO:';
-  cellF12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellF12.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // G12:H12: PERÍODO Value
-  styleAndMergeRange('G12:H12', descPeriodo,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  // --- PERIOD / SEMESTER / YEAR CARD ---
+  styleAndMergeRange(`${periodStartColLetter}10:${periodEndColLetter}10`, {
+    richText: [
+      { text: 'PERÍODO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descPeriodo.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+    ]
+  },
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // I12: ANO LECTIVO Label
-  const cellI12 = sheet.getCell('I12');
-  cellI12.value = 'ANO LECTIVO:';
-  cellI12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellI12.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // J12:L12: ANO LECTIVO Value
-  styleAndMergeRange('J12:L12', descAno,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  const trimParts = descTrimestre.split(' ');
+  const trimNum = trimParts[0] || '1º';
+  const trimLabel = trimParts.slice(1).join(' ') || 'TRIMESTRE';
+  styleAndMergeRange(`${periodStartColLetter}11:${periodEndColLetter}11`, {
+    richText: [
+      { text: trimNum, font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: ' ' },
+      { text: trimLabel.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+    ]
+  },
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- RIGHT CARD: Semester & Stats & Date ---
-  for (let r = 10; r <= 12; r++) {
-    for (let c = 14; c <= 18; c++) {
-      const cell = sheet.getCell(r, c);
-      cell.fill = cardFill;
-      const cellBorder = {};
-      if (r === 10) cellBorder.top = { style: 'thin', color: { argb: cardBorderColor } };
-      if (r === 12) cellBorder.bottom = { style: 'thin', color: { argb: cardBorderColor } };
-      if (c === 14) cellBorder.left = { style: 'thin', color: { argb: cardBorderColor } };
-      if (c === 18) cellBorder.right = { style: 'thin', color: { argb: cardBorderColor } };
-      cell.border = cellBorder;
-    }
-  }
-
-  // N10: TRIMESTRE Label
-  const cellN10 = sheet.getCell('N10');
-  cellN10.value = 'TRIMESTRE:';
-  cellN10.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellN10.alignment = { horizontal: 'right', vertical: 'middle' };
-
-  // O10:R10: TRIMESTRE Value
-  styleAndMergeRange('O10:R10', descTrimestre,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FFFF0000' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  styleAndMergeRange(`${periodStartColLetter}12:${periodEndColLetter}12`, {
+    richText: [
+      { text: 'ANO LECTIVO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descAno.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+    ]
+  },
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // N11: ALUNOS Label
-  const cellN11 = sheet.getCell('N11');
-  cellN11.value = 'ALUNOS:';
-  cellN11.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellN11.alignment = { horizontal: 'right', vertical: 'middle' };
+  // --- STATS CARD (2 Columns: label + formula) ---
+  // Label Column
+  const cellMFLabel = sheet.getCell(`${statsCardStartColLetter}10`);
+  cellMFLabel.value = 'MF:';
+  cellMFLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+  cellMFLabel.alignment = { horizontal: 'right', vertical: 'middle' };
 
-  // O11:R11: ALUNOS Value
-  const countFormula = `CONCATENATE("Total: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")+COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F"), " (M: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M"), ", F: ", COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F"), ")")`;
-  styleAndMergeRange('O11:R11', { formula: countFormula },
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF1F497D' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
-  );
+  const cellMLabel = sheet.getCell(`${statsCardStartColLetter}11`);
+  cellMLabel.value = 'M:';
+  cellMLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+  cellMLabel.alignment = { horizontal: 'right', vertical: 'middle' };
 
-  // N12: EMISSÃO Label
-  const cellN12 = sheet.getCell('N12');
-  cellN12.value = 'EMISSÃO:';
-  cellN12.font = { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } };
-  cellN12.alignment = { horizontal: 'right', vertical: 'middle' };
+  const cellFLabel = sheet.getCell(`${statsCardStartColLetter}12`);
+  cellFLabel.value = 'F:';
+  cellFLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+  cellFLabel.alignment = { horizontal: 'right', vertical: 'middle' };
 
-  // O12:R12: EMISSÃO Value
+  // Formula Column
+  const cellMFValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}10`);
+  cellMFValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")+COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F")` };
+  cellMFValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } };
+  cellMFValue.alignment = { horizontal: 'left', vertical: 'middle' };
+
+  const cellMValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}11`);
+  cellMValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")` };
+  cellMValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+  cellMValue.alignment = { horizontal: 'left', vertical: 'middle' };
+
+  const cellFValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}12`);
+  cellFValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F")` };
+  cellFValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } };
+  cellFValue.alignment = { horizontal: 'left', vertical: 'middle' };
+
+  // --- DATE BOX ---
   const today = new Date();
   const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear().toString().substring(2)}`;
-  styleAndMergeRange('O12:R12', formattedDate,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF333333' } },
-    cardFill, null, { horizontal: 'left', vertical: 'middle' }
+  
+  const dateBorder = {
+    top: { style: 'medium', color: { argb: 'FF000000' } },
+    left: { style: 'medium', color: { argb: 'FF000000' } },
+    bottom: { style: 'medium', color: { argb: 'FF000000' } },
+    right: { style: 'medium', color: { argb: 'FF000000' } }
+  };
+  
+  styleAndMergeRange(`${dateStartColLetter}10:${dateEndColLetter}12`, formattedDate,
+    { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'FF0070C0' } },
+    null, dateBorder, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Setup base student table headers
