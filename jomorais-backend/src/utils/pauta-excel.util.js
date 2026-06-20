@@ -404,10 +404,14 @@ export async function buildPautaExcelTemplate(params) {
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
-    styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, `MT${codigoTrimestre}º`,
+    styleAndMergeRange(`${colLetter3}15:${colLetter3}15`, `MT${codigoTrimestre}º`,
       { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
+    
+    const emptyMtCell = sheet.getCell(`${colLetter3}16`);
+    emptyMtCell.border = borderStyle;
+    emptyMtCell.fill = headerFill;
 
     styleAndMergeRange(`${colLetter1}16:${colLetter1}16`, 'J',
       { name: 'Calibri', size: 8, bold: true, italic: true },
@@ -643,6 +647,20 @@ export async function buildPautaExcelTemplate(params) {
     index++;
     rowNum++;
   }
+
+  // Add "DATA DO CONSELHO DE TURMA" row
+  const councilRow = sheet.getRow(rowNum);
+  councilRow.height = 25;
+  for (let c = 2; c <= colIndex + 3; c++) {
+    const cell = councilRow.getCell(c);
+    cell.border = borderStyle;
+  }
+  const councilCell = councilRow.getCell(4); // D (NOME)
+  councilCell.value = 'DATA DO CONSELHO DE TURMA______/______/2026';
+  councilCell.font = { name: 'Calibri', size: 11 };
+  councilCell.alignment = { horizontal: 'center', vertical: 'middle' };
+  
+  rowNum++;
 
   const startRow = 17;
   const genderColLetter = columnToLetter(colIndex + 3);
