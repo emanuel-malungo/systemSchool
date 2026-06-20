@@ -651,7 +651,7 @@ export async function buildPautaExcelTemplate(params) {
   // Add "DATA DO CONSELHO DE TURMA" row
   const councilRow = sheet.getRow(rowNum);
   councilRow.height = 25;
-  for (let c = 2; c <= colIndex + 3; c++) {
+  for (let c = 2; c <= colIndex - 1; c++) {
     const cell = councilRow.getCell(c);
     cell.border = borderStyle;
   }
@@ -720,13 +720,7 @@ export async function buildPautaExcelTemplate(params) {
     sheet.getColumn(statsStartColIndex + i).width = 4;
   }
 
-  let footRow = endRow + 2;
-  styleAndMergeRange(`B${footRow}:F${footRow}`, `DATA DO CONSELHO DE TURMA ______ / ______ / ${new Date().getFullYear()}`,
-    { name: 'Calibri', size: 11, bold: true },
-    null, null, { horizontal: 'left', vertical: 'middle' }
-  );
-
-  footRow += 3;
+  let footRow = endRow + 4;
   const obsColReal = columnToLetter(colIndex);
   const startSubDirColIdx = Math.max(12, colIndex - 15);
   const startSubDirCol = columnToLetter(startSubDirColIdx);
