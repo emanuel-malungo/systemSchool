@@ -596,11 +596,6 @@ export async function buildPautaExcelTemplate(params) {
       cellObs.value = '-';
     }
 
-    for (let i = 0; i < 8; i++) {
-      const cellStat = row.getCell(statsStartColIndex + i);
-      cellStat.border = borderStyle;
-    }
-
     index++;
     rowNum++;
   }
@@ -622,11 +617,11 @@ export async function buildPautaExcelTemplate(params) {
 
   formulas.forEach(f => {
     const colLetter = columnToLetter(statsStartColIndex + f.offset);
-    sheet.mergeCells(`${colLetter}${startRow}:${colLetter}${endRow}`);
     const cell = sheet.getCell(`${colLetter}${startRow}`);
     cell.value = { formula: f.formula };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
     cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: (f.offset % 2 === 0) ? 'FF0070C0' : 'FFC00000' } };
+    cell.border = borderStyle;
   });
 
   sheet.getColumn('A').width = 2; // Margem
@@ -648,7 +643,7 @@ export async function buildPautaExcelTemplate(params) {
   sheet.getColumn(generoColLetter).width = 8;
 
   for (let i = 0; i < 8; i++) {
-    sheet.getColumn(statsStartColIndex + i).width = 6;
+    sheet.getColumn(statsStartColIndex + i).width = 4;
   }
 
   let footRow = endRow + 2;
