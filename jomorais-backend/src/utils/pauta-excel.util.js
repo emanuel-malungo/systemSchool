@@ -201,7 +201,7 @@ export async function buildPautaExcelTemplate(params) {
 
   // --- LEFT SIGNATURE: O Director do Instituto ---
   styleAndMergeRange('B10:D10', 'O Director do Instituto',
-    { name: 'Segoe UI', size: 10, bold: true, italic: true, color: { argb: 'FF333333' } },
+    { name: 'Blackadder ITC', size: 12, bold: true, color: { argb: 'FF333333' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
@@ -214,25 +214,25 @@ export async function buildPautaExcelTemplate(params) {
 
   const dirNameVal = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MABIALA').toUpperCase();
   styleAndMergeRange('B12:D12', dirNameVal,
-    { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF333333' } },
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF333333' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange('B13:D13', `DATA ____ / ____ / ${new Date().getFullYear()}`,
-    { name: 'Segoe UI', size: 9, bold: true, color: { argb: 'FF555555' } },
+    { name: 'Agency FB', size: 11, bold: true, color: { argb: 'FF555555' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   // --- CLASS / TURMA CARD ---
   styleAndMergeRange(`${classStartColLetter}10:${classEndColLetter}10`, descClasse,
-    { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } },
+    { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`${classStartColLetter}12:${classEndColLetter}12`, {
     richText: [
-      { text: 'TURMA: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
-      { text: descTurma, font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+      { text: 'TURMA: ', font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descTurma, font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } } }
     ]
   },
     null, null, null, { horizontal: 'center', vertical: 'middle' }
@@ -240,7 +240,7 @@ export async function buildPautaExcelTemplate(params) {
 
   // --- COURSE CARD (Centered) ---
   styleAndMergeRange(`${courseStartColLetter}11:${courseEndColLetter}11`, `CURSO: ${descCurso.toUpperCase()}`,
-    { name: 'Segoe UI', size: 14, bold: true, color: { argb: 'FF0070C0' } },
+    { name: 'Calibri', size: 26, bold: true, color: { argb: 'FF0070C0' } },
     null, 
     { bottom: { style: 'thin', color: { argb: 'FF000000' } } }, 
     { horizontal: 'center', vertical: 'middle' }
