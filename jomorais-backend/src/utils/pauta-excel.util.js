@@ -728,8 +728,8 @@ export async function buildPautaExcelTemplate(params) {
   const obsColReal = columnToLetter(colIndex);
   const startSubDirColIdx = Math.max(12, colIndex - 15);
   const startSubDirCol = columnToLetter(startSubDirColIdx);
-  const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || '';
-  const nomeSubdir = pautaData.instituicao?.subDirector || '';
+  const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || 'RUTH DEMBI QUIFOCO ZEMBO';
+  const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
 
   styleAndMergeRange(`B${footRow}:F${footRow}`, 'A Directora de Turma',
     { name: 'Blackadder ITC', size: 12, bold: true },
@@ -754,12 +754,12 @@ export async function buildPautaExcelTemplate(params) {
 
   footRow++;
   styleAndMergeRange(`B${footRow}:F${footRow}`, nomeDirTurma,
-    { name: 'Calibri', size: 14, bold: true },
+    { name: 'Calibri', size: 10, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, nomeSubdir,
-    { name: 'Calibri', size: 14, bold: true },
+    { name: 'Calibri', size: 10, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
