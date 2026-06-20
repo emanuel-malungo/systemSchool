@@ -339,16 +339,20 @@ export async function buildPautaExcelTemplate(params) {
 
   // Setup base student table headers
   const headerPositions = [
-    { cell: 'B14', val: 'Nº', merge: 'B14:B16' },
-    { cell: 'C14', val: 'Nº PROC', merge: 'C14:C16' },
-    { cell: 'D14', val: 'NOME', merge: 'D14:D16' },
-    { cell: 'E14', val: 'DISCIPLINA A REPETIR', merge: 'E14:E16' }
+    { cell: 'B14', val: 'Nº', merge: 'B14:B16', rotate: true },
+    { cell: 'C14', val: 'Nº PROC', merge: 'C14:C16', rotate: true },
+    { cell: 'D14', val: 'NOME', merge: 'D14:D16', rotate: false },
+    { cell: 'E14', val: 'DISCIPLINA A REPETIR', merge: 'E14:E16', rotate: false }
   ];
 
   headerPositions.forEach(hp => {
+    const alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    if (hp.rotate) {
+      alignment.textRotation = 45;
+    }
     styleAndMergeRange(hp.merge, hp.val,
-      { name: 'Calibri', size: 10, bold: true },
-      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
+      { name: 'Calibri', size: 9, bold: true, italic: true },
+      headerFill, borderStyle, alignment
     );
   });
 
