@@ -637,7 +637,17 @@ export async function buildPautaExcelTemplate(params) {
   sheet.getColumn('A').width = 2; // Margem
   sheet.getColumn('B').width = 4; // Nº
   sheet.getColumn('C').width = 10; // Nº PROC
-  sheet.getColumn('D').width = 30; // NOME
+  
+  // Calculate flexible width for NOME column
+  let maxNameLength = 30; // minimum
+  for (const info of Object.values(pautaData.pauta)) {
+    const nomeLen = (info.aluno?.nome || 'N/A').length;
+    if (nomeLen > maxNameLength) {
+      maxNameLength = nomeLen;
+    }
+  }
+  sheet.getColumn('D').width = maxNameLength + 2; // NOME
+
   sheet.getColumn('E').width = 16; // DISCIPLINA A REPETIR
   
   disciplines.forEach(dName => {
