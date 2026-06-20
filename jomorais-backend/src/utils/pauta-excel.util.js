@@ -103,7 +103,7 @@ export async function buildPautaExcelTemplate(params) {
   const maxColLetter = columnToLetter(maxColIndex);
   const endRow = 17 + pautaData.totalAlunos - 1;
 
-  // Set heights for the logo/title rows
+  // Set heights for the logo/title rows matching the template
   sheet.getRow(1).height = 10;
   sheet.getRow(2).height = 18;
   sheet.getRow(3).height = 18;
@@ -112,14 +112,14 @@ export async function buildPautaExcelTemplate(params) {
   sheet.getRow(6).height = 12; // Spacer/Separator row
   sheet.getRow(7).height = 30; // Title row
   sheet.getRow(8).height = 25; // Subtitle row
-  sheet.getRow(9).height = 10; // Spacing before cards
-  sheet.getRow(10).height = 20;
-  sheet.getRow(11).height = 20;
-  sheet.getRow(12).height = 20;
-  sheet.getRow(13).height = 20;
+  sheet.getRow(9).height = 16.5; 
+  sheet.getRow(10).height = 18;
+  sheet.getRow(11).height = 20.25;
+  sheet.getRow(12).height = 19.5;
+  sheet.getRow(13).height = 20.25;
 
-  // Cap header width so it doesn't become too wide on tables with many disciplines
-  const headerMaxColIndex = Math.min(maxColIndex, 28);
+  // Dynamic header width ending exactly at the OBS column index (minimum 42 to prevent card overlap)
+  const headerMaxColIndex = Math.max(colIndex, 42);
   const headerMaxColLetter = columnToLetter(headerMaxColIndex);
 
   // Row 1-4: Institution Name next to logo
@@ -150,13 +150,13 @@ export async function buildPautaExcelTemplate(params) {
   );
 
   // Row 7: Title
-  styleAndMergeRange(`D7:${headerMaxColLetter}7`, 'PAUTA DE APROVEITAMENTO ESCOLAR',
+  styleAndMergeRange(`B7:${headerMaxColLetter}7`, 'PAUTA DE APROVEITAMENTO ESCOLAR',
     { name: 'Arial Rounded MT Bold', size: 20, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Row 8: Area de formacao
-  styleAndMergeRange(`D8:${headerMaxColLetter}8`, {
+  styleAndMergeRange(`C8:${headerMaxColLetter}8`, {
     richText: [
       { text: 'ÁREA DE FORMAÇÃO: ', font: { name: 'Algerian', size: 18, bold: true } },
       { text: 'SAÚDE', font: { name: 'Algerian', size: 18, bold: true, color: { argb: 'FF0070C0' } } }
@@ -165,7 +165,7 @@ export async function buildPautaExcelTemplate(params) {
     null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- METADATA CARDS LAYOUT CALCULATION (Rows 10-13) ---
+  // --- METADATA CARDS LAYOUT CALCULATION (Rows 9-12) ---
   const leftStartCol = 2; // B
   const leftEndCol = 4;   // D
   
@@ -223,13 +223,13 @@ export async function buildPautaExcelTemplate(params) {
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- CLASS / TURMA CARD ---
-  styleAndMergeRange(`${classStartColLetter}10:${classEndColLetter}10`, descClasse,
-    { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF0070C0' } },
+  // --- CLASS / TURMA CARD (Rows 9-10 and 11-12, no gaps) ---
+  styleAndMergeRange(`${classStartColLetter}9:${classEndColLetter}10`, descClasse,
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${classStartColLetter}12:${classEndColLetter}12`, {
+  styleAndMergeRange(`${classStartColLetter}11:${classEndColLetter}12`, {
     richText: [
       { text: 'TURMA: ', font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } } },
       { text: descTurma, font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } } }
@@ -238,78 +238,78 @@ export async function buildPautaExcelTemplate(params) {
     null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- COURSE CARD (Centered) ---
-  styleAndMergeRange(`${courseStartColLetter}11:${courseEndColLetter}11`, `CURSO: ${descCurso.toUpperCase()}`,
+  // --- COURSE CARD (Centered, rows 9-12 merged) ---
+  styleAndMergeRange(`${courseStartColLetter}9:${courseEndColLetter}12`, `CURSO: ${descCurso.toUpperCase()}`,
     { name: 'Calibri', size: 26, bold: true, color: { argb: 'FF0070C0' } },
     null, 
     { bottom: { style: 'thin', color: { argb: 'FF000000' } } }, 
     { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- PERIOD / SEMESTER / YEAR CARD ---
-  styleAndMergeRange(`${periodStartColLetter}10:${periodEndColLetter}10`, {
+  // --- PERIOD / SEMESTER / YEAR CARD (Right Aligned, Calibri 14/12) ---
+  styleAndMergeRange(`${periodStartColLetter}9:${periodEndColLetter}9`, {
     richText: [
-      { text: 'PERÍODO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
-      { text: descPeriodo.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+      { text: 'PERÍODO: ', font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descPeriodo.toUpperCase(), font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } } }
     ]
   },
-    null, null, null, { horizontal: 'center', vertical: 'middle' }
+    null, null, null, { horizontal: 'right', vertical: 'middle' }
   );
 
   const trimParts = descTrimestre.split(' ');
   const trimNum = trimParts[0] || '1º';
   const trimLabel = trimParts.slice(1).join(' ') || 'TRIMESTRE';
-  styleAndMergeRange(`${periodStartColLetter}11:${periodEndColLetter}11`, {
+  styleAndMergeRange(`${periodStartColLetter}10:${periodEndColLetter}11`, {
     richText: [
-      { text: trimNum, font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: trimNum, font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } } },
       { text: ' ' },
-      { text: trimLabel.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+      { text: trimLabel.toUpperCase(), font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } } }
     ]
   },
-    null, null, null, { horizontal: 'center', vertical: 'middle' }
+    null, null, null, { horizontal: 'right', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${periodStartColLetter}12:${periodEndColLetter}12`, {
+  styleAndMergeRange(`${columnToLetter(periodStartCol - 1)}12:${periodEndColLetter}12`, {
     richText: [
-      { text: 'ANO LECTIVO: ', font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } } },
-      { text: descAno.toUpperCase(), font: { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } } }
+      { text: 'ANO LECTIVO: ', font: { name: 'Calibri', size: 12, bold: true, color: { argb: 'FF0070C0' } } },
+      { text: descAno.toUpperCase(), font: { name: 'Calibri', size: 12, bold: true, color: { argb: 'FFFF0000' } } }
     ]
   },
-    null, null, null, { horizontal: 'center', vertical: 'middle' }
+    null, null, null, { horizontal: 'right', vertical: 'middle' }
   );
 
-  // --- STATS CARD (2 Columns: label + formula) ---
+  // --- STATS CARD (2 Columns, Center Aligned, Calibri 14 Bold) ---
   // Label Column
   const cellMFLabel = sheet.getCell(`${statsCardStartColLetter}10`);
   cellMFLabel.value = 'MF:';
-  cellMFLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
-  cellMFLabel.alignment = { horizontal: 'right', vertical: 'middle' };
+  cellMFLabel.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF000000' } };
+  cellMFLabel.alignment = { horizontal: 'center', vertical: 'middle' };
 
   const cellMLabel = sheet.getCell(`${statsCardStartColLetter}11`);
   cellMLabel.value = 'M:';
-  cellMLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
-  cellMLabel.alignment = { horizontal: 'right', vertical: 'middle' };
+  cellMLabel.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF000000' } };
+  cellMLabel.alignment = { horizontal: 'center', vertical: 'middle' };
 
   const cellFLabel = sheet.getCell(`${statsCardStartColLetter}12`);
   cellFLabel.value = 'F:';
-  cellFLabel.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
-  cellFLabel.alignment = { horizontal: 'right', vertical: 'middle' };
+  cellFLabel.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF000000' } };
+  cellFLabel.alignment = { horizontal: 'center', vertical: 'middle' };
 
   // Formula Column
-  const cellMFValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}10`);
+  const cellMFValue = sheet.getCell(`${statsCardEndColLetter}10`);
   cellMFValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")+COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F")` };
-  cellMFValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF0070C0' } };
-  cellMFValue.alignment = { horizontal: 'left', vertical: 'middle' };
+  cellMFValue.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } };
+  cellMFValue.alignment = { horizontal: 'center', vertical: 'middle' };
 
-  const cellMValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}11`);
+  const cellMValue = sheet.getCell(`${statsCardEndColLetter}11`);
   cellMValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"M")` };
-  cellMValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
-  cellMValue.alignment = { horizontal: 'left', vertical: 'middle' };
+  cellMValue.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF000000' } };
+  cellMValue.alignment = { horizontal: 'center', vertical: 'middle' };
 
-  const cellFValue = sheet.getCell(`${columnToLetter(statsCardStartCol + 1)}12`);
+  const cellFValue = sheet.getCell(`${statsCardEndColLetter}12`);
   cellFValue.value = { formula: `COUNTIF(${generoColLetter}17:${generoColLetter}${endRow},"F")` };
-  cellFValue.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FFFF0000' } };
-  cellFValue.alignment = { horizontal: 'left', vertical: 'middle' };
+  cellFValue.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } };
+  cellFValue.alignment = { horizontal: 'center', vertical: 'middle' };
 
   // --- DATE BOX ---
   const today = new Date();
@@ -323,7 +323,7 @@ export async function buildPautaExcelTemplate(params) {
   };
   
   styleAndMergeRange(`${dateStartColLetter}10:${dateEndColLetter}12`, formattedDate,
-    { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'FF0070C0' } },
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } },
     null, dateBorder, { horizontal: 'center', vertical: 'middle' }
   );
 
