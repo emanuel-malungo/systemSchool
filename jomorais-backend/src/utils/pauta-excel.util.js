@@ -404,14 +404,10 @@ export async function buildPautaExcelTemplate(params) {
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
-    styleAndMergeRange(`${colLetter3}15:${colLetter3}15`, `MT${codigoTrimestre}º`,
+    styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, `MT${codigoTrimestre}º`,
       { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
-    
-    const emptyMtCell = sheet.getCell(`${colLetter3}16`);
-    emptyMtCell.border = borderStyle;
-    emptyMtCell.fill = headerFill;
 
     styleAndMergeRange(`${colLetter1}16:${colLetter1}16`, 'J',
       { name: 'Calibri', size: 8, bold: true, italic: true },
@@ -736,12 +732,12 @@ export async function buildPautaExcelTemplate(params) {
   const nomeSubdir = pautaData.instituicao?.subDirector || '';
 
   styleAndMergeRange(`B${footRow}:F${footRow}`, 'A Directora de Turma',
-    { name: 'Calibri', size: 11, bold: true },
+    { name: 'Blackadder ITC', size: 12, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, 'O Subdirector Pedagógico',
-    { name: 'Calibri', size: 11, bold: true },
+    { name: 'Blackadder ITC', size: 12, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
@@ -758,12 +754,12 @@ export async function buildPautaExcelTemplate(params) {
 
   footRow++;
   styleAndMergeRange(`B${footRow}:F${footRow}`, nomeDirTurma,
-    { name: 'Calibri', size: 10, bold: true },
+    { name: 'Calibri', size: 14, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, nomeSubdir,
-    { name: 'Calibri', size: 10, bold: true },
+    { name: 'Calibri', size: 14, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
