@@ -377,11 +377,15 @@ export async function buildPautaExcelTemplate(params) {
 
   headerPositions.forEach(hp => {
     const alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    if (hp.val === 'DISCIPLINA A REPETIR') {
+      alignment.wrapText = false;
+      sheet.getColumn(5).width = 28;
+    }
     if (hp.rotate) {
       alignment.textRotation = 45;
     }
     styleAndMergeRange(hp.merge, hp.val,
-      { name: 'Calibri', size: 9, bold: true, italic: true },
+      { name: 'Calibri', size: 14, bold: true, italic: true },
       headerFill, borderStyle, alignment
     );
   });
@@ -503,7 +507,7 @@ export async function buildPautaExcelTemplate(params) {
     cellB.value = index;
     cellB.alignment = { horizontal: 'center', vertical: 'middle' };
     cellB.border = borderStyle;
-    cellB.font = { name: 'Arial Narrow', size: 9 };
+    cellB.font = { name: 'Arial Narrow', size: 9, bold: true };
 
     const cellC = row.getCell(3);
     cellC.value = parseInt(info.aluno?.codigo) || index;
@@ -562,7 +566,7 @@ export async function buildPautaExcelTemplate(params) {
 
     const cellE = row.getCell(5);
     cellE.value = repeatDiscs.join(', ');
-    cellE.font = { name: 'Arial Narrow', size: 8, italic: true };
+    cellE.font = { name: 'Arial Narrow', size: 11 };
     cellE.alignment = { horizontal: 'center', vertical: 'middle' };
     cellE.border = borderStyle;
 
