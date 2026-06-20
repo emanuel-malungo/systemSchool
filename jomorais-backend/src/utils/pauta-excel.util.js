@@ -171,7 +171,7 @@ export async function buildPautaExcelTemplate(params) {
   
   // Dynamic columns for metadata to scale based on sheet width
   const classStartCol = 7; // G
-  const classEndCol = 9;   // I
+  const classEndCol = 14;  // N (Widened significantly to fit very long turma names)
   
   const dateEndCol = headerMaxColIndex;
   const dateStartCol = headerMaxColIndex - 3;
@@ -182,7 +182,7 @@ export async function buildPautaExcelTemplate(params) {
   const periodEndCol = statsCardStartCol - 1;
   const periodStartCol = periodEndCol - 3;
   
-  let courseStartCol = classEndCol + 2; // K (11)
+  let courseStartCol = classEndCol + 2; // P (16)
   let courseEndCol = periodStartCol - 2;
   if (courseEndCol < courseStartCol) {
     courseEndCol = courseStartCol + 3;
@@ -201,47 +201,57 @@ export async function buildPautaExcelTemplate(params) {
 
   // --- LEFT SIGNATURE: O Director do Instituto ---
   styleAndMergeRange('B10:D10', 'O Director do Instituto',
-    { name: 'Blackadder ITC', size: 12, bold: true, color: { argb: 'FF333333' } },
+    { name: 'Blackadder ITC', size: 12, bold: true, color: { argb: 'FF000000' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // Empty row 11 with a bottom border for signature line
-  styleAndMergeRange('B11:D11', '',
-    null, null,
-    { bottom: { style: 'thin', color: { argb: 'FF000000' } } },
-    { horizontal: 'center', vertical: 'middle' }
+  // Signature line as text instead of empty cell bottom border
+  styleAndMergeRange('B11:D11', '____________________________',
+    { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF000000' } },
+    null, null, { horizontal: 'center', vertical: 'bottom' }
   );
 
   const dirNameVal = (pautaData.instituicao?.director || 'GABRIEL PRÓSPERO MABIALA').toUpperCase();
   styleAndMergeRange('B12:D12', dirNameVal,
-    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF333333' } },
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF000000' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange('B13:D13', `DATA ____ / ____ / ${new Date().getFullYear()}`,
-    { name: 'Agency FB', size: 11, bold: true, color: { argb: 'FF555555' } },
+  styleAndMergeRange('B13:D13', `DATA ____ / ____ / 2026`,
+    { name: 'Agency FB', size: 11, bold: true, color: { argb: 'FF000000' } },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // --- CLASS / TURMA CARD (Rows 9-10 and 11-12, no gaps) ---
+  // --- CLASS / TURMA CARD (Rows 9-10 and 11-12, no gaps, left aligned) ---
   styleAndMergeRange(`${classStartColLetter}9:${classEndColLetter}10`, descClasse,
     { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } },
-    null, null, { horizontal: 'center', vertical: 'middle' }
+    null, null, { horizontal: 'left', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${classStartColLetter}11:${classEndColLetter}12`, {
+  const turmaLabelEndCol = classStartCol + 1;
+  const turmaLabelEndColLetter = columnToLetter(turmaLabelEndCol);
+  const turmaValStartCol = turmaLabelEndCol + 1;
+  const turmaValStartColLetter = columnToLetter(turmaValStartCol);
+
+  styleAndMergeRange(`${classStartColLetter}11:${turmaLabelEndColLetter}12`, 'TURMA:',
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } },
+    null, null, { horizontal: 'left', vertical: 'middle' }
+  );
+
+  styleAndMergeRange(`${turmaValStartColLetter}11:${classEndColLetter}12`, descTurma,
+    { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } },
+    null, null, { horizontal: 'left', vertical: 'middle' }
+  );
+
+  // --- COURSE CARD (Centered, rows 9-12 merged, richText with black CURSO: and blue course name) ---
+  styleAndMergeRange(`${courseStartColLetter}9:${courseEndColLetter}12`, {
     richText: [
-      { text: 'TURMA: ', font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0070C0' } } },
-      { text: descTurma, font: { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFF0000' } } }
+      { text: 'CURSO: ', font: { name: 'Calibri', size: 26, bold: true, color: { argb: 'FF000000' } } },
+      { text: descCurso.toUpperCase(), font: { name: 'Calibri', size: 26, bold: true, color: { argb: 'FF0070C0' } } }
     ]
   },
-    null, null, null, { horizontal: 'center', vertical: 'middle' }
-  );
-
-  // --- COURSE CARD (Centered, rows 9-12 merged) ---
-  styleAndMergeRange(`${courseStartColLetter}9:${courseEndColLetter}12`, `CURSO: ${descCurso.toUpperCase()}`,
-    { name: 'Calibri', size: 26, bold: true, color: { argb: 'FF0070C0' } },
     null, 
+    null,
     { bottom: { style: 'thin', color: { argb: 'FF000000' } } }, 
     { horizontal: 'center', vertical: 'middle' }
   );

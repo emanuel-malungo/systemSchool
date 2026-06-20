@@ -644,9 +644,17 @@ export class GradeManagementService {
     });
 
     const descClasse = (metadata?.tb_classes?.designacao || '11ª CLASSE').toUpperCase();
-    const descCurso = (metadata?.tb_cursos?.designacao || '').toUpperCase();
+    let descCurso = (metadata?.tb_cursos?.designacao || '').toUpperCase();
     const descPeriodo = (metadata?.tb_periodos?.designacao || '').toUpperCase();
     const descTurma = (metadata?.designacao || '').toUpperCase();
+    
+    // Fallback: If course is empty but turma contains it (e.g. "10ª ÚNICA-ANÁLISES CLÌNICAS-MATINAL")
+    if (!descCurso && descTurma.includes('-')) {
+      const parts = descTurma.split('-');
+      if (parts.length >= 2) {
+        descCurso = parts[1].trim();
+      }
+    }
     const descTrimestre = (trimestre?.designacao || '1º TRIMESTRE').toUpperCase();
     const descAno = (metadata?.tb_ano_lectivo?.designacao || '').toUpperCase();
 

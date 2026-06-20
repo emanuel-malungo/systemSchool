@@ -68,10 +68,10 @@ async function test() {
   const params = {
     pautaData,
     codigoTrimestre: 2,
-    descClasse: "11ª CLASSE",
-    descCurso: "ANÁLISES CLÍNICAS",
+    descClasse: "10ª CLASSE",
+    descCurso: "",
     descPeriodo: "VESPERTINO",
-    descTurma: "A",
+    descTurma: "10ª ÚNICA-ANÁLISES CLÌNICAS-MATINAL",
     descTrimestre: "2º TRIMESTRE",
     descAno: "2025/2026",
     totalM: 2,
