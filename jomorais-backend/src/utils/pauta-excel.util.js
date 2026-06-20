@@ -655,9 +655,11 @@ export async function buildPautaExcelTemplate(params) {
     const cell = councilRow.getCell(c);
     cell.border = borderStyle;
   }
-  const councilCell = councilRow.getCell(4); // D (NOME)
-  councilCell.value = 'DATA DO CONSELHO DE TURMA______/______/2026';
-  councilCell.font = { name: 'Calibri', size: 11 };
+  
+  sheet.mergeCells(`B${rowNum}:E${rowNum}`);
+  const councilCell = councilRow.getCell(2); // B
+  councilCell.value = 'DATA DO CONSELHO DE TURMA ______ / ______ / 2026';
+  councilCell.font = { name: 'Calibri', size: 9 };
   councilCell.alignment = { horizontal: 'center', vertical: 'middle' };
   
   rowNum++;
