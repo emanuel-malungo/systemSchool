@@ -12,6 +12,40 @@ function columnToLetter(column) {
   return letter;
 }
 
+function abbreviateDiscipline(name) {
+  if (!name) return '';
+  const map = {
+    'LÍNGUA PORTUGUESA': 'L. Port.',
+    'MATEMÁTICA': 'Mat.',
+    'BIOLOGIA': 'Biol.',
+    'INGLÊS': 'Inglês',
+    'QUÍMICA ORGÂNICA': 'Qca Org.',
+    'MICROBIOLOGIA': 'Microbiol.',
+    'HEMATOLOGIA': 'Hemat.',
+    'IMUNOLOGIA': 'Imunol.',
+    'URINÁLISE': 'Urinol.',
+    'URINOLOGIA': 'Urinol.',
+    'PARASITOLOGIA': 'Parasitol.',
+    'EDUCAÇÃO FÍSICA': 'Ed. Física',
+    'ANATOMIA E FISIOLOGIA HUMANA': 'A.F.H',
+    'FÍSICA': 'Física',
+    'QUÍMICA': 'Química',
+    'INFORMÁTICA': 'Inform.',
+    'EMPREENDEDORISMO': 'Empreend.',
+    'GEOGRAFIA': 'Geog.',
+    'HISTÓRIA': 'Hist.'
+  };
+  
+  const upperName = name.toUpperCase().trim();
+  if (map[upperName]) return map[upperName];
+  
+  // Generic fallback if not mapped
+  if (name.length > 10) {
+    return name.substring(0, 1).toUpperCase() + name.substring(1, 8).toLowerCase() + '.';
+  }
+  return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+}
+
 export async function buildPautaExcelTemplate(params) {
   const {
     pautaData,
@@ -40,11 +74,7 @@ export async function buildPautaExcelTemplate(params) {
     right: { style: 'thin', color: { argb: 'FF000000' } }
   };
 
-  const headerFill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FFF2F2F2' }
-  };
+  const headerFill = null;
 
   // Helper for merging and styling range
   function styleAndMergeRange(rangeStr, val, font, fill, border, alignment) {
@@ -364,28 +394,28 @@ export async function buildPautaExcelTemplate(params) {
     const colLetter2 = columnToLetter(colIndex + 1);
     const colLetter3 = columnToLetter(colIndex + 2);
 
-    styleAndMergeRange(`${colLetter1}14:${colLetter3}14`, dName.toUpperCase(), 
-      { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF005080' } },
+    styleAndMergeRange(`${colLetter1}14:${colLetter3}14`, abbreviateDiscipline(dName), 
+      { name: 'Agency FB', size: 9, bold: true, color: { argb: 'FF0070C0' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
     );
 
     styleAndMergeRange(`${colLetter1}15:${colLetter2}15`, 'FALTAS',
-      { name: 'Calibri', size: 8, bold: true },
+      { name: 'Calibri', size: 8, bold: true, italic: true },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
     styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, `MT${codigoTrimestre}º`,
-      { name: 'Calibri', size: 8, bold: true, color: { argb: 'FFC00000' } },
+      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
     styleAndMergeRange(`${colLetter1}16:${colLetter1}16`, 'J',
-      { name: 'Calibri', size: 7, bold: true },
+      { name: 'Calibri', size: 8, bold: true, italic: true },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
     styleAndMergeRange(`${colLetter2}16:${colLetter2}16`, 'I',
-      { name: 'Calibri', size: 7, bold: true },
+      { name: 'Calibri', size: 8, bold: true, italic: true },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
