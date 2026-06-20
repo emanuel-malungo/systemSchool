@@ -118,9 +118,13 @@ export async function buildPautaExcelTemplate(params) {
   sheet.getRow(12).height = 20;
   sheet.getRow(13).height = 20;
 
+  // Cap header width so it doesn't become too wide on tables with many disciplines
+  const headerMaxColIndex = Math.min(maxColIndex, 28);
+  const headerMaxColLetter = columnToLetter(headerMaxColIndex);
+
   // Row 1-4: Institution Name next to logo
   const titleVal = 'INSTITUTO TÉCNICO PRIVADO DE SAÚDE JOMORAIS';
-  styleAndMergeRange(`D2:${maxColLetter}4`, titleVal,
+  styleAndMergeRange(`D2:${headerMaxColLetter}4`, titleVal,
     { name: 'Calibri', size: 20, bold: true },
     null, null, { horizontal: 'left', vertical: 'middle' }
   );
@@ -139,20 +143,20 @@ export async function buildPautaExcelTemplate(params) {
   }
 
   // Row 5: Separator line (Green)
-  styleAndMergeRange(`B5:${maxColLetter}5`, '', 
+  styleAndMergeRange(`B5:${headerMaxColLetter}5`, '', 
     null, null, 
     { bottom: { style: 'medium', color: { argb: 'FF385723' } } }, 
     null
   );
 
   // Row 7: Title
-  styleAndMergeRange(`D7:${maxColLetter}7`, 'PAUTA DE APROVEITAMENTO ESCOLAR',
+  styleAndMergeRange(`D7:${headerMaxColLetter}7`, 'PAUTA DE APROVEITAMENTO ESCOLAR',
     { name: 'Arial Rounded MT Bold', size: 20, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Row 8: Area de formacao
-  styleAndMergeRange(`D8:${maxColLetter}8`, {
+  styleAndMergeRange(`D8:${headerMaxColLetter}8`, {
     richText: [
       { text: 'ÁREA DE FORMAÇÃO: ', font: { name: 'Algerian', size: 18, bold: true } },
       { text: 'SAÚDE', font: { name: 'Algerian', size: 18, bold: true, color: { argb: 'FF0070C0' } } }
@@ -169,8 +173,8 @@ export async function buildPautaExcelTemplate(params) {
   const classStartCol = 7; // G
   const classEndCol = 9;   // I
   
-  const dateEndCol = maxColIndex;
-  const dateStartCol = maxColIndex - 3;
+  const dateEndCol = headerMaxColIndex;
+  const dateStartCol = headerMaxColIndex - 3;
   
   const statsCardEndCol = dateStartCol - 1;
   const statsCardStartCol = statsCardEndCol - 1;
