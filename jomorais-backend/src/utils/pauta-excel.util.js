@@ -503,19 +503,19 @@ export async function buildPautaExcelTemplate(params) {
     cellB.value = index;
     cellB.alignment = { horizontal: 'center', vertical: 'middle' };
     cellB.border = borderStyle;
-    cellB.font = { name: 'Calibri', size: 9 };
+    cellB.font = { name: 'Arial Narrow', size: 9 };
 
     const cellC = row.getCell(3);
     cellC.value = parseInt(info.aluno?.codigo) || index;
     cellC.alignment = { horizontal: 'center', vertical: 'middle' };
     cellC.border = borderStyle;
-    cellC.font = { name: 'Calibri', size: 9 };
+    cellC.font = { name: 'Arial Narrow', size: 9 };
 
     const cellD = row.getCell(4);
     cellD.value = (info.aluno?.nome || 'N/A').toUpperCase();
     cellD.alignment = { horizontal: 'left', vertical: 'middle' };
     cellD.border = borderStyle;
-    cellD.font = { name: 'Calibri', size: 9, bold: true };
+    cellD.font = { name: 'Arial Narrow', size: 9, bold: true };
 
     const repeatDiscs = [];
 
@@ -527,17 +527,17 @@ export async function buildPautaExcelTemplate(params) {
       cellJust.value = '-';
       cellJust.border = borderStyle;
       cellJust.alignment = { horizontal: 'center', vertical: 'middle' };
-      cellJust.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+      cellJust.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
 
       const cellInjust = row.getCell(injustColIdx);
       cellInjust.border = borderStyle;
       cellInjust.alignment = { horizontal: 'center', vertical: 'middle' };
       if (dObj && dObj.faltas !== undefined && dObj.faltas > 0) {
         cellInjust.value = dObj.faltas;
-        cellInjust.font = { name: 'Calibri', size: 9 };
+        cellInjust.font = { name: 'Arial Narrow', size: 9 };
       } else {
         cellInjust.value = '-';
-        cellInjust.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+        cellInjust.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
       }
 
       const cellG = row.getCell(gradeColIdx);
@@ -549,20 +549,20 @@ export async function buildPautaExcelTemplate(params) {
         cellG.value = n;
         cellG.numFmt = '0.0';
         if (n < 10) {
-          cellG.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } };
+          cellG.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FFFF0000' } };
           repeatDiscs.push(dName.substring(0, 5));
         } else {
-          cellG.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } };
+          cellG.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FF0070C0' } };
         }
       } else {
         cellG.value = '-';
-        cellG.font = { name: 'Calibri', size: 9, color: { argb: 'FF7F7F7F' } };
+        cellG.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
       }
     });
 
     const cellE = row.getCell(5);
     cellE.value = repeatDiscs.join(', ');
-    cellE.font = { name: 'Calibri', size: 8, italic: true };
+    cellE.font = { name: 'Arial Narrow', size: 8, italic: true };
     cellE.alignment = { horizontal: 'center', vertical: 'middle' };
     cellE.border = borderStyle;
 
@@ -594,13 +594,13 @@ export async function buildPautaExcelTemplate(params) {
     cellIdade.border = borderStyle;
     cellIdade.alignment = { horizontal: 'center', vertical: 'middle' };
     cellIdade.value = idade;
-    cellIdade.font = { name: 'Calibri', size: 9 };
+    cellIdade.font = { name: 'Arial Narrow', size: 9 };
 
     const cellGenero = row.getCell(colIndex + 3);
     cellGenero.border = borderStyle;
     cellGenero.alignment = { horizontal: 'center', vertical: 'middle' };
     cellGenero.value = genero;
-    cellGenero.font = { name: 'Calibri', size: 9 };
+    cellGenero.font = { name: 'Arial Narrow', size: 9 };
 
     const hasGrades = info.disciplinas?.some(d => d.nota !== null);
     const media = info.mediaGeral || 0;
@@ -613,17 +613,17 @@ export async function buildPautaExcelTemplate(params) {
       
       cellMedia.value = { formula: `AVERAGE(${gradeCells.join(',')})` };
       cellMedia.numFmt = '0.0';
-      cellMedia.font = { name: 'Calibri', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF0070C0' } };
+      cellMedia.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: media < 10 ? 'FFFF0000' : 'FF0070C0' } };
 
       if (!isDesistente) {
         if (info.situacao === 'TRANS') {
           cellObs.value = 'TRANSITA';
-          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF0070C0' } };
+          cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FF0070C0' } };
           if (isM) stats.transita.m++;
           if (isF) stats.transita.f++;
         } else {
           cellObs.value = 'N/TRANSITA';
-          cellObs.font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FFFF0000' } };
+          cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FFFF0000' } };
           if (isM) stats.nTransita.m++;
           if (isF) stats.nTransita.f++;
         }
@@ -634,7 +634,7 @@ export async function buildPautaExcelTemplate(params) {
 
     if (isDesistente) {
       cellObs.value = isM ? 'DESISTIDO' : 'DESISTIDA';
-      cellObs.font = { name: 'Calibri', size: 9, bold: true, italic: true, color: { argb: 'FF7F7F7F' } };
+      cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, italic: true, color: { argb: 'FF7F7F7F' } };
       cellMedia.value = '-';
     } else if (!hasGrades) {
       cellObs.value = '-';
