@@ -661,6 +661,14 @@ export async function buildPautaExcelTemplate(params) {
   councilCell.value = 'DATA DO CONSELHO DE TURMA ______ / ______ / 2026';
   councilCell.font = { name: 'Calibri', size: 9 };
   councilCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+  // Merge the Faltas cells (J and I) for each discipline in this row
+  disciplines.forEach(dName => {
+    const { justColIdx, injustColIdx } = disciplineColsMap[dName];
+    const colLetter1 = columnToLetter(justColIdx);
+    const colLetter2 = columnToLetter(injustColIdx);
+    sheet.mergeCells(`${colLetter1}${rowNum}:${colLetter2}${rowNum}`);
+  });
   
   rowNum++;
 
