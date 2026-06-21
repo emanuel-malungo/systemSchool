@@ -169,10 +169,23 @@ export default function CertificateManagement() {
       )
 
       if (res && res.data && res.data.length > 0) {
-        await CertificateWordGenerator.generateClassWord(res.data as any, turma?.designacao || 'Turma')
-        toast.success('Documento Word da turma gerado com sucesso')
-        setShowClassPrintModal(false)
-        setClassPrintForm({ codigoTurma: '', codigoAnoLectivo: '' })
+        // Verificar pagamentos para a turma toda? 
+        // O plano diz "Se for false bloquear imediatamente...". 
+        // Se a pessoa descarrega a turma toda, vamos filtrar quem tem pagamento, ou bloqueamos se 1 nao tiver?
+        // Como o certificado da turma tem varios alunos, a regra lógica é gerar apenas para os alunos que pagaram
+        // Mas a prompt fala "O aluno não tem o pagamento do Certificado confirmado" o que se aplica a 1.
+        // Vou filtrar apenas os válidos e avisar se houver bloqueados.
+        const validos = res.data.filter((cert: any) => cert.temPagamento !== false)
+        const bloqueados = res.data.length - validos.length
+
+        if (validos.length > 0) {
+          await CertificateWordGenerator.generateClassWord(validos as any, turma?.designacao || 'Turma')
+          toast.success(`Documento da turma gerado. ${bloqueados > 0 ? `(${bloqueados} aluno(s) bloqueados por falta de pagamento)` : ''}`)
+          setShowClassPrintModal(false)
+          setClassPrintForm({ codigoTurma: '', codigoAnoLectivo: '' })
+        } else {
+          toast.error('Impressão bloqueada: Nenhum aluno da turma tem o pagamento do Certificado confirmado.')
+        }
       } else {
         toast.warning('Nenhum certificado válido encontrado para esta turma neste ano letivo.')
       }
@@ -216,7 +229,12 @@ export default function CertificateManagement() {
       setIsDownloading(certificateId)
       const res = await certificateService.getCertificateById(certificateId)
       if (res && res.data) {
-        await CertificateWordGenerator.generateWord(res.data as any)
+        const certData: any = res.data
+        if (certData.temPagamento === false) {
+          toast.error('Impressão bloqueada: O aluno não tem o pagamento do Certificado confirmado.')
+          return
+        }
+        await CertificateWordGenerator.generateWord(certData)
         toast.success('Documento Word gerado com sucesso')
       } else {
         toast.error('Erro ao obter dados do certificado')

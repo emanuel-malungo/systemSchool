@@ -473,10 +473,34 @@ export class CertificatesService {
       const totalNotas = grades.reduce((acc, curr) => acc + curr.Nota, 0);
       const media = grades.length > 0 ? (totalNotas / grades.length) : 14;
 
+      // ── VERIFICAÇÃO DE PAGAMENTO ──
+      // Procurar se existe um serviço do tipo Certificado
+      const servicoCertificado = await prisma.tb_tipo_servicos.findFirst({
+        where: { designacao: { contains: 'Certificado' } }
+      });
+
+      let temPagamento = false;
+
+      if (servicoCertificado) {
+        // Verificar se há pagamento ativo para este aluno e este serviço
+        const pagamento = await prisma.tb_pagamentos.findFirst({
+          where: {
+            codigo_Aluno: certificado.Codigo_Aluno,
+            codigo_Tipo_Servico: servicoCertificado.codigo,
+            codigo_Estatus: 1 // 1 = Activo/Pago
+          }
+        });
+
+        if (pagamento) {
+          temPagamento = true;
+        }
+      }
+
       return {
         ...certificado,
         mediaFinal: parseFloat(media.toFixed(1)),
-        gradeDetails
+        gradeDetails,
+        temPagamento
       };
     } catch (error) {
       if (error instanceof AppError) throw error;
