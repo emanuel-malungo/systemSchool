@@ -20,7 +20,7 @@ import {
 } from '../../../hooks/useCertificate'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
-import { useAuth } from '../../../hooks/useAuth'
+import { usePermissions } from '../../../hooks/useAuth'
 import { toast } from 'react-toastify'
 import type { ITurma } from '../../../types/turma.types'
 import { CertificateWordGenerator } from '../../../utils/CertificateWordGenerator'
@@ -28,7 +28,8 @@ import certificateService from '../../../services/certificate.service'
 
 export default function CertificateManagement() {
   usePageTitle('Gestão de Certificados')
-  const { user } = useAuth()
+  const { user, userType } = usePermissions()
+  const isViewOnlyRole = userType === 'pedagogico' || userType === 'chefe de secretaria' || userType === 'assistente administrativo'
 
   // Estados
   const [filterAnoLectivo, setFilterAnoLectivo] = useState('')
@@ -185,13 +186,15 @@ export default function CertificateManagement() {
             </h1>
             <p className="text-gray-600 mt-2">Emitir, assinar e gerenciar certificados de alunos</p>
           </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Novo Certificado
-          </button>
+          {!isViewOnlyRole && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Novo Certificado
+            </button>
+          )}
         </div>
 
         {/* Filtros */}
@@ -328,7 +331,7 @@ export default function CertificateManagement() {
                           <Eye className="w-4 h-4" />
                         </button>
 
-                        {cert.Status === 'Pendente' && (
+                        {!isViewOnlyRole && cert.Status === 'Pendente' && (
                           <button
                             onClick={() => handleSignCertificate(cert.Codigo)}
                             disabled={isSigning}
@@ -358,7 +361,7 @@ export default function CertificateManagement() {
                           </button>
                         )}
 
-                        {cert.Status !== 'Cancelado' && (
+                        {!isViewOnlyRole && cert.Status !== 'Cancelado' && (
                           <button
                             onClick={() => handleDeleteCertificate(cert.Codigo)}
                             disabled={isDeleting}
@@ -613,7 +616,7 @@ export default function CertificateManagement() {
               >
                 Fechar
               </button>
-              {selectedCertificate.Status === 'Pendente' && (
+              {!isViewOnlyRole && selectedCertificate.Status === 'Pendente' && (
                 <button
                   onClick={() => {
                     handleSignCertificate(selectedCertificate.Codigo)

@@ -273,7 +273,7 @@ export class CertificatePdfGenerator {
     y += 10
 
     // ── CORPO DO TEXTO ──
-    const toTitleCase = (str: string) => {
+    const toTitleCase = (str: string | null | undefined) => {
       if (!str || str === 'N/A') return 'N/A';
       const lowercaseWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
       return str.toLowerCase().split(' ').map((word, index) => {

@@ -126,7 +126,7 @@ export class CertificateWordGenerator {
       private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
     const logoBuffer = await this.loadLogo()
 
-    const toTitleCase = (str: string) => {
+    const toTitleCase = (str: string | null | undefined) => {
       if (!str || str === 'N/A') return 'N/A';
       const lowercaseWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
       return str.toLowerCase().split(' ').map((word, index) => {

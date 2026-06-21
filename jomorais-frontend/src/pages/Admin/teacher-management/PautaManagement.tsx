@@ -21,6 +21,7 @@ import {
 } from '../../../hooks/useGrade'
 import { useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
+import { usePermissions } from '../../../hooks/useAuth'
 import type { ITurma } from '../../../types/turma.types'
 import { toast } from 'react-toastify'
 
@@ -34,6 +35,9 @@ interface FilterState {
 
 export default function PautaManagement() {
   usePageTitle('Gestão de Pautas')
+  const { userType } = usePermissions()
+  const isViewOnlyRole = userType === 'pedagogico' || userType === 'chefe de secretaria' || userType === 'assistente administrativo'
+  
   // Estados de filtro
   const [filters, setFilters] = useState<FilterState>({
     codigoTurma: '',
@@ -287,14 +291,16 @@ export default function PautaManagement() {
           </div>
 
           <div className="flex items-end">
-            <button
-              onClick={() => setShowGenerateConfirm(true)}
-              disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGeneratingPauta}
-              className="w-full py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
-            >
-              {isGeneratingPauta ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
-              Gerar Pauta
-            </button>
+            {!isViewOnlyRole && (
+              <button
+                onClick={() => setShowGenerateConfirm(true)}
+                disabled={!filters.codigoTurma || !filters.codigoAnoLectivo || isGeneratingPauta}
+                className="w-full py-2 bg-[#007C00] text-white rounded-lg hover:bg-[#005a00] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
+              >
+                {isGeneratingPauta ? <Loader2 className="h-5 w-5 animate-spin" /> : <BarChart3 className="h-5 w-5" />}
+                Gerar Pauta
+              </button>
+            )}
           </div>
         </div>
       </div>
