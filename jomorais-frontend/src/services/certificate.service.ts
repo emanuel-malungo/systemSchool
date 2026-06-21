@@ -71,6 +71,23 @@ class CertificateService {
   }
 
   /**
+   * Busca todos os certificados completos de uma turma
+   * @param codigoTurma - Código da turma
+   * @param codigoAnoLectivo - Código do ano letivo
+   */
+  async getClassCertificatesFull(codigoTurma: number, codigoAnoLectivo: number): Promise<{ success: boolean, data: CertificateResponse[] }> {
+    try {
+      const response = await api.get<{ success: boolean, data: CertificateResponse[] }>(
+        `${this.baseURL}/class/${codigoTurma}/ano/${codigoAnoLectivo}`
+      )
+      return response.data
+    } catch (error) {
+      console.error(`Erro ao buscar certificados da turma ${codigoTurma}:`, error)
+      throw error
+    }
+  }
+
+  /**
    * Cria um novo certificado
    * @param data - Dados do certificado
    * @returns Promise com certificado criado

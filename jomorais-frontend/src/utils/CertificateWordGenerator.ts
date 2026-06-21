@@ -112,19 +112,49 @@ export class CertificateWordGenerator {
     const classeDesignacao = confirmacao?.tb_turmas?.tb_classes?.designacao || ''
     const isNonaClasse = classeDesignacao.toLowerCase().includes('9ª')
 
+    const logoBuffer = await this.loadLogo()
+    let section;
+
     if (isNonaClasse) {
-      await this.generate9thClassWord(data)
+      section = await this.build9thClassSection(data, logoBuffer)
     } else {
-      await this.generateMiddleClassWord(data)
+      section = await this.buildMiddleClassSection(data, logoBuffer)
     }
+
+    const doc = new Document({ sections: [section] })
+    const blob = await Packer.toBlob(doc)
+    const nomeAluno = data.tb_alunos.nome || 'Aluno'
+    this.downloadBlob(blob, `Certificado_${nomeAluno.replace(/\s+/g, '_')}.docx`)
+  }
+
+  static async generateClassWord(certificates: ICertificatePdfData[], turmaNome: string): Promise<void> {
+    const logoBuffer = await this.loadLogo()
+    const sections: any[] = []
+
+    for (const data of certificates) {
+      const confirmacao = data.tb_alunos.tb_matriculas?.tb_confirmacoes?.[0]
+      const classeDesignacao = confirmacao?.tb_turmas?.tb_classes?.designacao || ''
+      const isNonaClasse = classeDesignacao.toLowerCase().includes('9ª')
+
+      if (isNonaClasse) {
+        sections.push(await this.build9thClassSection(data, logoBuffer))
+      } else {
+        sections.push(await this.buildMiddleClassSection(data, logoBuffer))
+      }
+    }
+
+    if (sections.length === 0) return;
+
+    const doc = new Document({ sections })
+    const blob = await Packer.toBlob(doc)
+    this.downloadBlob(blob, `Certificados_Turma_${turmaNome.replace(/\s+/g, '_')}.docx`)
   }
 
   // ══════════════════════════════════════════════════════════════════
   // LAYOUT 1: CERTIFICADO DA 9ª CLASSE (ENSINO GERAL)
   // ══════════════════════════════════════════════════════════════════
 
-      private static async generate9thClassWord(data: ICertificatePdfData): Promise<void> {
-    const logoBuffer = await this.loadLogo()
+  private static async build9thClassSection(data: ICertificatePdfData, logoBuffer: ArrayBuffer | undefined): Promise<any> {
 
     const toTitleCase = (str: string | null | undefined) => {
       if (!str || str === 'N/A') return 'N/A';
@@ -624,51 +654,43 @@ export class CertificateWordGenerator {
       ],
     })
     // ── Montar Documento ──
-    const doc = new Document({
-      sections: [
-        {
-          properties: {
-            page: {
-              margin: { top: 850, right: 850, bottom: 850, left: 850 }, // Margins 15mm (850 dxa)
-              borders: {
-                pageBorders: {
-                  offsetFrom: 'text',
-                },
-                pageBorderTop: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 }, // Much thicker border (4pt)
-                pageBorderBottom: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
-                pageBorderLeft: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
-                pageBorderRight: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
-              },
+    return {
+      properties: {
+        page: {
+          margin: { top: 850, right: 850, bottom: 850, left: 850 }, // Margins 15mm (850 dxa)
+          borders: {
+            pageBorders: {
+              offsetFrom: 'text',
             },
+            pageBorderTop: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 }, // Much thicker border (4pt)
+            pageBorderBottom: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
+            pageBorderLeft: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
+            pageBorderRight: { style: BorderStyle.SINGLE, size: 32, color: '000000', space: 16 },
           },
-          children: [
-            logoParagraph,
-            headerP1,
-            headerP2,
-            headerP3,
-            titleParagraph,
-            p1,
-            p2,
-            escolaParagraph,
-            gradesTable,
-            pTerms,
-            pDate,
-            signatureTable,
-          ],
         },
+      },
+      children: [
+        logoParagraph,
+        headerP1,
+        headerP2,
+        headerP3,
+        titleParagraph,
+        p1,
+        p2,
+        escolaParagraph,
+        gradesTable,
+        pTerms,
+        pDate,
+        signatureTable,
       ],
-    })
-
-    const blob = await Packer.toBlob(doc)
-    this.downloadBlob(blob, `Certificado_9Classe_${nomeAluno.replace(/\s+/g, '_')}.docx`)
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════
   // LAYOUT 2: CERTIFICADO DO ENSINO MÉDIO (TÉCNICO PROFISSIONAL)
   // ══════════════════════════════════════════════════════════════════
 
-  private static async generateMiddleClassWord(data: ICertificatePdfData): Promise<void> {
-    const logoBuffer = await this.loadLogo()
+  private static async buildMiddleClassSection(data: ICertificatePdfData, logoBuffer: ArrayBuffer | undefined): Promise<any> {
 
     const aluno = data.tb_alunos
     const nomeAluno = (aluno.nome || 'N/A').toUpperCase()
@@ -1060,38 +1082,31 @@ export class CertificateWordGenerator {
     })
 
     // ── Montar Documento ──
-    const doc = new Document({
-      sections: [
-        {
-          properties: {
-            page: {
-              margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 },
-              borders: {
-                pageBorders: {
-                  offsetFrom: 'text',
-                },
-                pageBorderTop: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
-                pageBorderBottom: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
-                pageBorderLeft: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
-                pageBorderRight: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
-              },
+    return {
+      properties: {
+        page: {
+          margin: { top: 1134, right: 1247, bottom: 1134, left: 1247 },
+          borders: {
+            pageBorders: {
+              offsetFrom: 'text',
             },
+            pageBorderTop: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+            pageBorderBottom: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+            pageBorderLeft: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
+            pageBorderRight: { style: BorderStyle.TRIPLE, size: 12, color: '000000', space: 16 },
           },
-          children: [
-            headerTable,
-            titleParagraph,
-            subtitleParagraph,
-            bodyParagraph,
-            gradesTable,
-            pEnd,
-            pDatePlace,
-            signatureTable,
-          ],
         },
+      },
+      children: [
+        headerTable,
+        titleParagraph,
+        subtitleParagraph,
+        bodyParagraph,
+        gradesTable,
+        pEnd,
+        pDatePlace,
+        signatureTable,
       ],
-    })
-
-    const blob = await Packer.toBlob(doc)
-    this.downloadBlob(blob, `Certificado_Medio_${nomeAluno.replace(/\s+/g, '_')}.docx`)
+    }
   }
 }

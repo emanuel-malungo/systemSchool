@@ -39,6 +39,7 @@ export default function CertificateManagement() {
   const [page, setPage] = useState(1)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showClassCreateModal, setShowClassCreateModal] = useState(false)
+  const [showClassPrintModal, setShowClassPrintModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedCertificate, setSelectedCertificate] = useState<any>(null)
   const [isDownloading, setIsDownloading] = useState<number | null>(null)
@@ -55,6 +56,11 @@ export default function CertificateManagement() {
     codigoTurma: '',
     codigoAnoLectivo: '',
     observacoes: '',
+  })
+
+  const [classPrintForm, setClassPrintForm] = useState({
+    codigoTurma: '',
+    codigoAnoLectivo: '',
   })
 
   // Hooks de dados
@@ -148,6 +154,35 @@ export default function CertificateManagement() {
     }
   }
 
+  const handlePrintClass = async () => {
+    if (!classPrintForm.codigoTurma || !classPrintForm.codigoAnoLectivo) {
+      toast.error('Preencha o Ano Letivo e a Turma obrigatórios')
+      return
+    }
+
+    try {
+      setIsDownloading(-1) // Using -1 to indicate class download
+      const turma = turmas.find((t: ITurma) => t.codigo?.toString() === classPrintForm.codigoTurma)
+      const res = await certificateService.getClassCertificatesFull(
+        parseInt(classPrintForm.codigoTurma),
+        parseInt(classPrintForm.codigoAnoLectivo)
+      )
+
+      if (res && res.data && res.data.length > 0) {
+        await CertificateWordGenerator.generateClassWord(res.data as any, turma?.designacao || 'Turma')
+        toast.success('Documento Word da turma gerado com sucesso')
+        setShowClassPrintModal(false)
+        setClassPrintForm({ codigoTurma: '', codigoAnoLectivo: '' })
+      } else {
+        toast.warning('Nenhum certificado válido encontrado para esta turma neste ano letivo.')
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao gerar documento Word da turma')
+    } finally {
+      setIsDownloading(null)
+    }
+  }
+
   const handleSignCertificate = async (certificateId: number) => {
     if (!user?.id) {
       toast.error('Usuário não identificado')
@@ -220,6 +255,13 @@ export default function CertificateManagement() {
           </div>
           {!isViewOnlyRole && (
             <div className="flex gap-2">
+              <button
+                onClick={() => setShowClassPrintModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                {isDownloading === -1 ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                Imprimir Turma
+              </button>
               <button
                 onClick={() => setShowClassCreateModal(true)}
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
@@ -644,6 +686,80 @@ export default function CertificateManagement() {
               >
                 {isCreatingClass && <Loader2 className="w-4 h-4 animate-spin" />}
                 Gerar Turma
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Imprimir Turma */}
+      {showClassPrintModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <h2 className="text-2xl font-bold mb-4">Descarregar Certificados da Turma</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ano Letivo *
+                </label>
+                <select
+                  value={classPrintForm.codigoAnoLectivo}
+                  onChange={(e) =>
+                    setClassPrintForm({ ...classPrintForm, codigoAnoLectivo: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">Selecione...</option>
+                  {anosLetivos.map((ano, idx) => (
+                    <option key={`print-ano-${idx}-${ano.codigo}`} value={ano.codigo || ''}>
+                      {ano.designacao}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Turma *
+                </label>
+                <select
+                  value={classPrintForm.codigoTurma}
+                  onChange={(e) =>
+                    setClassPrintForm({ ...classPrintForm, codigoTurma: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">Selecione...</option>
+                  {turmas
+                    .filter(
+                      (t: ITurma) =>
+                        !classPrintForm.codigoAnoLectivo ||
+                        t.codigo_AnoLectivo?.toString() === classPrintForm.codigoAnoLectivo
+                    )
+                    .map((turma: ITurma) => (
+                      <option key={`print-turma-${turma.codigo}`} value={turma.codigo || ''}>
+                        {turma.designacao}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                onClick={() => setShowClassPrintModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handlePrintClass}
+                disabled={isDownloading === -1}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDownloading === -1 && <Loader2 className="w-4 h-4 animate-spin" />}
+                Descarregar Word
               </button>
             </div>
           </div>

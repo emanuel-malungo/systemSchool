@@ -163,6 +163,29 @@ router.get('/:id', CertificatesController.getCertificateById);
 
 /**
  * @swagger
+ * /api/certificates/class/{codigoTurma}/ano/{codigoAnoLectivo}:
+ *   get:
+ *     summary: Obter todos os certificados completos de uma turma
+ *     tags: [Gestão de Certificados]
+ *     parameters:
+ *       - in: path
+ *         name: codigoTurma
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: codigoAnoLectivo
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Certificados completos encontrados
+ */
+router.get('/class/:codigoTurma/ano/:codigoAnoLectivo', CertificatesController.getClassCertificatesFull);
+
+/**
+ * @swagger
  * /api/certificates/{id}:
  *   put:
  *     summary: Atualizar certificado

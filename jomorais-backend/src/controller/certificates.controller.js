@@ -98,6 +98,28 @@ export class CertificatesController {
   }
 
   /**
+   * Obter todos os certificados completos de uma turma
+   */
+  static async getClassCertificatesFull(req, res) {
+    try {
+      const { codigoTurma, codigoAnoLectivo } = req.params;
+
+      const certificados = await CertificatesService.getClassCertificatesFull(
+        parseInt(codigoTurma),
+        parseInt(codigoAnoLectivo)
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: 'Certificados da turma obtidos com sucesso',
+        data: certificados
+      });
+    } catch (error) {
+      return handleControllerError(res, error, 'Erro ao obter certificados da turma', 400);
+    }
+  }
+
+  /**
    * Atualizar certificado
    */
   static async updateCertificate(req, res) {

@@ -136,9 +136,37 @@ export function useCreateClassCertificates() {
       certificateService.createClassCertificates(data),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: certificateKeys.lists() })
-      toast.success(
-        `Processado: ${response.data.totalProcessados} alunos. Criados: ${response.data.criados}. Falhados: ${response.data.falhados}.`
-      )
+      
+      let msg = `Processados: ${response.data.totalProcessados} alunos.\nCriados: ${response.data.criados}.\nFalhados: ${response.data.falhados}.`
+      
+      if (response.data.falhados > 0 && response.data.detalhesErro?.length > 0) {
+        // Agrupar erros para resumir
+        const errorCounts: Record<string, number> = {}
+        response.data.detalhesErro.forEach((d: any) => {
+          // Simplificar algumas mensagens para caber no toast
+          let erroMsg = d.erro
+          if (erroMsg.includes('Não foram encontradas notas lançadas')) {
+            erroMsg = 'Sem notas lançadas'
+          } else if (erroMsg.includes('O aluno reprovou')) {
+            erroMsg = 'Aluno reprovado'
+          } else if (erroMsg.includes('O aluno não possui notas lançadas para as seguintes')) {
+            erroMsg = 'Faltam notas da grade'
+          } else if (erroMsg.includes('Certificado já existe')) {
+            erroMsg = 'Certificado já existia'
+          }
+          
+          errorCounts[erroMsg] = (errorCounts[erroMsg] || 0) + 1
+        })
+        
+        const reasons = Object.entries(errorCounts)
+          .map(([err, count]) => `${count}x ${err}`)
+          .join('\n')
+          
+        msg += `\n\nPrincipais motivos:\n${reasons}`
+        toast.warning(msg, { style: { whiteSpace: 'pre-line' }, autoClose: 8000 })
+      } else {
+        toast.success(msg, { style: { whiteSpace: 'pre-line' } })
+      }
     },
     onError: (error: ApiError) => {
       const message =

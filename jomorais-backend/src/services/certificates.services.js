@@ -485,6 +485,47 @@ export class CertificatesService {
   }
 
   /**
+   * Obter todos os certificados detalhados de uma turma
+   */
+  static async getClassCertificatesFull(codigoTurma, codigoAnoLectivo) {
+    try {
+      const confirmacoes = await prisma.tb_confirmacoes.findMany({
+        where: {
+          codigo_Turma: parseInt(codigoTurma),
+          codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
+        },
+        select: {
+          tb_matriculas: {
+            select: { codigo_Aluno: true }
+          }
+        }
+      });
+      
+      const codigosAlunos = confirmacoes.map(c => c.tb_matriculas.codigo_Aluno);
+      
+      if (codigosAlunos.length === 0) return [];
+
+      const certificados = await prisma.tb_certificados.findMany({
+        where: {
+          Codigo_AnoLectivo: parseInt(codigoAnoLectivo),
+          Codigo_Aluno: { in: codigosAlunos },
+          Status: { not: 'Cancelado' }
+        },
+        select: { Codigo: true }
+      });
+
+      const fullCertificados = await Promise.all(
+        certificados.map(c => this.getCertificateById(c.Codigo))
+      );
+
+      return fullCertificados;
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Erro ao buscar certificados da turma', 500, 'GET_CLASS_ERROR', { originalError: error.message });
+    }
+  }
+
+  /**
    * Atualizar certificado
    */
   static async updateCertificate(id, data) {
