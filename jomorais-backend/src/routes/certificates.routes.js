@@ -80,6 +80,32 @@ router.post('/', CertificatesController.createCertificate);
 
 /**
  * @swagger
+ * /api/certificates/class:
+ *   post:
+ *     summary: Criar certificados para toda a turma
+ *     tags: [Gestão de Certificados]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - codigoTurma
+ *               - codigoAnoLectivo
+ *             properties:
+ *               codigoTurma:
+ *                 type: integer
+ *               codigoAnoLectivo:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Certificados processados com sucesso
+ */
+router.post('/class', CertificatesController.createClassCertificates);
+
+/**
+ * @swagger
  * /api/certificates:
  *   get:
  *     summary: Listar certificados com filtros

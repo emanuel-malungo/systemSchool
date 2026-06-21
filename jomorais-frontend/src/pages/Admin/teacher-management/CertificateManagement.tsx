@@ -17,6 +17,7 @@ import {
   useCreateCertificate,
   useSignCertificate,
   useDeleteCertificate,
+  useCreateClassCertificates,
 } from '../../../hooks/useCertificate'
 import { useAlunosByTurma, useTurmasComplete } from '../../../hooks/useTurma'
 import { useAnosLectivos } from '../../../hooks/useAnoLectivo'
@@ -37,6 +38,7 @@ export default function CertificateManagement() {
   const [filterStatus, setFilterStatus] = useState('')
   const [page, setPage] = useState(1)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showClassCreateModal, setShowClassCreateModal] = useState(false)
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [selectedCertificate, setSelectedCertificate] = useState<any>(null)
   const [isDownloading, setIsDownloading] = useState<number | null>(null)
@@ -45,6 +47,12 @@ export default function CertificateManagement() {
   const [createForm, setCreateForm] = useState({
     codigoTurma: '',
     codigoAluno: '',
+    codigoAnoLectivo: '',
+    observacoes: '',
+  })
+
+  const [classCreateForm, setClassCreateForm] = useState({
+    codigoTurma: '',
     codigoAnoLectivo: '',
     observacoes: '',
   })
@@ -87,6 +95,7 @@ export default function CertificateManagement() {
 
   // Mutations
   const { mutateAsync: createCertificate, isPending: isCreating } = useCreateCertificate()
+  const { mutateAsync: createClassCertificates, isPending: isCreatingClass } = useCreateClassCertificates()
   const { mutateAsync: signCertificate, isPending: isSigning } = useSignCertificate()
   const { mutateAsync: deleteCertificate, isPending: isDeleting } = useDeleteCertificate()
 
@@ -113,6 +122,29 @@ export default function CertificateManagement() {
       })
     } catch (error: any) {
       toast.error(error.message || 'Erro ao criar certificado')
+    }
+  }
+
+  const handleCreateClassCertificates = async () => {
+    if (!classCreateForm.codigoTurma || !classCreateForm.codigoAnoLectivo) {
+      toast.error('Preencha o Ano Letivo e a Turma obrigatórios')
+      return
+    }
+
+    try {
+      await createClassCertificates({
+        codigoTurma: parseInt(classCreateForm.codigoTurma),
+        codigoAnoLectivo: parseInt(classCreateForm.codigoAnoLectivo),
+        observacoes: classCreateForm.observacoes,
+      })
+      setShowClassCreateModal(false)
+      setClassCreateForm({
+        codigoTurma: '',
+        codigoAnoLectivo: '',
+        observacoes: '',
+      })
+    } catch (error: any) {
+      // error handled by mutation
     }
   }
 
@@ -187,13 +219,22 @@ export default function CertificateManagement() {
             <p className="text-gray-600 mt-2">Emitir, assinar e gerenciar certificados de alunos</p>
           </div>
           {!isViewOnlyRole && (
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Novo Certificado
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowClassCreateModal(true)}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Gerar para Turma
+              </button>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Novo Certificado
+              </button>
+            </div>
           )}
         </div>
 
@@ -514,6 +555,95 @@ export default function CertificateManagement() {
               >
                 {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
                 Criar Certificado
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Criar Certificado para Turma */}
+      {showClassCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <h2 className="text-2xl font-bold mb-4">Gerar Certificados para Turma</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ano Letivo *
+                </label>
+                <select
+                  value={classCreateForm.codigoAnoLectivo}
+                  onChange={(e) =>
+                    setClassCreateForm({ ...classCreateForm, codigoAnoLectivo: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">Selecione...</option>
+                  {anosLetivos.map((ano, idx) => (
+                    <option key={`class-ano-${idx}-${ano.codigo}`} value={ano.codigo || ''}>
+                      {ano.designacao}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Turma *
+                </label>
+                <select
+                  value={classCreateForm.codigoTurma}
+                  onChange={(e) =>
+                    setClassCreateForm({ ...classCreateForm, codigoTurma: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="">Selecione...</option>
+                  {turmas
+                    .filter(
+                      (t: ITurma) =>
+                        !classCreateForm.codigoAnoLectivo ||
+                        t.codigo_AnoLectivo?.toString() === classCreateForm.codigoAnoLectivo
+                    )
+                    .map((turma: ITurma) => (
+                      <option key={`class-turma-${turma.codigo}`} value={turma.codigo || ''}>
+                        {turma.designacao}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Observações
+                </label>
+                <textarea
+                  value={classCreateForm.observacoes}
+                  onChange={(e) =>
+                    setClassCreateForm({ ...classCreateForm, observacoes: e.target.value })
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  placeholder="Notas adicionais..."
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-6">
+              <button
+                onClick={() => setShowClassCreateModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateClassCertificates}
+                disabled={isCreatingClass}
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isCreatingClass && <Loader2 className="w-4 h-4 animate-spin" />}
+                Gerar Turma
               </button>
             </div>
           </div>

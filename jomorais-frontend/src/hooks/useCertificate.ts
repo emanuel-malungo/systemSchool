@@ -126,6 +126,29 @@ export function useCreateCertificate() {
 }
 
 /**
+ * Hook para criar certificados em lote (Turma)
+ */
+export function useCreateClassCertificates() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { codigoTurma: number; codigoAnoLectivo: number; observacoes?: string }) =>
+      certificateService.createClassCertificates(data),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: certificateKeys.lists() })
+      toast.success(
+        `Processado: ${response.data.totalProcessados} alunos. Criados: ${response.data.criados}. Falhados: ${response.data.falhados}.`
+      )
+    },
+    onError: (error: ApiError) => {
+      const message =
+        error?.response?.data?.message || error?.message || 'Erro ao criar certificados da turma'
+      toast.error(message)
+    },
+  })
+}
+
+/**
  * Hook para atualizar certificado
  */
 export function useUpdateCertificate() {

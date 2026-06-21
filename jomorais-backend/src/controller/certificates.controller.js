@@ -30,6 +30,29 @@ export class CertificatesController {
   }
 
   /**
+   * Criar certificados para toda a turma
+   */
+  static async createClassCertificates(req, res) {
+    try {
+      const { codigoTurma, codigoAnoLectivo, observacoes } = req.body;
+      
+      const resultado = await CertificatesService.createClassCertificates({
+        codigoTurma,
+        codigoAnoLectivo,
+        observacoes
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: 'Processamento de certificados concluído',
+        data: resultado
+      });
+    } catch (error) {
+      return handleControllerError(res, error, 'Erro ao criar certificados para a turma', 400);
+    }
+  }
+
+  /**
    * Listar certificados com paginação
    */
   static async getCertificates(req, res) {

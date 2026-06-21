@@ -86,6 +86,21 @@ class CertificateService {
   }
 
   /**
+   * Cria certificados para uma turma inteira
+   * @param data - Dados da turma
+   * @returns Promise com o sumario da operacao
+   */
+  async createClassCertificates(data: { codigoTurma: number; codigoAnoLectivo: number; observacoes?: string }): Promise<{ success: boolean; message: string; data: any }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string; data: any }>(`${this.baseURL}/class`, data)
+      return response.data
+    } catch (error) {
+      console.error('Erro ao criar certificados da turma:', error)
+      throw error
+    }
+  }
+
+  /**
    * Atualiza um certificado existente
    * @param id - Código do certificado
    * @param data - Dados a atualizar

@@ -94,7 +94,7 @@ export class CertificatesService {
           throw new AppError('O aluno não possui confirmação de matrícula ativa para o ano letivo selecionado', 400, 'NO_ENROLLMENT');
         }
 
-        // 2. Validar se o aluno foi aprovado globalmente (média das notas de cada disciplina >= 10)
+        // 2. Validar se o aluno foi aprovado globalmente em todas as disciplinas da grade
         const grades = await tx.tb_notas_alunos.findMany({
           where: {
             CodigoAluno: codigoAluno,
@@ -109,14 +109,12 @@ export class CertificatesService {
           throw new AppError('Não foram encontradas notas lançadas para este aluno no ano letivo selecionado', 400, 'NO_GRADES');
         }
 
-        // Agrupar por disciplina e calcular média
+        // Agrupar notas lançadas por disciplina
         const disciplinasNotas = {};
         grades.forEach(nota => {
           const discId = nota.CodigoDisciplina;
-          const discNome = nota.tb_disciplinas?.designacao || 'Desconhecida';
           if (!disciplinasNotas[discId]) {
             disciplinasNotas[discId] = {
-              designacao: discNome,
               soma: 0,
               count: 0
             };
@@ -125,12 +123,55 @@ export class CertificatesService {
           disciplinasNotas[discId].count += 1;
         });
 
-        // Validar aprovação em todas
-        for (const [discId, info] of Object.entries(disciplinasNotas)) {
-          const media = info.soma / info.count;
-          if (media < 10) {
-            throw new AppError(`Aluno reprovado na disciplina "${info.designacao}". Média final obtida: ${media.toFixed(1)} (mínimo de 10.0 necessário)`, 400, 'NOT_APPROVED');
+        // Obter os dados da turma para buscar a grade curricular
+        const turma = await tx.tb_turmas.findUnique({
+          where: { codigo: enrollment.codigo_Turma }
+        });
+
+        if (!turma) {
+          throw new AppError('Turma não encontrada para esta matrícula', 404, 'CLASS_NOT_FOUND');
+        }
+
+        // Buscar disciplinas obrigatórias na grade curricular
+        const gradeCurricular = await tx.tb_grade_curricular.findMany({
+          where: {
+            codigo_Classe: turma.codigo_Classe,
+            codigo_Curso: turma.codigo_Curso,
+            status: 1
+          },
+          include: {
+            tb_disciplinas: { select: { codigo: true, designacao: true } }
           }
+        });
+
+        if (gradeCurricular.length === 0) {
+          throw new AppError('Não foi possível encontrar a grade curricular ativa para a turma deste aluno.', 400, 'NO_CURRICULUM');
+        }
+
+        const missingDisciplinas = [];
+        const failedDisciplinas = [];
+
+        gradeCurricular.forEach(gradeItem => {
+          const discId = gradeItem.codigo_disciplina;
+          const discName = gradeItem.tb_disciplinas?.designacao || 'Desconhecida';
+          
+          const info = disciplinasNotas[discId];
+          if (!info) {
+            missingDisciplinas.push(discName);
+          } else {
+            const media = info.soma / info.count;
+            if (media < 10) {
+              failedDisciplinas.push(`${discName} (Média: ${media.toFixed(1)})`);
+            }
+          }
+        });
+
+        if (missingDisciplinas.length > 0) {
+          throw new AppError(`O aluno não possui notas lançadas para as seguintes disciplinas obrigatórias: ${missingDisciplinas.join(', ')}`, 400, 'MISSING_GRADES');
+        }
+
+        if (failedDisciplinas.length > 0) {
+          throw new AppError(`O aluno reprovou nas seguintes disciplinas: ${failedDisciplinas.join(', ')}. (Mínimo de 10.0 necessário)`, 400, 'NOT_APPROVED');
         }
 
         // 3. Verificar se já existe certificado cadastrado
@@ -175,6 +216,76 @@ export class CertificatesService {
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError('Erro ao criar certificado', 500, 'CREATE_ERROR', { originalError: error.message });
+    }
+  }
+
+  /**
+   * Criar certificados para toda a turma
+   */
+  static async createClassCertificates(data) {
+    try {
+      const { codigoTurma, codigoAnoLectivo, observacoes } = data;
+
+      if (!codigoTurma || !codigoAnoLectivo) {
+        throw new AppError('Campos obrigatórios: codigoTurma, codigoAnoLectivo', 400, 'MISSING_FIELDS');
+      }
+
+      // Buscar todos os alunos confirmados na turma neste ano letivo
+      const confirmacoes = await prisma.tb_confirmacoes.findMany({
+        where: {
+          codigo_Turma: parseInt(codigoTurma),
+          codigo_Ano_lectivo: parseInt(codigoAnoLectivo)
+        },
+        include: {
+          tb_matriculas: {
+            select: { codigo_Aluno: true }
+          }
+        }
+      });
+
+      if (confirmacoes.length === 0) {
+        throw new AppError('Nenhum aluno matriculado/confirmado nesta turma.', 404, 'NO_STUDENTS');
+      }
+
+      let criados = 0;
+      let falhados = 0;
+      const detalhesErro = [];
+
+      for (const conf of confirmacoes) {
+        const codigoAluno = conf.tb_matriculas.codigo_Aluno;
+        try {
+          await this.createCertificate({
+            codigoAluno,
+            codigoAnoLectivo: parseInt(codigoAnoLectivo),
+            observacoes
+          });
+          criados++;
+        } catch (error) {
+          falhados++;
+          
+          // Tentar buscar o nome do aluno para o relatorio de erro
+          const aluno = await prisma.tb_alunos.findUnique({
+            where: { codigo: codigoAluno },
+            select: { nome: true }
+          });
+          const nomeAluno = aluno ? aluno.nome : `Código ${codigoAluno}`;
+          
+          detalhesErro.push({
+            aluno: nomeAluno,
+            erro: error instanceof AppError ? error.message : 'Erro interno ao gerar certificado.'
+          });
+        }
+      }
+
+      return {
+        totalProcessados: confirmacoes.length,
+        criados,
+        falhados,
+        detalhesErro
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError('Erro ao criar certificados da turma', 500, 'CREATE_CLASS_CERT_ERROR', { originalError: error.message });
     }
   }
 
