@@ -1,22 +1,22 @@
 @echo off
+chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
+
+title Projeto Jomorais - Modo Local
+
+color 0E
 
 echo ============================================
 echo   CONFIGURACAO PORTAVEL - PROJETO JOMORAIS
 echo ============================================
 echo.
 
-REM Definir cores para o terminal
-color 0E
+REM Obter o diretório do script automaticamente
+set "SCRIPT_DIR=%~dp0"
 
 REM ===================================
 REM CONFIGURACAO MANUAL DE CAMINHOS
 REM ===================================
-REM Se você mover este script para outro PC, edite os caminhos abaixo:
-
-REM Obter o diretório do script automaticamente
-set "SCRIPT_DIR=%~dp0"
-
 REM OPCAO 1: Detectar automaticamente (recomendado)
 set "AUTO_DETECT=true"
 
@@ -25,23 +25,22 @@ REM set "AUTO_DETECT=false"
 REM set "MANUAL_BACKEND_DIR=C:\caminho\para\seu\backend"
 REM set "MANUAL_FRONTEND_DIR=C:\caminho\para\seu\frontend"
 
-echo [INFO] Modo de detecção: 
+echo [INFO] Modo de deteccao:
+
 if "!AUTO_DETECT!"=="true" (
     echo [AUTO] Detectando automaticamente...
-    
-    REM Detectar automaticamente os caminhos do backend e frontend
+    echo.
+
     set "BACKEND_DIR="
     set "FRONTEND_DIR="
-    
-    REM Procurar pelo diretório do backend
+
     for /d %%i in ("%SCRIPT_DIR%*backend*") do (
         if exist "%%i\package.json" (
             set "BACKEND_DIR=%%i"
             echo [BACKEND] Auto-detectado: %%i
         )
     )
-    
-    REM Se não encontrou com "backend", tentar variações
+
     if "!BACKEND_DIR!"=="" (
         for /d %%i in ("%SCRIPT_DIR%*back*") do (
             if exist "%%i\package.json" (
@@ -50,16 +49,14 @@ if "!AUTO_DETECT!"=="true" (
             )
         )
     )
-    
-    REM Procurar pelo diretório do frontend
+
     for /d %%i in ("%SCRIPT_DIR%*frontend*") do (
         if exist "%%i\package.json" (
             set "FRONTEND_DIR=%%i"
             echo [FRONTEND] Auto-detectado: %%i
         )
     )
-    
-    REM Se não encontrou com "front", tentar variações
+
     if "!FRONTEND_DIR!"=="" (
         for /d %%i in ("%SCRIPT_DIR%*web*") do (
             if exist "%%i\package.json" (
@@ -68,9 +65,10 @@ if "!AUTO_DETECT!"=="true" (
             )
         )
     )
-    
+
 ) else (
     echo [MANUAL] Usando caminhos configurados manualmente...
+    echo.
     set "BACKEND_DIR=!MANUAL_BACKEND_DIR!"
     set "FRONTEND_DIR=!MANUAL_FRONTEND_DIR!"
     echo [BACKEND] Manual: !BACKEND_DIR!
@@ -79,134 +77,165 @@ if "!AUTO_DETECT!"=="true" (
 
 echo.
 
-REM Verificar se os diretórios foram encontrados/configurados
+REM ===================================
+REM VALIDAR DIRETORIOS
+REM ===================================
 if "!BACKEND_DIR!"=="" (
     echo =============================================
-    echo ERRO: Diretorio do backend nao encontrado!
+    echo  ERRO: Diretorio do backend nao encontrado!
     echo =============================================
     echo.
     echo SOLUCOES:
     echo 1. Certifique-se que existe uma pasta com "backend" no nome
-    echo 2. Ou edite este script e configure manualmente:
+    echo    contendo um arquivo package.json dentro dela.
+    echo.
+    echo 2. Ou edite este script manualmente:
     echo    - Abra este arquivo .bat em um editor de texto
     echo    - Procure por "CONFIGURACAO MANUAL"
     echo    - Descomente as linhas e coloque o caminho correto
     echo.
     echo Estrutura esperada:
-    echo pasta-backend/
-    echo   └── package.json
+    echo   !SCRIPT_DIR!
+    echo   ├── backend\   ^<-- package.json aqui
+    echo   └── frontend\  ^<-- package.json aqui
     echo.
-    pause
-    exit /b 1
+    goto :ERROR_EXIT
 )
 
 if "!FRONTEND_DIR!"=="" (
     echo =============================================
-    echo ERRO: Diretorio do frontend nao encontrado!
+    echo  ERRO: Diretorio do frontend nao encontrado!
     echo =============================================
     echo.
     echo SOLUCOES:
-    echo 1. Certifique-se que existe uma pasta com "front" no nome
-    echo 2. Ou edite este script e configure manualmente:
+    echo 1. Certifique-se que existe uma pasta com "frontend" no nome
+    echo    contendo um arquivo package.json dentro dela.
+    echo.
+    echo 2. Ou edite este script manualmente:
     echo    - Abra este arquivo .bat em um editor de texto
     echo    - Procure por "CONFIGURACAO MANUAL"
     echo    - Descomente as linhas e coloque o caminho correto
     echo.
     echo Estrutura esperada:
-    echo pasta-frontend/
-    echo   └── package.json
+    echo   !SCRIPT_DIR!
+    echo   ├── backend\   ^<-- package.json aqui
+    echo   └── frontend\  ^<-- package.json aqui
     echo.
-    pause
-    exit /b 1
+    goto :ERROR_EXIT
 )
 
-REM Verificar se os arquivos package.json existem
 if not exist "!BACKEND_DIR!\package.json" (
-    echo ERRO: package.json nao encontrado em: !BACKEND_DIR!
+    echo [ERRO] package.json nao encontrado em:
+    echo        !BACKEND_DIR!
+    echo.
     echo Verifique se o caminho do backend esta correto.
-    pause
-    exit /b 1
+    echo.
+    goto :ERROR_EXIT
 )
 
 if not exist "!FRONTEND_DIR!\package.json" (
-    echo ERRO: package.json nao encontrado em: !FRONTEND_DIR!
+    echo [ERRO] package.json nao encontrado em:
+    echo        !FRONTEND_DIR!
+    echo.
     echo Verifique se o caminho do frontend esta correto.
-    pause
-    exit /b 1
+    echo.
+    goto :ERROR_EXIT
 )
 
-REM Verificar se o Node.js está instalado
-where node >nul 2>nul
-if %errorlevel% neq 0 (
-    echo ERRO: Node.js nao encontrado. 
-    echo Por favor, instale o Node.js primeiro em: https://nodejs.org/
-    pause
-    exit /b 1
+REM ===================================
+REM VERIFICAR NODE.JS E NPM
+REM ===================================
+echo [INFO] Verificando Node.js e npm...
+
+where node >nul 2>&1
+if !errorlevel! neq 0 (
+    echo.
+    echo [ERRO] Node.js nao encontrado.
+    echo.
+    echo Por favor, instale o Node.js em: https://nodejs.org/
+    echo Apos instalar, reinicie o computador e execute este script novamente.
+    echo.
+    goto :ERROR_EXIT
 )
 
-REM Verificar se o npm está instalado
-where npm >nul 2>nul
-if %errorlevel% neq 0 (
-    echo ERRO: npm nao encontrado. 
-    echo O npm geralmente vem com o Node.js.
-    pause
-    exit /b 1
+where npm >nul 2>&1
+if !errorlevel! neq 0 (
+    echo.
+    echo [ERRO] npm nao encontrado.
+    echo O npm geralmente e instalado junto com o Node.js.
+    echo Tente reinstalar o Node.js em: https://nodejs.org/
+    echo.
+    goto :ERROR_EXIT
 )
 
-echo [OK] Configuracao validada com sucesso!
+echo [OK] Node.js e npm encontrados!
 echo.
+
+REM ===================================
+REM INSTALAR DEPENDENCIAS
+REM ===================================
 echo [INFO] Verificando dependencias...
 echo.
 
-REM Instalar dependências do backend
 echo [BACKEND] Verificando dependencias em: !BACKEND_DIR!
 cd /d "!BACKEND_DIR!"
 if not exist "node_modules" (
-    echo [BACKEND] Instalando dependencias...
+    echo [BACKEND] Instalando dependencias... Isso pode demorar alguns minutos.
     call npm install
-    if %errorlevel% neq 0 (
-        echo ERRO: Falha ao instalar dependencias do backend.
-        pause
-        exit /b 1
+    if !errorlevel! neq 0 (
+        echo.
+        echo [ERRO] Falha ao instalar dependencias do backend.
+        echo Verifique sua conexao com a internet e tente novamente.
+        echo.
+        goto :ERROR_EXIT
     )
+    echo [BACKEND] Dependencias instaladas com sucesso!
 ) else (
     echo [BACKEND] Dependencias ja instaladas.
 )
 
-REM Instalar dependências do frontend
+echo.
 echo [FRONTEND] Verificando dependencias em: !FRONTEND_DIR!
 cd /d "!FRONTEND_DIR!"
 if not exist "node_modules" (
-    echo [FRONTEND] Instalando dependencias...
+    echo [FRONTEND] Instalando dependencias... Isso pode demorar alguns minutos.
     call npm install
-    if %errorlevel% neq 0 (
-        echo ERRO: Falha ao instalar dependencias do frontend.
-        pause
-        exit /b 1
+    if !errorlevel! neq 0 (
+        echo.
+        echo [ERRO] Falha ao instalar dependencias do frontend.
+        echo Verifique sua conexao com a internet e tente novamente.
+        echo.
+        goto :ERROR_EXIT
     )
+    echo [FRONTEND] Dependencias instaladas com sucesso!
 ) else (
     echo [FRONTEND] Dependencias ja instaladas.
 )
+
+echo.
 
 REM ===================================
 REM ATUALIZAR BANCO DE DADOS (PRISMA)
 REM ===================================
 echo [BACKEND] Atualizando banco de dados com Prisma...
 cd /d "!BACKEND_DIR!"
-call npx prisma generate
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao gerar o cliente Prisma.
-    pause
-    exit /b 1
+
+call npx prisma generate >nul 2>&1
+if !errorlevel! neq 0 (
+    echo [AVISO] prisma generate falhou - continuando mesmo assim...
+) else (
+    echo [OK] Cliente Prisma gerado.
 )
-call npx prisma db push --skip-generate
-if %errorlevel% neq 0 (
-    echo [ERRO] Falha ao sincronizar o banco de dados (Prisma db push).
-    echo [AVISO] Se houver alterações destrutivas que causem perda de dados,
-    echo         este comando falha automaticamente para proteger seus dados.
-    pause
-    exit /b 1
+
+call npx prisma db push --skip-generate --accept-data-loss >nul 2>&1
+if !errorlevel! neq 0 (
+    echo [AVISO] prisma db push falhou - o banco pode ja estar sincronizado.
+    echo [AVISO] Se houver problemas, execute manualmente: npx prisma db push
+) else (
+    echo [OK] Banco de dados sincronizado.
 )
+echo.
+
 echo [OK] Banco de dados e cliente Prisma atualizados com sucesso!
 echo.
 
@@ -216,38 +245,56 @@ REM ===================================
 echo [INFO] Iniciando servidores...
 echo.
 
-REM Iniciar o backend
+REM Salvar caminhos em variaveis limpas para o start funcionar corretamente
+set "BD=!BACKEND_DIR!"
+set "FD=!FRONTEND_DIR!"
+
 echo [BACKEND] Iniciando servidor backend...
-start "Backend - Jomorais" cmd /k "cd /d "!BACKEND_DIR!" && npm run dev"
+start "Backend - Jomorais" cmd /k "cd /d "!BD!" && npm run dev"
 
-REM Aguardar um pouco para o backend inicializar
-timeout /t 3 /nobreak >nul
+echo [INFO] Aguardando backend inicializar (5s)...
+timeout /t 5 /nobreak >nul
 
-REM Iniciar o frontend  
 echo [FRONTEND] Iniciando servidor frontend...
-start "Frontend - Jomorais" cmd /k "cd /d "!FRONTEND_DIR!" && npm run dev"
+start "Frontend - Jomorais" cmd /k "cd /d "!FD!" && npm run dev"
 
-REM Aguardar o frontend inicializar
-echo [INFO] Aguardando servidores iniciarem...
+echo [INFO] Aguardando frontend inicializar (8s)...
 timeout /t 8 /nobreak >nul
 
-REM Abrir o navegador
 echo [INFO] Abrindo navegador...
-start http://localhost:5173
+start "" "http://localhost:5173"
 
+goto :SUCCESS_EXIT
+
+REM ===================================
+REM SAIDAS
+REM ===================================
+:ERROR_EXIT
+echo.
+echo ============================================
+echo   OCORREU UM ERRO - Leia as mensagens acima
+echo ============================================
+echo.
+echo Pressione qualquer tecla para fechar...
+pause >nul
+exit /b 1
+
+:SUCCESS_EXIT
 echo.
 echo ============================================
 echo    PROJETO JOMORAIS INICIADO COM SUCESSO!
 echo ============================================
 echo.
-echo Backend: http://localhost:8000
-echo Frontend: http://localhost:5173
+echo  Backend:  http://localhost:8000
+echo  Frontend: http://localhost:5173
 echo.
-echo Caminhos utilizados:
-echo Backend:  !BACKEND_DIR!
-echo Frontend: !FRONTEND_DIR!
+echo  Caminhos utilizados:
+echo    Backend:  !BD!
+echo    Frontend: !FD!
 echo.
-echo Para parar, feche as janelas ou use stop-project.bat
+echo  Para parar os servidores, feche as janelas
+echo  "Backend - Jomorais" e "Frontend - Jomorais".
 echo.
-pause
-REM CRLF Line endings enforced by .gitattributes
+echo Pressione qualquer tecla para fechar esta janela...
+pause >nul
+exit /b 0

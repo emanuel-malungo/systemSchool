@@ -4,13 +4,12 @@ setlocal enabledelayedexpansion
 
 title Projeto Jomorais - Modo Rede Local
 
+color 0A
+
 echo ============================================
 echo   PROJETO JOMORAIS - MODO REDE LOCAL
 echo ============================================
 echo.
-
-REM Definir cores para o terminal
-color 0A
 
 REM Obter o diretório do script automaticamente
 set "SCRIPT_DIR=%~dp0"
@@ -24,7 +23,6 @@ echo [INFO] Detectando IP da rede local...
 
 set "LOCAL_IP="
 
-REM Detectar o IP da rede local (IPv4) - metodo mais robusto
 for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4" 2^>nul') do (
     set "IP_TEMP=%%a"
     if not "!IP_TEMP!"=="" (
@@ -36,7 +34,6 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /i "IPv4" 2^>nul') do (
 )
 
 :IP_FOUND
-REM Remover espacos do inicio
 if defined LOCAL_IP (
     for /f "tokens=* delims= " %%x in ("!LOCAL_IP!") do set "LOCAL_IP=%%x"
 )
@@ -58,7 +55,6 @@ echo [INFO] Detectando diretorios do projeto...
 set "BACKEND_DIR="
 set "FRONTEND_DIR="
 
-REM Procurar pelo diretório do backend
 for /d %%i in ("%SCRIPT_DIR%*backend*") do (
     if exist "%%i\package.json" (
         set "BACKEND_DIR=%%i"
@@ -75,7 +71,6 @@ if not defined BACKEND_DIR (
     )
 )
 
-REM Procurar pelo diretório do frontend
 for /d %%i in ("%SCRIPT_DIR%*frontend*") do (
     if exist "%%i\package.json" (
         set "FRONTEND_DIR=%%i"
@@ -94,7 +89,6 @@ if not defined FRONTEND_DIR (
 
 echo.
 
-REM Verificar se os diretórios foram encontrados
 if not defined BACKEND_DIR (
     echo [ERRO] Diretorio do backend nao encontrado!
     echo.
@@ -121,12 +115,11 @@ REM CONFIGURAR O .ENV DO FRONTEND
 REM ===================================
 echo [INFO] Configurando .env do frontend para acesso via rede...
 
-REM Criar backup do .env original se existir
 if exist "!FRONTEND_DIR!\.env" (
     copy "!FRONTEND_DIR!\.env" "!FRONTEND_DIR!\.env.backup" >nul 2>&1
+    echo [OK] Backup do .env criado.
 )
 
-REM Criar novo .env com IP da rede
 (
     echo VITE_API_URL=http://!LOCAL_IP!:8000
     echo #VITE_API_URL=https://jomorais-backend-o5e5.onrender.com
@@ -169,7 +162,7 @@ cd /d "!BACKEND_DIR!"
 if not exist "node_modules" (
     echo [BACKEND] Instalando dependencias... Isso pode demorar alguns minutos.
     call npm install
-    if %errorlevel% neq 0 (
+    if !errorlevel! neq 0 (
         echo [ERRO] Falha ao instalar dependencias do backend.
         goto :ERROR_EXIT
     )
@@ -181,7 +174,7 @@ cd /d "!FRONTEND_DIR!"
 if not exist "node_modules" (
     echo [FRONTEND] Instalando dependencias... Isso pode demorar alguns minutos.
     call npm install
-    if %errorlevel% neq 0 (
+    if !errorlevel! neq 0 (
         echo [ERRO] Falha ao instalar dependencias do frontend.
         goto :ERROR_EXIT
     )
@@ -199,12 +192,11 @@ echo [AVISO] Se outros PCs nao conseguirem acessar, execute como Administrador
 echo         ou adicione manualmente as portas 8000 e 5173 no Firewall do Windows.
 echo.
 
-REM Tentar adicionar regras de firewall (requer admin)
 netsh advfirewall firewall show rule name="Jomorais Backend" >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [INFO] Tentando adicionar regra de firewall para Backend (porta 8000)...
     netsh advfirewall firewall add rule name="Jomorais Backend" dir=in action=allow protocol=tcp localport=8000 >nul 2>&1
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo [OK] Regra de firewall adicionada para Backend.
     ) else (
         echo [AVISO] Nao foi possivel adicionar regra. Execute como Administrador se necessario.
@@ -212,10 +204,10 @@ if %errorlevel% neq 0 (
 )
 
 netsh advfirewall firewall show rule name="Jomorais Frontend" >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [INFO] Tentando adicionar regra de firewall para Frontend (porta 5173)...
     netsh advfirewall firewall add rule name="Jomorais Frontend" dir=in action=allow protocol=tcp localport=5173 >nul 2>&1
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo [OK] Regra de firewall adicionada para Frontend.
     ) else (
         echo [AVISO] Nao foi possivel adicionar regra. Execute como Administrador se necessario.
@@ -229,18 +221,21 @@ REM ATUALIZAR BANCO DE DADOS (PRISMA)
 REM ===================================
 echo [BACKEND] Atualizando banco de dados com Prisma...
 cd /d "!BACKEND_DIR!"
+
 call npx prisma generate
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [ERRO] Falha ao gerar o cliente Prisma.
     goto :ERROR_EXIT
 )
+
 call npx prisma db push --skip-generate
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo [ERRO] Falha ao sincronizar o banco de dados (Prisma db push).
-    echo [AVISO] Se houver alterações destrutivas que causem perda de dados,
+    echo [AVISO] Se houver alteracoes destrutivas que causem perda de dados,
     echo         este comando falha automaticamente para proteger seus dados.
     goto :ERROR_EXIT
 )
+
 echo [OK] Banco de dados e cliente Prisma atualizados com sucesso!
 echo.
 
@@ -250,20 +245,18 @@ REM ===================================
 echo [INFO] Iniciando servidores...
 echo.
 
-REM Iniciar o backend
+REM Iniciar o backend em nova janela
 echo [BACKEND] Iniciando servidor backend...
-start "Backend - Jomorais (Rede)" cmd /k "cd /d "!BACKEND_DIR!" && npm run dev"
+start "Backend - Jomorais (Rede)" /D "!BACKEND_DIR!" cmd /k npm run dev
 
-REM Aguardar backend inicializar
-echo [INFO] Aguardando backend inicializar...
+echo [INFO] Aguardando backend inicializar (5s)...
 timeout /t 5 /nobreak >nul
 
-REM Iniciar o frontend
+REM Iniciar o frontend em nova janela
 echo [FRONTEND] Iniciando servidor frontend...
-start "Frontend - Jomorais (Rede)" cmd /k "cd /d "!FRONTEND_DIR!" && npm run dev"
+start "Frontend - Jomorais (Rede)" /D "!FRONTEND_DIR!" cmd /k "npm run dev -- --host"
 
-REM Aguardar frontend inicializar
-echo [INFO] Aguardando frontend inicializar...
+echo [INFO] Aguardando frontend inicializar (8s)...
 timeout /t 8 /nobreak >nul
 
 REM Abrir o navegador
@@ -272,6 +265,9 @@ start "" "http://localhost:5173"
 
 goto :SUCCESS_EXIT
 
+REM ===================================
+REM SAIDAS
+REM ===================================
 :ERROR_EXIT
 echo.
 echo ============================================
@@ -279,13 +275,13 @@ echo   OCORREU UM ERRO - Verifique as mensagens acima
 echo ============================================
 echo.
 echo Pressione qualquer tecla para fechar...
-pause >nul
+pause
 exit /b 1
 
 :SUCCESS_EXIT
 echo.
 echo ============================================
-echo    PROJETO JOMORAIS - MODO REDE LOCAL
+echo    PROJETO JOMORAIS - INICIADO COM SUCESSO
 echo ============================================
 echo.
 echo  ACESSO LOCAL (este PC):
@@ -299,18 +295,16 @@ echo.
 echo ============================================
 echo.
 echo [IMPORTANTE] Para outros PCs acessarem:
-echo   1. Certifique-se que estao na mesma rede
-echo   2. Acesse: http://!LOCAL_IP!:5173
+echo   1. Certifique-se que estao na mesma rede Wi-Fi/LAN
+echo   2. Acesse pelo navegador: http://!LOCAL_IP!:5173
 echo   3. Se nao funcionar, verifique o Firewall do Windows
 echo.
 echo Caminhos utilizados:
 echo   Backend:  !BACKEND_DIR!
 echo   Frontend: !FRONTEND_DIR!
 echo.
-echo Para parar, feche as janelas dos terminais ou execute stop-project.bat
+echo Para parar os servidores, feche as janelas "Backend" e "Frontend".
 echo.
 echo Pressione qualquer tecla para fechar esta janela...
-pause >nul
+pause
 exit /b 0
-
-REM CRLF Line endings enforced by .gitattributes
