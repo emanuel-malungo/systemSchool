@@ -250,3 +250,4 @@ echo.
 echo Para parar, feche as janelas ou use stop-project.bat
 echo.
 pause
+REM CRLF Line endings enforced by .gitattributes

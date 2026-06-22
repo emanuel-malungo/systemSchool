@@ -312,3 +312,5 @@ echo.
 echo Pressione qualquer tecla para fechar esta janela...
 pause >nul
 exit /b 0
+
+REM CRLF Line endings enforced by .gitattributes
