@@ -225,6 +225,26 @@ if %errorlevel% neq 0 (
 echo.
 
 REM ===================================
+REM ATUALIZAR BANCO DE DADOS (PRISMA)
+REM ===================================
+echo [BACKEND] Atualizando banco de dados com Prisma...
+cd /d "!BACKEND_DIR!"
+call npx prisma generate
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao gerar o cliente Prisma.
+    goto :ERROR_EXIT
+)
+call npx prisma db push --skip-generate
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao sincronizar o banco de dados (Prisma db push).
+    echo [AVISO] Se houver alterações destrutivas que causem perda de dados,
+    echo         este comando falha automaticamente para proteger seus dados.
+    goto :ERROR_EXIT
+)
+echo [OK] Banco de dados e cliente Prisma atualizados com sucesso!
+echo.
+
+REM ===================================
 REM INICIAR SERVIDORES
 REM ===================================
 echo [INFO] Iniciando servidores...
