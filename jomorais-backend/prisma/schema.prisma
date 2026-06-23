@@ -93,8 +93,8 @@ model tb_item_permissao_utilizador {
   codigo_Utilizador Int             @map("Codigo_Utilizador") @db.UnsignedInt
   data_Permissao    DateTime        @map("Data_Permissao") @db.Date
   status            String          @default("desactivo") @map("status") @db.VarChar(45)
-  data_Inicio       DateTime        @default(dbgenerated("('0000-00-00')")) @map("Data_Inicio") @db.Date
-  data_fin          DateTime        @default(dbgenerated("('0000-00-00')")) @map("Data_fin") @db.Date
+  data_Inicio       DateTime        @default(dbgenerated("('1970-01-01')")) @map("Data_Inicio") @db.Date
+  data_fin          DateTime        @default(dbgenerated("('1970-01-01')")) @map("Data_fin") @db.Date
   tb_utilizadores   tb_utilizadores @relation(fields: [codigo_Utilizador], references: [codigo], onUpdate: Restrict, map: "FK_tb_item_permissao_utilizador_2")
 
   @@index([codigo_Permissao], map: "FK_tb_item_permissao_utilizador_1")
@@ -2375,7 +2375,7 @@ model tb_utilizador_docente {
   Codigo_Docente            Int      @default(0)
   Codigo_Utilizador_Docente Int      @default(0)
   Codigo_Utilizador         Int      @default(0)
-  Data                      DateTime @default(dbgenerated("('0000-00-00')")) @db.Date
+  Data                      DateTime @default(dbgenerated("('1970-01-01')")) @db.Date
 }
 
 model tb_valor_tipo_nota {
