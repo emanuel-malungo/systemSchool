@@ -543,48 +543,58 @@ export async function buildPautaGeralExcelTemplate(params) {
     }
   }
 
-  // --- MÁXIMA TABLE BELOW STUDENT LIST ---
-  let maxRow = endRow + 3;
+  // --- MÁXIMA TABLE BELOW DADOS ESTATÍSTICOS ---
+  let maxRow = 17;
+
+  const colM1 = columnToLetter(statsStartColIndex);
+  const colM2 = columnToLetter(statsStartColIndex + 1);
+  const colM3 = columnToLetter(statsStartColIndex + 2);
+  const colM4 = columnToLetter(statsStartColIndex + 3);
+  const colM5 = columnToLetter(statsStartColIndex + 4);
+  const colM8 = columnToLetter(statsStartColIndex + 7);
 
   // Row 1
-  styleAndMergeRange(`B${maxRow}:C${maxRow}`, 'MÁXIMA',
+  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'MÁXIMA',
     { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`D${maxRow}:D${maxRow}`, { formula: `MAX(${mediaColLetter}14:${mediaColLetter}${endRow})` },
+  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
     { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
+  for (let c = statsStartColIndex + 2; c <= statsStartColIndex + 7; c++) {
+    sheet.getCell(`${columnToLetter(c)}${maxRow}`).numFmt = '0.#';
+  }
 
   // Row 2
   maxRow += 1;
-  styleAndMergeRange(`B${maxRow}:D${maxRow}`, 'NOME DO/A ALUNO/A',
+  styleAndMergeRange(`${colM1}${maxRow}:${colM4}${maxRow}`, 'NOME DO/A ALUNO/A',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
-  styleAndMergeRange(`E${maxRow}:${generoColLetter}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(D${maxRow - 1}, ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
+  styleAndMergeRange(`${colM5}${maxRow}:${colM8}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
   // Row 3
   maxRow += 1;
-  styleAndMergeRange(`B${maxRow}:C${maxRow}`, '',
+  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, '',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`D${maxRow}:D${maxRow}`, maxGradeAge,
+  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, maxGradeAge,
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Row 4
   maxRow += 1;
-  styleAndMergeRange(`B${maxRow}:C${maxRow}`, 'IDADE:',
+  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'IDADE:',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`D${maxRow}:D${maxRow}`, 'ANOS',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, 'ANOS',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // --- FOOTER ---
-  let footRow = maxRow + 8; // Safely place the footer 8 rows below maxRow to prevent any overlap
+  let footRow = Math.max(endRow + 6, maxRow + 6); // Safely place the footer below both tables
   
   const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || 'ANASTÁSIO ZOVO NZUZI';
   const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
