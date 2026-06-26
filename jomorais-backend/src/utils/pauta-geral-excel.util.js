@@ -232,11 +232,11 @@ export async function buildPautaGeralExcelTemplate(params) {
     null, cursoBorder, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // Setup base student table headers
+  // Setup base student table headers (spanning down to Row 13)
   const headerPositions = [
-    { cell: 'B11', val: 'Nº', merge: 'B11:B12', rotate: false },
-    { cell: 'C11', val: 'Nº MATRI', merge: 'C11:C12', rotate: false },
-    { cell: 'D11', val: 'NOME COMPLETO', merge: 'D11:D12', rotate: false }
+    { cell: 'B11', val: 'Nº', merge: 'B11:B13', rotate: false },
+    { cell: 'C11', val: 'Nº MATRI', merge: 'C11:C13', rotate: false },
+    { cell: 'D11', val: 'NOME COMPLETO', merge: 'D11:D13', rotate: false }
   ];
 
   headerPositions.forEach(hp => {
@@ -262,7 +262,8 @@ export async function buildPautaGeralExcelTemplate(params) {
   disciplines.forEach(dName => {
     const colL = columnToLetter(colIndex);
 
-    styleAndMergeRange(`${colL}12:${colL}12`, abbreviateDiscipline(dName), 
+    // Merge discipline abbreviations vertically to Row 13
+    styleAndMergeRange(`${colL}12:${colL}13`, abbreviateDiscipline(dName), 
       { name: 'Times New Roman', size: 10, bold: true },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
     );
@@ -292,7 +293,8 @@ export async function buildPautaGeralExcelTemplate(params) {
     if (col.val === 'Observação') {
       font = { name: 'Times New Roman', size: 8, bold: true };
     }
-    styleAndMergeRange(`${col.letter}11:${col.letter}12`, col.val,
+    // Merge extra columns vertically to Row 13
+    styleAndMergeRange(`${col.letter}11:${col.letter}13`, col.val,
       font,
       headerFill, borderStyle, 
       { horizontal: 'center', vertical: 'middle', textRotation: col.val === 'Observação' ? 45 : 0 }
