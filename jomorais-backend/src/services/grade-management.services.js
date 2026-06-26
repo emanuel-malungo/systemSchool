@@ -810,6 +810,14 @@ export class GradeManagementService {
           const listNotas = notasPorDisciplina[disc.codigo] || [];
           const notaConsolidada = listNotas.length > 0 ? GradeManagementService._calcularNotaTrimestral(listNotas) : null;
           
+          const macNotas = listNotas.filter(n => n.CodigoTipoAvaliacao === 1);
+          const ppNotas = listNotas.filter(n => n.CodigoTipoAvaliacao === 2 || n.CodigoTipoAvaliacao === 9);
+          const ptNotas = listNotas.filter(n => n.CodigoTipoAvaliacao === 3 || n.CodigoTipoAvaliacao === 10);
+          
+          const macVal = macNotas.length > 0 ? (macNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / macNotas.length) : null;
+          const ppVal = ppNotas.length > 0 ? (ppNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / ppNotas.length) : null;
+          const ptVal = ptNotas.length > 0 ? (ptNotas.reduce((acc, n) => acc + (n.Nota || 0), 0) / ptNotas.length) : null;
+
           const faltasAlunoDisc = faltas
             .filter(f => f.Codigo_Matricula === confirmacao.codigo_Matricula && f.Codigo_Disciplina === disc.codigo)
             .reduce((sum, f) => sum + (parseInt(f.nFaltas) || 1), 0);
@@ -818,6 +826,9 @@ export class GradeManagementService {
             codigoDisciplina: disc.codigo,
             disciplina: disc.designacao,
             nota: notaConsolidada,
+            mac: macVal !== null ? parseFloat(macVal.toFixed(1)) : null,
+            npp: ppVal !== null ? parseFloat(ppVal.toFixed(1)) : null,
+            npt: ptVal !== null ? parseFloat(ptVal.toFixed(1)) : null,
             faltas: faltasAlunoDisc
           };
         });

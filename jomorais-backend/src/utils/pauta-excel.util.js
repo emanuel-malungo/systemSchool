@@ -118,9 +118,12 @@ export async function buildPautaExcelTemplate(params) {
     disciplineColsMap[dName] = { 
       justColIdx: colIndex, 
       injustColIdx: colIndex + 1, 
-      gradeColIdx: colIndex + 2 
+      macColIdx: colIndex + 2,
+      nppColIdx: colIndex + 3,
+      nptColIdx: colIndex + 4,
+      gradeColIdx: colIndex + 5 
     };
-    colIndex += 3;
+    colIndex += 6;
   });
 
   let obsColLetter = columnToLetter(colIndex);
@@ -129,7 +132,7 @@ export async function buildPautaExcelTemplate(params) {
   let generoColLetter = columnToLetter(colIndex + 3);
   let statsStartColIndex = colIndex + 4;
 
-  const maxColIndex = 5 + (3 * disciplines.length) + 4 + 8;
+  const maxColIndex = 5 + (6 * disciplines.length) + 4 + 8;
   const maxColLetter = columnToLetter(maxColIndex);
   const endRow = 17 + pautaData.totalAlunos - 1;
 
@@ -397,19 +400,17 @@ export async function buildPautaExcelTemplate(params) {
     const colLetter1 = columnToLetter(colIndex);
     const colLetter2 = columnToLetter(colIndex + 1);
     const colLetter3 = columnToLetter(colIndex + 2);
+    const colLetter4 = columnToLetter(colIndex + 3);
+    const colLetter5 = columnToLetter(colIndex + 4);
+    const colLetter6 = columnToLetter(colIndex + 5);
 
-    styleAndMergeRange(`${colLetter1}14:${colLetter3}14`, abbreviateDiscipline(dName), 
+    styleAndMergeRange(`${colLetter1}14:${colLetter6}14`, abbreviateDiscipline(dName), 
       { name: 'Agency FB', size: 9, bold: true, color: { argb: 'FF0070C0' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle', wrapText: true }
     );
 
     styleAndMergeRange(`${colLetter1}15:${colLetter2}15`, 'FALTAS',
       { name: 'Calibri', size: 8, bold: true, italic: true },
-      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
-    );
-
-    styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, `MT${codigoTrimestre}º`,
-      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
@@ -423,13 +424,36 @@ export async function buildPautaExcelTemplate(params) {
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
 
+    styleAndMergeRange(`${colLetter3}15:${colLetter3}16`, 'MAC',
+      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
+      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${colLetter4}15:${colLetter4}16`, 'NPP',
+      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
+      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${colLetter5}15:${colLetter5}16`, 'NPT',
+      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
+      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
+
+    styleAndMergeRange(`${colLetter6}15:${colLetter6}16`, `MT${codigoTrimestre}º`,
+      { name: 'Calibri', size: 10, bold: true, italic: true, color: { argb: 'FFFF0000' } },
+      headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
+
     disciplineColsMap[dName] = { 
       justColIdx: colIndex, 
       injustColIdx: colIndex + 1, 
-      gradeColIdx: colIndex + 2 
+      macColIdx: colIndex + 2,
+      nppColIdx: colIndex + 3,
+      nptColIdx: colIndex + 4,
+      gradeColIdx: colIndex + 5 
     };
 
-    colIndex += 3;
+    colIndex += 6;
   });
 
   obsColLetter = columnToLetter(colIndex);
@@ -501,7 +525,6 @@ export async function buildPautaExcelTemplate(params) {
 
   for (const [alunoId, info] of Object.entries(pautaData.pauta)) {
     const row = sheet.getRow(rowNum);
-    row.height = 20;
 
     const cellB = row.getCell(2);
     cellB.value = index;
@@ -517,7 +540,7 @@ export async function buildPautaExcelTemplate(params) {
 
     const cellD = row.getCell(4);
     cellD.value = (info.aluno?.nome || 'N/A').toUpperCase();
-    cellD.alignment = { horizontal: 'left', vertical: 'middle' };
+    cellD.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
     cellD.border = borderStyle;
     cellD.font = { name: 'Arial Narrow', size: 9, bold: true };
 
@@ -525,7 +548,7 @@ export async function buildPautaExcelTemplate(params) {
 
     disciplines.forEach(dName => {
       const dObj = info.disciplinas?.find(d => d.disciplina === dName);
-      const { justColIdx, injustColIdx, gradeColIdx } = disciplineColsMap[dName];
+      const { justColIdx, injustColIdx, macColIdx, nppColIdx, nptColIdx, gradeColIdx } = disciplineColsMap[dName];
 
       const cellJust = row.getCell(justColIdx);
       cellJust.value = '-';
@@ -544,30 +567,45 @@ export async function buildPautaExcelTemplate(params) {
         cellInjust.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
       }
 
-      const cellG = row.getCell(gradeColIdx);
-      cellG.border = borderStyle;
-      cellG.alignment = { horizontal: 'center', vertical: 'middle' };
-
-      if (dObj && dObj.nota !== undefined && dObj.nota !== null) {
-        const n = dObj.nota;
-        cellG.value = n;
-        cellG.numFmt = '0.0';
-        if (n < 10) {
-          cellG.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FFFF0000' } };
-          repeatDiscs.push(dName.substring(0, 5));
+      const formatGradeCell = (cell, gradeVal, includeFailureRed) => {
+        cell.border = borderStyle;
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        if (gradeVal !== undefined && gradeVal !== null) {
+          cell.value = gradeVal;
+          cell.numFmt = '0.0';
+          if (includeFailureRed && gradeVal < 10) {
+            cell.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FFFF0000' } };
+            return true;
+          } else {
+            cell.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FF0070C0' } };
+          }
         } else {
-          cellG.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FF0070C0' } };
+          cell.value = '-';
+          cell.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
         }
-      } else {
-        cellG.value = '-';
-        cellG.font = { name: 'Arial Narrow', size: 9, color: { argb: 'FF7F7F7F' } };
+        return false;
+      };
+
+      const cellMac = row.getCell(macColIdx);
+      formatGradeCell(cellMac, dObj ? dObj.mac : null, false);
+
+      const cellNpp = row.getCell(nppColIdx);
+      formatGradeCell(cellNpp, dObj ? dObj.npp : null, false);
+
+      const cellNpt = row.getCell(nptColIdx);
+      formatGradeCell(cellNpt, dObj ? dObj.npt : null, false);
+
+      const cellG = row.getCell(gradeColIdx);
+      const isFailed = formatGradeCell(cellG, dObj ? dObj.nota : null, true);
+      if (isFailed) {
+        repeatDiscs.push(dName.substring(0, 5));
       }
     });
 
     const cellE = row.getCell(5);
     cellE.value = repeatDiscs.join(', ');
     cellE.font = { name: 'Arial Narrow', size: 11 };
-    cellE.alignment = { horizontal: 'center', vertical: 'middle' };
+    cellE.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
     cellE.border = borderStyle;
 
     const birthYear = info.aluno?.dataNascimento ? new Date(info.aluno.dataNascimento).getFullYear() : 0;
@@ -708,14 +746,17 @@ export async function buildPautaExcelTemplate(params) {
       maxNameLength = nomeLen;
     }
   }
-  sheet.getColumn('D').width = maxNameLength + 2; // NOME
+  sheet.getColumn('D').width = Math.min(maxNameLength + 2, 45); // NOME
 
-  sheet.getColumn('E').width = 16; // DISCIPLINA A REPETIR
+  sheet.getColumn('E').width = 25; // DISCIPLINA A REPETIR
   
   disciplines.forEach(dName => {
-    const { justColIdx, injustColIdx, gradeColIdx } = disciplineColsMap[dName];
+    const { justColIdx, injustColIdx, macColIdx, nppColIdx, nptColIdx, gradeColIdx } = disciplineColsMap[dName];
     sheet.getColumn(justColIdx).width = 4;
     sheet.getColumn(injustColIdx).width = 4;
+    sheet.getColumn(macColIdx).width = 6;
+    sheet.getColumn(nppColIdx).width = 6;
+    sheet.getColumn(nptColIdx).width = 6;
     sheet.getColumn(gradeColIdx).width = 7;
   });
   
