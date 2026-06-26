@@ -129,7 +129,7 @@ export async function buildPautaGeralExcelTemplate(params) {
 
   const maxColIndex = 4 + disciplines.length + 3 + 8; // A-D (4), disciplines, OBS/Media/Genero (3), Stats (8)
   const maxColLetter = columnToLetter(maxColIndex);
-  const endRow = 17 + pautaData.totalAlunos - 1;
+  const endRow = 13 + Object.keys(pautaData.pauta).length;
 
   // Set heights for the logo/title rows matching the template
   sheet.getRow(1).height = 10;
@@ -528,56 +528,61 @@ export async function buildPautaGeralExcelTemplate(params) {
     sheet.getColumn(statsStartColIndex + i).width = 6;
   }
 
-  // --- MÁXIMA TABLE UNDER STATS ---
-  let maxRow = 17;
-  let maxColStart = statsStartColIndex + 1; // Align under MATRICULADOS F
+  // Find the student with the maximum grade to get their age
+  let maxGradeVal = -1;
+  let maxGradeAge = '';
+  for (const info of Object.values(pautaData.pauta)) {
+    const media = info.mediaGeral || 0;
+    if (media > maxGradeVal) {
+      maxGradeVal = media;
+      const birthYear = info.aluno?.dataNascimento ? new Date(info.aluno.dataNascimento).getFullYear() : 0;
+      const currentYear = new Date().getFullYear();
+      maxGradeAge = birthYear > 0 ? (currentYear - birthYear) : '';
+    }
+  }
 
-  const maxColL = columnToLetter(maxColStart);
-  const maxValColL = columnToLetter(maxColStart + 1);
+  // --- MÁXIMA TABLE BELOW STUDENT LIST ---
+  let maxRow = endRow + 3;
 
-  // Row 17
-  styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, 'MÁXIMA',
+  // Row 1
+  styleAndMergeRange(`B${maxRow}:C${maxRow}`, 'MÁXIMA',
     { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${maxValColL}${maxRow}:${maxValColL}${maxRow}`, { formula: `MAX(${mediaColLetter}14:${mediaColLetter}${endRow})` },
+  styleAndMergeRange(`D${maxRow}:D${maxRow}`, { formula: `MAX(${mediaColLetter}14:${mediaColLetter}${endRow})` },
     { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // Row 18
+  // Row 2
   maxRow += 1;
-  styleAndMergeRange(`${maxColL}${maxRow}:${maxValColL}${maxRow}`, 'NOME DO/A ALUNO/A',
+  styleAndMergeRange(`B${maxRow}:D${maxRow}`, 'NOME DO/A ALUNO/A',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
-  const nameEndColL = columnToLetter(maxColStart + 5);
-  styleAndMergeRange(`${columnToLetter(maxColStart + 2)}${maxRow}:${nameEndColL}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(${maxValColL}${maxRow - 1}, ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
+  styleAndMergeRange(`E${maxRow}:${generoColLetter}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(D${maxRow - 1}, ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
-  // Row 19
+  // Row 3
   maxRow += 1;
-  styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, '',
+  styleAndMergeRange(`B${maxRow}:C${maxRow}`, '',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${maxValColL}${maxRow}:${maxValColL}${maxRow}`, '',
+  styleAndMergeRange(`D${maxRow}:D${maxRow}`, maxGradeAge,
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  // Row 20
+  // Row 4
   maxRow += 1;
-  styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, 'IDADE:',
+  styleAndMergeRange(`B${maxRow}:C${maxRow}`, 'IDADE:',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${maxValColL}${maxRow}:${maxValColL}${maxRow}`, 'ANOS',
+  styleAndMergeRange(`D${maxRow}:D${maxRow}`, 'ANOS',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // --- FOOTER ---
-  let footRow = endRow + 6; // slightly more breathing room below the table
-  if (footRow < maxRow + 4) {
-    footRow = maxRow + 4; // Ensure footer is always below the MAXIMA table
-  }
+  let footRow = maxRow + 8; // Safely place the footer 8 rows below maxRow to prevent any overlap
   
   const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || 'ANASTÁSIO ZOVO NZUZI';
   const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
