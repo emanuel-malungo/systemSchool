@@ -468,26 +468,37 @@ export async function buildPautaGeralExcelTemplate(params) {
   
   rowNum++;
 
-  const startRow = 17;
+  const dataStartRow = 14;
+  const statsResultRow = 14;
   const obsColLetterReal = obsColLetter;
   const formulas = [
-    { offset: 0, formula: `COUNTIF(${generoColLetter}${startRow}:${generoColLetter}${endRow},"M")` },
-    { offset: 1, formula: `COUNTIF(${generoColLetter}${startRow}:${generoColLetter}${endRow},"F")` },
-    { offset: 2, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"TRANSITA",${generoColLetter}${startRow}:${generoColLetter}${endRow},"M")` },
-    { offset: 3, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"TRANSITA",${generoColLetter}${startRow}:${generoColLetter}${endRow},"F")` },
-    { offset: 4, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${generoColLetter}${startRow}:${generoColLetter}${endRow},"M")` },
-    { offset: 5, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${generoColLetter}${startRow}:${generoColLetter}${endRow},"F")` },
-    { offset: 6, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDO",${generoColLetter}${startRow}:${generoColLetter}${endRow},"M")` },
-    { offset: 7, formula: `COUNTIFS(${obsColLetterReal}${startRow}:${obsColLetterReal}${endRow},"DESISTIDA",${generoColLetter}${startRow}:${generoColLetter}${endRow},"F")` }
+    { offset: 0, formula: `COUNTIF(${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"M")` },
+    { offset: 1, formula: `COUNTIF(${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"F")` },
+    { offset: 2, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"TRANSITA",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"M")` },
+    { offset: 3, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"TRANSITA",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"F")` },
+    { offset: 4, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"M")` },
+    { offset: 5, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"N/TRANSITA",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"F")` },
+    { offset: 6, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"DESISTIDO",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"M")` },
+    { offset: 7, formula: `COUNTIFS(${obsColLetterReal}${dataStartRow}:${obsColLetterReal}${endRow},"DESISTIDA",${generoColLetter}${dataStartRow}:${generoColLetter}${endRow},"F")` }
   ];
 
   formulas.forEach(f => {
     const colLetter = columnToLetter(statsStartColIndex + f.offset);
-    const cell = sheet.getCell(`${colLetter}${startRow}`);
+    const cell = sheet.getCell(`${colLetter}${statsResultRow}`);
     cell.value = { formula: f.formula };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
     cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: (f.offset % 2 === 0) ? 'FF0070C0' : 'FFC00000' } };
     cell.border = borderStyle;
+  });
+
+  const totalsRow = 15;
+  statCategories.forEach(cat => {
+    const colL1 = columnToLetter(statsStartColIndex + cat.offset);
+    const colL2 = columnToLetter(statsStartColIndex + cat.offset + 1);
+    styleAndMergeRange(`${colL1}${totalsRow}:${colL2}${totalsRow}`, { formula: `SUM(${colL1}${statsResultRow}:${colL2}${statsResultRow})` },
+      { name: 'Times New Roman', size: 10, bold: true, color: { argb: cat.color } },
+      null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    );
   });
 
   sheet.getColumn('A').width = 2; // Margem
@@ -518,13 +529,13 @@ export async function buildPautaGeralExcelTemplate(params) {
   }
 
   // --- MÁXIMA TABLE UNDER STATS ---
-  let maxRow = endRow + 3;
-  let maxColStart = statsStartColIndex - 4; // Align to the left of the stats
-  if (maxColStart < 5) maxColStart = 5;
+  let maxRow = 17;
+  let maxColStart = statsStartColIndex + 1; // Align under MATRICULADOS F
 
   const maxColL = columnToLetter(maxColStart);
   const maxValColL = columnToLetter(maxColStart + 1);
 
+  // Row 17
   styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, 'MÁXIMA',
     { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
@@ -533,19 +544,27 @@ export async function buildPautaGeralExcelTemplate(params) {
     { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  maxRow += 2;
-  styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, 'NOME DO/A ALUNO/A',
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
-  );
-  styleAndMergeRange(`${maxValColL}${maxRow}:${columnToLetter(statsStartColIndex + 3)}${maxRow}`, '',
+  // Row 18
+  maxRow += 1;
+  styleAndMergeRange(`${maxColL}${maxRow}:${maxValColL}${maxRow}`, 'NOME DO/A ALUNO/A',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
+  const nameEndColL = columnToLetter(maxColStart + 5);
+  styleAndMergeRange(`${columnToLetter(maxColStart + 2)}${maxRow}:${nameEndColL}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(${maxValColL}${maxRow - 1}, ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
+    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+  );
+  
+  // Row 19
   maxRow += 1;
+  styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, '',
+    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+  );
   styleAndMergeRange(`${maxValColL}${maxRow}:${maxValColL}${maxRow}`, '',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
+  // Row 20
   maxRow += 1;
   styleAndMergeRange(`${maxColL}${maxRow}:${maxColL}${maxRow}`, 'IDADE:',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
@@ -554,10 +573,12 @@ export async function buildPautaGeralExcelTemplate(params) {
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  let footRow = endRow + 10;
-  const obsColReal = columnToLetter(colIndex);
-  const startSubDirColIdx = Math.max(10, colIndex - 10);
-  const startSubDirCol = columnToLetter(startSubDirColIdx);
+  // --- FOOTER ---
+  let footRow = endRow + 6; // slightly more breathing room below the table
+  if (footRow < maxRow + 4) {
+    footRow = maxRow + 4; // Ensure footer is always below the MAXIMA table
+  }
+  
   const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || 'ANASTÁSIO ZOVO NZUZI';
   const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
 
@@ -568,39 +589,51 @@ export async function buildPautaGeralExcelTemplate(params) {
       { text: '27 de março de 2026.-', font: { name: 'Times New Roman', size: 11, bold: true } }
     ]
   };
-  styleAndMergeRange(`D${footRow - 4}:${startSubDirCol}${footRow - 4}`, dateStrVal,
+  
+  // Center date text across the entire page (A to statsEndCol)
+  styleAndMergeRange(`A${footRow - 4}:${statsEndCol}${footRow - 4}`, dateStrVal,
     null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`B${footRow}:F${footRow}`, 'O Director de Turma',
+  // Left Signature Block (Director)
+  const leftStart = 'B';
+  const leftEnd = 'F';
+  
+  // Right Signature Block (Subdirector)
+  const rightStartColIdx = Math.max(7, statsStartColIndex - 2);
+  const rightEndColIdx = rightStartColIdx + 5;
+  const rightStart = columnToLetter(rightStartColIdx);
+  const rightEnd = columnToLetter(rightEndColIdx);
+
+  styleAndMergeRange(`${leftStart}${footRow}:${leftEnd}${footRow}`, 'O Director de Turma',
     { name: 'Blackadder ITC', size: 14, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, 'O Subdirector Pedagógico',
+  styleAndMergeRange(`${rightStart}${footRow}:${rightEnd}${footRow}`, 'O Subdirector Pedagógico',
     { name: 'Blackadder ITC', size: 14, bold: true },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   footRow++;
-  styleAndMergeRange(`B${footRow}:F${footRow}`, '_____________________________________',
+  styleAndMergeRange(`${leftStart}${footRow}:${leftEnd}${footRow}`, '_____________________________________',
     { name: 'Times New Roman', size: 11 },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, '_____________________________________',
+  styleAndMergeRange(`${rightStart}${footRow}:${rightEnd}${footRow}`, '_____________________________________',
     { name: 'Times New Roman', size: 11 },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   footRow++;
-  styleAndMergeRange(`B${footRow}:F${footRow}`, nomeDirTurma.toUpperCase(),
-    { name: 'Times New Roman', size: 11, bold: true },
+  styleAndMergeRange(`${leftStart}${footRow}:${leftEnd}${footRow}`, nomeDirTurma.toUpperCase(),
+    { name: 'Times New Roman', size: 11 },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${startSubDirCol}${footRow}:${obsColReal}${footRow}`, nomeSubdir.toUpperCase(),
-    { name: 'Times New Roman', size: 11, bold: true },
+  styleAndMergeRange(`${rightStart}${footRow}:${rightEnd}${footRow}`, nomeSubdir.toUpperCase(),
+    { name: 'Times New Roman', size: 11 },
     null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
