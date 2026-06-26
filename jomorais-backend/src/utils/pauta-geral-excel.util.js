@@ -224,9 +224,12 @@ export async function buildPautaGeralExcelTemplate(params) {
   );
 
   // Row 10: CURSO
+  const cursoBorder = {
+    right: { style: 'dashDot', color: { argb: 'FF000000' } }
+  };
   styleAndMergeRange(`A10:${headerMaxColLetter}10`, `CURSO: ${descCurso.toUpperCase()}`,
     { name: 'Snap ITC', size: 12, bold: true },
-    null, null, { horizontal: 'center', vertical: 'middle' }
+    null, cursoBorder, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Setup base student table headers
@@ -285,6 +288,9 @@ export async function buildPautaGeralExcelTemplate(params) {
     let font = { name: 'Times New Roman', size: 10, bold: true };
     if (col.val === 'Género') {
       font = { name: 'Agency FB', size: 18, bold: true };
+    }
+    if (col.val === 'Observação') {
+      font = { name: 'Times New Roman', size: 8, bold: true };
     }
     styleAndMergeRange(`${col.letter}11:${col.letter}12`, col.val,
       font,
@@ -422,10 +428,10 @@ export async function buildPautaGeralExcelTemplate(params) {
       if (!isDesistente) {
         if (info.situacao === 'TRANS') {
           cellObs.value = 'TRANSITA';
-          cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FF0070C0' } };
+          cellObs.font = { name: 'Agency FB', size: 12, bold: true, color: { argb: 'FF0070C0' } };
         } else {
           cellObs.value = 'N/TRANSITA';
-          cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, color: { argb: 'FFFF0000' } };
+          cellObs.font = { name: 'Agency FB', size: 12, bold: true, color: { argb: 'FFFF0000' } };
         }
       }
     } else {
@@ -434,7 +440,7 @@ export async function buildPautaGeralExcelTemplate(params) {
 
     if (isDesistente) {
       cellObs.value = isM ? 'DESISTIDO' : 'DESISTIDA';
-      cellObs.font = { name: 'Arial Narrow', size: 9, bold: true, italic: true, color: { argb: 'FF7F7F7F' } };
+      cellObs.font = { name: 'Agency FB', size: 12, bold: true, color: { argb: 'FFFF0000' } };
       cellMedia.value = '-';
     } else if (!hasGrades) {
       cellObs.value = '-';
