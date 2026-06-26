@@ -6,6 +6,7 @@ import { AppError } from '../utils/validation.utils.js';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
 import { buildPautaExcelTemplate } from '../utils/pauta-excel.util.js';
+import { buildPautaGeralExcelTemplate } from '../utils/pauta-geral-excel.util.js';
 
 export class GradeManagementService {
   // Helper para calcular a nota trimestral consolidada por disciplina usando pesos (MAC: 40%, PP: 20%, PT: 40%)
@@ -684,7 +685,9 @@ export class GradeManagementService {
       }
     });
 
-    return buildPautaExcelTemplate({
+    const isGeral = !descCurso || descCurso.includes('CFB') || descCurso.includes('CIÊNCIAS') || descCurso.includes('ECONÓMICO') || descCurso.includes('JURÍDICA') || descCurso.includes('FÍSICA') || descCurso.includes('GERAL');
+
+    const params = {
       pautaData,
       codigoTrimestre,
       descClasse,
@@ -695,7 +698,13 @@ export class GradeManagementService {
       descAno,
       totalM,
       totalF
-    });
+    };
+
+    if (isGeral) {
+      return buildPautaGeralExcelTemplate(params);
+    }
+
+    return buildPautaExcelTemplate(params);
   }
 
 
