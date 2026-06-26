@@ -282,8 +282,12 @@ export async function buildPautaGeralExcelTemplate(params) {
   ];
 
   extraCols.forEach(col => {
+    let font = { name: 'Times New Roman', size: 10, bold: true };
+    if (col.val === 'Género') {
+      font = { name: 'Agency FB', size: 18, bold: true };
+    }
     styleAndMergeRange(`${col.letter}11:${col.letter}12`, col.val,
-      { name: 'Times New Roman', size: 10, bold: true },
+      font,
       headerFill, borderStyle, 
       { horizontal: 'center', vertical: 'middle', textRotation: col.val === 'Observação' ? 45 : 0 }
     );
@@ -294,7 +298,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   const statsEndCol = columnToLetter(statsStartColIndex + 7);
 
   styleAndMergeRange(`${statsStartCol}11:${statsEndCol}11`, 'DADOS ESTATÍSTICOS',
-    { name: 'Times New Roman', size: 10, bold: true },
+    { name: 'Calibri', size: 12, bold: true },
     headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
@@ -552,8 +556,14 @@ export async function buildPautaGeralExcelTemplate(params) {
   const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
 
   // "COMPLEXO ESCOLAR PRIVADO JOMORAIS, 27 de março de 2026.-"
-  styleAndMergeRange(`D${footRow - 4}:${startSubDirCol}${footRow - 4}`, `COMPLEXO ESCOLAR PRIVADO JOMORAIS, 27 de março de 2026.-`,
-    { name: 'Times New Roman', size: 10 }, null, null, { horizontal: 'center', vertical: 'middle' }
+  const dateStrVal = {
+    richText: [
+      { text: 'COMPLEXO ESCOLAR PRIVADO JOMORAIS, ', font: { name: 'Times New Roman', size: 11, bold: false } },
+      { text: '27 de março de 2026.-', font: { name: 'Times New Roman', size: 11, bold: true } }
+    ]
+  };
+  styleAndMergeRange(`D${footRow - 4}:${startSubDirCol}${footRow - 4}`, dateStrVal,
+    null, null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`B${footRow}:F${footRow}`, 'O Director de Turma',
