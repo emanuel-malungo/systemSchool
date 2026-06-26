@@ -193,16 +193,40 @@ export async function buildPautaGeralExcelTemplate(params) {
   );
 
   // Row 8: Metadata (Ano Lectivo, Classe, Turma, Sala, Periodo, Trimestre)
-  const metaStr = `Ano Lectivo: ${descAno}          ${descClasse}          Turma: ${descTurma}          Sala: ___          Período: ${descPeriodo}          ${descTrimestre}`;
-  styleAndMergeRange(`A8:${headerMaxColLetter}8`, metaStr,
-    { name: 'Times New Roman', size: 12, bold: true, color: { argb: 'FFFF0000' } },
-    null, null, { horizontal: 'left', vertical: 'middle' }
+  const dashedBorder = {
+    top: { style: 'dashDot', color: { argb: 'FF000000' } },
+    bottom: { style: 'dashDot', color: { argb: 'FF000000' } },
+    left: { style: 'dashDot', color: { argb: 'FF000000' } },
+    right: { style: 'dashDot', color: { argb: 'FF000000' } }
+  };
+
+  const metaVal = {
+    richText: [
+      { text: '  Ano Lectivo: ', font: { name: 'Times New Roman', size: 14, color: { argb: 'FF000000' }, bold: true } },
+      { text: descAno, font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } },
+      { text: '          ' },
+      { text: descClasse.split(' ')[0] + ' ', font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } },
+      { text: descClasse.split(' ').slice(1).join(' '), font: { name: 'Times New Roman', size: 14, color: { argb: 'FF000000' }, bold: true } },
+      { text: '          Turma: ', font: { name: 'Times New Roman', size: 14, color: { argb: 'FF000000' }, bold: true } },
+      { text: descTurma, font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } },
+      { text: '          Sala: ', font: { name: 'Times New Roman', size: 14, color: { argb: 'FF000000' }, bold: true } },
+      { text: 'B1', font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } },
+      { text: '          Período: ', font: { name: 'Times New Roman', size: 14, color: { argb: 'FF000000' }, bold: true } },
+      { text: descPeriodo, font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } },
+      { text: '                    ' },
+      { text: descTrimestre, font: { name: 'Times New Roman', size: 14, color: { argb: 'FFFF0000' }, bold: true } }
+    ]
+  };
+
+  styleAndMergeRange(`A8:${headerMaxColLetter}8`, metaVal,
+    null,
+    null, dashedBorder, { horizontal: 'left', vertical: 'middle' }
   );
 
   // Row 10: CURSO
-  styleAndMergeRange(`D10:${headerMaxColLetter}10`, `CURSO: ${descCurso.toUpperCase()}`,
-    { name: 'Impact', size: 16, bold: true },
-    null, null, { horizontal: 'left', vertical: 'middle' }
+  styleAndMergeRange(`A10:${headerMaxColLetter}10`, `CURSO: ${descCurso.toUpperCase()}`,
+    { name: 'Snap ITC', size: 12, bold: true },
+    null, null, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Setup base student table headers
