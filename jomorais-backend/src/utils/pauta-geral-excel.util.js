@@ -56,8 +56,6 @@ export async function buildPautaGeralExcelTemplate(params) {
     descTurma,
     descTrimestre,
     descAno,
-    totalM,
-    totalF
   } = params;
 
   const workbook = new ExcelJS.Workbook();
@@ -594,7 +592,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   );
 
   // --- FOOTER ---
-  let footRow = Math.max(endRow + 6, maxRow + 6); // Safely place the footer below both tables
+  let footRow = Math.max(endRow + 8, maxRow + 8); // Safely place the footer below both tables
   
   const nomeDirTurma = pautaData.directorTurma?.tb_docente?.nome || 'ANASTÁSIO ZOVO NZUZI';
   const nomeSubdir = pautaData.instituicao?.subDirector || 'ALBERTO SASSA TATI';
