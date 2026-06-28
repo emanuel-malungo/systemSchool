@@ -215,9 +215,9 @@ if not exist "node_modules" (
 echo.
 
 REM ===================================
-REM ATUALIZAR BANCO DE DADOS (PRISMA)
+REM ATUALIZAR CLIENTE PRISMA
 REM ===================================
-echo [BACKEND] Atualizando banco de dados com Prisma...
+echo [BACKEND] Atualizando cliente Prisma...
 cd /d "!BACKEND_DIR!"
 
 call npx prisma generate >nul 2>&1
@@ -226,17 +226,6 @@ if !errorlevel! neq 0 (
 ) else (
     echo [OK] Cliente Prisma gerado.
 )
-
-call npx prisma db push --skip-generate --accept-data-loss >nul 2>&1
-if !errorlevel! neq 0 (
-    echo [AVISO] prisma db push falhou - o banco pode ja estar sincronizado.
-    echo [AVISO] Se houver problemas, execute manualmente: npx prisma db push
-) else (
-    echo [OK] Banco de dados sincronizado.
-)
-echo.
-
-echo [OK] Banco de dados e cliente Prisma atualizados com sucesso!
 echo.
 
 REM ===================================
