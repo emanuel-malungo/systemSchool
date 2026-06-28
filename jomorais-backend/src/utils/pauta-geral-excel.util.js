@@ -525,7 +525,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   sheet.getColumn(generoColLetter).width = 8;
 
   for (let i = 0; i < 8; i++) {
-    sheet.getColumn(statsStartColIndex + i).width = 6;
+    sheet.getColumn(statsStartColIndex + i).width = 10;
   }
 
   // Find the student with the maximum grade to get their age
