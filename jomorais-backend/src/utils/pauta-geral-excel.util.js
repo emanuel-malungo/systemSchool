@@ -544,50 +544,50 @@ export async function buildPautaGeralExcelTemplate(params) {
   // --- MÁXIMA TABLE BELOW DADOS ESTATÍSTICOS ---
   let maxRow = 17;
 
-  const colM1 = columnToLetter(statsStartColIndex);
-  const colM2 = columnToLetter(statsStartColIndex + 1);
   const colM3 = columnToLetter(statsStartColIndex + 2);
   const colM4 = columnToLetter(statsStartColIndex + 3);
   const colM5 = columnToLetter(statsStartColIndex + 4);
-  const colMNameEnd = columnToLetter(statsStartColIndex + 14);
+  const colM6 = columnToLetter(statsStartColIndex + 5);
+  const colM7 = columnToLetter(statsStartColIndex + 6);
+  const colMNameEnd = columnToLetter(statsStartColIndex + 16);
 
   // Row 1
-  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'MÁXIMA',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'MÁXIMA',
     { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
+  styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
     { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  for (let c = statsStartColIndex + 2; c <= statsStartColIndex + 3; c++) {
+  for (let c = statsStartColIndex + 4; c <= statsStartColIndex + 5; c++) {
     sheet.getCell(`${columnToLetter(c)}${maxRow}`).numFmt = '0.#';
   }
 
   // Row 2
   maxRow += 1;
-  styleAndMergeRange(`${colM1}${maxRow}:${colM4}${maxRow}`, 'NOME DO/A ALUNO/A',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM6}${maxRow}`, 'NOME DO/A ALUNO/A',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
-  styleAndMergeRange(`${colM5}${maxRow}:${colMNameEnd}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
+  styleAndMergeRange(`${colM7}${maxRow}:${colMNameEnd}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
   // Row 3
   maxRow += 1;
-  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, '',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, '',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, maxGradeAge,
+  styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, maxGradeAge,
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Row 4
   maxRow += 1;
-  styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'IDADE:',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'IDADE:',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'ANOS',
+  styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, 'ANOS',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
