@@ -549,17 +549,17 @@ export async function buildPautaGeralExcelTemplate(params) {
   const colM3 = columnToLetter(statsStartColIndex + 2);
   const colM4 = columnToLetter(statsStartColIndex + 3);
   const colM5 = columnToLetter(statsStartColIndex + 4);
-  const colM8 = columnToLetter(statsStartColIndex + 7);
+  const colMNameEnd = columnToLetter(statsStartColIndex + 14);
 
   // Row 1
   styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'MÁXIMA',
     { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
-  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
     { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  for (let c = statsStartColIndex + 2; c <= statsStartColIndex + 7; c++) {
+  for (let c = statsStartColIndex + 2; c <= statsStartColIndex + 3; c++) {
     sheet.getCell(`${columnToLetter(c)}${maxRow}`).numFmt = '0.#';
   }
 
@@ -569,7 +569,7 @@ export async function buildPautaGeralExcelTemplate(params) {
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
-  styleAndMergeRange(`${colM5}${maxRow}:${colM8}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
+  styleAndMergeRange(`${colM5}${maxRow}:${colMNameEnd}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
@@ -578,7 +578,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, '',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, maxGradeAge,
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, maxGradeAge,
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
@@ -587,7 +587,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   styleAndMergeRange(`${colM1}${maxRow}:${colM2}${maxRow}`, 'IDADE:',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
-  styleAndMergeRange(`${colM3}${maxRow}:${colM8}${maxRow}`, 'ANOS',
+  styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'ANOS',
     { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
