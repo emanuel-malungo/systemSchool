@@ -319,7 +319,7 @@ export async function buildPautaGeralExcelTemplate(params) {
     const colL1 = columnToLetter(statsStartColIndex + cat.offset);
     const colL2 = columnToLetter(statsStartColIndex + cat.offset + 1);
     styleAndMergeRange(`${colL1}12:${colL2}12`, cat.label,
-      { name: 'Times New Roman', size: 10, bold: true, color: { argb: cat.color } },
+      { name: 'Calibri', size: 12, bold: true, color: { argb: cat.color } },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
   });
@@ -327,7 +327,7 @@ export async function buildPautaGeralExcelTemplate(params) {
   for (let i = 0; i < 8; i++) {
     const colL = columnToLetter(statsStartColIndex + i);
     styleAndMergeRange(`${colL}13:${colL}13`, i % 2 === 0 ? 'M' : 'F',
-      { name: 'Times New Roman', size: 10, bold: true },
+      { name: 'Calibri', size: 12, bold: true },
       headerFill, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
   }
@@ -487,7 +487,7 @@ export async function buildPautaGeralExcelTemplate(params) {
     const cell = sheet.getCell(`${colLetter}${statsResultRow}`);
     cell.value = { formula: f.formula };
     cell.alignment = { horizontal: 'center', vertical: 'middle' };
-    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: (f.offset % 2 === 0) ? 'FF0070C0' : 'FFC00000' } };
+    cell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: (f.offset % 2 === 0) ? 'FF0070C0' : 'FFC00000' } };
     cell.border = borderStyle;
   });
 
@@ -496,7 +496,7 @@ export async function buildPautaGeralExcelTemplate(params) {
     const colL1 = columnToLetter(statsStartColIndex + cat.offset);
     const colL2 = columnToLetter(statsStartColIndex + cat.offset + 1);
     styleAndMergeRange(`${colL1}${totalsRow}:${colL2}${totalsRow}`, { formula: `SUM(${colL1}${statsResultRow}:${colL2}${statsResultRow})` },
-      { name: 'Times New Roman', size: 10, bold: true, color: { argb: cat.color } },
+      { name: 'Calibri', size: 12, bold: true, color: { argb: cat.color } },
       null, borderStyle, { horizontal: 'center', vertical: 'middle' }
     );
   });
@@ -553,11 +553,11 @@ export async function buildPautaGeralExcelTemplate(params) {
 
   // Row 1
   styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'MÁXIMA',
-    { name: 'Times New Roman', size: 10, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11, bold: true }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, { formula: `ROUND(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), 1)` },
-    { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 20, bold: true, color: { argb: 'FF0070C0' } }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   for (let c = statsStartColIndex + 4; c <= statsStartColIndex + 5; c++) {
     sheet.getCell(`${columnToLetter(c)}${maxRow}`).numFmt = '0.#';
@@ -566,29 +566,29 @@ export async function buildPautaGeralExcelTemplate(params) {
   // Row 2
   maxRow += 1;
   styleAndMergeRange(`${colM3}${maxRow}:${colM6}${maxRow}`, 'NOME DO/A ALUNO/A',
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
   styleAndMergeRange(`${colM7}${maxRow}:${colMNameEnd}${maxRow}`, { formula: `IFERROR(INDEX(D14:D${endRow}, MATCH(MAX(${mediaColLetter}14:${mediaColLetter}${endRow}), ${mediaColLetter}14:${mediaColLetter}${endRow}, 0)), "")` },
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   
   // Row 3
   maxRow += 1;
   styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, '',
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, maxGradeAge,
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // Row 4
   maxRow += 1;
   styleAndMergeRange(`${colM3}${maxRow}:${colM4}${maxRow}`, 'IDADE:',
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
   styleAndMergeRange(`${colM5}${maxRow}:${colM6}${maxRow}`, 'ANOS',
-    { name: 'Times New Roman', size: 9 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
+    { name: 'Calibri', size: 11 }, null, borderStyle, { horizontal: 'center', vertical: 'middle' }
   );
 
   // --- FOOTER ---
