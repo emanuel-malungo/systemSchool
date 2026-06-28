@@ -35,6 +35,7 @@ import directorRoutes from './routes/director.routes.js';
 
 // Importar Swagger
 import { swaggerDocs } from './config/swagger.js';
+import { syncDatabase } from './config/sync-database.js';
 
 dotenv.config();
 
@@ -157,9 +158,20 @@ const getLocalIP = () => {
   return 'localhost';
 };
 
-app.listen(PORT, HOST, () => {
-  const localIP = getLocalIP();
-  console.log(`🚀 Servidor rodando em ${BASE_URL}`);
-  console.log(`📡 Acesso local: http://localhost:${PORT}`);
-  console.log(`🌐 Acesso na rede: http://${localIP}:${PORT}`);
-});
+// Sincronizar o banco de dados e iniciar o servidor
+async function startServer() {
+  try {
+    await syncDatabase();
+  } catch (error) {
+    console.error('⚠️ Aviso: Falha ao sincronizar o banco de dados na inicialização:', error.message);
+  }
+
+  app.listen(PORT, HOST, () => {
+    const localIP = getLocalIP();
+    console.log(`🚀 Servidor rodando em ${BASE_URL}`);
+    console.log(`📡 Acesso local: http://localhost:${PORT}`);
+    console.log(`🌐 Acesso na rede: http://${localIP}:${PORT}`);
+  });
+}
+
+startServer();
